@@ -36,6 +36,14 @@ export class User extends BaseEntity {
 	@Column({ type: String, nullable: true })
 	email: string | null;
 
+	/** The private key for this user, used to sign activities sent to external instances */
+	@Column({ type: String, nullable: true })
+	private_key: string | null;
+
+	/** The public key of this user. Exists on both external and internal users */
+	@Column()
+	public_key: string;
+
 	/**
 	 * TODO:
 	 * followers

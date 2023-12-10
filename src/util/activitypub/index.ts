@@ -1,7 +1,7 @@
 import { APObject, AnyAPObject } from "activitypub-types";
-import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { HttpError } from "../httperror";
 
+import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { createLogger } from "../log";
 const Log = createLogger("activitypub");
 
@@ -52,14 +52,16 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	Log.verbose(`Fetching from remote ${data}`);
 
-	const ret = await fetch(data, {
+	const res = await fetch(data, {
 		...ACTIVITYPUB_FETCH_OPTS,
 	});
 
-	if (!ret.ok)
-		throw new APError(`Remote server sent code ${ret.status} : ${ret.statusText}`);
+	if (!res.ok)
+		throw new APError(
+			`Remote server sent code ${res.status} : ${res.statusText}`,
+		);
 
-	const json = await ret.json();
+	const json = await res.json();
 
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
@@ -73,12 +75,19 @@ export const resolveWebfinger = async (
 
 	Log.verbose(`Performing webfinger lookup ${lookup}`);
 
-	const wellknown = (await fetch(
+	const res = await fetch(
 		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
 		{
 			...ACTIVITYPUB_FETCH_OPTS,
 		},
-	).then((x) => x.json())) as WebfingerResponse;
+	);
+
+	if (!res.ok)
+		throw new APError(
+			`Remote server sent code ${res.status} : ${res.statusText}`,
+		);
+
+	const wellknown = await res.json() as WebfingerResponse;
 
 	if (!("links" in wellknown))
 		throw new APError(

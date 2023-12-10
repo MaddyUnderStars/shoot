@@ -32,6 +32,7 @@ router.get(
 					username: obj.preferredUsername,
 					display_name: obj.name || obj.preferredUsername,
 					domain: mention.domain,
+					public_key: obj.publicKey?.publicKeyPem || "",
 				}).save();
 			}
 			else if (!user) {
