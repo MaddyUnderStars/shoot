@@ -2,9 +2,9 @@
   "name": "unnamed-ap-chat-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/bootstrap.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/bootstrap.js"
   },
   "author": "MaddyUnderStars",
   "license": "ISC",
