@@ -3,11 +3,7 @@ import { Response, Router } from "express";
 import z from "zod";
 
 import { PublicUser, User } from "../../../entity";
-import {
-	HttpError,
-	generateToken,
-	route
-} from "../../../util";
+import { HttpError, config, generateToken, route } from "../../../util";
 
 const router = Router();
 
@@ -24,12 +20,12 @@ router.post(
 		const { username, password } = req.body;
 
 		const user = await User.findOneOrFail({
-			where: { username },
+			where: { username, domain: config.federation.webapp_url.hostname },
 		}).catch(() => {
 			throw new HttpError(INVALID_LOGIN, 401);
 		});
 
-		if (!(await bcrypt.compare(password, user.password_hash)))
+		if (!(await bcrypt.compare(password, user.password_hash!)))
 			throw new HttpError(INVALID_LOGIN, 401);
 
 		return res.json({

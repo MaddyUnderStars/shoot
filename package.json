@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.5",
-    "activitypub-types": "github:spacebarchat/activitypub-types",
+    "activitypub-types": "github:spacebarchat/activitypub-types#dist",
     "bcrypt": "^5.1.1",
     "config": "^3.3.9",
     "express": "^4.18.2",

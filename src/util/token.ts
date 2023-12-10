@@ -27,7 +27,7 @@ export const getUserFromToken = (token: string): Promise<User> =>
 
 				if (!user) return reject(INVALID_TOKEN);
 
-				if (decoded.iat * 1000 < new Date(user.valid_tokens_since).setSeconds(0, 0))
+				if (decoded.iat * 1000 < new Date(user.valid_tokens_since!).setSeconds(0, 0))
 					return reject(INVALID_TOKEN);
 
 				return resolve(user);

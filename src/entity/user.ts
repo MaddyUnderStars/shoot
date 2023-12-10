@@ -7,21 +7,22 @@ import {
 } from "typeorm";
 
 @Entity("users")
+@Index(["username", "domain"], { unique: true })
 export class User extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	id: string;
 
 	/** The username of this user. Forms their mention */
-	@Index()
-	@Column({ unique: true })
+	@Column()
 	username: string;
 
 	/** Tokens generated past this date are valid */
-	@Column()
-	valid_tokens_since: Date;
+	@Column({ nullable: true, type: Date })
+	valid_tokens_since: Date | null;
 
-	@Column()
-	password_hash: string;
+	/** The password hash of this user. If null, this user is not from our domain */
+	@Column({ nullable: true, type: String })
+	password_hash: string | null;
 
 	/** The preferred/display name of this user */
 	@Column()
