@@ -2,7 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
 
-import { errorHandler, routes } from "./http";
+import { authHandler, errorHandler, routes } from "./http";
 import { createLogger, initDatabase } from "./util";
 
 const Log = createLogger("server");
@@ -15,6 +15,8 @@ export class ChatServer {
 		this.app = express();
 
 		this.app.use(bodyParser.json());
+
+		this.app.use(authHandler);
 
 		this.app.use("/", routes);
 

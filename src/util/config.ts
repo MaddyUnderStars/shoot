@@ -8,6 +8,14 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 };
 
 const config = Object.freeze({
+	security: {
+		/**
+		 * The Jsonwebtoken secret used to generate authentication tokens.
+		 * Generate with `crypto.randomBytes(256).toString("base64")`
+		 */
+		jwt_secret: nodeConfig.get<string>("security.jwt_secret"),
+	},
+
 	database: {
 		/**
 		 * A URL style database connection string

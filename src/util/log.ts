@@ -9,5 +9,6 @@ export const createLogger = (context: string) => {
 		error: (...args: unknown[]) => doLog("error", ...args),
 		warn: (...args: unknown[]) => doLog("warn", ...args),
 		msg: (...args: unknown[]) => doLog("log", ...args),
+		verbose: (...args: unknown[]) => doLog("log", ...args),
 	};
 };

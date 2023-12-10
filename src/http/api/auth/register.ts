@@ -1,7 +1,12 @@
 import { Response, Router } from "express";
 import z from "zod";
-import { User } from "../../../entity";
-import { HttpError, config, route } from "../../../util";
+import {
+	HttpError,
+	config,
+	generateToken,
+	registerUser,
+	route,
+} from "../../../util";
 
 const router = Router();
 
@@ -19,15 +24,11 @@ router.post(
 			if (!config.registration.enabled)
 				throw new HttpError("Registration is disabled", 400);
 
-			const user = User.create({
-				username: req.body.username,
-				display_name: req.body.username,
-				domain: config.federation.webapp_url.hostname
-			});
+			const { username, email, password } = req.body;
 
-			await user.save();
+			const user = await registerUser(username, password, email);
 
-			return res.json({ token: "TODO" });
+			return res.json({ token: await generateToken(user.id) });
 		},
 	),
 );
