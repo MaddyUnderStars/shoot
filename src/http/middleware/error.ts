@@ -9,21 +9,28 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 
 	let code = 400;
 	let message: string = error.message;
+	
+	switch (true) {
+		case error instanceof HttpError:
+			code = error.code
+			break;
+		case error instanceof z.ZodError:
+			message = error.errors[0].message;
+			break;
+		case error.name === "EntityNotFoundError":
+			code = 404;
+			const name = error.message.match(ENTITY_NOT_FOUND_REGEX)?.[1] || "Object";
+			message = `${name} could not be found`
+		case error.name === "QueryFailedError":
+			code = 500;
 
-	if (error instanceof HttpError) code = error.code;
-	else if (error instanceof z.ZodError) message = error.errors[0].message;
-	else if (error.name === "EntityNotFoundError") {
-		code = 404;
-		const name = error.message.match(ENTITY_NOT_FOUND_REGEX)?.[1] || "Object";
-		message = `${name} could not be found`
-	}
-	else if (error.name === "QueryFailedError") {
-		code = 500;
-
-		if (error.message.toLowerCase().includes("unique")) {
-			code = 400;
-			message = `Object already exists`
-		}
+			if (error.message.toLowerCase().includes("unique")) {
+				code = 400;
+				message = `Object already exists`
+			}
+		case error.message === "fetch failed":
+			code = 500;
+			message = error?.cause?.message || error.message;
 	}
 
 	return res.status(code).json({ code, message });
