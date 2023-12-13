@@ -1,8 +1,7 @@
-import { ObjectIsPerson } from "activitypub-types";
 import { Response, Router } from "express";
 import { z } from "zod";
 import { PublicUser, User } from "../../../../entity";
-import { APError, HttpError, config, resolveWebfinger, route, splitQualifiedMention } from "../../../../util";
+import { HttpError, config, createUserForRemotePerson, route, splitQualifiedMention } from "../../../../util";
 
 const router = Router();
 
@@ -26,14 +25,8 @@ router.get(
 
 			if (!user && config.federation.enabled) {
 				// Fetch from remote instance
-				const obj = await resolveWebfinger(user_id);
-				if (!ObjectIsPerson(obj)) throw new APError("Resolved object was not person");
-				user = await User.create({
-					username: obj.preferredUsername,
-					display_name: obj.name || obj.preferredUsername,
-					domain: mention.domain,
-					public_key: obj.publicKey?.publicKeyPem || "",
-				}).save();
+				user = await createUserForRemotePerson(user_id);
+				await user.save();
 			}
 			else if (!user) {
 				throw new HttpError("User could not be found", 404);

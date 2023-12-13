@@ -1,14 +1,14 @@
 import {
-	BaseEntity,
 	Column,
 	Entity,
 	Index,
 	PrimaryGeneratedColumn,
 } from "typeorm";
+import { BaseModel } from "./basemodel";
 
 @Entity("users")
 @Index(["username", "domain"], { unique: true })
-export class User extends BaseEntity {
+export class User extends BaseModel {
 	@PrimaryGeneratedColumn()
 	id: string;
 
@@ -67,10 +67,6 @@ export class User extends BaseEntity {
 			...this.toPublic(),
 		};
 	};
-
-	private toJSON = () => {
-		throw new Error("Do not return database entities directly. Call .toPublic or .toPrivate");
-	}
 }
 
 export type PublicUser = Pick<User, "username" | "display_name" | "domain">;

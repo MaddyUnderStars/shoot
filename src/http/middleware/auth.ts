@@ -1,7 +1,11 @@
 import { RequestHandler } from "express";
 import { HttpError, getUserFromToken } from "../../util";
 
-const NO_AUTH_ROUTES = ["/auth/login", "/auth/register", /\.well\-known/];
+const NO_AUTH_ROUTES = [
+	"/auth/login",
+	"/auth/register",
+	/\.well\-known/,
+];
 
 export const authHandler: RequestHandler = async (req, res, next) => {
 	const url = req.url;
@@ -16,7 +20,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 
 	const { authorization } = req.headers;
 	if (!authorization)
-		throw new HttpError("Missing `authorization` header", 401);
+		return next(new HttpError("Missing `authorization` header", 401));
 
 	let user;
 	try {

@@ -1,6 +1,7 @@
-import { APObject, AnyAPObject } from "activitypub-types";
+import { APObject, AnyAPObject, ObjectIsPerson } from "activitypub-types";
 import { HttpError } from "../httperror";
 
+import { User } from "../../entity";
 import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { createLogger } from "../log";
 const Log = createLogger("activitypub");
@@ -99,3 +100,18 @@ export const resolveWebfinger = async (
 
 	return await resolveAPObject<AnyAPObject>(link.href);
 };
+
+export const createUserForRemotePerson = async (lookup: string) => {
+	const obj = await resolveWebfinger(lookup);
+	if (!ObjectIsPerson(obj)) throw new APError("Resolved object is not Person");
+
+	if (!obj.publicKey?.publicKeyPem)
+		throw new APError("Resolved object is Person but does not contain public key");
+
+	return User.create({
+		username: obj.preferredUsername,
+		display_name: obj.name || obj.preferredUsername,
+		domain: splitQualifiedMention(lookup).domain,
+		public_key: obj.publicKey.publicKeyPem,
+	});
+}

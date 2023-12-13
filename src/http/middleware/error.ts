@@ -3,7 +3,6 @@ import z from "zod";
 import { HttpError } from "../../util";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
-const ENTITY_EXISTS_REGEX = /(\w+)\./;
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 	if (res.headersSent) return next(error);
