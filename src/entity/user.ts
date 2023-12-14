@@ -44,6 +44,14 @@ export class User extends BaseModel {
 	@Column()
 	public_key: string;
 
+	@Column({ type: "simple-json", nullable: true })
+	activitypub_addresses: {
+		inbox: string;
+		outbox: string;
+		followers?: string;
+		following?: string;
+	};
+
 	/**
 	 * TODO:
 	 * followers

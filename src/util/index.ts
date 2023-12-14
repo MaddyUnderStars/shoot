@@ -6,4 +6,6 @@ export * from "./httperror";
 export * from "./log";
 export * from "./route";
 export * from "./token";
+export * from "./types";
 export * from "./url";
+

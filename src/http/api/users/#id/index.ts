@@ -1,12 +1,12 @@
 import { Response, Router } from "express";
 import { z } from "zod";
-import { PublicUser, User } from "../../../../entity";
-import { HttpError, config, createUserForRemotePerson, route, splitQualifiedMention } from "../../../../util";
+import { PublicUser } from "../../../../entity";
+import { getOrCreateUser, route } from "../../../../util";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.get(
-	"/:user_id",
+	"/",
 	route(
 		{
 			params: z.object({
@@ -16,21 +16,7 @@ router.get(
 		async (req, res: Response<PublicUser>) => {
 			const { user_id } = req.params;
 
-			const mention = splitQualifiedMention(user_id);
-
-			let user = await User.findOne({ where: { 
-				username: mention.user,
-				domain: mention.domain
-			}});
-
-			if (!user && config.federation.enabled) {
-				// Fetch from remote instance
-				user = await createUserForRemotePerson(user_id);
-				await user.save();
-			}
-			else if (!user) {
-				throw new HttpError("User could not be found", 404);
-			}
+			const user = await getOrCreateUser(user_id);
 
 			return res.json(user.toPublic());
 		},

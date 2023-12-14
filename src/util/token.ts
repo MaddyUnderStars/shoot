@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import { User } from "../entity";
 import { config } from "./config";
+import { HttpError } from "./httperror";
 
-const INVALID_TOKEN = "Invalid token";
+const INVALID_TOKEN = new HttpError("Invalid token", 401);
 
 export type UserTokenData = {
 	id: string;

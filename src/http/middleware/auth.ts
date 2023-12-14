@@ -1,4 +1,5 @@
 import { RequestHandler } from "express";
+import type { User } from "../../entity";
 import { HttpError, getUserFromToken } from "../../util";
 
 const NO_AUTH_ROUTES = [
@@ -29,7 +30,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 		return next(e);
 	}
 
-	req.user_id = user.id;
+	req.user = user;
 
 	return next();
 };
@@ -37,7 +38,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 declare global {
 	namespace Express {
 		interface Request {
-			user_id: string;
+			user: User;
 		}
 	}
 }

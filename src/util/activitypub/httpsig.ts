@@ -121,7 +121,7 @@ export class HttpSig {
 		const sig_b64 = signature.toString("base64");
 
 		const header =
-			`keyId="${config.federation.webapp_url.origin}/_/user/${sender.id}",` +
+			`keyId="${config.federation.webapp_url.origin}/users/${sender.username}@${sender.domain}#public-key",` +
 			`headers="(request-target) host date digest",` +
 			`signature="${sig_b64}"`;
 
