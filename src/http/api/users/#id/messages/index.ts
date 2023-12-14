@@ -8,11 +8,17 @@ import { Message } from "../../../../../entity";
 import {
 	addContext,
 	config,
+	createLogger,
 	getOrCreateUser,
-	route
+	route,
 } from "../../../../../util";
 import { HttpSig } from "../../../../../util/activitypub/httpsig";
-import { buildAPCreateNote, buildAPNote } from "../../../../../util/activitypub/transformers";
+import {
+	buildAPCreateNote,
+	buildAPNote,
+} from "../../../../../util/activitypub/transformers";
+
+const Log = createLogger("activitypub");
 
 const router = Router({ mergeParams: true });
 
@@ -36,7 +42,7 @@ router.post(
 
 			const message = Message.create({
 				to,
-				
+
 				content: req.body.content,
 				author: req.user,
 			});
@@ -51,12 +57,23 @@ router.post(
 				const create = buildAPCreateNote(note);
 				const withContext = addContext(create);
 
-				const signed = HttpSig.sign(to.activitypub_addresses.inbox, req.user, withContext);
+				const signed = HttpSig.sign(
+					to.activitypub_addresses.inbox,
+					req.user,
+					withContext,
+				);
 
-				setImmediate(async  () => {
-					const res = await fetch(to.activitypub_addresses.inbox, signed);
-					console.log(await res.text());
-				})
+				setImmediate(async () => {
+					const res = await fetch(
+						to.activitypub_addresses.inbox,
+						signed,
+					);
+					if (!res.ok)
+						Log.error(
+							`Error sending message to inbox ${to.activitypub_addresses.inbox}`,
+							await res.text(),
+						);
+				});
 			}
 
 			return res.json(message.toPublic());

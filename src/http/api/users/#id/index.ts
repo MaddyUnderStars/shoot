@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import { z } from "zod";
 import { PublicUser } from "../../../../entity";
-import { getOrCreateUser, route } from "../../../../util";
+import { addContext, getOrCreateUser, route } from "../../../../util";
 
 const router = Router({ mergeParams: true });
 
@@ -18,7 +18,8 @@ router.get(
 
 			const user = await getOrCreateUser(user_id);
 
-			return res.json(user.toPublic());
+			//@ts-ignore
+			return res.json(addContext(user.toPublic()));
 		},
 	),
 );

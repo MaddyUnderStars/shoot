@@ -15,6 +15,7 @@ export const registerUser = async (
 	password: string,
 	email?: string,
 ) => {
+	// todo: don't await this
 	const keys = await generateKeyPair("rsa", {
 		modulusLength: 4096,
 		publicKeyEncoding: {

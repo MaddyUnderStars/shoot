@@ -1,9 +1,5 @@
-import {
-	Column,
-	Entity,
-	Index,
-	PrimaryGeneratedColumn,
-} from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { config } from "../util";
 import { BaseModel } from "./basemodel";
 
 @Entity("users")
@@ -65,6 +61,11 @@ export class User extends BaseModel {
 			username: this.username,
 			display_name: this.display_name,
 			domain: this.domain,
+			publicKey: {
+				id: `${config.federation.instance_url.origin}/users/${this.username}@${this.domain}`,
+				owner: `${config.federation.instance_url.origin}/users/${this.username}@${this.domain}`,
+				publicKeyPem: this.public_key,
+			}
 		};
 	};
 
@@ -77,5 +78,14 @@ export class User extends BaseModel {
 	};
 }
 
-export type PublicUser = Pick<User, "username" | "display_name" | "domain">;
+export type PublicUser = Pick<User, "username" | "display_name" | "domain"> & {
+	publicKey?: {
+		/** The ID of this public key. Typically `https://example.com/users/username#main-key`. */
+		id: string;
+		/** The owner of this key. Typically matches actor ID. */
+		owner: string;
+		/** The RSA public key. */
+		publicKeyPem: string;
+	};
+};
 export type PrivateUser = PublicUser & Pick<User, "email">;

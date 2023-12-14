@@ -17,11 +17,14 @@ export class APError extends HttpError {}
 
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 
-export const ACTIVITYPUB_FETCH_OPTS = {
+export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 	headers: {
 		Accept: "application/activity+json",
 		"Content-Type": "application/activity+json",
+		"User-Agent": "Unnamed Activitypub Chat Server (https://github.com/maddyunderstars)"
 	},
+	
+	redirect: "follow",
 };
 
 export const splitQualifiedMention = (lookup: string) => {

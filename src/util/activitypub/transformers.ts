@@ -3,8 +3,8 @@ import type { Message } from "../../entity/message";
 import { config } from "../config";
 
 export const buildAPNote = (message: Message): APNote => {
-	const id = `${config.federation.webapp_url.origin}/message/${message.id}`;
-	const attributedTo = `${config.federation.webapp_url.origin}/user/${message.author.id}`;
+	const id = `${config.federation.instance_url.origin}/message/${message.id}`;
+	const attributedTo = `${config.federation.instance_url.origin}/user/${message.author.id}`;
 
 	return {
 		id,
@@ -27,7 +27,7 @@ export const buildAPCreateNote = (inner: APNote): APCreate => {
 }
 
 export const buildAPAnnounceNote = (inner: APNote, channel_id: string): APAnnounce => {
-	const actor = `${config.federation.webapp_url.origin}/channel/${channel_id}`;
+	const actor = `${config.federation.instance_url.origin}/channel/${channel_id}`;
 	const to = "https://www.w3.org/ns/activitystreams#Public";	// TODO
 
 	return {
