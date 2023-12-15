@@ -5,7 +5,7 @@ import { HttpError, getUserFromToken } from "../../util";
 const NO_AUTH_ROUTES = [
 	"/auth/login",
 	"/auth/register",
-	/\/users\/([a-zA-Z0-9_@\.]*)$/g,	//TODO: remove
+	"/s2s",
 	/\.well\-known/,
 ];
 

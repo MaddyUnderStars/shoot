@@ -7,8 +7,6 @@ export class Channel extends BaseModel {
 	@Column()
 	name: string;
 
-	// todo: guilds
-
 	@Column({ type: String, nullable: true })
 	domain: string | null;
 

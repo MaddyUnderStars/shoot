@@ -1,12 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index } from "typeorm";
 import { config } from "../util";
 import { BaseModel } from "./basemodel";
 
 @Entity("users")
 @Index(["username", "domain"], { unique: true })
 export class User extends BaseModel {
-	@PrimaryGeneratedColumn()
-	id: string;
+	@CreateDateColumn()
+	registered_date: Date;
 
 	/** The username of this user. Forms their mention */
 	@Column()
@@ -62,8 +62,8 @@ export class User extends BaseModel {
 			display_name: this.display_name,
 			domain: this.domain,
 			publicKey: {
-				id: `${config.federation.instance_url.origin}/users/${this.username}@${this.domain}`,
-				owner: `${config.federation.instance_url.origin}/users/${this.username}@${this.domain}`,
+				id: `${config.federation.instance_url.origin}/s2s/users/${this.username}`,
+				owner: `${config.federation.instance_url.origin}/s2s/users/${this.username}`,
 				publicKeyPem: this.public_key,
 			}
 		};

@@ -175,9 +175,12 @@ export const createChannelFromRemoteGroup = async (lookup: string) => {
 
 export const addContext = <T extends AnyAPObject | APActivity>(
 	obj: T,
-): T & { "@context": ContextField } => {
+): T & { "@context": ContextField[] } => {
 	return {
+		"@context": [
+			"https://www.w3.org/ns/activitystreams",
+			"https://w3id.org/security/v1",
+		],
 		...obj,
-		"@context": "https://www.w3.org/ns/activitystreams",
 	};
 };
