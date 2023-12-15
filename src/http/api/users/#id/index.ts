@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import { z } from "zod";
 import { PublicUser } from "../../../../entity";
-import { addContext, getOrCreateUser, route } from "../../../../util";
+import { addContext, getOrFetchUser, route } from "../../../../util";
 
 const router = Router({ mergeParams: true });
 
@@ -16,7 +16,7 @@ router.get(
 		async (req, res: Response<PublicUser>) => {
 			const { user_id } = req.params;
 
-			const user = await getOrCreateUser(user_id);
+			const user = await getOrFetchUser(user_id);
 
 			//@ts-ignore
 			return res.json(addContext(user.toPublic()));
