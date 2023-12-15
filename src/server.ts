@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
+import morgan from "morgan";
 
 import { authHandler, errorHandler, routes } from "./http";
 import { createLogger, initDatabase } from "./util";
@@ -14,7 +15,15 @@ export class ChatServer {
 	public constructor(server?: http.Server) {
 		this.app = express();
 
-		this.app.use(bodyParser.json());
+		this.app.use(bodyParser.json({ inflate: true }));
+		this.app.use(
+			bodyParser.json({
+				type: "application/activity+json",
+			}),
+		);
+		this.app.use(bodyParser.urlencoded({ inflate: true, extended: true }));
+
+		this.app.use(morgan("combined"));
 
 		this.app.use(authHandler);
 
