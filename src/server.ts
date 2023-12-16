@@ -4,7 +4,7 @@ import http from "http";
 import morgan from "morgan";
 
 import { authHandler, errorHandler, routes } from "./http";
-import { createLogger, initDatabase } from "./util";
+import { config, createLogger, initDatabase } from "./util";
 
 const Log = createLogger("server");
 
@@ -14,6 +14,8 @@ export class ChatServer {
 
 	public constructor(server?: http.Server) {
 		this.app = express();
+
+		this.app.set("trust proxy", config.security.trust_proxy);
 
 		this.app.use(bodyParser.json({ inflate: true }));
 		this.app.use(

@@ -14,6 +14,14 @@ const config = Object.freeze({
 		 * Generate with `crypto.randomBytes(256).toString("base64")`
 		 */
 		jwt_secret: nodeConfig.get<string>("security.jwt_secret"),
+
+		/**
+		 * How to determine the client IP when behind a proxy
+		 * https://expressjs.com/en/guide/behind-proxies.html
+		*/
+		trust_proxy:
+			ifExistsGet<string>("security.trust_proxy") ??
+			"loopback,uniquelocal",
 	},
 
 	database: {
@@ -86,4 +94,3 @@ const config = Object.freeze({
 });
 
 export { config };
-
