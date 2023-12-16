@@ -18,7 +18,9 @@ const config = Object.freeze({
 		/**
 		 * How to determine the client IP when behind a proxy
 		 * https://expressjs.com/en/guide/behind-proxies.html
-		*/
+		 *
+		 * @default loopback,uniquelocal
+		 */
 		trust_proxy:
 			ifExistsGet<string>("security.trust_proxy") ??
 			"loopback,uniquelocal",
@@ -77,18 +79,21 @@ const config = Object.freeze({
 
 				/**
 				 * TODO: Whether to force a captcha to be completed for new registrations.
+				 * 
+				 * @default false
 				 */
-				require_captcha: ifExistsGet<boolean>(
-					"registration.require_captcha",
-				),
+				require_captcha:
+					ifExistsGet<boolean>("registration.require_captcha") ??
+					false,
 
 				/**
 				 * TODO: Whether to require an email address for new registrations.
 				 * TODO: If enabled and an email server has been configured, verification emails will be sent.
+				 * 
+				 * @default false
 				 */
-				require_email: ifExistsGet<boolean>(
-					"registration.require_email",
-				),
+				require_email:
+					ifExistsGet<boolean>("registration.require_email") ?? false,
 		  }
 		: { enabled: false },
 });
