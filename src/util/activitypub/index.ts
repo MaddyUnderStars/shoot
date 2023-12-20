@@ -20,6 +20,8 @@ export class APError extends HttpError {}
 
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 
+export const ACTIVITY_JSON_ACCEPT = "application/activity+json";
+
 export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 	headers: {
 		Accept: "application/activity+json",

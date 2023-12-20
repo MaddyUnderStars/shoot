@@ -1,13 +1,8 @@
 import { RequestHandler } from "express";
 import type { User } from "../../entity";
-import { HttpError, getUserFromToken } from "../../util";
+import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
 
-const NO_AUTH_ROUTES = [
-	"/auth/login",
-	"/auth/register",
-	"/s2s",
-	/\.well\-known/,
-];
+const NO_AUTH_ROUTES = ["/auth/login", "/auth/register", /\.well\-known/];
 
 export const authHandler: RequestHandler = async (req, res, next) => {
 	const url = req.url;
@@ -16,7 +11,8 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 		NO_AUTH_ROUTES.some((x) => {
 			if (typeof x == "string") return url.startsWith(x);
 			return x.test(url);
-		})
+		}) ||
+		req.headers.accept?.includes(ACTIVITY_JSON_ACCEPT)
 	)
 		return next();
 

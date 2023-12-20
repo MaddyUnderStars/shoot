@@ -62,8 +62,8 @@ export class User extends BaseModel {
 			display_name: this.display_name,
 			domain: this.domain,
 			publicKey: {
-				id: `${config.federation.instance_url.origin}/s2s/users/${this.username}`,
-				owner: `${config.federation.instance_url.origin}/s2s/users/${this.username}`,
+				id: `${config.federation.instance_url.origin}/users/${this.username}`,
+				owner: `${config.federation.instance_url.origin}/users/${this.username}`,
 				publicKeyPem: this.public_key,
 			}
 		};

@@ -17,7 +17,7 @@ router.get(
 			},
 		});
 
-		const me = `${config.federation.instance_url.origin}/s2s/users/${user.username}`;
+		const me = `${config.federation.instance_url.origin}/users/${user.username}`;
 
 		res.setHeader(
 			"Content-Type",

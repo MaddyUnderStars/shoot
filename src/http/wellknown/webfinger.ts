@@ -43,7 +43,7 @@ router.get(
 					{
 						rel: "self",
 						type: "application/activity+json",
-						href: `${instance_url.origin}/s2s/users/${user.username}`,
+						href: `${instance_url.origin}/users/${user.username}`,
 					},
 				],
 			});
