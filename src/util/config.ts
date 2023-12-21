@@ -8,6 +8,11 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 };
 
 const config = Object.freeze({
+	redis: {
+		host: ifExistsGet<string>("redis.host") ?? "localhost",
+		port: ifExistsGet<number>("redis.port") ?? 6379,
+	},
+
 	security: {
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.

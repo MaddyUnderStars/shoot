@@ -10,6 +10,8 @@ const router = Router();
 router.use("/", (req, res, next) => {
 	const header = req.headers.accept;
 
+	res.setHeader("Content-Type", "application/activity+json; charset=utf-8");
+
 	if (header?.includes(ACTIVITY_JSON_ACCEPT)) {
 		return s2s(req, res, next);
 	}
