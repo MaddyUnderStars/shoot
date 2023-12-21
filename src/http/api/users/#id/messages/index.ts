@@ -1,67 +1,89 @@
-/**
- * TEMP ROUTES FOR TESTING AP
- */
+// /**
+//  * TEMP ROUTES FOR TESTING AP
+//  */
 
-import { Router } from "express";
-import { z } from "zod";
-import { Message } from "../../../../../entity";
-import {
-	addContext,
-	config,
-	getOrCreateUser,
-	route
-} from "../../../../../util";
-import { HttpSig } from "../../../../../util/activitypub/httpsig";
-import { buildAPCreateNote, buildAPNote } from "../../../../../util/activitypub/transformers";
+// import { Router } from "express";
+// import { z } from "zod";
+// import { Message } from "../../../../../entity";
+// import { DMChannel } from "../../../../../entity/DMChannel";
+// import {
+// 	addContext,
+// 	config,
+// 	createLogger,
+// 	route
+// } from "../../../../../util";
+// import { HttpSig } from "../../../../../util/activitypub/httpsig";
+// import {
+// 	buildAPCreateNote,
+// 	buildAPNote,
+// } from "../../../../../util/activitypub/transformers";
 
-const router = Router({ mergeParams: true });
+// const Log = createLogger("activitypub");
 
-const MessageCreate = z.object({
-	content: z.string(),
-});
+// const router = Router({ mergeParams: true });
 
-router.post(
-	"/",
-	route(
-		{
-			body: MessageCreate,
-			params: z.object({
-				user_id: z.string(),
-			}),
-		},
-		async (req, res) => {
-			const { user_id } = req.params;
+// const MessageCreate = z.object({
+// 	content: z.string(),
+// });
 
-			const to = await getOrCreateUser(user_id);
+// router.post(
+// 	"/",
+// 	route(
+// 		{
+// 			body: MessageCreate,
+// 			params: z.object({
+// 				user_id: z.string(),
+// 			}),
+// 		},
+// 		async (req, res) => {
+// 			const { user_id } = req.params;
 
-			const message = Message.create({
-				to,
-				
-				content: req.body.content,
-				author: req.user,
-			});
+// 			const channel = DMChannel.findOne({
+// 				where: {
+// 					owner: { id: req.user.id },
+// 					recipients: {  }
+// 				}
+// 			})
 
-			await message.save();
+// 			const message = Message.create({
+// 				to,
 
-			if (config.federation.enabled) {
-				// todo: move
-				// send this activity to remote instances
+// 				content: req.body.content,
+// 				author: req.user,
+// 			});
 
-				const note = buildAPNote(message);
-				const create = buildAPCreateNote(note);
-				const withContext = addContext(create);
+// 			await message.save();
 
-				const signed = HttpSig.sign(to.activitypub_addresses.inbox, req.user, withContext);
+// 			if (config.federation.enabled) {
+// 				// todo: move
+// 				// send this activity to remote instances
 
-				setImmediate(async  () => {
-					const res = await fetch(to.activitypub_addresses.inbox, signed);
-					console.log(await res.text());
-				})
-			}
+// 				const note = buildAPNote(message);
+// 				const create = buildAPCreateNote(note);
+// 				const withContext = addContext(create);
 
-			return res.json(message.toPublic());
-		},
-	),
-);
+// 				const signed = HttpSig.sign(
+// 					to.activitypub_addresses.inbox,
+// 					req.user,
+// 					withContext,
+// 				);
 
-export default router;
+// 				setImmediate(async () => {
+// 					const res = await fetch(
+// 						to.activitypub_addresses.inbox,
+// 						signed,
+// 					);
+// 					if (!res.ok)
+// 						Log.error(
+// 							`Error sending message to inbox ${to.activitypub_addresses.inbox}`,
+// 							await res.text(),
+// 						);
+// 				});
+// 			}
+
+// 			return res.json(message.toPublic());
+// 		},
+// 	),
+// );
+
+// export default router;

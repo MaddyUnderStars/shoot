@@ -30,7 +30,7 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 			}
 		case error.message === "fetch failed":
 			code = 500;
-			message = error?.cause?.message || error.message;
+			message = error?.cause?.errors?.[0]?.message || error?.cause?.message || error.message;
 	}
 
 	return res.status(code).json({ code, message });

@@ -3,7 +3,6 @@ import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
 import { ACTIVITYPUB_FETCH_OPTS, APError, createUserForRemotePerson } from ".";
 import { User } from "../../entity";
-import { config } from "../config";
 
 export class HttpSig {
 	private static getSignString<T extends IncomingHttpHeaders>(
@@ -121,7 +120,7 @@ export class HttpSig {
 		const sig_b64 = signature.toString("base64");
 
 		const header =
-			`keyId="${config.federation.webapp_url.origin}/users/${sender.username}@${sender.domain}#public-key",` +
+			`keyId="${sender.toPublic().publicKey?.id}",` +
 			`headers="(request-target) host date digest",` +
 			`signature="${sig_b64}"`;
 

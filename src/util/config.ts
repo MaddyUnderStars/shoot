@@ -8,12 +8,27 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 };
 
 const config = Object.freeze({
+	redis: {
+		host: ifExistsGet<string>("redis.host") ?? "localhost",
+		port: ifExistsGet<number>("redis.port") ?? 6379,
+	},
+
 	security: {
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.
 		 * Generate with `crypto.randomBytes(256).toString("base64")`
 		 */
 		jwt_secret: nodeConfig.get<string>("security.jwt_secret"),
+
+		/**
+		 * How to determine the client IP when behind a proxy
+		 * https://expressjs.com/en/guide/behind-proxies.html
+		 *
+		 * @default loopback,uniquelocal
+		 */
+		trust_proxy:
+			ifExistsGet<string>("security.trust_proxy") ??
+			"loopback,uniquelocal",
 	},
 
 	database: {
@@ -69,21 +84,23 @@ const config = Object.freeze({
 
 				/**
 				 * TODO: Whether to force a captcha to be completed for new registrations.
+				 * 
+				 * @default false
 				 */
-				require_captcha: ifExistsGet<boolean>(
-					"registration.require_captcha",
-				),
+				require_captcha:
+					ifExistsGet<boolean>("registration.require_captcha") ??
+					false,
 
 				/**
 				 * TODO: Whether to require an email address for new registrations.
 				 * TODO: If enabled and an email server has been configured, verification emails will be sent.
+				 * 
+				 * @default false
 				 */
-				require_email: ifExistsGet<boolean>(
-					"registration.require_email",
-				),
+				require_email:
+					ifExistsGet<boolean>("registration.require_email") ?? false,
 		  }
 		: { enabled: false },
 });
 
 export { config };
-

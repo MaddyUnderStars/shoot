@@ -6,6 +6,12 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 import { User } from "../../entity";
 import { config } from "../config";
 
+import {
+	APError,
+	ActorMention,
+	createUserForRemotePerson,
+	splitQualifiedMention,
+} from "../activitypub";
 import { createLogger } from "../log";
 
 const Log = createLogger("users");
@@ -15,30 +21,68 @@ export const registerUser = async (
 	password: string,
 	email?: string,
 ) => {
-	const keys = await generateKeyPair("rsa", {
-		modulusLength: 4096,
-		publicKeyEncoding: {
-			type: "spki",
-			format: "pem",
-		},
-		privateKeyEncoding: {
-			type: "pkcs8",
-			format: "pem",
-		},
-	});
-
 	const user = await User.create({
 		username,
 		email,
 		password_hash: await bcrypt.hash(password, 12),
-		private_key: keys.privateKey,
-		public_key: keys.publicKey,
-		
+		public_key: "", // TODO: bad solution
+
 		display_name: username,
 		valid_tokens_since: new Date(),
 		domain: config.federation.webapp_url.hostname,
 	}).save();
 
+	setImmediate(async () => {
+		const start = Date.now();
+		const keys = await generateKeyPair("rsa", {
+			modulusLength: 4096,
+			publicKeyEncoding: {
+				type: "spki",
+				format: "pem",
+			},
+			privateKeyEncoding: {
+				type: "pkcs8",
+				format: "pem",
+			},
+		});
+
+		await User.update(
+			{ id: user.id },
+			{ public_key: keys.publicKey, private_key: keys.privateKey },
+		);
+
+		Log.verbose(
+			`Generated keys for user '${user.username} in ${
+				Date.now() - start
+			}ms`,
+		);
+	});
+
 	Log.verbose(`User '${user.username}' registered`);
 	return user;
+};
+
+export const getOrFetchUser = async (user_id: string) => {
+	const mention = splitQualifiedMention(user_id);
+
+	let user = await User.findOne({
+		where: {
+			username: mention.user,
+			domain: mention.domain,
+		},
+	});
+
+	if (!user && config.federation.enabled) {
+		// Fetch from remote instance
+		user = await createUserForRemotePerson(user_id);
+		await user.save();
+	} else if (!user) {
+		throw new APError("User could not be found", 404);
+	}
+
+	return user;
+};
+
+export const batchGetUsers = async (users: ActorMention[]) => {
+	return Promise.all(users.map((user) => getOrFetchUser(user)));
 };

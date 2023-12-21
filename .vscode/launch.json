@@ -7,11 +7,12 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Bundle",
+			"name": "Bootstrap",
 			"skipFiles": ["<node_internals>/**"],
 			"program": "${workspaceFolder}/src/bootstrap.ts",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
-			"preLaunchTask": "tsc: build - tsconfig.json"
+			"preLaunchTask": "tsc: build - tsconfig.json",
+			"outputCapture": "std"
 		}
 	]
 }

@@ -3,13 +3,16 @@ import {
 	APObject,
 	AnyAPObject,
 	ContextField,
+	ObjectIsGroup,
 	ObjectIsPerson,
 } from "activitypub-types";
 import { HttpError } from "../httperror";
 
 import { User } from "../../entity";
+import { DMChannel } from "../../entity/DMChannel";
+import { Channel } from "../../entity/channel";
 import { WebfingerResponse } from "../../http/wellknown/webfinger";
-import { config } from "../config";
+import { getOrFetchUser } from "../entity";
 import { createLogger } from "../log";
 const Log = createLogger("activitypub");
 
@@ -17,12 +20,20 @@ export class APError extends HttpError {}
 
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 
-export const ACTIVITYPUB_FETCH_OPTS = {
+export const ACTIVITY_JSON_ACCEPT = "application/activity+json";
+
+export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 	headers: {
 		Accept: "application/activity+json",
 		"Content-Type": "application/activity+json",
+		"User-Agent":
+			"Unnamed Activitypub Chat Server (https://github.com/maddyunderstars)",
 	},
+
+	redirect: "follow",
 };
+
+export type ActorMention = `${string}@${string}`;
 
 export const splitQualifiedMention = (lookup: string) => {
 	let domain: string, user: string;
@@ -133,32 +144,45 @@ export const createUserForRemotePerson = async (lookup: string) => {
 	});
 };
 
-export const getOrCreateUser = async (user_id: string) => {
-	const mention = splitQualifiedMention(user_id);
+export const createChannelFromRemoteGroup = async (lookup: string) => {
+	const obj = await resolveWebfinger(lookup);
+	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
 
-	let user = await User.findOne({
-		where: {
-			username: mention.user,
-			domain: mention.domain,
-		},
-	});
+	if (!obj.publicKey?.publicKeyPem)
+		throw new APError(
+			"Resolved object is Group but does not contain public key",
+		);
 
-	if (!user && config.federation.enabled) {
-		// Fetch from remote instance
-		user = await createUserForRemotePerson(user_id);
-		await user.save();
-	} else if (!user) {
-		throw new APError("User could not be found", 404);
+	if (!obj.attributedTo || typeof obj.attributedTo != "string")
+		throw new APError(
+			"Resolved group doesn't have attributedTo, we don't know what owns it",
+		);
+
+	let channel: Channel;
+	// TODO: check type of channel of remote obj
+	switch ("dm") {
+		case "dm":
+			channel = DMChannel.create({
+				owner: await getOrFetchUser(obj.attributedTo),
+				recipients: [],
+			});
+			// TODO: start fetching recipients over time
+			break;
+		default:
+			throw new APError("Resolved group was not a recognisable type");
 	}
 
-	return user;
+	return channel;
 };
 
 export const addContext = <T extends AnyAPObject | APActivity>(
 	obj: T,
-): T & { "@context": ContextField } => {
+): T & { "@context": ContextField[] } => {
 	return {
+		"@context": [
+			"https://www.w3.org/ns/activitystreams",
+			"https://w3id.org/security/v1",
+		],
 		...obj,
-		"@context": "https://www.w3.org/ns/activitystreams",
 	};
 };

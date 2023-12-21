@@ -22,7 +22,7 @@ router.get(
 			const { webapp_url, instance_url } = config.federation;
 
 			const mention = splitQualifiedMention(resource);
-			if (mention.domain != config.federation.webapp_url.hostname)
+			if (mention.domain != webapp_url.hostname && mention.domain != instance_url.hostname)
 				throw new HttpError("Resource not found", 404);
 
 			const user = await User.findOneOrFail({
@@ -35,7 +35,7 @@ router.get(
 			// TODO: don't hardcode 'user' in the response
 			// TODO: check if guild/channel exists
 
-			res.setHeader("Content-Type", "application/jrd+json");
+			res.setHeader("Content-Type", "application/jrd+json; charset=utf-8");
 			return res.json({
 				subject: `acct:${user.username}@${user.domain}`,
 				aliases: [`${webapp_url.origin}/user/${user.username}`],
@@ -43,7 +43,7 @@ router.get(
 					{
 						rel: "self",
 						type: "application/activity+json",
-						href: `${webapp_url.origin}/user/${user.username}`,
+						href: `${instance_url.origin}/users/${user.username}`,
 					},
 				],
 			});
