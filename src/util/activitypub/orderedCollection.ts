@@ -1,5 +1,4 @@
 import { APOrderedCollection, CollectionCurrentField } from "activitypub-types";
-import { ACTIVITYSTREAMS_CONTEXT } from ".";
 
 export const makeOrderedCollection = async <
 	T extends CollectionCurrentField,
@@ -15,7 +14,6 @@ export const makeOrderedCollection = async <
 
 	if (!page)
 		return {
-			"@context": ACTIVITYSTREAMS_CONTEXT,
 			id: id,
 			type: "OrderedCollection",
 			totalItems: await getTotalElements(),
@@ -32,7 +30,6 @@ export const makeOrderedCollection = async <
 	// and should probably let the caller of this function specify what they are
 	// along with first/last
 	return {
-		"@context": ACTIVITYSTREAMS_CONTEXT,
 		id: `${id}?page=true`,
 		type: "OrderedCollection",
 		first: new URL(`${id}?page=true`),

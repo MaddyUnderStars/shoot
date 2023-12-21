@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
 import { User } from "../../../../entity";
-import { addContext, route } from "../../../../util";
+import { addContext, config, route } from "../../../../util";
+import { makeOrderedCollection } from "../../../../util/activitypub/orderedCollection";
 import { buildAPPerson } from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
@@ -12,13 +13,53 @@ router.get(
 		const { user_id } = req.params;
 
 		const user = await User.findOneOrFail({
-			where: {
-				username: user_id,
-			},
+			where: { username: user_id },
 		});
 
 		return res.json(addContext(buildAPPerson(user)));
 	}),
+);
+
+router.get(
+	"/:collection",
+	route(
+		{
+			params: z.object({
+				user_id: z.string(),
+				collection: z.union([
+					z.literal("followers"),
+					z.literal("following"),
+					z.literal("outbox"),
+					z.literal("inbox"),
+				]),
+			}),
+			query: z.object({
+				page: z.boolean().default(false).optional(),
+				min_id: z.string().optional(),
+				max_id: z.string().optional(),
+			})
+		},
+		async (req, res) => {
+			const { user_id, collection } = req.params;
+
+			const user = await User.findOneOrFail({
+				where: { username: user_id },
+			});
+
+			return res.json(addContext(await makeOrderedCollection({
+				id: `${config.federation.instance_url.origin}${req.originalUrl}`,
+				page: req.query.page ?? false,
+				min_id: req.query.min_id,
+				max_id: req.query.max_id,
+				getElements: async () => {
+					return [];
+				},
+				getTotalElements: async () => {
+					return 0;
+				}
+			})))
+		},
+	),
 );
 
 export default router;
