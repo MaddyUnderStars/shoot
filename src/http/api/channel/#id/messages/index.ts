@@ -5,8 +5,8 @@ import { DMChannel } from "../../../../../entity/DMChannel";
 import { addContext, config, createLogger, route } from "../../../../../util";
 import { HttpSig } from "../../../../../util/activitypub/httpsig";
 import {
-	buildAPCreateNote,
-	buildAPNote,
+	buildAPAnnounceNote,
+	buildAPNote
 } from "../../../../../util/activitypub/transformers";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 
@@ -42,7 +42,7 @@ router.post(
 				// send this activity to remote instances
 
 				const note = buildAPNote(message);
-				const create = buildAPCreateNote(note);
+				const create = buildAPAnnounceNote(note, message.channel.id);
 				const withContext = addContext(create);
 
 				// TODO: fix

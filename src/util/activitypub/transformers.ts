@@ -7,11 +7,12 @@ import { InstanceActor } from "./instanceActor";
 export const buildAPNote = (message: Message): APNote => {
 	const id = `${config.federation.instance_url.origin}/message/${message.id}`;
 	const attributedTo = `${config.federation.instance_url.origin}/user/${message.author.id}`;
+	const to = `${config.federation.instance_url.origin}/channel/${message.channel.id}`;
 
 	return {
 		id,
 		attributedTo,
-		to: `${attributedTo}/followers`, // TODO: to the channel it was sent to
+		to,
 
 		type: "Note",
 		content: message.content,

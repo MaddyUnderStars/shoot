@@ -1,7 +1,7 @@
 import { Response, Router } from "express";
 import { z } from "zod";
 import { PublicUser } from "../../../../entity";
-import { addContext, getOrFetchUser, route } from "../../../../util";
+import { getOrFetchUser, route } from "../../../../util";
 
 const router = Router({ mergeParams: true });
 
@@ -19,7 +19,7 @@ router.get(
 			const user = await getOrFetchUser(user_id);
 
 			//@ts-ignore
-			return res.json(addContext(user.toPublic()));
+			return res.json(user.toPublic());
 		},
 	),
 );
