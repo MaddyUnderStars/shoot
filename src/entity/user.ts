@@ -6,6 +6,10 @@ import { BaseModel } from "./basemodel";
 @Entity("users")
 @Index(["username", "domain"], { unique: true })
 export class User extends BaseModel {
+	/** The remote ID of this user */
+	@Column({ nullable: true, type: String })
+	remote_id: string | null;
+
 	@CreateDateColumn()
 	registered_date: Date;
 
@@ -48,10 +52,6 @@ export class User extends BaseModel {
 		followers?: string;
 		following?: string;
 	};
-
-	/** The activitypub address of this actor */
-	@Column({ nullable: true, type: String })
-	address: string | null;
 
 	/**
 	 * TODO:

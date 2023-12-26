@@ -1,10 +1,10 @@
 import {
-	APActivity,
-	APObject,
-	AnyAPObject,
-	ContextField,
-	ObjectIsGroup,
-	ObjectIsPerson,
+    APActivity,
+    APObject,
+    AnyAPObject,
+    ContextField,
+    ObjectIsGroup,
+    ObjectIsPerson,
 } from "activitypub-types";
 import { HttpError } from "../httperror";
 
@@ -145,7 +145,7 @@ export const createUserForRemotePerson = async (lookup: string) => {
 			throw new APError("Resolved object must have ID");
 
 	return User.create({
-		address: obj.id,
+		remote_id: obj.id,
 		username: obj.preferredUsername || lookup,
 		display_name: obj.name || obj.preferredUsername,
 		domain: splitQualifiedMention(lookup).domain,

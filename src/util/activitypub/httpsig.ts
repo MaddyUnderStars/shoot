@@ -66,7 +66,7 @@ export class HttpSig {
 		const actorId = `${url.origin}${url.pathname}`; // likely wrong
 
 		const remoteUser =
-			(await User.findOne({ where: { address: target } })) ??
+			(await User.findOne({ where: { remote_id: target } })) ??
 			(await createUserForRemotePerson(actorId));
 
 		const expected = this.getSignString(
