@@ -1,10 +1,12 @@
 import {
-    APActivity,
-    APObject,
-    AnyAPObject,
-    ContextField,
-    ObjectIsGroup,
-    ObjectIsPerson,
+	APActivity,
+	APActor,
+	APObject,
+	AnyAPObject,
+	ContextField,
+	ObjectIsApplication,
+	ObjectIsGroup,
+	ObjectIsPerson,
 } from "activitypub-types";
 import { HttpError } from "../httperror";
 
@@ -84,7 +86,9 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	if (!res.ok)
 		throw new APError(
-			`Remote server sent code ${res.status} : ${res.statusText} : ${await res.text()}`,
+			`Remote server sent code ${res.status} : ${
+				res.statusText
+			} : ${await res.text()}`,
 		);
 
 	const json = await res.json();
@@ -126,6 +130,12 @@ export const resolveWebfinger = async (
 	return await resolveAPObject<AnyAPObject>(link.href);
 };
 
+export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
+	return (
+		ObjectIsPerson(obj) || ObjectIsApplication(obj) || ObjectIsGroup(obj)
+	);
+};
+
 export const createUserForRemotePerson = async (lookup: string) => {
 	// If we were given a URL, this is probably a actor URL
 	// otherwise, treat it as a username@domain handle
@@ -133,7 +143,7 @@ export const createUserForRemotePerson = async (lookup: string) => {
 		? await resolveAPObject(lookup)
 		: await resolveWebfinger(lookup);
 
-	if (!ObjectIsPerson(obj))
+	if (!APObjectIsActor(obj))
 		throw new APError("Resolved object is not Person");
 
 	if (!obj.publicKey?.publicKeyPem)
@@ -141,8 +151,7 @@ export const createUserForRemotePerson = async (lookup: string) => {
 			"Resolved object is Person but does not contain public key",
 		);
 
-	if (!obj.id)
-			throw new APError("Resolved object must have ID");
+	if (!obj.id) throw new APError("Resolved object must have ID");
 
 	return User.create({
 		remote_id: obj.id,

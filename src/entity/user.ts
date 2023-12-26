@@ -64,16 +64,16 @@ export class User extends BaseModel {
 	public toPublic = (): PublicUser => {
 		const id =
 			this.id == InstanceActor.id
-				? `${config.federation.instance_url.origin}/actor`
-				: `${config.federation.instance_url.origin}/users/${this.username}`;
+				? `/actor`
+				: `/users/${this.username}`;
 
 		return {
 			username: this.username,
 			display_name: this.display_name,
 			domain: this.domain,
 			publicKey: {
-				id: id,
-				owner: id,
+				id: `${config.federation.instance_url.origin}${id}`,
+				owner: `${config.federation.webapp_url.origin}${id}`,
 				publicKeyPem: this.public_key,
 			},
 		};

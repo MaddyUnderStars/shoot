@@ -2,6 +2,7 @@ import { APAnnounce, APCreate, APNote, APPerson } from "activitypub-types";
 import { User } from "../../entity";
 import type { Message } from "../../entity/message";
 import { config } from "../config";
+import { InstanceActor } from "./instanceActor";
 
 export const buildAPNote = (message: Message): APNote => {
 	const id = `${config.federation.instance_url.origin}/message/${message.id}`;
@@ -46,14 +47,15 @@ export const buildAPAnnounceNote = (
 };
 
 export const buildAPPerson = (user: User): APPerson => {
-	const id = user.id == "actor" ? "/actor" : `/users/${user.username}`;
+	const id =
+		user.id == InstanceActor.id ? `/actor` : `/users/${user.username}`;
 
 	const { webapp_url, instance_url } = config.federation;
 
 	return {
 		type: "Person",
-		id: `${webapp_url.origin}${id}`,
-		url: `${instance_url.origin}${id}`,
+		id: `${instance_url.origin}${id}`,
+		url: `${webapp_url.origin}${id}`,
 
 		preferredUsername: user.username,
 		name: user.display_name,
@@ -64,8 +66,8 @@ export const buildAPPerson = (user: User): APPerson => {
 		following: `${instance_url.origin}${id}/following`,
 
 		publicKey: {
-			id: `${instance_url.origin}${id}#main-key`,
-			owner: `${webapp_url.origin}${id}`,
+			id: `${config.federation.instance_url.origin}${id}`,
+			owner: `${config.federation.webapp_url.origin}${id}`,
 			publicKeyPem: user.public_key,
 		},
 	};
