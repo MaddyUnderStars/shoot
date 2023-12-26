@@ -1,6 +1,9 @@
 import { Router } from "express";
+import { verifyHttpSig } from "../middleware";
 
 const router = Router();
+
+router.use(verifyHttpSig);
 
 import users_id from "./users/#id";
 router.use("/users/:user_id", users_id);

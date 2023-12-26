@@ -68,6 +68,8 @@ const config = Object.freeze({
 					nodeConfig.get<string>("federation.instance_url"),
 				),
 
+				require_http_signatures: ifExistsGet<boolean>("federation.require_http_signatures") ?? false,
+
 				/**
 				 * The public and private keys of the instance actor (/actor)
 				 * used for verifying and signing HTTP signatures
@@ -79,7 +81,7 @@ const config = Object.freeze({
 				enabled: false,
 				webapp_url: LOCALHOST_URL,
 				instance_url: LOCALHOST_URL,
-
+				require_http_signatures: false,
 				public_key: "",
 				private_key: "",
 		  },

@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
 import { ACTIVITYPUB_FETCH_OPTS, APError, createUserForRemotePerson } from ".";
 import { User } from "../../entity";
+import { config } from "../config";
+import { InstanceActor } from "./instanceActor";
 
 export class HttpSig {
 	private static getSignString<T extends IncomingHttpHeaders>(
@@ -29,15 +31,17 @@ export class HttpSig {
 		requestHeaders: IncomingHttpHeaders,
 	) {
 		const date = requestHeaders["date"];
+		const sigheader = requestHeaders["signature"]?.toString();
+
+		if (!date || !sigheader) throw new APError("Missing signature");
+
 		if (
-			!date ||
 			// Older than 1 day
-			Date.parse(date).valueOf() > Date.now() + 24 * 60 * 60 * 1000
+			Date.parse(date).valueOf() >
+			Date.now() + 24 * 60 * 60 * 1000
 		)
 			throw new APError("Signature too old");
 
-		const sigheader = requestHeaders["signature"]?.toString();
-		if (!sigheader) throw new APError("Missing signature");
 		const sigopts: { [key: string]: string | undefined } = Object.assign(
 			{},
 			...sigheader
@@ -66,8 +70,8 @@ export class HttpSig {
 		const actorId = `${url.origin}${url.pathname}`; // likely wrong
 
 		const remoteUser =
-			(await User.findOne({ where: { remote_id: target } })) ??
-			(await createUserForRemotePerson(actorId));
+			(await User.findOne({ where: { remote_id: actorId } })) ??
+			(await (await createUserForRemotePerson(actorId)).save());
 
 		const expected = this.getSignString(
 			target,
@@ -127,8 +131,13 @@ export class HttpSig {
 		const signature = signer.sign(sender.private_key);
 		const sig_b64 = signature.toString("base64");
 
+		const id =
+			sender.id == InstanceActor.id
+				? `/actor`
+				: `/users/${sender.username}`;
+
 		const header =
-			`keyId="${User.create(sender).toPublic().publicKey?.id}",` +
+			`keyId="${config.federation.instance_url.origin}${id}",` +
 			`headers="(request-target) host date${digest ? " digest" : ""}",` +
 			`signature="${sig_b64}"`;
 
