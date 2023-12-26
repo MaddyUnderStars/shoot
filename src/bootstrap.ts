@@ -13,6 +13,7 @@
 	- Then start server
 */
 
+import "dotenv/config";
 import { ChatServer } from "./server";
 import { createLogger } from "./util";
 
@@ -23,10 +24,14 @@ Log.msg("Starting");
 const NODE_REQUIRED_VERSION = 18;
 const [NODE_MAJOR_VERSION] = process.versions.node.split(".").map(Number);
 if (NODE_MAJOR_VERSION < NODE_REQUIRED_VERSION) {
-	Log.error(`You are running node version ${NODE_MAJOR_VERSION}. We require a version > ${NODE_REQUIRED_VERSION}. Please upgrade.`);
+	Log.error(
+		`You are running node version ${NODE_MAJOR_VERSION}. We require a version > ${NODE_REQUIRED_VERSION}. Please upgrade.`,
+	);
 	process.exit(1);
 }
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+
 const chatServer = new ChatServer();
 
-chatServer.listen(3001);
+chatServer.listen(PORT);
