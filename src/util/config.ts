@@ -67,11 +67,21 @@ const config = Object.freeze({
 				instance_url: new URL(
 					nodeConfig.get<string>("federation.instance_url"),
 				),
+
+				/**
+				 * The public and private keys of the instance actor (/actor)
+				 * used for verifying and signing HTTP signatures
+				 */
+				public_key: nodeConfig.get<string>("federation.public_key"),
+				private_key: nodeConfig.get<string>("federation.private_key"),
 		  }
 		: {
 				enabled: false,
 				webapp_url: LOCALHOST_URL,
 				instance_url: LOCALHOST_URL,
+
+				public_key: "",
+				private_key: "",
 		  },
 
 	registration: ifExistsGet<boolean>("registration.enabled")
@@ -84,7 +94,7 @@ const config = Object.freeze({
 
 				/**
 				 * TODO: Whether to force a captcha to be completed for new registrations.
-				 * 
+				 *
 				 * @default false
 				 */
 				require_captcha:
@@ -94,7 +104,7 @@ const config = Object.freeze({
 				/**
 				 * TODO: Whether to require an email address for new registrations.
 				 * TODO: If enabled and an email server has been configured, verification emails will be sent.
-				 * 
+				 *
 				 * @default false
 				 */
 				require_email:

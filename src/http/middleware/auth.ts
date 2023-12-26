@@ -12,7 +12,8 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 			if (typeof x == "string") return url.startsWith(x);
 			return x.test(url);
 		}) ||
-		ACTIVITY_JSON_ACCEPT.some((v) => req.headers.accept?.includes(v))
+		ACTIVITY_JSON_ACCEPT.some((v) => req.headers.accept?.includes(v)) ||
+		ACTIVITY_JSON_ACCEPT.some((v) => req.headers["content-type"]?.includes(v))
 	)
 		return next();
 

@@ -1,34 +1,36 @@
 {
-  "name": "unnamed-ap-chat-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/bootstrap.js",
-  "scripts": {
-    "start": "node dist/bootstrap.js"
-  },
-  "author": "MaddyUnderStars",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/config": "^3.3.3",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.10.4",
-    "prettier": "^3.1.0",
-    "typescript": "^5.3.3"
-  },
-  "dependencies": {
-    "@types/jsonwebtoken": "^9.0.5",
-    "@types/morgan": "^1.9.9",
-    "activitypub-types": "github:spacebarchat/activitypub-types#dist",
-    "bcrypt": "^5.1.1",
-    "config": "^3.3.9",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "pg": "^8.11.3",
-    "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.17",
-    "zod": "^3.22.4",
-    "zod-express-middleware": "^1.4.0"
-  }
+	"name": "unnamed-ap-chat-server",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/bootstrap.js",
+	"scripts": {
+		"start": "node dist/bootstrap.js",
+		"cli": "node dist/cli.js",
+		"build": "tsc"
+	},
+	"author": "MaddyUnderStars",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/bcrypt": "^5.0.2",
+		"@types/config": "^3.3.3",
+		"@types/express": "^4.17.21",
+		"@types/node": "^20.10.4",
+		"prettier": "^3.1.0",
+		"typescript": "^5.3.3"
+	},
+	"dependencies": {
+		"@types/jsonwebtoken": "^9.0.5",
+		"@types/morgan": "^1.9.9",
+		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
+		"bcrypt": "^5.1.1",
+		"config": "^3.3.9",
+		"express": "^4.18.2",
+		"jsonwebtoken": "^9.0.2",
+		"morgan": "^1.10.0",
+		"pg": "^8.11.3",
+		"sqlite3": "^5.1.6",
+		"typeorm": "^0.3.17",
+		"zod": "^3.22.4",
+		"zod-express-middleware": "^1.4.0"
+	}
 }

@@ -17,7 +17,7 @@ import { ChatServer } from "./server";
 import { createLogger } from "./util";
 
 const Log = createLogger("bootstrap");
-Log.msg("Starting")
+Log.msg("Starting");
 
 // Check nodejs version
 const NODE_REQUIRED_VERSION = 18;

@@ -25,7 +25,7 @@ export class HttpSig {
 	// TODO: Support hs2019 algo
 	public static async validate(
 		target: string,
-		activity: APActivity,
+		method: string,
 		requestHeaders: IncomingHttpHeaders,
 	) {
 		const date = requestHeaders["date"];
@@ -40,12 +40,15 @@ export class HttpSig {
 		if (!sigheader) throw new APError("Missing signature");
 		const sigopts: { [key: string]: string | undefined } = Object.assign(
 			{},
-			...sigheader.split(",").flat().map((keyval) => {
-				const split = keyval.split("=");
-				return {
-					[split[0]]: split[1].replaceAll('"', ""),
-				};
-			}),
+			...sigheader
+				.split(",")
+				.flat()
+				.map((keyval) => {
+					const split = keyval.split("=");
+					return {
+						[split[0]]: split[1].replaceAll('"', ""),
+					};
+				}),
 		);
 
 		const { signature, headers, keyId, algorithm } = sigopts;
@@ -62,11 +65,13 @@ export class HttpSig {
 		const url = new URL(keyId);
 		const actorId = `${url.origin}${url.pathname}`; // likely wrong
 
-		const remoteUser = await createUserForRemotePerson(actorId);
+		const remoteUser =
+			(await User.findOne({ where: { address: target } })) ??
+			(await createUserForRemotePerson(actorId));
 
 		const expected = this.getSignString(
 			target,
-			"post",
+			method,
 			requestHeaders,
 			headers.split(/\s+/),
 		);
@@ -91,27 +96,30 @@ export class HttpSig {
 	 * ```
 	 */
 	public static sign(
-		inbox: string,
+		target: string,
+		method: string,
 		sender: User,
-		message: APActivity,
+		message?: APActivity,
 	) {
 		if (!sender.private_key)
 			throw new APError("Cannot sign activity without private key");
 
-		const digest = crypto
-			.createHash("sha256")
-			.update(JSON.stringify(message))
-			.digest("base64");
+		const digest = message
+			? crypto
+					.createHash("sha256")
+					.update(JSON.stringify(message))
+					.digest("base64")
+			: undefined;
 		const signer = crypto.createSign("sha256");
 		const now = new Date();
 
-		const url = new URL(inbox);
+		const url = new URL(target);
 		const inboxFrag = url.pathname;
 		const toSign =
-			`(request-target): post ${inboxFrag}\n` +
-			`host: ${url.hostname}\n` +
-			`date: ${now.toUTCString()}\n` +
-			`digest: SHA-256=${digest}`;
+			`(request-target): ${method.toLowerCase()} ${inboxFrag}` +
+			`\nhost: ${url.hostname}` +
+			`\ndate: ${now.toUTCString()}` +
+			(digest ? `\ndigest: SHA-256=${digest}` : "");
 
 		signer.update(toSign);
 		signer.end();
@@ -120,20 +128,20 @@ export class HttpSig {
 		const sig_b64 = signature.toString("base64");
 
 		const header =
-			`keyId="${sender.toPublic().publicKey?.id}",` +
-			`headers="(request-target) host date digest",` +
+			`keyId="${User.create(sender).toPublic().publicKey?.id}",` +
+			`headers="(request-target) host date${digest ? " digest" : ""}",` +
 			`signature="${sig_b64}"`;
 
 		return {
+			method,
 			headers: {
 				...ACTIVITYPUB_FETCH_OPTS.headers,
 				Host: url.hostname,
 				Date: now.toUTCString(),
-				Digest: `SHA-256=${digest}`,
+				Digest: digest ? `SHA-256=${digest}` : undefined,
 				Signature: header,
 			},
-			method: "POST",
-			body: JSON.stringify(message),
+			body: message ? JSON.stringify(message) : undefined,
 		} as RequestInit;
 	}
 }

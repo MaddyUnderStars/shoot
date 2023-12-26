@@ -20,6 +20,21 @@ router.get(
 	}),
 );
 
+router.post(
+	"/inbox",
+	route(
+		{
+			body: z.any(),
+		},
+		async (req, res) => {
+			console.log(req.body);
+
+			// TODO
+			return res.sendStatus(200);
+		},
+	),
+);
+
 router.get(
 	"/:collection",
 	route(
@@ -36,7 +51,7 @@ router.get(
 				page: z.boolean().default(false).optional(),
 				min_id: z.string().optional(),
 				max_id: z.string().optional(),
-			})
+			}),
 		},
 		async (req, res) => {
 			const { user_id, collection } = req.params;
@@ -45,18 +60,22 @@ router.get(
 				where: { username: user_id },
 			});
 
-			return res.json(addContext(await makeOrderedCollection({
-				id: `${config.federation.instance_url.origin}${req.originalUrl}`,
-				page: req.query.page ?? false,
-				min_id: req.query.min_id,
-				max_id: req.query.max_id,
-				getElements: async () => {
-					return [];
-				},
-				getTotalElements: async () => {
-					return 0;
-				}
-			})))
+			return res.json(
+				addContext(
+					await makeOrderedCollection({
+						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
+						page: req.query.page ?? false,
+						min_id: req.query.min_id,
+						max_id: req.query.max_id,
+						getElements: async () => {
+							return [];
+						},
+						getTotalElements: async () => {
+							return 0;
+						},
+					}),
+				),
+			);
 		},
 	),
 );

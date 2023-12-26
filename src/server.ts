@@ -3,7 +3,7 @@ import express from "express";
 import http from "http";
 import morgan from "morgan";
 
-import { authHandler, errorHandler, routes } from "./http";
+import { authHandler, errorHandler, routes, verifyHttpSig } from "./http";
 import { config, createLogger, initDatabase } from "./util";
 
 const Log = createLogger("server");
@@ -28,6 +28,8 @@ export class ChatServer {
 		this.app.use(morgan("combined"));
 
 		this.app.use(authHandler);
+
+		this.app.use(verifyHttpSig);
 
 		this.app.use("/", routes);
 

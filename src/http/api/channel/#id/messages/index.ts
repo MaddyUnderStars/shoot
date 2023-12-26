@@ -51,7 +51,7 @@ router.post(
 					inbox = channel.recipients[0].activitypub_addresses.inbox;
 				else throw new Error("unimplemented");
 
-				const signed = HttpSig.sign(inbox, req.user, withContext);
+				const signed = HttpSig.sign(inbox, req.method, req.user, withContext);
 
 				setImmediate(async () => {
 					const res = await fetch(

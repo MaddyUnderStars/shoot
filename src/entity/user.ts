@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index } from "typeorm";
 import { config } from "../util";
+import { InstanceActor } from "../util/activitypub/instanceActor";
 import { BaseModel } from "./basemodel";
 
 @Entity("users")
@@ -48,6 +49,10 @@ export class User extends BaseModel {
 		following?: string;
 	};
 
+	/** The activitypub address of this actor */
+	@Column({ nullable: true, type: String })
+	address: string | null;
+
 	/**
 	 * TODO:
 	 * followers
@@ -57,15 +62,20 @@ export class User extends BaseModel {
 	 */
 
 	public toPublic = (): PublicUser => {
+		const id =
+			this.id == InstanceActor.id
+				? `${config.federation.instance_url.origin}/actor`
+				: `${config.federation.instance_url.origin}/users/${this.username}`;
+
 		return {
 			username: this.username,
 			display_name: this.display_name,
 			domain: this.domain,
 			publicKey: {
-				id: `${config.federation.instance_url.origin}/users/${this.username}`,
-				owner: `${config.federation.instance_url.origin}/users/${this.username}`,
+				id: id,
+				owner: id,
 				publicKeyPem: this.public_key,
-			}
+			},
 		};
 	};
 

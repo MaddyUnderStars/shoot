@@ -13,6 +13,7 @@ import {
 	splitQualifiedMention,
 } from "../activitypub";
 import { createLogger } from "../log";
+import { KEY_OPTIONS } from "../rsa";
 
 const Log = createLogger("users");
 
@@ -34,17 +35,7 @@ export const registerUser = async (
 
 	setImmediate(async () => {
 		const start = Date.now();
-		const keys = await generateKeyPair("rsa", {
-			modulusLength: 4096,
-			publicKeyEncoding: {
-				type: "spki",
-				format: "pem",
-			},
-			privateKeyEncoding: {
-				type: "pkcs8",
-				format: "pem",
-			},
-		});
+		const keys = await generateKeyPair("rsa", KEY_OPTIONS);
 
 		await User.update(
 			{ id: user.id },

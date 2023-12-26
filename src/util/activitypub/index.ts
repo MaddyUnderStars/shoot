@@ -14,6 +14,9 @@ import { Channel } from "../../entity/channel";
 import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { getOrFetchUser } from "../entity";
 import { createLogger } from "../log";
+import { tryParseUrl } from "../url";
+import { HttpSig } from "./httpsig";
+import { InstanceActor } from "./instanceActor";
 const Log = createLogger("activitypub");
 
 export class APError extends HttpError {}
@@ -74,13 +77,14 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	Log.verbose(`Fetching from remote ${data}`);
 
-	const res = await fetch(data, {
-		...ACTIVITYPUB_FETCH_OPTS,
-	});
+	// sign the request
+	const signed = HttpSig.sign(data, "get", InstanceActor);
+
+	const res = await fetch(data, signed);
 
 	if (!res.ok)
 		throw new APError(
-			`Remote server sent code ${res.status} : ${res.statusText}`,
+			`Remote server sent code ${res.status} : ${res.statusText} : ${await res.text()}`,
 		);
 
 	const json = await res.json();
@@ -123,7 +127,12 @@ export const resolveWebfinger = async (
 };
 
 export const createUserForRemotePerson = async (lookup: string) => {
-	const obj = await resolveWebfinger(lookup);
+	// If we were given a URL, this is probably a actor URL
+	// otherwise, treat it as a username@domain handle
+	const obj = tryParseUrl(lookup)
+		? await resolveAPObject(lookup)
+		: await resolveWebfinger(lookup);
+
 	if (!ObjectIsPerson(obj))
 		throw new APError("Resolved object is not Person");
 
@@ -132,7 +141,11 @@ export const createUserForRemotePerson = async (lookup: string) => {
 			"Resolved object is Person but does not contain public key",
 		);
 
+	if (!obj.id)
+			throw new APError("Resolved object must have ID");
+
 	return User.create({
+		address: obj.id,
 		username: obj.preferredUsername || lookup,
 		display_name: obj.name || obj.preferredUsername,
 		domain: splitQualifiedMention(lookup).domain,
