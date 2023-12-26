@@ -12,7 +12,7 @@ router.use("/", (req, res, next) => {
 
 	res.setHeader("Content-Type", "application/activity+json; charset=utf-8");
 
-	if (header?.includes(ACTIVITY_JSON_ACCEPT)) {
+	if (ACTIVITY_JSON_ACCEPT.some(v => header?.includes(v))) {
 		return s2s(req, res, next);
 	}
 

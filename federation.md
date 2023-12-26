@@ -16,3 +16,7 @@
     [part 3](https://seb.jambor.dev/posts/understanding-activitypub-part-3-the-state-of-mastodon/)
 -   [Nodejs Express Activitypub sample implementation](https://github.com/dariusk/express-activitypub)
 -   [Reading Activitypub](https://tinysubversions.com/notes/reading-activitypub/#the-ultimate-tl-dr)
+
+## Tools
+
+-   [Actor verification](https://verify.funfedi.dev)

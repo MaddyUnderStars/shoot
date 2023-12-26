@@ -30,7 +30,6 @@ router.get(
 					z.literal("followers"),
 					z.literal("following"),
 					z.literal("outbox"),
-					z.literal("inbox"),
 				]),
 			}),
 			query: z.object({

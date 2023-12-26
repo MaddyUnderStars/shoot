@@ -12,7 +12,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 			if (typeof x == "string") return url.startsWith(x);
 			return x.test(url);
 		}) ||
-		req.headers.accept?.includes(ACTIVITY_JSON_ACCEPT)
+		ACTIVITY_JSON_ACCEPT.some((v) => req.headers.accept?.includes(v))
 	)
 		return next();
 
