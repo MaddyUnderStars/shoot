@@ -30,12 +30,14 @@ export const ACTIVITY_JSON_ACCEPT = [
 	"application/activity+json",
 ];
 
+export const USER_AGENT =
+	"Unnamed Activitypub Chat Server (https://github.com/maddyunderstars)";
+
 export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 	headers: {
 		Accept: "application/activity+json",
 		"Content-Type": "application/activity+json",
-		"User-Agent":
-			"Unnamed Activitypub Chat Server (https://github.com/maddyunderstars)",
+		"User-Agent": USER_AGENT,
 	},
 
 	redirect: "follow",
@@ -108,7 +110,11 @@ export const resolveWebfinger = async (
 	const res = await fetch(
 		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
 		{
-			...ACTIVITYPUB_FETCH_OPTS,
+			// don't send the default headers because
+			// they include activitypub content type
+			headers: {
+				"User-Agent": USER_AGENT,
+			},
 		},
 	);
 
