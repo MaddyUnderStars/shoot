@@ -4,14 +4,14 @@ import { InstanceActor } from "../util/activitypub/instanceActor";
 import { Actor } from "./actor";
 
 @Entity("users")
-@Index(["username", "domain"], { unique: true })
+@Index(["name", "domain"], { unique: true })
 export class User extends Actor {
 	@CreateDateColumn()
 	registered_date: Date;
 
 	/** The username of this user. Forms their mention */
 	@Column()
-	username: string;
+	name: string;
 
 	/** Tokens generated past this date are valid */
 	@Column({ nullable: true, type: Date })
@@ -33,10 +33,10 @@ export class User extends Actor {
 		const id =
 			this.id == InstanceActor.id
 				? `/actor`
-				: `/users/${this.username}`;
+				: `/users/${this.name}`;
 
 		return {
-			username: this.username,
+			name: this.name,
 			display_name: this.display_name,
 			domain: this.domain,
 			publicKey: {
@@ -56,7 +56,7 @@ export class User extends Actor {
 	};
 }
 
-export type PublicUser = Pick<User, "username" | "display_name" | "domain"> & {
+export type PublicUser = Pick<User, "name" | "display_name" | "domain"> & {
 	publicKey?: {
 		/** The ID of this public key. Typically `https://example.com/users/username#main-key`. */
 		id: string;

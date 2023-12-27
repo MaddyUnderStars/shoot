@@ -1,9 +1,7 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column } from "typeorm";
 import { BaseModel } from "./basemodel";
 
-@Entity("remote_actors")
-@Index(["remote_address"], { unique: true })
-export class Actor extends BaseModel {
+export abstract class Actor extends BaseModel {
 	/** The remote address of this actor. If this actor is local, it will be null. */
 	@Column({ nullable: true, type: String })
 	remote_address: string | null;

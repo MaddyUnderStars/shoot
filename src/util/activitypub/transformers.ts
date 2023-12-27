@@ -1,5 +1,11 @@
-import { APAnnounce, APCreate, APGroup, APNote, APPerson } from "activitypub-types";
-import { User } from "../../entity";
+import {
+	APAnnounce,
+	APCreate,
+	APGroup,
+	APNote,
+	APPerson,
+} from "activitypub-types";
+import { DMChannel, User } from "../../entity";
 import { Channel } from "../../entity/channel";
 import type { Message } from "../../entity/message";
 import { config } from "../config";
@@ -49,8 +55,7 @@ export const buildAPAnnounceNote = (
 };
 
 export const buildAPPerson = (user: User): APPerson => {
-	const id =
-		user.id == InstanceActor.id ? `/actor` : `/users/${user.username}`;
+	const id = user.id == InstanceActor.id ? `/actor` : `/users/${user.name}`;
 
 	const { webapp_url, instance_url } = config.federation;
 
@@ -59,7 +64,7 @@ export const buildAPPerson = (user: User): APPerson => {
 		id: `${instance_url.origin}${id}`,
 		url: `${webapp_url.origin}${id}`,
 
-		preferredUsername: user.username,
+		preferredUsername: user.name,
 		name: user.display_name,
 
 		inbox: `${instance_url.origin}${id}/inbox`,
@@ -80,12 +85,20 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 
 	const { webapp_url, instance_url } = config.federation;
 
+	const owner =
+		channel instanceof DMChannel
+			? `${instance_url.origin}/users/${channel.recipients[0].name}`
+			: undefined;
+
 	return {
 		type: "Group",
 		id: `${instance_url.origin}${id}`,
 		url: `${webapp_url.origin}${id}`,
 
-		preferredUsername: channel.name,
+		preferredUsername: channel.id,
+		name: channel.name,
+
+		attributedTo: owner,
 
 		inbox: `${instance_url.origin}${id}/inbox`,
 		outbox: `${instance_url.origin}${id}/outbox`,
@@ -97,5 +110,5 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 			owner: `${config.federation.webapp_url.origin}${id}`,
 			publicKeyPem: channel.public_key,
 		},
-	}
-}
+	};
+};

@@ -7,10 +7,10 @@ import { User } from "../../entity";
 import { config } from "../config";
 
 import {
-	APError,
-	ActorMention,
-	createUserForRemotePerson,
-	splitQualifiedMention,
+    APError,
+    ActorMention,
+    createUserForRemotePerson,
+    splitQualifiedMention,
 } from "../activitypub";
 import { createLogger } from "../log";
 import { KEY_OPTIONS } from "../rsa";
@@ -23,7 +23,7 @@ export const registerUser = async (
 	email?: string,
 ) => {
 	const user = await User.create({
-		username,
+		name: username,
 		email,
 		password_hash: await bcrypt.hash(password, 12),
 		public_key: "", // TODO: bad solution
@@ -43,13 +43,13 @@ export const registerUser = async (
 		);
 
 		Log.verbose(
-			`Generated keys for user '${user.username} in ${
+			`Generated keys for user '${user.name} in ${
 				Date.now() - start
 			}ms`,
 		);
 	});
 
-	Log.verbose(`User '${user.username}' registered`);
+	Log.verbose(`User '${user.name}' registered`);
 	return user;
 };
 
@@ -58,7 +58,7 @@ export const getOrFetchUser = async (user_id: string) => {
 
 	let user = await User.findOne({
 		where: {
-			username: mention.user,
+			name: mention.user,
 			domain: mention.domain,
 		},
 	});

@@ -1,8 +1,15 @@
 import { APActivity } from "activitypub-types";
 import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
-import { ACTIVITYPUB_FETCH_OPTS, APError, createUserForRemotePerson } from ".";
-import { Actor, User } from "../../entity";
+import {
+	ACTIVITYPUB_FETCH_OPTS,
+	APError,
+	APObjectIsActor,
+	createChannelFromRemoteGroup,
+	createUserForRemotePerson,
+	resolveAPObject,
+} from ".";
+import { Actor, Channel, User } from "../../entity";
 import { config } from "../config";
 
 export class HttpSig {
@@ -73,9 +80,39 @@ export class HttpSig {
 		// since channels don't have usernames
 		// maybe it would be better to have an `RemoteActors` table and store
 		// keys in there? it would simplify this greatly
-		const remoteUser =
-			(await User.findOne({ where: { remote_address: actorId } })) ??
-			(await (await createUserForRemotePerson(actorId)).save());
+		// const remoteUser =
+		// 	(await User.findOne({ where: { remote_address: actorId } })) ??
+		// 	(await (await createUserForRemotePerson(actorId)).save());
+
+		const [user, channel] = await Promise.all([
+			User.findOne({ where: { remote_address: actorId } }),
+			Channel.findOne({ where: { remote_address: actorId } }),
+		]);
+
+		let actor = user ?? channel;
+
+		if (!actor) {
+			const remoteActor = await resolveAPObject(actorId);
+
+			if (!APObjectIsActor(remoteActor))
+				throw new APError("Request was signed by a non-actor object?");
+
+			if (!remoteActor.publicKey?.publicKeyPem)
+				throw new APError(
+					"Public key of signing actor was not returned when requested",
+				);
+
+			switch (remoteActor.type) {
+				case "Group":
+					actor = await createChannelFromRemoteGroup(remoteActor);
+					break;
+				default:
+					// treat as person
+					actor = await createUserForRemotePerson(remoteActor);
+			}
+
+			await actor.save();
+		}
 
 		// verify that the one who signed this activity was the one authoring it
 		if (activity) {
@@ -85,9 +122,9 @@ export class HttpSig {
 				throw new APError(
 					"Could not verify author was the one who signed this activity",
 				);
-			if (remoteUser.remote_address != author)
+			if (actor.remote_address != author)
 				throw new APError(
-					`Author of activity ${activity.id} did not match signing author ${remoteUser.remote_address}`,
+					`Author of activity ${activity.id} did not match signing author ${actor.remote_address}`,
 				);
 		}
 
@@ -105,7 +142,7 @@ export class HttpSig {
 		verifier.end();
 
 		return verifier.verify(
-			remoteUser.public_key,
+			actor.public_key,
 			Buffer.from(signature, "base64"),
 		);
 	}

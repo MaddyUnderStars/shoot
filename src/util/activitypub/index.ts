@@ -142,12 +142,15 @@ export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
 	);
 };
 
-export const createUserForRemotePerson = async (lookup: string) => {
+export const createUserForRemotePerson = async (lookup: string | APActor) => {
 	// If we were given a URL, this is probably a actor URL
 	// otherwise, treat it as a username@domain handle
-	const obj = tryParseUrl(lookup)
-		? await resolveAPObject(lookup)
-		: await resolveWebfinger(lookup);
+	const obj =
+		typeof lookup == "string"
+			? tryParseUrl(lookup)
+				? await resolveAPObject(lookup)
+				: await resolveWebfinger(lookup)
+			: lookup;
 
 	if (!APObjectIsActor(obj))
 		throw new APError("Resolved object is not Person");
@@ -161,9 +164,9 @@ export const createUserForRemotePerson = async (lookup: string) => {
 
 	return User.create({
 		remote_address: obj.id,
-		username: obj.preferredUsername || lookup,
+		name: obj.preferredUsername || obj.id,
 		display_name: obj.name || obj.preferredUsername,
-		domain: splitQualifiedMention(lookup).domain,
+		domain: new URL(obj.id).hostname,
 		public_key: obj.publicKey.publicKeyPem,
 
 		collections: {
@@ -175,8 +178,16 @@ export const createUserForRemotePerson = async (lookup: string) => {
 	});
 };
 
-export const createChannelFromRemoteGroup = async (lookup: string) => {
-	const obj = await resolveWebfinger(lookup);
+export const createChannelFromRemoteGroup = async (
+	lookup: string | APActor,
+) => {
+	const obj =
+		typeof lookup == "string"
+			? tryParseUrl(lookup)
+				? await resolveAPObject(lookup)
+				: await resolveWebfinger(lookup)
+			: lookup;
+			
 	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
 
 	if (!obj.publicKey?.publicKeyPem)
@@ -194,8 +205,11 @@ export const createChannelFromRemoteGroup = async (lookup: string) => {
 	switch ("dm") {
 		case "dm":
 			channel = DMChannel.create({
+				name: obj.name,
 				owner: await getOrFetchUser(obj.attributedTo),
 				recipients: [],
+				remote_address: obj.id,
+				public_key: obj.publicKey.publicKeyPem,
 			});
 			// TODO: start fetching recipients over time
 			break;

@@ -13,7 +13,7 @@ router.get(
 		const { user_id } = req.params;
 
 		const user = await User.findOneOrFail({
-			where: { username: user_id },
+			where: { name: user_id },
 		});
 
 		return res.json(addContext(buildAPPerson(user)));
@@ -57,7 +57,7 @@ router.get(
 			const { user_id, collection } = req.params;
 
 			const user = await User.findOneOrFail({
-				where: { username: user_id },
+				where: { name: user_id },
 			});
 
 			return res.json(
