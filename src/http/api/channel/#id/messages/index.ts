@@ -42,8 +42,8 @@ router.post(
 				// send this activity to remote instances
 
 				const note = buildAPNote(message);
-				const create = buildAPAnnounceNote(note, message.channel.id);
-				const withContext = addContext(create);
+				const announce = buildAPAnnounceNote(note, message.channel.id);
+				const withContext = addContext(announce);
 
 				// TODO: fix
 				let inbox: string;
@@ -51,7 +51,7 @@ router.post(
 					inbox = channel.recipients[0].activitypub_addresses.inbox;
 				else throw new Error("unimplemented");
 
-				const signed = HttpSig.sign(inbox, req.method, req.user, withContext);
+				const signed = HttpSig.sign(inbox, req.method, channel, `/channel/${channel.id}`, withContext);
 
 				setImmediate(async () => {
 					const res = await fetch(

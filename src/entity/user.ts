@@ -1,11 +1,11 @@
 import { Column, CreateDateColumn, Entity, Index } from "typeorm";
 import { config } from "../util";
 import { InstanceActor } from "../util/activitypub/instanceActor";
-import { BaseModel } from "./basemodel";
+import { WithKeys } from "./withKeys";
 
 @Entity("users")
 @Index(["username", "domain"], { unique: true })
-export class User extends BaseModel {
+export class User extends WithKeys {
 	/** The remote ID of this user */
 	@Column({ nullable: true, type: String })
 	remote_id: string | null;
@@ -36,14 +36,6 @@ export class User extends BaseModel {
 	/** The email address of this user */
 	@Column({ type: String, nullable: true })
 	email: string | null;
-
-	/** The private key for this user, used to sign activities sent to external instances */
-	@Column({ type: String, nullable: true })
-	private_key: string | null;
-
-	/** The public key of this user. Exists on both external and internal users */
-	@Column()
-	public_key: string;
 
 	@Column({ type: "simple-json", nullable: true })
 	activitypub_addresses: {

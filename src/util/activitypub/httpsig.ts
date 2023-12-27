@@ -3,8 +3,8 @@ import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
 import { ACTIVITYPUB_FETCH_OPTS, APError, createUserForRemotePerson } from ".";
 import { User } from "../../entity";
+import { WithKeys } from "../../entity/withKeys";
 import { config } from "../config";
-import { InstanceActor } from "./instanceActor";
 
 export class HttpSig {
 	private static getSignString<T extends IncomingHttpHeaders>(
@@ -29,6 +29,7 @@ export class HttpSig {
 		target: string,
 		method: string,
 		requestHeaders: IncomingHttpHeaders,
+		activity?: APActivity,
 	) {
 		const date = requestHeaders["date"];
 		const sigheader = requestHeaders["signature"]?.toString();
@@ -69,9 +70,27 @@ export class HttpSig {
 		const url = new URL(keyId);
 		const actorId = `${url.origin}${url.pathname}`; // likely wrong
 
+		// TODO: this breaks channel federation
+		// since channels don't have usernames
+		// maybe it would be better to have an `RemoteActors` table and store
+		// keys in there? it would simplify this greatly
 		const remoteUser =
 			(await User.findOne({ where: { remote_id: actorId } })) ??
 			(await (await createUserForRemotePerson(actorId)).save());
+
+		// verify that the one who signed this activity was the one authoring it
+		if (activity) {
+			let author = activity.actor ?? activity.attributedTo;
+			author = Array.isArray(author) ? author[0] : author;
+			if (typeof author != "string")
+				throw new APError(
+					"Could not verify author was the one who signed this activity",
+				);
+			if (remoteUser.remote_id != author)
+				throw new APError(
+					`Author of activity ${activity.id} did not match signing author ${remoteUser.remote_id}`,
+				);
+		}
 
 		const expected = this.getSignString(
 			target,
@@ -102,10 +121,11 @@ export class HttpSig {
 	public static sign(
 		target: string,
 		method: string,
-		sender: User,
+		keys: WithKeys,
+		id: string,
 		message?: APActivity,
 	) {
-		if (!sender.private_key)
+		if (!keys.private_key)
 			throw new APError("Cannot sign activity without private key");
 
 		const digest = message
@@ -128,13 +148,13 @@ export class HttpSig {
 		signer.update(toSign);
 		signer.end();
 
-		const signature = signer.sign(sender.private_key);
+		const signature = signer.sign(keys.private_key);
 		const sig_b64 = signature.toString("base64");
 
-		const id =
-			sender.id == InstanceActor.id
-				? `/actor`
-				: `/users/${sender.username}`;
+		// const id =
+		// 	keys.id == InstanceActor.id
+		// 		? `/actor`
+		// 		: `/users/${keys.username}`;
 
 		const header =
 			`keyId="${config.federation.instance_url.origin}${id}",` +

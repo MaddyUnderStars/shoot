@@ -6,7 +6,7 @@ const Log = createLogger("httpsignatures");
 
 export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 	if (req.originalUrl == "/actor" && req.method == "GET") {
-		return next();	// allow GET /actor unsigned
+		return next(); // allow GET /actor unsigned
 	}
 
 	if (
@@ -23,7 +23,14 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 	}
 
 	try {
-		if (!(await HttpSig.validate(req.originalUrl, req.method, req.headers)))
+		if (
+			!(await HttpSig.validate(
+				req.originalUrl,
+				req.method,
+				req.headers,
+				Object.values(req.body).length > 0 ? req.body : undefined,
+			))
+		)
 			return next(
 				new APError("HTTP Signature could not be validated.", 401),
 			);

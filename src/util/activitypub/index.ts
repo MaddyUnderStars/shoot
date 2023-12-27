@@ -82,7 +82,7 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	Log.verbose(`Fetching from remote ${data}`);
 
 	// sign the request
-	const signed = HttpSig.sign(data, "get", InstanceActor);
+	const signed = HttpSig.sign(data, "get", InstanceActor, "/actor");
 
 	const res = await fetch(data, signed);
 

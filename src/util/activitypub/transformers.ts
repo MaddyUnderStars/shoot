@@ -1,5 +1,6 @@
-import { APAnnounce, APCreate, APNote, APPerson } from "activitypub-types";
+import { APAnnounce, APCreate, APGroup, APNote, APPerson } from "activitypub-types";
 import { User } from "../../entity";
+import { Channel } from "../../entity/channel";
 import type { Message } from "../../entity/message";
 import { config } from "../config";
 import { InstanceActor } from "./instanceActor";
@@ -73,3 +74,26 @@ export const buildAPPerson = (user: User): APPerson => {
 		},
 	};
 };
+
+export const buildAPGroup = (channel: Channel): APGroup => {
+	const id = `/channel/${channel.id}`;
+
+	const { webapp_url, instance_url } = config.federation;
+
+	return {
+		type: "Group",
+		id: `${instance_url.origin}${id}`,
+		url: `${webapp_url.origin}${id}`,
+
+		inbox: `${instance_url.origin}${id}/inbox`,
+		outbox: `${instance_url.origin}${id}/outbox`,
+		followers: `${instance_url.origin}${id}/followers`,
+		following: `${instance_url.origin}${id}/following`,
+
+		publicKey: {
+			id: `${config.federation.instance_url.origin}${id}`,
+			owner: `${config.federation.webapp_url.origin}${id}`,
+			publicKeyPem: channel.public_key,
+		},
+	}
+}
