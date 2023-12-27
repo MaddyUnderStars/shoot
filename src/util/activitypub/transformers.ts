@@ -85,6 +85,8 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 		id: `${instance_url.origin}${id}`,
 		url: `${webapp_url.origin}${id}`,
 
+		preferredUsername: channel.name,
+
 		inbox: `${instance_url.origin}${id}/inbox`,
 		outbox: `${instance_url.origin}${id}/outbox`,
 		followers: `${instance_url.origin}${id}/followers`,

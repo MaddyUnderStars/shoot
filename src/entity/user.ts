@@ -1,15 +1,11 @@
 import { Column, CreateDateColumn, Entity, Index } from "typeorm";
 import { config } from "../util";
 import { InstanceActor } from "../util/activitypub/instanceActor";
-import { WithKeys } from "./withKeys";
+import { Actor } from "./actor";
 
 @Entity("users")
 @Index(["username", "domain"], { unique: true })
-export class User extends WithKeys {
-	/** The remote ID of this user */
-	@Column({ nullable: true, type: String })
-	remote_id: string | null;
-
+export class User extends Actor {
 	@CreateDateColumn()
 	registered_date: Date;
 
@@ -29,29 +25,9 @@ export class User extends WithKeys {
 	@Column()
 	display_name: string;
 
-	/** The domain this user originates from */
-	@Column()
-	domain: string;
-
 	/** The email address of this user */
 	@Column({ type: String, nullable: true })
 	email: string | null;
-
-	@Column({ type: "simple-json", nullable: true })
-	activitypub_addresses: {
-		inbox: string;
-		outbox: string;
-		followers?: string;
-		following?: string;
-	};
-
-	/**
-	 * TODO:
-	 * followers
-	 * following
-	 * public key
-	 * private key
-	 */
 
 	public toPublic = (): PublicUser => {
 		const id =

@@ -48,7 +48,7 @@ router.post(
 				// TODO: fix
 				let inbox: string;
 				if (channel instanceof DMChannel)
-					inbox = channel.recipients[0].activitypub_addresses.inbox;
+					inbox = channel.recipients[0].collections.inbox;
 				else throw new Error("unimplemented");
 
 				const signed = HttpSig.sign(inbox, req.method, channel, `/channel/${channel.id}`, withContext);

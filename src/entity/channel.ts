@@ -1,20 +1,11 @@
 import { Column, Entity, TableInheritance } from "typeorm";
-import { WithKeys } from "./withKeys";
+import { Actor } from "./actor";
 
 @Entity("channels")
 @TableInheritance({ column: { type: String, name: "type" } })
-export class Channel extends WithKeys {
+export class Channel extends Actor {
 	@Column()
 	name: string;
-
-	@Column({ type: String, nullable: true })
-	domain: string | null;
-
-	@Column()
-	public_key: string;
-
-	@Column({ nullable: true, type: String })
-	private_key: string | null;
 
 	public toPublic(): PublicChannel {
 		return {

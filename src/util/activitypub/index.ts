@@ -160,13 +160,13 @@ export const createUserForRemotePerson = async (lookup: string) => {
 	if (!obj.id) throw new APError("Resolved object must have ID");
 
 	return User.create({
-		remote_id: obj.id,
+		remote_address: obj.id,
 		username: obj.preferredUsername || lookup,
 		display_name: obj.name || obj.preferredUsername,
 		domain: splitQualifiedMention(lookup).domain,
 		public_key: obj.publicKey.publicKeyPem,
 
-		activitypub_addresses: {
+		collections: {
 			inbox: obj.inbox.toString(),
 			outbox: obj.outbox.toString(),
 			followers: obj.followers?.toString(),

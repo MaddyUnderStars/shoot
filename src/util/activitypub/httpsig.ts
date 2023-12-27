@@ -2,8 +2,7 @@ import { APActivity } from "activitypub-types";
 import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
 import { ACTIVITYPUB_FETCH_OPTS, APError, createUserForRemotePerson } from ".";
-import { User } from "../../entity";
-import { WithKeys } from "../../entity/withKeys";
+import { Actor, User } from "../../entity";
 import { config } from "../config";
 
 export class HttpSig {
@@ -75,7 +74,7 @@ export class HttpSig {
 		// maybe it would be better to have an `RemoteActors` table and store
 		// keys in there? it would simplify this greatly
 		const remoteUser =
-			(await User.findOne({ where: { remote_id: actorId } })) ??
+			(await User.findOne({ where: { remote_address: actorId } })) ??
 			(await (await createUserForRemotePerson(actorId)).save());
 
 		// verify that the one who signed this activity was the one authoring it
@@ -86,9 +85,9 @@ export class HttpSig {
 				throw new APError(
 					"Could not verify author was the one who signed this activity",
 				);
-			if (remoteUser.remote_id != author)
+			if (remoteUser.remote_address != author)
 				throw new APError(
-					`Author of activity ${activity.id} did not match signing author ${remoteUser.remote_id}`,
+					`Author of activity ${activity.id} did not match signing author ${remoteUser.remote_address}`,
 				);
 		}
 
@@ -121,7 +120,7 @@ export class HttpSig {
 	public static sign(
 		target: string,
 		method: string,
-		keys: WithKeys,
+		keys: Actor,
 		id: string,
 		message?: APActivity,
 	) {

@@ -8,7 +8,7 @@ export const InstanceActor = Object.freeze({
 	domain: config.federation.webapp_url.hostname,
 	public_key: config.federation.public_key,
 	private_key: config.federation.private_key,
-	activitypub_addresses: {
+	collections: {
 		followers: `${config.federation.instance_url.origin}/actor/followers`,
 		following: `${config.federation.instance_url.origin}/actor/following`,
 		inbox: `${config.federation.instance_url.origin}/actor/inbox`,
