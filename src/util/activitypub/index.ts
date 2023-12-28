@@ -10,6 +10,7 @@ import {
 } from "activitypub-types";
 import { HttpError } from "../httperror";
 
+import { XMLParser } from "fast-xml-parser";
 import { User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
@@ -100,30 +101,65 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	return json as T;
 };
 
-export const resolveWebfinger = async (
+const doWebfingerOrFindTemplate = async (
 	lookup: string,
-): Promise<AnyAPObject> => {
+): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
-	Log.verbose(`Performing webfinger lookup ${lookup}`);
-
-	const res = await fetch(
+	const url = new URL(
 		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
-		{
-			// don't send the default headers because
-			// they include activitypub content type
-			headers: {
-				"User-Agent": USER_AGENT,
-			},
-		},
 	);
+
+	const opts = {
+		// don't send the default headers because
+		// they include activitypub content type
+		headers: {
+			"User-Agent": USER_AGENT,
+		},
+	};
+
+	let res = await fetch(url, opts);
+
+	if (res.ok) {
+		if (res.status == 404)
+			throw new APError(
+				`Remote server sent code ${res.status} : ${res.statusText}`,
+			);
+		return await res.json();
+	}
+
+	Log.verbose(`Attempting to find webfinger template to resolve ${lookup}`);
+
+	const hostmeta = await fetch(`${url.origin}/.well-known/host-meta`);
+	if (!hostmeta.ok) throw new APError("Could not resolve webfinger address");
+	const parser = new XMLParser({
+		ignoreAttributes: false,
+		attributeNamePrefix: "@_",
+	});
+	const obj = parser.parse(await hostmeta.text());
+
+	const template = obj?.XRD?.Link?.["@_template"];
+	if (!template)
+		throw new APError(
+			"host-meta did not contain root->XRD->Link[template]",
+		);
+
+	res = await fetch(template.replace("{uri}", lookup), opts);
 
 	if (!res.ok)
 		throw new APError(
 			`Remote server sent code ${res.status} : ${res.statusText}`,
 		);
 
-	const wellknown = (await res.json()) as WebfingerResponse;
+	return await res.json();
+};
+
+export const resolveWebfinger = async (
+	lookup: string,
+): Promise<AnyAPObject> => {
+	Log.verbose(`Performing webfinger lookup ${lookup}`);
+
+	const wellknown = await doWebfingerOrFindTemplate(lookup);
 
 	if (!("links" in wellknown))
 		throw new APError(
@@ -143,6 +179,8 @@ export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
 };
 
 export const createUserForRemotePerson = async (lookup: string | APActor) => {
+	const domain = typeof lookup == "string" ? splitQualifiedMention(lookup).domain : new URL(lookup.id!).hostname;
+
 	// If we were given a URL, this is probably a actor URL
 	// otherwise, treat it as a username@domain handle
 	const obj =
@@ -163,10 +201,11 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 	if (!obj.id) throw new APError("Resolved object must have ID");
 
 	return User.create({
+		domain,
+
 		remote_address: obj.id,
 		name: obj.preferredUsername || obj.id,
 		display_name: obj.name || obj.preferredUsername,
-		domain: new URL(obj.id).hostname,
 		public_key: obj.publicKey.publicKeyPem,
 
 		collections: {
@@ -187,7 +226,7 @@ export const createChannelFromRemoteGroup = async (
 				? await resolveAPObject(lookup)
 				: await resolveWebfinger(lookup)
 			: lookup;
-			
+
 	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
 
 	if (!obj.publicKey?.publicKeyPem)
