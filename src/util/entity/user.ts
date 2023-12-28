@@ -6,14 +6,11 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 import { User } from "../../entity";
 import { config } from "../config";
 
-import {
-    APError,
-    ActorMention,
-    createUserForRemotePerson,
-    splitQualifiedMention,
-} from "../activitypub";
+import { APActor } from "activitypub-types";
+import { APError, APObjectIsActor, ActorMention, resolveAPObject, resolveWebfinger, splitQualifiedMention } from "../activitypub";
 import { createLogger } from "../log";
 import { KEY_OPTIONS } from "../rsa";
+import { tryParseUrl } from "../url";
 
 const Log = createLogger("users");
 
@@ -77,3 +74,42 @@ export const getOrFetchUser = async (user_id: string) => {
 export const batchGetUsers = async (users: ActorMention[]) => {
 	return Promise.all(users.map((user) => getOrFetchUser(user)));
 };
+
+export const createUserForRemotePerson = async (lookup: string | APActor) => {
+	const domain = typeof lookup == "string" ? splitQualifiedMention(lookup).domain : new URL(lookup.id!).hostname;
+
+	// If we were given a URL, this is probably a actor URL
+	// otherwise, treat it as a username@domain handle
+	const obj = typeof lookup == "string"
+		? tryParseUrl(lookup)
+			? await resolveAPObject(lookup)
+			: await resolveWebfinger(lookup)
+		: lookup;
+
+	if (!APObjectIsActor(obj))
+		throw new APError("Resolved object is not Person");
+
+	if (!obj.publicKey?.publicKeyPem)
+		throw new APError(
+			"Resolved object is Person but does not contain public key"
+		);
+
+	if (!obj.id) throw new APError("Resolved object must have ID");
+
+	return User.create({
+		domain,
+
+		remote_address: obj.id,
+		name: obj.preferredUsername || obj.id,
+		display_name: obj.name || obj.preferredUsername,
+		public_key: obj.publicKey.publicKeyPem,
+
+		collections: {
+			inbox: obj.inbox.toString(),
+			outbox: obj.outbox.toString(),
+			followers: obj.followers?.toString(),
+			following: obj.following?.toString(),
+		},
+	});
+};
+

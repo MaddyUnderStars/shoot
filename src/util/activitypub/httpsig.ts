@@ -1,16 +1,14 @@
 import { APActivity } from "activitypub-types";
 import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
-import {
-	ACTIVITYPUB_FETCH_OPTS,
-	APError,
-	APObjectIsActor,
-	createChannelFromRemoteGroup,
-	createUserForRemotePerson,
-	resolveAPObject,
-} from ".";
 import { Actor, Channel, User } from "../../entity";
 import { config } from "../config";
+import { createChannelFromRemoteGroup } from "../entity/channel";
+import { createUserForRemotePerson } from "../entity/user";
+import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
+import { APError } from "./error";
+import { resolveAPObject } from "./resolve";
+import { APObjectIsActor } from "./util";
 
 export class HttpSig {
 	private static getSignString<T extends IncomingHttpHeaders>(
