@@ -21,7 +21,7 @@ const DATASOURCE_OPTIONS = new DataSource({
 	entities: [path.join(__dirname, "..", "entity", "*.js")],
 	supportBigNumbers: true,
 	bigNumberStrings: false,
-	synchronize: false, // TODO
+	synchronize: true, // TODO
 	logging: config.database.log,
 });
 

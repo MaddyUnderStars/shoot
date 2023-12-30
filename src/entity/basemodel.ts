@@ -1,3 +1,4 @@
+import merge from "ts-deepmerge";
 import { BaseEntity, PrimaryGeneratedColumn } from "typeorm";
 
 export abstract class BaseModel extends BaseEntity {
@@ -14,4 +15,10 @@ export abstract class BaseModel extends BaseEntity {
 			"Do not return database entities directly. Call .toPublic or .toPrivate",
 		);
 	};
+
+	// todo: better types
+	public assign(props: object) {
+		Object.assign(this, merge(this, props));
+		return this;
+	}
 }

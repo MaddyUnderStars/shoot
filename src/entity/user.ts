@@ -13,6 +13,10 @@ export class User extends Actor {
 	@Column()
 	name: string;
 
+	/** The user's bio */
+	@Column({ nullable: true, type: String })
+	summary: string | null;
+
 	/** Tokens generated past this date are valid */
 	@Column({ nullable: true, type: Date })
 	valid_tokens_since: Date | null;
@@ -39,6 +43,7 @@ export class User extends Actor {
 			name: this.name,
 			display_name: this.display_name,
 			domain: this.domain,
+			summary: this.summary,
 			publicKey: {
 				id: `${config.federation.instance_url.origin}${id}`,
 				owner: `${config.federation.webapp_url.origin}${id}`,
@@ -56,7 +61,7 @@ export class User extends Actor {
 	};
 }
 
-export type PublicUser = Pick<User, "name" | "display_name" | "domain"> & {
+export type PublicUser = Pick<User, "name" | "summary" | "display_name" | "domain"> & {
 	publicKey?: {
 		/** The ID of this public key. Typically `https://example.com/users/username#main-key`. */
 		id: string;

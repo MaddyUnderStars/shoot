@@ -6,6 +6,9 @@ import auth_login from "./auth/login";
 import auth_register from "./auth/register";
 router.use("/auth", auth_register, auth_login);
 
+import users_me from "./users/@me";
+router.use("/users/@me", users_me);
+
 import users_id from "./users/#id";
 router.use("/users/:user_id", users_id);
 

@@ -31,6 +31,7 @@
 		"morgan": "^1.10.0",
 		"pg": "^8.11.3",
 		"sqlite3": "^5.1.6",
+		"ts-deepmerge": "^6.2.0",
 		"typeorm": "^0.3.17",
 		"zod": "^3.22.4",
 		"zod-express-middleware": "^1.4.0"

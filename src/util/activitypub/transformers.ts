@@ -67,6 +67,8 @@ export const buildAPPerson = (user: User): APPerson => {
 		preferredUsername: user.name,
 		name: user.display_name,
 
+		summary: user.summary || undefined,
+
 		inbox: `${instance_url.origin}${id}/inbox`,
 		outbox: `${instance_url.origin}${id}/outbox`,
 		followers: `${instance_url.origin}${id}/followers`,
