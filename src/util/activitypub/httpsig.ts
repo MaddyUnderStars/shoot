@@ -40,12 +40,10 @@ export class HttpSig {
 
 		if (!date || !sigheader) throw new APError("Missing signature");
 
-		if (
-			// Older than 1 day
-			Date.parse(date).valueOf() >
-			Date.now() + 24 * 60 * 60 * 1000
-		)
-			throw new APError("Signature too old");
+		const ONE_DAY = 24 * 60 * 60 * 1000;
+		const dateParsed = Date.parse(date).valueOf();
+		if (dateParsed > Date.now() + ONE_DAY || dateParsed < Date.now() - ONE_DAY)
+			throw new APError("Signature was created gt/lt 1 day from now");
 
 		const sigopts: { [key: string]: string | undefined } = Object.assign(
 			{},
