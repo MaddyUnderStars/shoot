@@ -28,9 +28,8 @@ router.patch(
 			body: UserModifySchema,
 		},
 		async (req, res) => {
-			req.user.assign(req.body);
-			await req.user.save();
-			return res.json(req.user.toPrivate());
+			await User.update({ id: req.user.id }, req.body);
+			return res.sendStatus(200);
 		},
 	),
 );
