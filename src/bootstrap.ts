@@ -1,18 +1,3 @@
-/*
-	TODO:
-	- CLI with options:
-	-	- Bind address
-	-	- Config path
-	-	- Admin operations such as creating admin users
-
-	- Config validation
-	-	- including activitypub config
-
-	- Maybe a cute ascii logo :3
-
-	- Then start server
-*/
-
 import "dotenv/config";
 import { ChatServer } from "./server";
 import { createLogger } from "./util";
