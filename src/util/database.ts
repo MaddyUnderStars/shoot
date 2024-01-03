@@ -40,6 +40,8 @@ export const initDatabase = async () => {
 
 export const getDatabase = () => connection ?? null;
 
+export const closeDatabase = () => connection?.destroy();
+
 const doFirstSync = async () => {
 	if (!(await dbExists())) {
 		Log.msg("This appears to be a fresh database. Synchronising.");
