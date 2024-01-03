@@ -8,6 +8,16 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 };
 
 const config = Object.freeze({
+	http: {
+		/**
+		 * Whether to enable morgan logging of http requests.
+		 * Example: `200, 404` will log requests with status codes 200, 400
+		 * Example: `-200` will log all non-200 responses
+		 * Example `-` will log all responses
+		 */
+		log: ifExistsGet<string>("http.log"),
+	},
+
 	security: {
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.

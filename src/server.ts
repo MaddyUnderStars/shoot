@@ -1,8 +1,8 @@
 import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
-import morgan from "morgan";
 
+import morgan from "morgan";
 import { authHandler, errorHandler, routes } from "./http";
 import { config, createLogger, initDatabase } from "./util";
 
@@ -25,7 +25,17 @@ export class ChatServer {
 		);
 		this.app.use(bodyParser.urlencoded({ inflate: true, extended: true }));
 
-		this.app.use(morgan("combined"));
+		if (config.http.log)
+			this.app.use(
+				morgan("combined", {
+					skip(req, res) {
+						const log = config.http.log;
+						let skip =
+							log!.includes(res.statusCode.toString()) ?? false;
+						return log?.charAt(0) == "-" ? skip : !skip;
+					},
+				}),
+			);
 
 		this.app.use(authHandler);
 
