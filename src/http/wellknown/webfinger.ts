@@ -8,6 +8,8 @@ const router = Router();
 
 const WebfingerRequest = z.object({ resource: z.string() });
 
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 router.get(
 	"/webfinger",
 	route(
@@ -36,14 +38,12 @@ router.get(
 					},
 				}),
 				// todo: awful
-				parseInt(mention.user)
-					? Channel.findOne({
-							where: {
-								id: mention.user,
-								domain: config.federation.webapp_url.hostname,
-							},
-					  })
-					: undefined,
+				uuid.test(mention.user) ? Channel.findOne({
+					where: {
+						id: mention.user,
+						domain: config.federation.webapp_url.hostname,
+					},
+				}) : null,
 			]);
 
 			const actor = user ?? channel;
