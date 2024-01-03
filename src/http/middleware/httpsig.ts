@@ -16,8 +16,7 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 		// not a signed request
 
 		// TODO: does this endpoint require signing?
-
-		Log.verbose(`Unsigned request to ${req.originalUrl} was allowed`);
+		// i.e. sending to an inbox, getting a user's followers/following/posts etc
 
 		return next();
 	}
