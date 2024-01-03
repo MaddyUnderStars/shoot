@@ -12,6 +12,8 @@ import { resolveAPObject } from "./resolve";
  * - more tbd
  */
 export const handleChannelInbox = async (activity: APActivity, target: Channel) => {
+	console.log(activity);
+	
 	if (!activity.type) throw new APError("Activity does not have type");
 	if (Array.isArray(activity.type))
 		throw new APError("Activity has multiple types, cannot handle");
@@ -21,6 +23,7 @@ export const handleChannelInbox = async (activity: APActivity, target: Channel) 
 		throw new APError(`Activity of type ${activity.type} has no handler`);
 
 	await handler(activity, target);
+
 };
 
 const handlers: {

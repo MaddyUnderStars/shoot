@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
-import { APError, config, createLogger } from "../../util";
-import { HttpSig } from "../../util/activitypub/httpsig";
+import { APError, HttpSig, config, createLogger } from "../../util";
 
 const Log = createLogger("httpsignatures");
 
