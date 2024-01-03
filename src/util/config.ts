@@ -8,11 +8,6 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 };
 
 const config = Object.freeze({
-	redis: {
-		host: ifExistsGet<string>("redis.host") ?? "localhost",
-		port: ifExistsGet<number>("redis.port") ?? 6379,
-	},
-
 	security: {
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.
@@ -93,24 +88,6 @@ const config = Object.freeze({
 				 * The CLI can still be used to create users using admin opereations.
 				 */
 				enabled: true,
-
-				/**
-				 * TODO: Whether to force a captcha to be completed for new registrations.
-				 *
-				 * @default false
-				 */
-				require_captcha:
-					ifExistsGet<boolean>("registration.require_captcha") ??
-					false,
-
-				/**
-				 * TODO: Whether to require an email address for new registrations.
-				 * TODO: If enabled and an email server has been configured, verification emails will be sent.
-				 *
-				 * @default false
-				 */
-				require_email:
-					ifExistsGet<boolean>("registration.require_email") ?? false,
 		  }
 		: { enabled: false },
 });
