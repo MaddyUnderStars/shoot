@@ -3,12 +3,12 @@ import {
 	CreateDateColumn,
 	Entity,
 	ManyToOne,
-	UpdateDateColumn
+	UpdateDateColumn,
 } from "typeorm";
 import { AttributesOnly } from "../util";
 import { BaseModel } from "./basemodel";
-import { Channel, PublicChannel } from "./channel";
-import { PublicUser, User } from "./user";
+import { Channel } from "./channel";
+import { User } from "./user";
 
 @Entity("messages")
 export class Message extends BaseModel {
@@ -28,12 +28,9 @@ export class Message extends BaseModel {
 	@ManyToOne("users")
 	author: User;
 
-	// @ManyToOne("channels")
-	// @JoinColumn()
-	// channel: Channel;
-
+	/** The channel this message is associated with */
 	@ManyToOne("channels")
-	channel: Channel
+	channel: Channel;
 
 	public toPublic() {
 		return {
@@ -41,8 +38,11 @@ export class Message extends BaseModel {
 			content: this.content,
 			published: this.published,
 			updated: this.updated,
-			author: this.author.toPublic(),
-			channel: this.channel.toPublic(),
+
+			// this sillyness is because typeorm's loadRelationIds: true doesn't map them into objects,
+			// but into strings. silly
+			author_id: typeof this.author == "string" ? this.author : this.author.id,
+			channel_id: typeof this.channel == "string" ? this.channel : this.channel.id,
 		} as PublicMessage;
 	}
 
@@ -51,7 +51,10 @@ export class Message extends BaseModel {
 	}
 }
 
-export type PublicMessage = Omit<AttributesOnly<Message>, "author" | "channel"> & {
-	author: PublicUser;
-	channel: PublicChannel;
+export type PublicMessage = Omit<
+	AttributesOnly<Message>,
+	"author" | "channel"
+> & {
+	author_id: string;
+	channel_id: string;
 };

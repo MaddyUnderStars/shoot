@@ -18,4 +18,7 @@ router.use("/users/:user_id/channels", users_id_channels);
 import channels_id_messages from "./channel/#id/messages";
 router.use("/channel/:channel_id/messages", channels_id_messages);
 
+import channels_id_messages_id from "./channel/#id/messages/#id";
+router.use("/channel/:channel_id/messages/:message_id", channels_id_messages_id);
+
 export default router;
