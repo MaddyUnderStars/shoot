@@ -12,12 +12,14 @@ router.get(
 	}),
 );
 
-const UserModifySchema: z.ZodSchema<Partial<User>> = z.object({
-	name: z.string(),
-    display_name: z.string(),
-	summary: z.string(),
-	// todo: profile picture
-}).partial();
+const UserModifySchema: z.ZodSchema<Partial<User>> = z
+	.object({
+		display_name: z.string(),
+		summary: z.string(),
+		// todo: profile picture
+	})
+	.partial()
+	.strict();
 
 router.patch(
 	"/",
@@ -26,10 +28,10 @@ router.patch(
 			body: UserModifySchema,
 		},
 		async (req, res) => {
-            req.user.assign(req.body);
-            await req.user.save();
-            return res.json(req.user.toPrivate());
-        },
+			req.user.assign(req.body);
+			await req.user.save();
+			return res.json(req.user.toPrivate());
+		},
 	),
 );
 

@@ -9,6 +9,7 @@ import { DMChannel, User } from "../../entity";
 import { Channel } from "../../entity/channel";
 import type { Message } from "../../entity/message";
 import { config } from "../config";
+import { createXsdDate } from "../misc";
 import { InstanceActor } from "./instanceActor";
 
 export const buildAPNote = (message: Message): APNote => {
@@ -69,10 +70,16 @@ export const buildAPPerson = (user: User): APPerson => {
 
 		summary: user.summary || undefined,
 
+		published: createXsdDate(user.registered_date),
+
 		inbox: `${instance_url.origin}${id}/inbox`,
 		outbox: `${instance_url.origin}${id}/outbox`,
 		followers: `${instance_url.origin}${id}/followers`,
 		following: `${instance_url.origin}${id}/following`,
+
+		endpoints: {
+			sharedInbox: `${instance_url.origin}/inbox`,
+		},
 
 		publicKey: {
 			id: `${config.federation.instance_url.origin}${id}`,

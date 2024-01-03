@@ -4,6 +4,7 @@ export * from "./database";
 export * from "./entity";
 export * from "./httperror";
 export * from "./log";
+export * from "./misc";
 export * from "./route";
 export * from "./rsa";
 export * from "./token";

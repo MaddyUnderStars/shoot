@@ -48,7 +48,7 @@ router.get(
 				]),
 			}),
 			query: z.object({
-				page: z.boolean().default(false).optional(),
+				page: z.boolean({ coerce: true }).default(false).optional(),
 				min_id: z.string().optional(),
 				max_id: z.string().optional(),
 			}),

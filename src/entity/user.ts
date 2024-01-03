@@ -1,3 +1,4 @@
+import type { APActor } from "activitypub-types";
 import { Column, CreateDateColumn, Entity, Index } from "typeorm";
 import { config } from "../util";
 import { InstanceActor } from "../util/activitypub/instanceActor";
@@ -9,8 +10,11 @@ export class User extends Actor {
 	@CreateDateColumn()
 	registered_date: Date;
 
-	/** The username of this user. Forms their mention */
-	@Column()
+	/**
+	 * The username of this user. Forms their mention
+	 * Do not allow modification, as this will break federation.
+	 */
+	@Column({ update: false })
 	name: string;
 
 	/** The user's bio */
@@ -35,9 +39,7 @@ export class User extends Actor {
 
 	public toPublic = (): PublicUser => {
 		const id =
-			this.id == InstanceActor.id
-				? `/actor`
-				: `/users/${this.name}`;
+			this.id == InstanceActor.id ? `/actor` : `/users/${this.name}`;
 
 		return {
 			name: this.name,
@@ -61,14 +63,10 @@ export class User extends Actor {
 	};
 }
 
-export type PublicUser = Pick<User, "name" | "summary" | "display_name" | "domain"> & {
-	publicKey?: {
-		/** The ID of this public key. Typically `https://example.com/users/username#main-key`. */
-		id: string;
-		/** The owner of this key. Typically matches actor ID. */
-		owner: string;
-		/** The RSA public key. */
-		publicKeyPem: string;
-	};
+export type PublicUser = Pick<
+	User,
+	"name" | "summary" | "display_name" | "domain"
+> & {
+	publicKey?: APActor["publicKey"]
 };
 export type PrivateUser = PublicUser & Pick<User, "email">;
