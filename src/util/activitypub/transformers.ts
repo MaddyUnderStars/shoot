@@ -115,8 +115,8 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 		following: `${instance_url.origin}${id}/following`,
 
 		publicKey: {
-			id: `${config.federation.instance_url.origin}${id}`,
-			owner: `${config.federation.webapp_url.origin}${id}`,
+			id: `${instance_url.origin}${id}`,
+			owner: `${webapp_url.origin}${id}`,
 			publicKeyPem: channel.public_key,
 		},
 	};

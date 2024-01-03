@@ -8,7 +8,7 @@ import { createUserForRemotePerson } from "../entity/user";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { resolveAPObject } from "./resolve";
-import { APObjectIsActor } from "./util";
+import { APObjectIsActor, hasAPContext } from "./util";
 
 export class HttpSig {
 	private static getSignString<T extends IncomingHttpHeaders>(
@@ -111,7 +111,7 @@ export class HttpSig {
 		}
 
 		// verify that the one who signed this activity was the one authoring it
-		if (activity) {
+		if (activity && hasAPContext(activity)) {
 			let author = activity.actor ?? activity.attributedTo;
 			author = Array.isArray(author) ? author[0] : author;
 			if (typeof author != "string")
