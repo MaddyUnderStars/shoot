@@ -1,8 +1,10 @@
 import { APActivity, ObjectIsNote } from "activitypub-types";
 import { Channel } from "../../entity";
+import { sendActivity } from "../../sender";
 import { APError } from "./error";
 import { resolveAPObject } from "./resolve";
-import { buildMessageFromAPNote } from "./transformers";
+import { buildAPAnnounceNote, buildMessageFromAPNote } from "./transformers";
+import { addContext } from "./util";
 
 /**
  * Valid activities to be received by channel inboxes:
@@ -12,7 +14,10 @@ import { buildMessageFromAPNote } from "./transformers";
  * - `Undo<Follow>`
  * - more tbd
  */
-export const handleChannelInbox = async (activity: APActivity, target: Channel) => {
+export const handleChannelInbox = async (
+	activity: APActivity,
+	target: Channel,
+) => {
 	if (!activity.type) throw new APError("Activity does not have type");
 	if (Array.isArray(activity.type))
 		throw new APError("Activity has multiple types, cannot handle");
@@ -22,7 +27,6 @@ export const handleChannelInbox = async (activity: APActivity, target: Channel) 
 		throw new APError(`Activity of type ${activity.type} has no handler`);
 
 	await handler(activity, target);
-
 };
 
 const handlers: {
@@ -49,5 +53,14 @@ const handlers: {
 
 		// TODO: announce this message
 		// TODO: send this message to connected clients
+
+		setImmediate(async () => {
+			const announce = buildAPAnnounceNote(inner, target.id);
+			await sendActivity(
+				new URL(inner.attributedTo!.toString() + "/inbox"),
+				addContext(announce),
+				target,
+			);
+		});
 	},
 };
