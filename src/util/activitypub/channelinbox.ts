@@ -2,6 +2,7 @@ import { APActivity, ObjectIsNote } from "activitypub-types";
 import { Channel } from "../../entity";
 import { APError } from "./error";
 import { resolveAPObject } from "./resolve";
+import { buildMessageFromAPNote } from "./transformers";
 
 /**
  * Valid activities to be received by channel inboxes:
@@ -12,8 +13,6 @@ import { resolveAPObject } from "./resolve";
  * - more tbd
  */
 export const handleChannelInbox = async (activity: APActivity, target: Channel) => {
-	console.log(activity);
-	
 	if (!activity.type) throw new APError("Activity does not have type");
 	if (Array.isArray(activity.type))
 		throw new APError("Activity has multiple types, cannot handle");
@@ -45,6 +44,10 @@ const handlers: {
 		if (!ObjectIsNote(inner))
 			throw new APError(`Cannot accept Create<${inner.type}>`);
 
-		// todo: finish
+		const message = await buildMessageFromAPNote(inner, target);
+		await message.save();
+
+		// TODO: announce this message
+		// TODO: send this message to connected clients
 	},
 };

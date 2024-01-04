@@ -6,8 +6,15 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 import { User } from "../../entity";
 import { config } from "../config";
 
-import { APActor } from "activitypub-types";
-import { APError, APObjectIsActor, ActorMention, resolveAPObject, resolveWebfinger, splitQualifiedMention } from "../activitypub";
+import { APActor, APNote } from "activitypub-types";
+import {
+	APError,
+	APObjectIsActor,
+	ActorMention,
+	resolveAPObject,
+	resolveWebfinger,
+	splitQualifiedMention,
+} from "../activitypub";
 import { createLogger } from "../log";
 import { KEY_OPTIONS } from "../rsa";
 import { tryParseUrl } from "../url";
@@ -40,9 +47,7 @@ export const registerUser = async (
 		);
 
 		Log.verbose(
-			`Generated keys for user '${user.name} in ${
-				Date.now() - start
-			}ms`,
+			`Generated keys for user '${user.name} in ${Date.now() - start}ms`,
 		);
 	});
 
@@ -76,22 +81,26 @@ export const batchGetUsers = async (users: ActorMention[]) => {
 };
 
 export const createUserForRemotePerson = async (lookup: string | APActor) => {
-	const domain = typeof lookup == "string" ? splitQualifiedMention(lookup).domain : new URL(lookup.id!).hostname;
+	const domain =
+		typeof lookup == "string"
+			? splitQualifiedMention(lookup).domain
+			: new URL(lookup.id!).hostname;
 
 	// If we were given a URL, this is probably a actor URL
 	// otherwise, treat it as a username@domain handle
-	const obj = typeof lookup == "string"
-		? tryParseUrl(lookup)
-			? await resolveAPObject(lookup)
-			: await resolveWebfinger(lookup)
-		: lookup;
+	const obj =
+		typeof lookup == "string"
+			? tryParseUrl(lookup)
+				? await resolveAPObject(lookup)
+				: await resolveWebfinger(lookup)
+			: lookup;
 
 	if (!APObjectIsActor(obj))
 		throw new APError("Resolved object is not Person");
 
 	if (!obj.publicKey?.publicKeyPem)
 		throw new APError(
-			"Resolved object is Person but does not contain public key"
+			"Resolved object is Person but does not contain public key",
 		);
 
 	if (!obj.id) throw new APError("Resolved object must have ID");
@@ -113,3 +122,20 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 	});
 };
 
+export const getOrFetchAttributedUser = async (
+	attributed: APNote["attributedTo"],
+) => {
+	if (!attributed)
+		throw new APError("Note must have attributedTo to assign author");
+	if (Array.isArray(attributed))
+		throw new APError(
+			"Cannot assign single author to this note with multiple attributedTo",
+		);
+
+	if (typeof attributed == "string") return await getOrFetchUser(attributed);
+
+	if (!APObjectIsActor(attributed))
+		throw new APError("note.attributedTo must be actor");
+
+	return await createUserForRemotePerson(attributed);
+};

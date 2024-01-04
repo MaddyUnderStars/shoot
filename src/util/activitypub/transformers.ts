@@ -7,10 +7,26 @@ import {
 } from "activitypub-types";
 import { DMChannel, User } from "../../entity";
 import { Channel } from "../../entity/channel";
-import type { Message } from "../../entity/message";
+import { Message } from "../../entity/message";
 import { config } from "../config";
+import { getOrFetchAttributedUser } from "../entity";
 import { createXsdDate } from "../misc";
 import { InstanceActor } from "./instanceActor";
+
+export const buildMessageFromAPNote = async (
+	note: APNote,
+	channel: Channel,
+): Promise<Message> => {
+	const author = await getOrFetchAttributedUser(note.attributedTo);
+	await author.save();
+
+	return Message.create({
+		author,
+		channel,
+
+		content: note.content,
+	});
+};
 
 export const buildAPNote = (message: Message): APNote => {
 	const id = `${config.federation.instance_url.origin}/message/${message.id}`;
