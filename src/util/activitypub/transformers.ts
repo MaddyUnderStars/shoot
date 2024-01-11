@@ -5,7 +5,7 @@ import {
 	APNote,
 	APPerson,
 } from "activitypub-types";
-import { DMChannel, User } from "../../entity";
+import { ApCache, DMChannel, User } from "../../entity";
 import { Channel } from "../../entity/channel";
 import { Message } from "../../entity/message";
 import { config } from "../config";
@@ -23,6 +23,7 @@ export const buildMessageFromAPNote = async (
 	return Message.create({
 		author,
 		channel,
+		reference_object: ApCache.create({ id: note.id, raw: note }),
 
 		content: note.content,
 	});
@@ -58,7 +59,7 @@ export const buildAPAnnounceNote = (
 	channel_id: string,
 ): APAnnounce => {
 	const actor = `${config.federation.instance_url.origin}/channel/${channel_id}`;
-	const to = "https://www.w3.org/ns/activitystreams#Public"; // TODO
+	const to = "https://www.w3.org/ns/activitystreams#Public"; // TODO: this should be channel_id followers
 
 	return {
 		to,

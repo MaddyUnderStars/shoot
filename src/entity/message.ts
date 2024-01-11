@@ -3,9 +3,11 @@ import {
 	CreateDateColumn,
 	Entity,
 	ManyToOne,
+	OneToOne,
 	UpdateDateColumn,
 } from "typeorm";
 import { AttributesOnly } from "../util";
+import { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
 import { Channel } from "./channel";
 import { User } from "./user";
@@ -31,6 +33,13 @@ export class Message extends BaseModel {
 	/** The channel this message is associated with */
 	@ManyToOne("channels")
 	channel: Channel;
+
+	/**
+	 * The reference object this message was created from.
+	 * Messages sent from here don't have this.
+	*/
+	@OneToOne("activitypub_objects", { nullable: true })
+	reference_object: ApCache | null;
 
 	public toPublic() {
 		return {

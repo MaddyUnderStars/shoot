@@ -2,6 +2,7 @@ import { hasAPContext } from "./util";
 
 import { AnyAPObject } from "activitypub-types";
 import { XMLParser } from "fast-xml-parser";
+import { ApCache } from "../../entity";
 import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { createLogger } from "../log";
 import { USER_AGENT } from "./constants";
@@ -13,10 +14,13 @@ import { splitQualifiedMention } from "./util";
 const Log = createLogger("ap:resolve");
 
 export const resolveAPObject = async <T extends AnyAPObject>(
-	data: string | T
+	data: string | T,
 ): Promise<T> => {
 	// we were already given an object
 	if (typeof data != "string") return data;
+
+	const cache = await ApCache.findOne({ where: { id: data }})
+	if (cache) return cache.raw as T;
 
 	Log.verbose(`Fetching from remote ${data}`);
 
@@ -27,23 +31,30 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	if (!res.ok)
 		throw new APError(
-			`Remote server sent code ${res.status} : ${res.statusText} : ${await res.text()}`
+			`Remote server sent code ${res.status} : ${
+				res.statusText
+			} : ${await res.text()}`,
 		);
 
 	const json = await res.json();
 
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
+	await ApCache.create({
+		id: json.id,
+		raw: json,
+	}).save();
+
 	return json as T;
 };
 
 export const doWebfingerOrFindTemplate = async (
-	lookup: string
+	lookup: string,
 ): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
 	const url = new URL(
-		`https://${domain}/.well-known/webfinger?resource=${lookup}`
+		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
 	);
 
 	const opts = {
@@ -59,7 +70,7 @@ export const doWebfingerOrFindTemplate = async (
 	if (res.ok) {
 		if (res.status == 404)
 			throw new APError(
-				`Remote server sent code ${res.status} : ${res.statusText}`
+				`Remote server sent code ${res.status} : ${res.statusText}`,
 			);
 		return await res.json();
 	}
@@ -77,21 +88,21 @@ export const doWebfingerOrFindTemplate = async (
 	const template = obj?.XRD?.Link?.["@_template"];
 	if (!template)
 		throw new APError(
-			"host-meta did not contain root->XRD->Link[template]"
+			"host-meta did not contain root->XRD->Link[template]",
 		);
 
 	res = await fetch(template.replace("{uri}", lookup), opts);
 
 	if (!res.ok)
 		throw new APError(
-			`Remote server sent code ${res.status} : ${res.statusText}`
+			`Remote server sent code ${res.status} : ${res.statusText}`,
 		);
 
 	return await res.json();
 };
 
 export const resolveWebfinger = async (
-	lookup: string
+	lookup: string,
 ): Promise<AnyAPObject> => {
 	Log.verbose(`Performing webfinger lookup ${lookup}`);
 
@@ -99,7 +110,7 @@ export const resolveWebfinger = async (
 
 	if (!("links" in wellknown))
 		throw new APError(
-			`webfinger did not return any links for actor ${lookup}`
+			`webfinger did not return any links for actor ${lookup}`,
 		);
 
 	const link = wellknown.links.find((x) => x.rel == "self");

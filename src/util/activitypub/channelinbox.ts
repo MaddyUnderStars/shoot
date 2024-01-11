@@ -1,14 +1,13 @@
 import { APActivity, ObjectIsNote } from "activitypub-types";
-import { Channel } from "../../entity";
-import { sendActivity } from "../../sender";
+import { ApCache, Channel } from "../../entity";
+import { handleMessage } from "../entity/message";
 import { APError } from "./error";
 import { resolveAPObject } from "./resolve";
-import { buildAPAnnounceNote, buildMessageFromAPNote } from "./transformers";
-import { addContext } from "./util";
+import { buildMessageFromAPNote } from "./transformers";
 
 /**
  * Valid activities to be received by channel inboxes:
- * - `Create<Note>`
+ * - `Create<Note>` - Sends Announce<Note> to followers
  * - `Accept<Follow>`
  * - `Reject<Follow>`
  * - `Undo<Follow>`
@@ -25,6 +24,11 @@ export const handleChannelInbox = async (
 	const handler = handlers[activity.type.toLowerCase()];
 	if (!handler)
 		throw new APError(`Activity of type ${activity.type} has no handler`);
+	
+	await ApCache.create({
+		id: activity.id,
+		raw: activity,
+	}).save();
 
 	await handler(activity, target);
 };
@@ -49,18 +53,6 @@ const handlers: {
 			throw new APError(`Cannot accept Create<${inner.type}>`);
 
 		const message = await buildMessageFromAPNote(inner, target);
-		await message.save();
-
-		// TODO: announce this message
-		// TODO: send this message to connected clients
-
-		setImmediate(async () => {
-			const announce = buildAPAnnounceNote(inner, target.id);
-			await sendActivity(
-				new URL(inner.attributedTo!.toString() + "/inbox"),
-				addContext(announce),
-				target,
-			);
-		});
+		await handleMessage(message);
 	},
 };

@@ -1,6 +1,7 @@
 import { APActivity } from "activitypub-types";
 import { Actor, Channel, User } from "../entity";
-import { APError, HttpSig, InstanceActor, createLogger } from "../util";
+import { APError, HttpSig, InstanceActor } from "../util";
+import { createLogger } from "../util/log";
 
 const Log = createLogger("ap:distribute");
 

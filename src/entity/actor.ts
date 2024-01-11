@@ -19,7 +19,7 @@ export abstract class Actor extends BaseModel {
 		outbox: string;
 		followers?: string;
 		following?: string;
-	};
+	} | null;
 
 	/**
 	 * The private key for this user, used to sign activities sent to external instances

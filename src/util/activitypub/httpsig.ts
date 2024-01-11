@@ -42,7 +42,10 @@ export class HttpSig {
 
 		const ONE_DAY = 24 * 60 * 60 * 1000;
 		const dateParsed = Date.parse(date).valueOf();
-		if (dateParsed > Date.now() + ONE_DAY || dateParsed < Date.now() - ONE_DAY)
+		if (
+			dateParsed > Date.now() + ONE_DAY ||
+			dateParsed < Date.now() - ONE_DAY
+		)
 			throw new APError("Signature was created gt/lt 1 day from now");
 
 		const sigopts: { [key: string]: string | undefined } = Object.assign(
@@ -63,10 +66,10 @@ export class HttpSig {
 		if (!signature || !headers || !keyId)
 			throw new APError("Invalid signature");
 
-		const ALLOWED_ALGO = "rsa-sha256";
+		const ALLOWED_ALGOS = ["rsa-sha256", "hs2019"];
 
 		// If it's provided, check it. otherwise just assume it's sha256
-		if (algorithm && algorithm != ALLOWED_ALGO)
+		if (algorithm && !ALLOWED_ALGOS.includes(algorithm))
 			throw new APError(`Unsupported encryption algorithm ${algorithm}`);
 
 		const url = new URL(keyId);
@@ -132,7 +135,7 @@ export class HttpSig {
 		);
 
 		const verifier = crypto.createVerify(
-			algorithm?.toUpperCase() || ALLOWED_ALGO,
+			algorithm?.toUpperCase() || ALLOWED_ALGOS[0],
 		);
 		verifier.write(expected);
 		verifier.end();

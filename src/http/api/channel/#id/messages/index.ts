@@ -1,19 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Message } from "../../../../../entity";
-import { DMChannel } from "../../../../../entity/DMChannel";
 import {
-	addContext,
-	config,
 	createLogger,
+	handleMessage,
 	route,
-	splitQualifiedMention,
+	splitQualifiedMention
 } from "../../../../../util";
-import { HttpSig } from "../../../../../util/activitypub/httpsig";
-import {
-	buildAPAnnounceNote,
-	buildAPNote,
-} from "../../../../../util/activitypub/transformers";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 
 const MessageCreate = z.object({
@@ -41,42 +34,7 @@ router.post(
 				author: req.user,
 			});
 
-			await message.save();
-
-			if (channel.domain == config.federation.webapp_url.hostname) {
-				// this is an internal message
-				// TODO: websocket gateway send to any online clients in this channel
-			} else if (config.federation.enabled) {
-				// todo: move
-				// send this activity to remote instances
-
-				const note = buildAPNote(message);
-				const announce = buildAPAnnounceNote(note, message.channel.id);
-				const withContext = addContext(announce);
-
-				// TODO: fix
-				let inbox: string;
-				if (channel instanceof DMChannel)
-					inbox = channel.recipients[0].collections.inbox;
-				else throw new Error("unimplemented");
-
-				const signed = HttpSig.sign(
-					inbox,
-					req.method,
-					channel,
-					`/channel/${channel.id}`,
-					withContext,
-				);
-
-				setImmediate(async () => {
-					const res = await fetch(inbox, signed);
-					if (!res.ok)
-						Log.error(
-							`Error sending message to ${inbox}`,
-							await res.text(),
-						);
-				});
-			}
+			await handleMessage(message);
 
 			return res.json(message.toPublic());
 		},
@@ -118,7 +76,7 @@ router.get(
 				loadRelationIds: true,
 			});
 
-			return res.json(messages.map(x => x.toPublic()));
+			return res.json(messages.map((x) => x.toPublic()));
 		},
 	),
 );
