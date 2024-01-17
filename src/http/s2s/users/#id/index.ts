@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { User } from "../../../../entity";
 import { addContext, config, route } from "../../../../util";
+import { handleInbox } from "../../../../util/activitypub/inbox";
 import { makeOrderedCollection } from "../../../../util/activitypub/orderedCollection";
 import { buildAPPerson } from "../../../../util/activitypub/transformers";
 
@@ -25,12 +26,15 @@ router.post(
 	route(
 		{
 			body: z.any(),
+			params: z.object({ user_id: z.string() }),
 		},
 		async (req, res) => {
-			console.log(req.body);
+			const target = await User.findOneOrFail({
+				where: { name: req.params.user_id },
+			});
 
-			// TODO
-			return res.sendStatus(200);
+			await handleInbox(req.body, target);
+			return res.status(200);
 		},
 	),
 );

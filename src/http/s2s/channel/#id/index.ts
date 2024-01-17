@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { Channel } from "../../../../entity/channel";
 import { addContext, config, getDatabase, route } from "../../../../util";
-import { handleChannelInbox } from "../../../../util/activitypub/channelinbox";
+import { handleInbox } from "../../../../util/activitypub/inbox";
 import { buildAPGroup } from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
@@ -49,7 +49,7 @@ router.post(
 				})
 				.getOneOrFail();
 
-			await handleChannelInbox(req.body, channel);
+			await handleInbox(req.body, channel);
 			return res.status(200);
 		},
 	),

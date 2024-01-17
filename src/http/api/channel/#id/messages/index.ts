@@ -2,7 +2,6 @@ import { Router } from "express";
 import { z } from "zod";
 import { Message } from "../../../../../entity";
 import {
-	createLogger,
 	handleMessage,
 	route,
 	splitQualifiedMention
@@ -14,8 +13,6 @@ const MessageCreate = z.object({
 });
 
 const router = Router({ mergeParams: true });
-
-const Log = createLogger("activitypub");
 
 // Create a message in a channel
 router.post(
