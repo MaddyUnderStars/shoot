@@ -15,7 +15,7 @@ const handleCli = async () => {
 	if (!cmd) {
 		Log.warn(
 			`Syntax: \`npm run cli -- [option]. Options:\n` +
-				`generate-keys - Generate signing keys for federation HTTP signatures\n` +
+				`generate-keys - Generate signing keys for federation HTTP signatures and user tokens\n` +
 				`add-user [username] [email?] - Register a new user`,
 		);
 		return;
@@ -53,6 +53,9 @@ const handlers = {
 						public_key: keys.publicKey,
 						private_key: keys.privateKey,
 					},
+					security: {
+						jwt_secret: crypto.randomBytes(256).toString("base64"),
+					}
 				},
 				null,
 				2,
