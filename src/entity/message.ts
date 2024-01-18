@@ -2,6 +2,7 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	JoinColumn,
 	ManyToOne,
 	OneToOne,
 	UpdateDateColumn,
@@ -39,6 +40,7 @@ export class Message extends BaseModel {
 	 * Messages sent from here don't have this.
 	*/
 	@OneToOne("activitypub_objects", { nullable: true })
+	@JoinColumn()
 	reference_object: ApCache | null;
 
 	public toPublic() {

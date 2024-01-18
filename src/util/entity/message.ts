@@ -14,7 +14,14 @@ import {
 export const handleMessage = async (message: Message) => {
 	// TODO: validation
 
-	await message.save();
+	if (
+		(await Message.count({
+			where: { reference_object: { id: message.reference_object!.id } },
+		})) != 0
+	)
+		throw new APError("Already processed", 200);
+
+	await Message.insert(message);
 
 	// TODO: gateway event send
 

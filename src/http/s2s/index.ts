@@ -5,6 +5,9 @@ const router = Router();
 
 router.use(verifyHttpSig);
 
+import inbox from "./inbox";
+router.use("/inbox", inbox);
+
 import users_id from "./users/#id";
 router.use("/users/:user_id", users_id);
 

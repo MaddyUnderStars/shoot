@@ -17,9 +17,15 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	data: string | T,
 ): Promise<T> => {
 	// we were already given an object
-	if (typeof data != "string") return data;
+	if (typeof data != "string") {
+		await ApCache.create({
+			id: data.id,
+			raw: data,
+		}).save();
+		return data;
+	}
 
-	const cache = await ApCache.findOne({ where: { id: data }})
+	const cache = await ApCache.findOne({ where: { id: data } });
 	if (cache) return cache.raw as T;
 
 	Log.verbose(`Fetching from remote ${data}`);

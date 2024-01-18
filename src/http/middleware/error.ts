@@ -1,15 +1,20 @@
 import { ErrorRequestHandler } from "express";
 import z from "zod";
-import { HttpError } from "../../util";
+import { HttpError, createLogger } from "../../util";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
+
+const Log = createLogger("HTTP")
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 	if (res.headersSent) return next(error);
 
 	let code = 400;
 	let message: string = error.message;
-	
+
+	// TODO: configure
+	Log.error(error);
+
 	switch (true) {
 		case error instanceof HttpError:
 			code = error.code

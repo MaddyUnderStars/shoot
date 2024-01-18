@@ -1,14 +1,22 @@
 import { Response, Router } from "express";
 import z from "zod";
-import { Channel, User } from "../../entity";
-import { HttpError, config, splitQualifiedMention } from "../../util";
-import { route } from "../../util/route";
+import { User } from "../../entity";
+import { getExternalPathFromActor } from "../../sender";
+import {
+	HttpError,
+	InstanceActor,
+	config,
+	findActorOfAnyType,
+	route,
+	splitQualifiedMention
+} from "../../util";
 
 const router = Router();
 
 const WebfingerRequest = z.object({ resource: z.string() });
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const uuid =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 router.get(
 	"/webfinger",
@@ -30,45 +38,27 @@ router.get(
 			)
 				throw new HttpError("Resource not found", 404);
 
-			const [user, channel] = await Promise.all([
-				User.findOne({
-					where: {
-						name: mention.user,
-						domain: config.federation.webapp_url.hostname,
-					},
-				}),
-				// todo: awful
-				uuid.test(mention.user) ? Channel.findOne({
-					where: {
-						id: mention.user,
-						domain: config.federation.webapp_url.hostname,
-					},
-				}) : null,
-			]);
-
-			const actor = user ?? channel;
+			const actor = await findActorOfAnyType(mention.user, config.federation.webapp_url.hostname);
 
 			if (!actor) throw new HttpError("Actor could not be found", 404);
-
-			// TODO: don't hardcode 'user' in the response
-			// TODO: check if guild/channel exists
 
 			res.setHeader(
 				"Content-Type",
 				"application/jrd+json; charset=utf-8",
 			);
 
-			const id = actor instanceof User ? actor.name : actor.id;
-			const path = actor instanceof User ? "/users/" : "/channel/";
+			// this is really, really gross. TODO: fix
+			const id = (actor instanceof User || actor.id == InstanceActor.id) ? actor.name : actor.id;
+			const path = getExternalPathFromActor(actor);
 
 			return res.json({
 				subject: `acct:${id}@${actor.domain}`,
-				aliases: [`${webapp_url.origin}${path}${actor.name}`],
+				aliases: [`${webapp_url.origin}${path}`],
 				links: [
 					{
 						rel: "self",
 						type: "application/activity+json",
-						href: `${instance_url.origin}${path}${id}`,
+						href: `${instance_url.origin}${path}`,
 					},
 				],
 			});
