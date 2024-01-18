@@ -1,4 +1,4 @@
-import { APReject } from "activitypub-types";
+import { APAccept } from "activitypub-types";
 import { ActivityHandler } from ".";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
@@ -20,8 +20,8 @@ export const FollowActivityHandler: ActivityHandler = async (
 
 	// TODO
 
-	const accept: APReject = addContext({
-		type: "Reject",
+	const accept: APAccept = addContext({
+		type: "Accept",
 		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
 		object: activity,
 	})

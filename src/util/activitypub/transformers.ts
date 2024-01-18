@@ -59,11 +59,14 @@ export const buildAPAnnounceNote = (
 	channel_id: string,
 ): APAnnounce => {
 	const actor = `${config.federation.instance_url.origin}/channel/${channel_id}`;
-	const to = "https://www.w3.org/ns/activitystreams#Public"; // TODO: this should be channel_id followers
+	// TODO: this should be channel_id followers
+	const to = ["https://www.w3.org/ns/activitystreams#Public"];
 
 	return {
 		to,
 		actor,
+
+		cc: [ `${actor}/followers` ],
 
 		id: `${actor}/message/${inner.id?.split("/").reverse()[0]}`, // TODO
 		type: "Announce",

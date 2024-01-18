@@ -15,8 +15,9 @@ export const handleMessage = async (message: Message) => {
 	// TODO: validation
 
 	if (
+		message.reference_object &&
 		(await Message.count({
-			where: { reference_object: { id: message.reference_object!.id } },
+			where: { reference_object: { id: message.reference_object.id } },
 		})) != 0
 	)
 		throw new APError("Already processed", 200);
@@ -25,13 +26,11 @@ export const handleMessage = async (message: Message) => {
 
 	// TODO: gateway event send
 
-	if (
-		!message.reference_object ||
-		!ObjectIsNote(message.reference_object.raw)
-	)
-		throw new APError(`e`); // TODO
+	let note;
+	if (message.reference_object && ObjectIsNote(message.reference_object.raw))
+		note = message.reference_object.raw;
+	else note = buildAPNote(message);
 
-	const note = message.reference_object.raw ?? buildAPNote(message);
 	const announce = buildAPAnnounceNote(note, message.channel.id);
 	const withContext = addContext(announce);
 
