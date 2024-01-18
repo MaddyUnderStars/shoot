@@ -14,6 +14,9 @@ router.use("/users/:user_id", users_id);
 import channel_id from "./channel/#id";
 router.use("/channel/:channel_id", channel_id);
 
+import channel_id_message_id from "./channel/#id/message/#id";
+router.use("/channel/:channel_id/message/:message_id", channel_id_message_id);
+
 import actor from "./actor";
 router.use("/actor", actor);
 

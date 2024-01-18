@@ -30,14 +30,14 @@ export const buildMessageFromAPNote = async (
 };
 
 export const buildAPNote = (message: Message): APNote => {
-	const id = `${config.federation.instance_url.origin}/message/${message.id}`;
+	const id = `${config.federation.instance_url.origin}/channel/${message.channel.id}/message/${message.id}`;
 	const attributedTo = `${config.federation.instance_url.origin}/user/${message.author.id}`;
 	const to = `${config.federation.instance_url.origin}/channel/${message.channel.id}`;
 
 	return {
 		id,
 		attributedTo,
-		to,
+		to: ["https://www.w3.org/ns/activitystreams#Public", to],
 
 		type: "Note",
 		content: message.content,
@@ -66,7 +66,7 @@ export const buildAPAnnounceNote = (
 		to,
 		actor,
 
-		cc: [ `${actor}/followers` ],
+		cc: [`${actor}/followers`],
 
 		id: `${actor}/message/${inner.id?.split("/").reverse()[0]}`, // TODO
 		type: "Announce",

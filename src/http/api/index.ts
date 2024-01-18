@@ -1,6 +1,9 @@
 import { Router } from "express";
+import { authHandler } from "../middleware";
 
 const router = Router();
+
+router.use(authHandler);
 
 import auth_login from "./auth/login";
 import auth_register from "./auth/register";

@@ -8,8 +8,6 @@ const router = Router();
 
 // Mount the s2s API on / based on the Accept header
 router.use("/", (req, res, next) => {
-	const header = req.headers.accept;
-
 	res.setHeader("Content-Type", "application/activity+json; charset=utf-8");
 
 	if (

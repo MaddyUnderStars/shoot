@@ -1,9 +1,9 @@
 import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
-
 import morgan from "morgan";
-import { authHandler, errorHandler, routes } from "./http";
+
+import { errorHandler, routes } from "./http";
 import { config, createLogger, initDatabase } from "./util";
 
 const Log = createLogger("server");
@@ -36,8 +36,6 @@ export class ChatServer {
 					},
 				}),
 			);
-
-		this.app.use(authHandler);
 
 		this.app.use("/", routes);
 
