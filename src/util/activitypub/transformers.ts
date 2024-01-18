@@ -116,7 +116,7 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 
 	const owner =
 		channel instanceof DMChannel
-			? `${instance_url.origin}/users/${channel.recipients[0].name}`
+			? `${instance_url.origin}/users/${channel.owner.name}`
 			: undefined;
 
 	return {
