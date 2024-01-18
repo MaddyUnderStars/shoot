@@ -1,8 +1,4 @@
 import bcrypt from "bcrypt";
-import crypto from "crypto";
-import { promisify } from "util";
-const generateKeyPair = promisify(crypto.generateKeyPair);
-
 import { User } from "../../entity";
 import { config } from "../config";
 
@@ -16,8 +12,8 @@ import {
 	splitQualifiedMention,
 } from "../activitypub";
 import { createLogger } from "../log";
-import { KEY_OPTIONS } from "../rsa";
 import { tryParseUrl } from "../url";
+import { generateSigningKeys } from "./actor";
 
 const Log = createLogger("users");
 
@@ -25,6 +21,7 @@ export const registerUser = async (
 	username: string,
 	password: string,
 	email?: string,
+	awaitKeyGeneration = false
 ) => {
 	const user = await User.create({
 		name: username,
@@ -37,19 +34,8 @@ export const registerUser = async (
 		domain: config.federation.webapp_url.hostname,
 	}).save();
 
-	setImmediate(async () => {
-		const start = Date.now();
-		const keys = await generateKeyPair("rsa", KEY_OPTIONS);
-
-		await User.update(
-			{ id: user.id },
-			{ public_key: keys.publicKey, private_key: keys.privateKey },
-		);
-
-		Log.verbose(
-			`Generated keys for user '${user.name} in ${Date.now() - start}ms`,
-		);
-	});
+	if (awaitKeyGeneration) await generateSigningKeys(user);
+	else setImmediate(() => generateSigningKeys(user));
 
 	Log.verbose(`User '${user.name}' registered`);
 	return user;

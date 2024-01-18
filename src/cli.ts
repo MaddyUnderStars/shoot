@@ -73,11 +73,16 @@ const handlers = {
 
 		const password = generatePassword();
 
+		if (!username) {
+			Log.error("Must specify username");
+			return;
+		}
+
 		const handle = `${username}@${config.federation.webapp_url.hostname}`;
 
 		await initDatabase();
 		try {
-			await registerUser(username, password, email);
+			await registerUser(username, password, email, true);
 		} catch (e) {
 			Log.error(
 				`Could not register user ${handle},`,
@@ -88,8 +93,9 @@ const handlers = {
 		}
 
 		Log.msg(
-			`Registered user '${handle}' with password '${password}'. Please wait for key generation.`,
+			`Registered user '${handle}' with password '${password}'`,
 		);
+		await closeDatabase();
 	},
 } as { [key: string]: Function };
 

@@ -10,8 +10,8 @@ import { APError, resolveAPObject, resolveWebfinger, splitQualifiedMention } fro
 import { config } from "../config";
 import { getDatabase } from "../database";
 import { createLogger } from "../log";
-import { KEY_OPTIONS } from "../rsa";
 import { tryParseUrl } from "../url";
+import { generateSigningKeys } from "./actor";
 import { getOrFetchUser } from "./user";
 
 const Log = createLogger("channels");
@@ -30,21 +30,7 @@ export const createDmChannel = async (
 
 	await channel.save();
 
-	setImmediate(async () => {
-		const start = Date.now();
-		const keys = await generateKeyPair("rsa", KEY_OPTIONS);
-
-		await Channel.update(
-			{ id: channel.id },
-			{ public_key: keys.publicKey, private_key: keys.privateKey },
-		);
-
-		Log.verbose(
-			`Generated keys for channel '${channel.name} in ${
-				Date.now() - start
-			}ms`,
-		);
-	});
+	setImmediate(() => generateSigningKeys(channel));
 
 	// federate dm channel creation
 
