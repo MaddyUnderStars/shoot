@@ -5,6 +5,9 @@ const router = Router();
 
 router.use(authHandler);
 
+import nodeInfo from "./node-info";
+router.use("/node-info/2.0", nodeInfo)
+
 import auth_login from "./auth/login";
 import auth_register from "./auth/register";
 router.use("/auth", auth_register, auth_login);
