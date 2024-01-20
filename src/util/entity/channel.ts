@@ -6,15 +6,17 @@ import { APActor, ObjectIsGroup } from "activitypub-types";
 import { User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
-import { APError, resolveAPObject, resolveWebfinger, splitQualifiedMention } from "../activitypub";
+import {
+	APError,
+	resolveAPObject,
+	resolveWebfinger,
+	splitQualifiedMention,
+} from "../activitypub";
 import { config } from "../config";
 import { getDatabase } from "../database";
-import { createLogger } from "../log";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 import { getOrFetchUser } from "./user";
-
-const Log = createLogger("channels");
 
 export const createDmChannel = async (
 	name: string,
@@ -46,8 +48,13 @@ export const getOrFetchChannel = async (channel_id: string) => {
 		.select("channels")
 		.leftJoinAndSelect("channels.recipients", "recipients")
 		.leftJoinAndSelect("channels.owner", "owner")
-		.where("channels.id = :id", { id: mention.user })
-		.andWhere("channels.domain = :domain", { domain: mention.domain })
+		.where((qb) => {
+			qb.where("channels.id = :id", { id: mention.user }).andWhere(
+				"channels.domain = :domain",
+				{ domain: mention.domain },
+			);
+		})
+		.orWhere("channels.remote_address = :lookup", { lookup: channel_id })
 		.getOne();
 
 	if (!channel && config.federation.enabled) {
@@ -60,24 +67,30 @@ export const getOrFetchChannel = async (channel_id: string) => {
 };
 
 export const createChannelFromRemoteGroup = async (
-	lookup: string | APActor
+	lookup: string | APActor,
 ) => {
-	const obj = typeof lookup == "string"
-		? tryParseUrl(lookup)
-			? await resolveAPObject(lookup)
-			: await resolveWebfinger(lookup)
-		: lookup;
+	const domain =
+		typeof lookup == "string"
+			? splitQualifiedMention(lookup).domain
+			: new URL(lookup.id!).hostname;
+
+	const obj =
+		typeof lookup == "string"
+			? tryParseUrl(lookup)
+				? await resolveAPObject(lookup)
+				: await resolveWebfinger(lookup)
+			: lookup;
 
 	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
 
 	if (!obj.publicKey?.publicKeyPem)
 		throw new APError(
-			"Resolved object is Group but does not contain public key"
+			"Resolved object is Group but does not contain public key",
 		);
 
 	if (!obj.attributedTo || typeof obj.attributedTo != "string")
 		throw new APError(
-			"Resolved group doesn't have attributedTo, we don't know what owns it"
+			"Resolved group doesn't have attributedTo, we don't know what owns it",
 		);
 
 	let channel: Channel;
@@ -85,6 +98,8 @@ export const createChannelFromRemoteGroup = async (
 	switch ("dm") {
 		case "dm":
 			channel = DMChannel.create({
+				domain,
+
 				name: obj.name,
 				owner: await getOrFetchUser(obj.attributedTo),
 				recipients: [],
