@@ -21,7 +21,7 @@ const DATASOURCE_OPTIONS = new DataSource({
 	entities: [path.join(__dirname, "..", "entity", "*.js")],
 	supportBigNumbers: true,
 	bigNumberStrings: false,
-	synchronize: true, // TODO
+	synchronize: false, // TODO
 	logging: config.database.log,
 });
 
@@ -32,7 +32,12 @@ export const initDatabase = async () => {
 
 	Log.msg(`Connecting to ${CONNECTION_TYPE}`);
 
-	connection = await DATASOURCE_OPTIONS.initialize();
+	try {
+		connection = await DATASOURCE_OPTIONS.initialize();
+	} catch (e) {
+		Log.error(e instanceof Error ? e.message : e);
+		process.exit();
+	}
 	await doFirstSync();
 
 	Log.msg(`Connected`);

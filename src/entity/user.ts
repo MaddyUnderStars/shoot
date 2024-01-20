@@ -1,13 +1,10 @@
-import type { APActor } from "activitypub-types";
 import { Column, CreateDateColumn, Entity, Index } from "typeorm";
-import { config } from "../util";
-import { InstanceActor } from "../util/activitypub/instanceActor";
 import { Actor } from "./actor";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
 export class User extends Actor {
-	@CreateDateColumn()
+	@CreateDateColumn() // TODO: this is wrong for federated users
 	registered_date: Date;
 
 	/**
@@ -38,19 +35,11 @@ export class User extends Actor {
 	email: string | null;
 
 	public toPublic = (): PublicUser => {
-		const id =
-			this.id == InstanceActor.id ? `/actor` : `/users/${this.name}`;
-
 		return {
 			name: this.name,
 			display_name: this.display_name,
 			domain: this.domain,
 			summary: this.summary,
-			publicKey: {
-				id: `${config.federation.instance_url.origin}${id}`,
-				owner: `${config.federation.webapp_url.origin}${id}`,
-				publicKeyPem: this.public_key,
-			},
 		};
 	};
 
@@ -66,7 +55,5 @@ export class User extends Actor {
 export type PublicUser = Pick<
 	User,
 	"name" | "summary" | "display_name" | "domain"
-> & {
-	publicKey?: APActor["publicKey"]
-};
+>;
 export type PrivateUser = PublicUser & Pick<User, "email">;

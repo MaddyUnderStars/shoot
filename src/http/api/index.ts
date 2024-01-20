@@ -3,10 +3,11 @@ import { authHandler } from "../middleware";
 
 const router = Router();
 
-router.use(authHandler);
-
+// BEFORE auth handler
 import nodeInfo from "./nodeinfo";
 router.use("/nodeinfo/2.0", nodeInfo)
+
+router.use(authHandler);
 
 import auth_login from "./auth/login";
 import auth_register from "./auth/register";

@@ -98,8 +98,11 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 		domain,
 
 		remote_address: obj.id,
+
 		name: obj.preferredUsername || obj.id,
 		display_name: obj.name || obj.preferredUsername,
+		summary: obj.summary,
+
 		public_key: obj.publicKey.publicKeyPem,
 
 		collections: {

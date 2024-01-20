@@ -31,7 +31,7 @@ router.post(
 
 			// TODO: federate channel creation
 			// Probably create it locally and then send a Follow to recipient
-			// Once we receive an Accpt, they'll be properly added to the dm
+			// Once we receive an Accept, they'll be properly added to the dm
 
 			return res.json(channel.toPublic());
 		},
