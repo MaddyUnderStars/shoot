@@ -6,12 +6,16 @@ import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
 import { buildMessageFromAPNote } from "../../transformers";
 
+/**
+ * External users Create<Note> at a channel
+ * the channel Announces that note and sends to channel members
+ */
 export const CreateActivityHandler: ActivityHandler = async (
 	activity,
 	target,
 ) => {
 	if (!(target instanceof Channel))
-		throw new APError("Cannot Create<Note> to target other than channel"); // TODO
+		throw new APError("Cannot Create to target other than Channel"); // TODO
 
 	if (!activity.object)
 		throw new APError(

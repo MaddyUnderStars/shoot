@@ -10,8 +10,9 @@ import {
 
 /**
  * Handle a new message by validating it, sending gateway event, and sending an Announce
+ * If federate = false then only save and distribute to our clients
  */
-export const handleMessage = async (message: Message) => {
+export const handleMessage = async (message: Message, federate = true) => {
 	// TODO: validation
 
 	if (
@@ -45,5 +46,5 @@ export const handleMessage = async (message: Message) => {
 
 	if (!recipients.length) return;
 
-	await sendActivity(recipients, withContext, message.channel);
+	if (federate) await sendActivity(recipients, withContext, message.channel);
 };

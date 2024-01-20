@@ -1,5 +1,6 @@
 import { APActivity } from "activitypub-types";
 import { Actor } from "../../../../entity";
+import { AnnounceActivityHandler } from "./announce";
 import { CreateActivityHandler } from "./create";
 import { FollowActivityHandler } from "./follow";
 import { UndoActivityHandler } from "./undo";
@@ -11,6 +12,7 @@ export type ActivityHandler = (
 
 export const ActivityHandlers: { [key: Lowercase<string>]: ActivityHandler } = {
 	create: CreateActivityHandler,
+	announce: AnnounceActivityHandler,
 	follow: FollowActivityHandler,
 	undo: UndoActivityHandler,
 };

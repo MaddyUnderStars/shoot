@@ -8,6 +8,7 @@ import {
 import { ApCache, DMChannel, User } from "../../entity";
 import { Channel } from "../../entity/channel";
 import { Message } from "../../entity/message";
+import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
 import { getOrFetchAttributedUser } from "../entity";
 import { createXsdDate } from "../misc";
@@ -31,8 +32,8 @@ export const buildMessageFromAPNote = async (
 
 export const buildAPNote = (message: Message): APNote => {
 	const id = `${config.federation.instance_url.origin}/channel/${message.channel.id}/message/${message.id}`;
-	const attributedTo = `${config.federation.instance_url.origin}/user/${message.author.id}`;
-	const to = `${config.federation.instance_url.origin}/channel/${message.channel.id}`;
+	const attributedTo = `${config.federation.instance_url.origin}${getExternalPathFromActor(message.author)}`;
+	const to = `${config.federation.instance_url.origin}${getExternalPathFromActor(message.channel)}`;
 
 	return {
 		id,
@@ -60,13 +61,11 @@ export const buildAPAnnounceNote = (
 ): APAnnounce => {
 	const actor = `${config.federation.instance_url.origin}/channel/${channel_id}`;
 	// TODO: this should be channel_id followers
-	const to = ["https://www.w3.org/ns/activitystreams#Public"];
 
 	return {
-		to,
 		actor,
 
-		cc: [`${actor}/followers`],
+		to: [`${actor}/followers`],
 
 		id: `${actor}/message/${inner.id?.split("/").reverse()[0]}`, // TODO
 		type: "Announce",

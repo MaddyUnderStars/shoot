@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { User } from "../../entity";
 import { config } from "../config";
 
-import { APActor, APNote } from "activitypub-types";
+import { APActor, APNote, ObjectIsGroup } from "activitypub-types";
 import {
 	APError,
 	APObjectIsActor,
@@ -83,6 +83,9 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 
 	if (!APObjectIsActor(obj))
 		throw new APError("Resolved object is not Person");
+
+	if (ObjectIsGroup(obj))
+		throw new APError("Refusing to treat Group as Person");
 
 	if (!obj.publicKey?.publicKeyPem)
 		throw new APError(

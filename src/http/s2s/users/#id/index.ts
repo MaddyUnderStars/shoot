@@ -34,7 +34,7 @@ router.post(
 			});
 
 			await handleInbox(req.body, target);
-			return res.status(200);
+			return res.sendStatus(200);
 		},
 	),
 );
