@@ -1,3 +1,12 @@
+# How we implement federation
+
+some notes cause I'm thinking
+
+guilds are follow channels
+channels are follow and are followed by users
+users Create<Note> at channels
+channels Announce<Note> to it's followers
+
 # Helpful Activitypub Resources
 
 ## Activitypub Specification
