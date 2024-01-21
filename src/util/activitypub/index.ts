@@ -6,4 +6,3 @@ export * from "./orderedCollection";
 export * from "./resolve";
 export * from "./transformers";
 export * from "./util";
-

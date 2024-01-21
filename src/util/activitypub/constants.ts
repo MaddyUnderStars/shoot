@@ -1,4 +1,3 @@
-
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 
 export const ACTIVITY_JSON_ACCEPT = [

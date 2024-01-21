@@ -96,7 +96,7 @@ router.get(
 									relations: {
 										author: true,
 										channel: true,
-									}
+									},
 								})
 							).map((msg) => buildAPNote(msg));
 						},

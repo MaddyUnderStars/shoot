@@ -5,7 +5,7 @@ const router = Router();
 
 // BEFORE auth handler
 import nodeInfo from "./nodeinfo";
-router.use("/nodeinfo/2.0", nodeInfo)
+router.use("/nodeinfo/2.0", nodeInfo);
 
 router.use(authHandler);
 
@@ -26,6 +26,9 @@ import channels_id_messages from "./channel/#id/messages";
 router.use("/channel/:channel_id/messages", channels_id_messages);
 
 import channels_id_messages_id from "./channel/#id/messages/#id";
-router.use("/channel/:channel_id/messages/:message_id", channels_id_messages_id);
+router.use(
+	"/channel/:channel_id/messages/:message_id",
+	channels_id_messages_id,
+);
 
 export default router;

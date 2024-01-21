@@ -31,13 +31,13 @@ export const AnnounceActivityHandler: ActivityHandler = async (
 		throw new APError(`Cannot accept Announce<${inner.type}>`);
 
 	if (!activity.actor)
-			throw new APError("Cannot accept Announce without `actor`.");
+		throw new APError("Cannot accept Announce without `actor`.");
 
 	if (Array.isArray(activity.actor))
 		throw new APError("Cannot accept Announce with multiple `actor`s");
 
 	if (typeof activity.actor != "string")
-			throw new APError("Cannot accept Announce with non-string actor");
+		throw new APError("Cannot accept Announce with non-string actor");
 
 	const channel = await getOrFetchChannel(activity.actor);
 

@@ -73,7 +73,10 @@ const config = Object.freeze({
 					nodeConfig.get<string>("federation.instance_url"),
 				),
 
-				require_http_signatures: ifExistsGet<boolean>("federation.require_http_signatures") ?? false,
+				require_http_signatures:
+					ifExistsGet<boolean>(
+						"federation.require_http_signatures",
+					) ?? false,
 
 				/**
 				 * The public and private keys of the instance actor (/actor)
@@ -81,7 +84,7 @@ const config = Object.freeze({
 				 */
 				public_key: nodeConfig.get<string>("federation.public_key"),
 				private_key: nodeConfig.get<string>("federation.private_key"),
-		  }
+			}
 		: {
 				enabled: false,
 				webapp_url: LOCALHOST_URL,
@@ -89,7 +92,7 @@ const config = Object.freeze({
 				require_http_signatures: false,
 				public_key: "",
 				private_key: "",
-		  },
+			},
 
 	registration: ifExistsGet<boolean>("registration.enabled")
 		? {
@@ -98,7 +101,7 @@ const config = Object.freeze({
 				 * The CLI can still be used to create users using admin opereations.
 				 */
 				enabled: true,
-		  }
+			}
 		: { enabled: false },
 });
 

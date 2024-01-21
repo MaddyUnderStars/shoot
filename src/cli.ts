@@ -55,7 +55,7 @@ const handlers = {
 					},
 					security: {
 						jwt_secret: crypto.randomBytes(256).toString("base64"),
-					}
+					},
 				},
 				null,
 				2,
@@ -95,9 +95,7 @@ const handlers = {
 			return;
 		}
 
-		Log.msg(
-			`Registered user '${handle}' with password '${password}'`,
-		);
+		Log.msg(`Registered user '${handle}' with password '${password}'`);
 		await closeDatabase();
 	},
 } as { [key: string]: Function };

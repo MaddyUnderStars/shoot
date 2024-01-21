@@ -21,7 +21,7 @@ export const registerUser = async (
 	username: string,
 	password: string,
 	email?: string,
-	awaitKeyGeneration = false
+	awaitKeyGeneration = false,
 ) => {
 	const user = await User.create({
 		name: username,

@@ -24,7 +24,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 		type: "Accept",
 		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
 		object: activity,
-	})
+	});
 
 	await sendActivity(new URL(actor.collections.inbox), accept, target);
 };

@@ -27,7 +27,9 @@ router.post(
 
 			// TODO: find existing dm channel
 
-			const channel = await createDmChannel(req.body.name, owner, [recipient]);
+			const channel = await createDmChannel(req.body.name, owner, [
+				recipient,
+			]);
 
 			// TODO: federate channel creation
 			// Probably create it locally and then send a Follow to recipient

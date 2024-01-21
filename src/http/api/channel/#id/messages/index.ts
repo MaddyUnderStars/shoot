@@ -4,7 +4,7 @@ import { Message } from "../../../../../entity";
 import {
 	handleMessage,
 	route,
-	splitQualifiedMention
+	splitQualifiedMention,
 } from "../../../../../util";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 

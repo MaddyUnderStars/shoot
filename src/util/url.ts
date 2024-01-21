@@ -1,8 +1,7 @@
 export const tryParseUrl = (input: any) => {
 	try {
 		return new URL(input);
-	}
-	catch (e) {
+	} catch (e) {
 		return null;
 	}
-}
+};

@@ -38,7 +38,7 @@ export class Message extends BaseModel {
 	/**
 	 * The reference object this message was created from.
 	 * Messages sent from here don't have this.
-	*/
+	 */
 	@OneToOne("activitypub_objects", { nullable: true })
 	@JoinColumn()
 	reference_object: ApCache | null;
@@ -52,8 +52,12 @@ export class Message extends BaseModel {
 
 			// this sillyness is because typeorm's loadRelationIds: true doesn't map them into objects,
 			// but into strings. silly
-			author_id: typeof this.author == "string" ? this.author : this.author.id,
-			channel_id: typeof this.channel == "string" ? this.channel : this.channel.id,
+			author_id:
+				typeof this.author == "string" ? this.author : this.author.id,
+			channel_id:
+				typeof this.channel == "string"
+					? this.channel
+					: this.channel.id,
 		} as PublicMessage;
 	}
 

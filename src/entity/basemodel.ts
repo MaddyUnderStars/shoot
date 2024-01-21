@@ -2,7 +2,7 @@ import merge from "ts-deepmerge";
 import { BaseEntity, PrimaryGeneratedColumn } from "typeorm";
 
 export abstract class BaseModel extends BaseEntity {
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryGeneratedColumn("uuid")
 	id: string;
 
 	/** Get a public representation of this entity, to be sent to clients. */

@@ -12,8 +12,8 @@ router.use("/", (req, res, next) => {
 
 	if (
 		ACTIVITY_JSON_ACCEPT.some((v) => req.headers.accept?.includes(v)) ||
-		ACTIVITY_JSON_ACCEPT.some(
-			(v) => req.headers["content-type"]?.includes(v),
+		ACTIVITY_JSON_ACCEPT.some((v) =>
+			req.headers["content-type"]?.includes(v),
 		)
 	) {
 		return s2s(req, res, next);

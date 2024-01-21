@@ -24,7 +24,11 @@ export const sendActivity = async (
 		);
 
 		const res = await fetch(target, signed);
-		if (res.status != 202) Log.verbose(`Sent activity ${activity.id} got response`, await res.text());
+		if (res.status != 202)
+			Log.verbose(
+				`Sent activity ${activity.id} got response`,
+				await res.text(),
+			);
 		if (!res.ok)
 			Log.error(
 				`Sending activity to ${target} failed : ${res.status} ${res.statusText}`,

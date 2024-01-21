@@ -1,7 +1,7 @@
 export const createLogger = (context: string) => {
 	context = context.toUpperCase();
 	const doLog = (level: "error" | "warn" | "log", ...args: unknown[]) => {
-		console[level](`[${context} ${(new Date()).toISOString()}]`, ...args);
+		console[level](`[${context} ${new Date().toISOString()}]`, ...args);
 		return args.join(" ");
 	};
 

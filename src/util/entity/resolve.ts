@@ -22,7 +22,7 @@ export const findActorOfAnyType = async (id: string, domain: string) => {
 						id,
 						domain,
 					},
-			  })
+				})
 			: null,
 	]);
 

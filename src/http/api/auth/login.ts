@@ -20,7 +20,10 @@ router.post(
 		const { username, password } = req.body;
 
 		const user = await User.findOneOrFail({
-			where: { name: username, domain: config.federation.webapp_url.hostname },
+			where: {
+				name: username,
+				domain: config.federation.webapp_url.hostname,
+			},
 		}).catch(() => {
 			// Throw the same error, to prevent knowing accounts exists
 			throw new HttpError(INVALID_LOGIN, 401);

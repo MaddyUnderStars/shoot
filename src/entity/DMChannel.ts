@@ -1,4 +1,10 @@
-import { ChildEntity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import {
+	ChildEntity,
+	JoinColumn,
+	JoinTable,
+	ManyToMany,
+	ManyToOne,
+} from "typeorm";
 import { Channel } from "./channel";
 import { User } from "./user";
 

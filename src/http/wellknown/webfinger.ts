@@ -8,7 +8,7 @@ import {
 	config,
 	findActorOfAnyType,
 	route,
-	splitQualifiedMention
+	splitQualifiedMention,
 } from "../../util";
 
 const router = Router();
@@ -38,7 +38,10 @@ router.get(
 			)
 				throw new HttpError("Resource not found", 404);
 
-			const actor = await findActorOfAnyType(mention.user, config.federation.webapp_url.hostname);
+			const actor = await findActorOfAnyType(
+				mention.user,
+				config.federation.webapp_url.hostname,
+			);
 
 			if (!actor) throw new HttpError("Actor could not be found", 404);
 
@@ -48,7 +51,10 @@ router.get(
 			);
 
 			// this is really, really gross. TODO: fix
-			const id = (actor instanceof User || actor.id == InstanceActor.id) ? actor.name : actor.id;
+			const id =
+				actor instanceof User || actor.id == InstanceActor.id
+					? actor.name
+					: actor.id;
 			const path = getExternalPathFromActor(actor);
 
 			return res.json({

@@ -1,6 +1,15 @@
 import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
 
-import { APActivity, APActor, APObject, AnyAPObject, ContextField, ObjectIsApplication, ObjectIsGroup, ObjectIsPerson } from "activitypub-types";
+import {
+	APActivity,
+	APActor,
+	APObject,
+	AnyAPObject,
+	ContextField,
+	ObjectIsApplication,
+	ObjectIsGroup,
+	ObjectIsPerson,
+} from "activitypub-types";
 
 export const splitQualifiedMention = (lookup: string) => {
 	let domain: string, user: string;
@@ -36,8 +45,8 @@ export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
 };
 
 export const addContext = <T extends AnyAPObject | APActivity>(
-	obj: T
-): T & { "@context": ContextField[]; } => {
+	obj: T,
+): T & { "@context": ContextField[] } => {
 	return {
 		"@context": [
 			"https://www.w3.org/ns/activitystreams",
