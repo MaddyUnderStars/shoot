@@ -6,7 +6,8 @@
 	"scripts": {
 		"start": "node dist/bootstrap.js",
 		"cli": "node dist/cli.js",
-		"build": "tsc"
+		"build": "tsc",
+		"prepare": "husky install"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
@@ -17,7 +18,9 @@
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/morgan": "^1.9.9",
 		"@types/node": "^20.10.4",
-		"prettier": "^3.1.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.2.0",
+		"prettier": "^3.2.4",
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
@@ -35,5 +38,8 @@
 		"typeorm": "^0.3.17",
 		"zod": "^3.22.4",
 		"zod-express-middleware": "^1.4.0"
+	},
+	"lint-staged": {
+		"*.{ts,js,md}": "prettier --write"
 	}
 }
