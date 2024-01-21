@@ -1,15 +1,20 @@
 import { Router } from "express";
 import { z } from "zod";
-import { User } from "../../../../entity";
+import { PrivateUser, User } from "../../../../entity";
 import { route } from "../../../../util";
 
 const router = Router({ mergeParams: true });
 
 router.get(
 	"/",
-	route({}, async (req, res) => {
-		return res.json(req.user.toPrivate());
-	}),
+	route(
+		{
+			response: PrivateUser,
+		},
+		async (req, res) => {
+			return res.json(req.user.toPrivate());
+		},
+	),
 );
 
 const UserModifySchema: z.ZodSchema<Partial<User>> = z

@@ -7,6 +7,7 @@ import {
 	OneToOne,
 	UpdateDateColumn,
 } from "typeorm";
+import { z } from "zod";
 import { AttributesOnly } from "../util";
 import { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
@@ -66,10 +67,21 @@ export class Message extends BaseModel {
 	}
 }
 
-export type PublicMessage = Omit<
+export type PublicMessage = Pick<
 	AttributesOnly<Message>,
-	"author" | "channel"
+	"id" | "content" | "published" | "updated"
 > & {
 	author_id: string;
 	channel_id: string;
 };
+
+export const PublicMessage: z.ZodType<PublicMessage> = z
+	.object({
+		id: z.string(),
+		content: z.string(),
+		published: z.date(),
+		updated: z.date(),
+		author_id: z.string(),
+		channel_id: z.string(),
+	})
+	.openapi("PublicMessage");

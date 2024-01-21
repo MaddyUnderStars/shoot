@@ -1,4 +1,4 @@
-import { Response, Router } from "express";
+import { Router } from "express";
 import z from "zod";
 import {
 	HttpError,
@@ -16,11 +16,15 @@ const RegisterRequest = z.object({
 	email: z.string().optional(),
 });
 
+const RegisterResponse = z.object({
+	token: z.string(),
+});
+
 router.post(
 	"/register",
 	route(
-		{ body: RegisterRequest },
-		async (req, res: Response<RegisterResponse>) => {
+		{ body: RegisterRequest, response: RegisterResponse },
+		async (req, res) => {
 			if (!config.registration.enabled)
 				throw new HttpError("Registration is disabled", 400);
 
@@ -34,9 +38,3 @@ router.post(
 );
 
 export default router;
-
-// TODO: captcha response
-
-interface RegisterResponse {
-	token: string;
-}

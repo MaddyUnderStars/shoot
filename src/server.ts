@@ -3,10 +3,14 @@ import express from "express";
 import http from "http";
 import morgan from "morgan";
 
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
 import { errorHandler, routes } from "./http";
 import { config, createLogger, initDatabase } from "./util";
 
 const Log = createLogger("server");
+
+extendZodWithOpenApi(z);
 
 export class ChatServer {
 	server: http.Server;

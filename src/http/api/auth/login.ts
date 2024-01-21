@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { Response, Router } from "express";
+import { Router } from "express";
 import z from "zod";
 
 import { PublicUser, User } from "../../../entity";
@@ -12,11 +12,16 @@ const LoginRequest = z.object({
 	password: z.string(),
 });
 
+const LoginResponse = z.object({
+	token: z.string(),
+	user: PublicUser,
+});
+
 const INVALID_LOGIN = "Invalid login";
 
 router.post(
 	"/login",
-	route({ body: LoginRequest }, async (req, res: Response<LoginResponse>) => {
+	route({ body: LoginRequest, response: LoginResponse }, async (req, res) => {
 		const { username, password } = req.body;
 
 		const user = await User.findOneOrFail({
@@ -40,10 +45,3 @@ router.post(
 );
 
 export default router;
-
-// TODO: captcha response
-
-interface LoginResponse {
-	token: string;
-	user: PublicUser;
-}

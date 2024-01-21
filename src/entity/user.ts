@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, Index } from "typeorm";
+import { z } from "zod";
 import { Actor } from "./actor";
 
 @Entity("users")
@@ -57,3 +58,18 @@ export type PublicUser = Pick<
 	"name" | "summary" | "display_name" | "domain"
 >;
 export type PrivateUser = PublicUser & Pick<User, "email">;
+
+export const PublicUser: z.ZodType<PublicUser> = z
+	.object({
+		name: z.string(),
+		summary: z.string(),
+		display_name: z.string(),
+		domain: z.string(),
+	})
+	.openapi("PublicUser");
+
+export const PrivateUser: z.ZodType<PrivateUser> = PublicUser.and(
+	z.object({
+		email: z.string(),
+	}),
+).openapi("PrivateUser");

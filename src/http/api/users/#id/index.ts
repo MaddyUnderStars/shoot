@@ -12,6 +12,7 @@ router.get(
 			params: z.object({
 				user_id: z.string(),
 			}),
+			response: PublicUser,
 		},
 		async (req, res: Response<PublicUser>) => {
 			const { user_id } = req.params;

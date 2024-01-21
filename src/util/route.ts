@@ -1,8 +1,17 @@
 import { RequestHandler } from "express";
+import { ZodSchema } from "zod";
 import { RequestValidation, validateRequest } from "zod-express-middleware";
 
+export type RouteOptions<Params, Response, Body, Query> = RequestValidation<
+	Params,
+	Query,
+	Body
+> & {
+	response?: ZodSchema<Response>;
+};
+
 export const route = <Params, Response, Body, Query>(
-	opts: RequestValidation<Params, Query, Body>,
+	opts: RouteOptions<Params, Response, Body, Query>,
 	handler: RequestHandler<Params, Response, Body, Query>,
 ) => {
 	const ret: RequestHandler<Params, Response, Body, Query> = (
@@ -18,6 +27,8 @@ export const route = <Params, Response, Body, Query>(
 			}
 		});
 	};
+
+	Object.assign(ret, { ROUTE_OPTIONS: opts });
 
 	return ret;
 };

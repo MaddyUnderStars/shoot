@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message } from "../../../../../entity";
+import { Message, PublicMessage } from "../../../../../entity";
 import {
 	handleMessage,
 	route,
@@ -18,7 +18,11 @@ const router = Router({ mergeParams: true });
 router.post(
 	"/",
 	route(
-		{ body: MessageCreate, params: z.object({ channel_id: z.string() }) },
+		{
+			body: MessageCreate,
+			params: z.object({ channel_id: z.string() }),
+			response: PublicMessage,
+		},
 		async (req, res) => {
 			const { channel_id } = req.params;
 
