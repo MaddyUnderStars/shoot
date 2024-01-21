@@ -27,6 +27,9 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	// TODO: gateway event send
 
+	if (!federate)
+		return;
+
 	let note;
 	if (message.reference_object && ObjectIsNote(message.reference_object.raw))
 		note = message.reference_object.raw;
@@ -46,5 +49,5 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	if (!recipients.length) return;
 
-	if (federate) await sendActivity(recipients, withContext, message.channel);
+	await sendActivity(recipients, withContext, message.channel);
 };
