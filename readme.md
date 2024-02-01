@@ -1,8 +1,8 @@
-# Activitypub Instant Messenger
+# Shoot - Federated Instant Messenger
 
-[Name Pending] is an instant messenger for the fediverse.
+Shoot is an instant messenger for the fediverse.
 
-Connect with your friends on [Name Pending] or other federated services like Mastodon, Pixelfed, \*key with
+Connect with your friends on Shoot or other federated services like Mastodon, Pixelfed, \*key with
 direct messenges, group chats, and guilds with thousands of others.
 
 Planned featureset:

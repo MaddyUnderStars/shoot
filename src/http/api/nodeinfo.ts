@@ -15,8 +15,8 @@ router.get(
 		return res.json({
 			version: "2.0",
 			software: {
-				name: "Unnamed AP instant messenger",
-				version: "0.1",
+				name: "Shoot",
+				version: "0.0",
 			},
 			protocols: ["activitypub"],
 			// usage: {
