@@ -1,5 +1,7 @@
 import "dotenv/config";
-import { ChatServer } from "./server";
+import { createServer } from "http";
+import { GatewayServer } from "./gateway/server";
+import { APIServer } from "./http/server";
 import { createLogger } from "./util";
 
 const Log = createLogger("bootstrap");
@@ -17,6 +19,9 @@ if (NODE_MAJOR_VERSION < NODE_REQUIRED_VERSION) {
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 
-const chatServer = new ChatServer();
+const http = createServer();
 
-chatServer.listen(PORT);
+const api = new APIServer(http);
+const gateway = new GatewayServer(http);
+
+Promise.all([api.listen(PORT), gateway.listen(PORT)]);

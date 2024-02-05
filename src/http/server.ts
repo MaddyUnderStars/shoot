@@ -3,12 +3,12 @@ import express from "express";
 import http from "http";
 import morgan from "morgan";
 
-import { errorHandler, routes } from "./http";
-import { config, createLogger, initDatabase } from "./util";
+import { errorHandler, routes } from ".";
+import { config, createLogger, initDatabase } from "../util";
 
-const Log = createLogger("server");
+const Log = createLogger("API");
 
-export class ChatServer {
+export class APIServer {
 	server: http.Server;
 	app: express.Application;
 
@@ -46,11 +46,12 @@ export class ChatServer {
 	}
 
 	public async listen(port: number) {
-		await initDatabase();
-
 		this.server.on("listening", () => {
 			Log.msg(`Listening on port ${port}`);
 		});
-		this.server.listen(port);
+
+		await initDatabase();
+
+		if (!this.server.listening) this.server.listen(port);
 	}
 }
