@@ -11,5 +11,6 @@ Planned featureset:
 -   Group chats
 -   Guilds, containing channels and roles
 -   Voice and video chat(?)
+-   End to end encryption(?)
 -   Instantly messenge your friends on other Activitypub federated services
 -   Or log in using your Mastodon/\*key/Pixelfed/etc account to gain access to additional features not supported by your platform, without a new identity
