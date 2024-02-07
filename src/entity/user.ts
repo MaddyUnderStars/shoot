@@ -34,6 +34,10 @@ export class User extends Actor {
 	@Column({ type: String, nullable: true })
 	email: string | null;
 
+	public get mention() {
+		return `${this.name}@${this.domain}`;
+	}
+
 	public toPublic = (): PublicUser => {
 		return {
 			name: this.name,
