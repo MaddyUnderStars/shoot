@@ -4,4 +4,5 @@ export * from "./apcache";
 export * from "./channel";
 export * from "./message";
 export * from "./migrations";
+export * from "./session";
 export * from "./user";
