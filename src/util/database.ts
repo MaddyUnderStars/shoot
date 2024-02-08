@@ -21,19 +21,22 @@ const DATASOURCE_OPTIONS = new DataSource({
 	entities: [path.join(__dirname, "..", "entity", "*.js")],
 	supportBigNumbers: true,
 	bigNumberStrings: false,
-	synchronize: false, // TODO
+	synchronize: true, // TODO
 	logging: config.database.log,
 });
 
 let connection: DataSource;
+let initCalled: Promise<DataSource>;
 
 export const initDatabase = async () => {
 	if (connection) return connection;
+	if (initCalled) return await initCalled;
 
 	Log.msg(`Connecting to ${CONNECTION_TYPE}`);
 
 	try {
-		connection = await DATASOURCE_OPTIONS.initialize();
+		initCalled = DATASOURCE_OPTIONS.initialize();
+		connection = await initCalled;
 	} catch (e) {
 		Log.error(e instanceof Error ? e.message : e);
 		process.exit();

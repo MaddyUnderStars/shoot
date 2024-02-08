@@ -1,5 +1,5 @@
 {
-	"name": "unnamed-ap-chat-server",
+	"name": "shoot",
 	"version": "1.0.0",
 	"description": "Activitypub federated instant messaging server",
 	"main": "dist/bootstrap.js",
@@ -19,6 +19,7 @@
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/morgan": "^1.9.9",
 		"@types/node": "^20.10.4",
+		"@types/ws": "^8.5.10",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.2.0",
 		"prettier": "^3.2.4",
@@ -27,6 +28,7 @@
 	"dependencies": {
 		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
 		"bcrypt": "^5.1.1",
+		"bufferutil": "^4.0.8",
 		"config": "^3.3.9",
 		"dotenv": "^16.3.1",
 		"express": "^4.18.2",
@@ -37,6 +39,7 @@
 		"sqlite3": "^5.1.6",
 		"ts-deepmerge": "^6.2.0",
 		"typeorm": "^0.3.17",
+		"ws": "^8.16.0",
 		"zod": "^3.22.4",
 		"zod-express-middleware": "^1.4.0"
 	},

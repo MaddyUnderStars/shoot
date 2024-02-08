@@ -5,7 +5,7 @@ import {
 	ManyToMany,
 	ManyToOne,
 } from "typeorm";
-import { Channel } from "./channel";
+import { Channel, PublicChannel } from "./channel";
 import { User } from "./user";
 
 @ChildEntity("dm")
@@ -18,4 +18,18 @@ export class DMChannel extends Channel {
 	@ManyToOne("users")
 	@JoinColumn()
 	owner: User;
+
+	public toPublic(): PublicDmChannel {
+		return {
+			...super.toPublic(),
+
+			owner_id: this.owner.mention,
+			recipients: this.recipients.map((x) => x.mention),
+		};
+	}
 }
+
+export type PublicDmChannel = PublicChannel & {
+	owner_id: string;
+	recipients: string[];
+};

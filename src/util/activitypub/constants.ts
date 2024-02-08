@@ -5,8 +5,7 @@ export const ACTIVITY_JSON_ACCEPT = [
 	"application/activity+json",
 ];
 
-export const USER_AGENT =
-	"Unnamed Activitypub Chat Server (https://github.com/maddyunderstars)";
+export const USER_AGENT = "Shoot (https://github.com/maddyunderstars/shoot)";
 
 export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 	headers: {

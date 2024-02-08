@@ -16,5 +16,7 @@
 			"path": ".",
 		},
 	],
-	"settings": {},
+	"settings": {
+		"typescript.tsdk": "shoot/node_modules/typescript/lib"
+	},
 }
