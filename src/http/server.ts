@@ -1,16 +1,13 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import express from "express";
 import http from "http";
 import morgan from "morgan";
 
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
 import { errorHandler, routes } from ".";
 import { config, createLogger, initDatabase } from "../util";
 
 const Log = createLogger("API");
-
-extendZodWithOpenApi(z);
 
 export class APIServer {
 	server: http.Server;
@@ -18,6 +15,8 @@ export class APIServer {
 
 	public constructor(server?: http.Server) {
 		this.app = express();
+
+		this.app.use(cors());
 
 		this.app.set("trust proxy", config.security.trust_proxy);
 

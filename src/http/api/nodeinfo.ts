@@ -10,6 +10,7 @@ const NodeInfoResponse = z.object({
 	software: z.object({
 		name: z.string(),
 		version: z.string(),
+		homepage: z.string(),
 	}),
 	protocols: z.array(z.string()),
 	openRegistrations: z.boolean(),
@@ -33,6 +34,7 @@ router.get(
 				software: {
 					name: "Shoot",
 					version: "0.0",
+					homepage: "https://github.com/MaddyUnderStars/shoot",
 				},
 				protocols: ["activitypub"],
 				// usage: {

@@ -82,7 +82,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 				body: route.options.body
 					? {
 							content: {
-								requestContentType: {
+								[requestContentType]: {
 									schema: route.options.body,
 								},
 							},
