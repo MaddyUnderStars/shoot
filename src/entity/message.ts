@@ -68,7 +68,7 @@ export class Message extends BaseModel {
 
 export type PublicMessage = Omit<
 	AttributesOnly<Message>,
-	"author" | "channel"
+	"author" | "channel" | "reference_object"
 > & {
 	author_id: string;
 	channel_id: string;

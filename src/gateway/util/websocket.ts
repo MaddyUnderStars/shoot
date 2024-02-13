@@ -1,4 +1,5 @@
 import { Session } from "../../entity";
+import { GATEWAY_PAYLOAD } from "./validation";
 
 export interface Websocket extends Omit<WebSocket, "send"> {
 	/** The source IP address of this socket */
@@ -10,8 +11,14 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	/** The session attached to this connection */
 	session: Session;
 
+	/** The current sequence/event number for this socket */
+	sequence: number;
+
 	/** When triggered, disconnect this client. They have not authed in time */
 	auth_timeout?: NodeJS.Timeout;
+
+	/** Event emitter UUID -> listener cancel function */
+	listeners: Record<string, () => unknown>;
 
 	/** The original socket.send function */
 	raw_send: (
@@ -20,11 +27,13 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	) => unknown;
 
 	/** The new socket.send function */
-	send: (this: Websocket, data: object) => unknown;
+	send: (this: Websocket, data: GATEWAY_PAYLOAD) => unknown;
 }
 
-export function send(this: Websocket, data: object) {
+export function send(this: Websocket, data: GATEWAY_PAYLOAD) {
 	// TODO: zlib encoding?
 
-	return this.raw_send(JSON.stringify(data));
+	const ret = { ...data, s: this.sequence++ };
+
+	return this.raw_send(JSON.stringify(ret));
 }

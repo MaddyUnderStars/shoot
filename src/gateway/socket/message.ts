@@ -5,7 +5,7 @@ import { Websocket } from "../util/websocket";
 export async function onMessage(this: Websocket, event: MessageEvent<any>) {
 	const parsed = validate(event.data);
 
-	const handler = handlers[parsed.op];
+	const handler = handlers[parsed.t];
 	if (!handler) throw new Error("invalid opcode");
 
 	await handler.call(this, parsed);
@@ -13,7 +13,7 @@ export async function onMessage(this: Websocket, event: MessageEvent<any>) {
 
 const GatewayPayload = z
 	.object({
-		op: z.string(),
+		t: z.string(),
 	})
 	.passthrough();
 

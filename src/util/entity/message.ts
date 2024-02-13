@@ -7,6 +7,7 @@ import {
 	buildAPAnnounceNote,
 	buildAPNote,
 } from "../activitypub";
+import { emitGatewayEvent } from "../events";
 
 /**
  * Handle a new message by validating it, sending gateway event, and sending an Announce
@@ -25,7 +26,10 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	await Message.insert(message);
 
-	// TODO: gateway event send
+	emitGatewayEvent(message.channel.id, {
+		type: "MESSAGE_CREATE",
+		message: message.toPublic(),
+	});
 
 	if (!federate) return;
 
