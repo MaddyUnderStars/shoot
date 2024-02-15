@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import express from "express";
 import http from "http";
 import morgan from "morgan";
@@ -14,6 +15,8 @@ export class APIServer {
 
 	public constructor(server?: http.Server) {
 		this.app = express();
+
+		this.app.use(cors());
 
 		this.app.set("trust proxy", config.security.trust_proxy);
 
