@@ -5,6 +5,7 @@ import {
 	APError,
 	addContext,
 	buildAPAnnounceNote,
+	buildAPCreateNote,
 	buildAPNote,
 } from "../activitypub";
 import { emitGatewayEvent } from "../events";
@@ -33,14 +34,6 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	if (!federate) return;
 
-	let note;
-	if (message.reference_object && ObjectIsNote(message.reference_object.raw))
-		note = message.reference_object.raw;
-	else note = buildAPNote(message);
-
-	const announce = buildAPAnnounceNote(note, message.channel.id);
-	const withContext = addContext(announce);
-
 	let recipients;
 	if (message.channel instanceof DMChannel) {
 		recipients = message.channel.recipients;
@@ -52,5 +45,18 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	if (!recipients.length) return;
 
-	await sendActivity(recipients, withContext, message.channel);
+	let note;
+	if (message.reference_object && ObjectIsNote(message.reference_object.raw))
+		note = message.reference_object.raw;
+	else note = buildAPNote(message);
+
+	const announce = buildAPAnnounceNote(note, message.channel.id);
+
+	await sendActivity(
+		recipients,
+		addContext(buildAPCreateNote(note)),
+		message.author,
+	);
+
+	await sendActivity(recipients, addContext(announce), message.channel);
 };

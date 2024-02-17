@@ -36,21 +36,28 @@ export const buildAPNote = (message: Message): APNote => {
 	const to = `${config.federation.instance_url.origin}${getExternalPathFromActor(message.channel)}`;
 
 	return {
-		id,
-		attributedTo,
-		to: ["https://www.w3.org/ns/activitystreams#Public", to],
-
 		type: "Note",
-		content: message.content,
+		id,
 		published: message.published,
+		attributedTo,
+		to: [to, `${attributedTo}/followers`],
+		cc: [
+			// "https://www.w3.org/ns/activitystreams#Public"
+		],
+		content: message.content,
 		updated: message.updated ?? undefined,
+		summary: "",
+		url: `${config.federation.webapp_url.origin}/channel/${message.channel.id}/message/${message.id}`,
 	};
 };
 
 export const buildAPCreateNote = (inner: APNote): APCreate => {
 	return {
 		type: "Create",
+		id: inner.id + "/create",
 		actor: inner.attributedTo,
+		to: inner.to,
+		cc: inner.cc,
 		object: inner,
 	};
 };
@@ -63,13 +70,14 @@ export const buildAPAnnounceNote = (
 	// TODO: this should be channel_id followers
 
 	return {
-		actor,
-
-		to: [`${actor}/followers`],
-
-		id: `${actor}/message/${inner.id?.split("/").reverse()[0]}`, // TODO
+		id: `${actor}/message/${inner.id?.split("/").reverse()[0]}/announce`, // TODO
 		type: "Announce",
+		actor,
 		published: inner.published,
+
+		to: inner.to,
+		cc: inner.cc,
+
 		object: inner,
 	};
 };
