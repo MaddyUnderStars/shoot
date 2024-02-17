@@ -1,6 +1,8 @@
+import { AnyAPObject } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Message, User } from "../../../../entity";
+import { Relationship } from "../../../../entity/relationship";
 import { addContext, config, route } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
 import { makeOrderedCollection } from "../../../../util/activitypub/orderedCollection";
@@ -69,7 +71,7 @@ router.get(
 
 			return res.json(
 				addContext(
-					await makeOrderedCollection({
+					await makeOrderedCollection<AnyAPObject>({
 						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
 						page: req.query.page ?? false,
 						min_id: req.query.min_id,
@@ -89,7 +91,18 @@ router.get(
 										})
 									).map((msg) => buildAPNote(msg));
 								case "followers":
-									return [];
+									return (
+										await Relationship.find({
+											where: {
+												to: {
+													name: user_id,
+													domain: config.federation
+														.webapp_url.hostname,
+												},
+											},
+											relations: { from: true },
+										})
+									).map((x) => buildAPPerson(x.from));
 								case "following":
 									return [];
 							}
@@ -101,7 +114,15 @@ router.get(
 										where: { author: { name: user_id } },
 									});
 								case "followers":
-									return 0;
+									return await Relationship.count({
+										where: {
+											to: {
+												name: user_id,
+												domain: config.federation
+													.webapp_url.hostname,
+											},
+										},
+									});
 								case "following":
 									return 0;
 							}

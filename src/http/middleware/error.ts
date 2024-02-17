@@ -27,6 +27,7 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 			const name =
 				error.message.match(ENTITY_NOT_FOUND_REGEX)?.[1] || "Object";
 			message = `${name} could not be found`;
+			break;
 		case error.name === "QueryFailedError":
 			code = 500;
 
@@ -34,12 +35,14 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 				code = 400;
 				message = `Object already exists`;
 			}
+			break;
 		case error.message === "fetch failed":
 			code = 500;
 			message =
 				error?.cause?.errors?.[0]?.message ||
 				error?.cause?.message ||
 				error.message;
+			break;
 	}
 
 	return res.status(code).json({ code, message });

@@ -9,11 +9,12 @@ export const AcceptOrCreateRelationship = async (to: User, from: User) => {
 			from: { id: to.id },
 			to: { id: from.id },
 		},
+		relations: { to: true, from: true },
 	});
 
 	if (existing) {
 		// Accept it
-		existing.type = RelationshipType.pending;
+		existing.type = RelationshipType.accepted;
 		await Relationship.update({ id: existing.id }, { type: existing.type });
 
 		// Send the gateway event to both clients
@@ -36,6 +37,8 @@ export const AcceptOrCreateRelationship = async (to: User, from: User) => {
 		type: "RELATIONSHIP_CREATE",
 		relationship: relationship,
 	});
+
+	// TODO: federate Follow
 
 	return relationship;
 };

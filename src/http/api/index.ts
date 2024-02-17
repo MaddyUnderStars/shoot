@@ -25,6 +25,9 @@ router.use("/users/:user_id", users_id);
 import users_id_channels from "./users/#id/channels";
 router.use("/users/:user_id/channels", users_id_channels);
 
+import users_id_relationship from "./users/#id/relationship";
+router.use("/users/:user_id/relationship", users_id_relationship);
+
 import channels_id from "./channel/#id";
 router.use("/channel/:channel_id", channels_id);
 
