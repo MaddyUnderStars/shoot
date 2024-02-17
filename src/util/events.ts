@@ -3,8 +3,15 @@ import { GATEWAY_EVENT } from "../gateway/util";
 
 const events = new EventEmitter();
 
-export const emitGatewayEvent = (target: string, payload: GATEWAY_EVENT) => {
-	events.emit(target, payload);
+export const emitGatewayEvent = (
+	targets: string | string[],
+	payload: GATEWAY_EVENT,
+) => {
+	if (!Array.isArray(targets)) targets = [targets];
+
+	for (const target of targets) {
+		events.emit(target, payload);
+	}
 };
 
 export const listenGatewayEvent = (

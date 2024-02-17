@@ -4,6 +4,7 @@ import {
 	PublicChannel,
 	PublicMessage,
 } from "../../../entity";
+import { Relationship } from "../../../entity/relationship";
 
 export type GATEWAY_PAYLOAD = {
 	/**
@@ -27,6 +28,11 @@ export type MESSAGE_CREATE = {
 	message: PublicMessage;
 };
 
+export type RELATIONSHIP_CREATE = {
+	type: "RELATIONSHIP_CREATE";
+	relationship: Relationship;
+};
+
 /** Sent by gateway after a user has been authenticated with IDENTIFY */
 export type READY = {
 	type: "READY";
@@ -35,4 +41,4 @@ export type READY = {
 	channels: Array<PublicChannel>;
 };
 
-export type GATEWAY_EVENT = MESSAGE_CREATE | READY;
+export type GATEWAY_EVENT = MESSAGE_CREATE | RELATIONSHIP_CREATE | READY;
