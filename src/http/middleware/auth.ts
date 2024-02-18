@@ -2,7 +2,12 @@ import { RequestHandler } from "express";
 import type { User } from "../../entity";
 import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
 
-const NO_AUTH_ROUTES = ["/auth/login", "/auth/register", /\.well\-known/];
+const NO_AUTH_ROUTES = [
+	"/auth/login",
+	"/auth/register",
+	/\.well\-known/,
+	"/nodeinfo/2.0.json",
+];
 
 export const authHandler: RequestHandler = async (req, res, next) => {
 	const url = req.url;

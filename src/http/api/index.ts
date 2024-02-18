@@ -5,7 +5,7 @@ const router = Router();
 
 // BEFORE auth handler
 import nodeInfo from "./nodeinfo";
-router.use("/nodeinfo/2.0", nodeInfo);
+router.use("/nodeinfo/2.0.json", nodeInfo);
 
 router.use(authHandler);
 
