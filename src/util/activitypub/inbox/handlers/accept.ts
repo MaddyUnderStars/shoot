@@ -2,7 +2,7 @@ import { ActivityIsFollow } from "activitypub-types";
 import { ActivityHandler } from ".";
 import { User } from "../../../../entity";
 import { getOrFetchUser } from "../../../entity";
-import { AcceptOrCreateRelationship } from "../../../entity/relationship";
+import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
 
@@ -34,5 +34,5 @@ export const AcceptActivityHandler: ActivityHandler = async (
 
 	const from = await getOrFetchUser(activity.actor);
 
-	const relationship = await AcceptOrCreateRelationship(target, from);
+	const relationship = await acceptOrCreateRelationship(target, from);
 };

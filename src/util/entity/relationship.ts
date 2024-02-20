@@ -1,12 +1,16 @@
-import { APFollow } from "activitypub-types";
-import { User } from "../../entity";
+import { APAccept, APFollow } from "activitypub-types";
+import { ApCache, User } from "../../entity";
 import { Relationship, RelationshipType } from "../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../sender";
 import { addContext } from "../activitypub";
 import { config } from "../config";
 import { emitGatewayEvent } from "../events";
 
-export const AcceptOrCreateRelationship = async (to: User, from: User) => {
+export const acceptOrCreateRelationship = async (
+	to: User,
+	from: User,
+	follow_activity?: ApCache,
+) => {
 	// Check if there is a relationship in the other direction
 	const existing = await Relationship.findOne({
 		where: {
@@ -22,6 +26,24 @@ export const AcceptOrCreateRelationship = async (to: User, from: User) => {
 		await Relationship.update({ id: existing.id }, { type: existing.type });
 
 		// Send the gateway event to both clients
+
+		if (
+			from.collections?.inbox &&
+			from.remote_address &&
+			existing.reference_object
+		) {
+			const follow: APAccept = {
+				type: "Accept",
+				id: `${config.federation.instance_url.origin}/${existing.id}`,
+				actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(from)}`,
+				object: existing.reference_object.raw,
+			};
+			await sendActivity(
+				new URL(from.collections.inbox),
+				addContext(follow),
+				from,
+			);
+		}
 
 		return existing;
 	}

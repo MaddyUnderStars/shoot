@@ -1,4 +1,13 @@
-import { Column, CreateDateColumn, Entity, Index, ManyToOne } from "typeorm";
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	Index,
+	JoinColumn,
+	ManyToOne,
+	OneToOne,
+} from "typeorm";
+import { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
 import { User } from "./user";
 
@@ -30,14 +39,22 @@ export class Relationship extends BaseModel {
 	@CreateDateColumn()
 	created: Date;
 
+	/**
+	 * The reference object this message was created from.
+	 * Messages sent from here don't have this.
+	 */
+	@OneToOne("activitypub_objects", { nullable: true })
+	@JoinColumn()
+	reference_object: ApCache | null;
+
 	public toPublic() {
 		throw new Error("Do not return relationships publicly");
 	}
 
 	public toPrivate() {
 		return {
-			from_id: this.from.id,
-			to_id: this.to.id,
+			from_id: this.from.mention,
+			to_id: this.to.mention,
 			type: this.type,
 			created: this.created,
 		};

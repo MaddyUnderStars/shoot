@@ -6,7 +6,7 @@ import {
 	RelationshipType,
 } from "../../../../entity/relationship";
 import { getOrFetchUser, route } from "../../../../util";
-import { AcceptOrCreateRelationship } from "../../../../util/entity/relationship";
+import { acceptOrCreateRelationship } from "../../../../util/entity/relationship";
 
 const router = Router({ mergeParams: true });
 
@@ -52,8 +52,35 @@ router.post(
 		async (req, res) => {
 			const { user_id } = req.params;
 			const to = await getOrFetchUser(user_id);
-			const relationship = await AcceptOrCreateRelationship(to, req.user);
+			const relationship = await acceptOrCreateRelationship(to, req.user);
 			return res.json(relationship.toPrivate());
+		},
+	),
+);
+
+router.delete(
+	"/",
+	route(
+		{
+			params: z.object({ user_id: z.string() }),
+		},
+		async (req, res) => {
+			const { user_id } = req.params;
+
+			const to = await getOrFetchUser(user_id);
+
+			await Relationship.delete({
+				to: { id: to.id },
+				from: { id: req.user.id },
+			});
+			await Relationship.delete({
+				to: { id: req.user.id },
+				from: { id: to.id },
+			});
+
+			// todo federate
+
+			return res.sendStatus(200);
 		},
 	),
 );

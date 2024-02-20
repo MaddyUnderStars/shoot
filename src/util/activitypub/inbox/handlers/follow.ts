@@ -5,7 +5,7 @@ import { RelationshipType } from "../../../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
 import { getOrFetchUser } from "../../../entity";
-import { AcceptOrCreateRelationship } from "../../../entity/relationship";
+import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { APError } from "../../error";
 import { addContext } from "../../util";
 
@@ -22,7 +22,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 		throw new APError("Received follow from actor without inbox");
 
 	if (target instanceof User) {
-		const relationship = await AcceptOrCreateRelationship(target, actor);
+		const relationship = await acceptOrCreateRelationship(target, actor);
 		if (relationship.type != RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
