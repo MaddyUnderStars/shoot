@@ -191,9 +191,9 @@ export class HttpSig {
 		const now = new Date();
 
 		const url = new URL(target);
-		const inboxFrag = url.pathname;
+		const requestTarget = url.pathname + url.search;
 		const toSign =
-			`(request-target): ${method.toLowerCase()} ${inboxFrag}` +
+			`(request-target): ${method.toLowerCase()} ${requestTarget}` +
 			`\nhost: ${url.hostname}` +
 			`\ndate: ${now.toUTCString()}` +
 			(digest ? `\ndigest: SHA-256=${digest}` : "");
