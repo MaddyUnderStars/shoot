@@ -1,7 +1,9 @@
+import { APCollection, APCollectionPage } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Message } from "../../../../entity";
+import { DMChannel, Message } from "../../../../entity";
 import { Channel } from "../../../../entity/channel";
+import { getExternalPathFromActor } from "../../../../sender";
 import {
 	addContext,
 	config,
@@ -13,6 +15,7 @@ import { handleInbox } from "../../../../util/activitypub/inbox";
 import {
 	buildAPGroup,
 	buildAPNote,
+	buildAPPerson,
 } from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
@@ -66,12 +69,11 @@ router.post(
 );
 
 router.get(
-	"/:collection",
+	"/outbox",
 	route(
 		{
 			params: z.object({
 				channel_id: z.string(),
-				collection: z.literal("outbox"),
 			}),
 			query: z.object({
 				page: z.boolean({ coerce: true }).default(false).optional(),
@@ -80,7 +82,7 @@ router.get(
 			}),
 		},
 		async (req, res) => {
-			const { channel_id, collection } = req.params;
+			const { channel_id } = req.params;
 
 			return res.json(
 				addContext(
@@ -111,5 +113,84 @@ router.get(
 		},
 	),
 );
+
+router.get(
+	"/followers",
+	route(
+		{
+			params: z.object({
+				channel_id: z.string(),
+			}),
+			query: z.object({
+				page: z.string().optional(),
+			}),
+		},
+		async (req, res) => {
+			const { channel_id } = req.params;
+			const { page } = req.query;
+
+			const channel = await DMChannel.findOneOrFail({
+				where: { id: channel_id },
+				relations: { recipients: true, owner: true },
+			});
+
+			const colId = `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/followers`;
+
+			if (!page)
+				return res.json(
+					addContext(
+						buildCollection(colId, channel.recipients.length + 1), // add owner
+					),
+				);
+
+			const nextPage = undefined;
+			//channel.recipients[channel.recipients.length - 1].id;
+
+			const collection = buildCollectionPage(colId, page, nextPage);
+
+			collection.items = channel.recipients
+				.map((x) => x.remote_address ?? buildAPPerson(x).id!)
+				.concat(
+					channel.owner.remote_address ??
+						buildAPPerson(channel.owner).id!,
+				);
+
+			return res.json(addContext(collection));
+		},
+	),
+);
+
+const buildCollectionPage = (
+	id: string,
+	currentPage: string,
+	nextPage?: string,
+	ordered = false,
+): APCollectionPage => {
+	return {
+		id: setUrlParam(id, "page", currentPage),
+		type: ordered ? "OrderedCollectionPage" : "CollectionPage",
+		partOf: id,
+		next: nextPage ? setUrlParam(id, "page", nextPage) : undefined,
+	};
+};
+
+const buildCollection = (
+	id: string,
+	totalItems: number,
+	ordered = false,
+): APCollection => {
+	return {
+		id,
+		totalItems,
+		type: ordered ? "OrderedCollection" : "Collection",
+		first: setUrlParam(id, "page", "true"),
+	};
+};
+
+const setUrlParam = (url: string, param: string, value: string) => {
+	const ret = new URL(url);
+	ret.searchParams.set(param, value);
+	return ret.toString();
+};
 
 export default router;

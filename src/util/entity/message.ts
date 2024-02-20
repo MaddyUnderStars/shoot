@@ -36,7 +36,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	let recipients;
 	if (message.channel instanceof DMChannel) {
-		recipients = message.channel.recipients;
+		recipients = [message.channel]; //.recipients;
 	} else throw new APError("aaaaaaa!");
 
 	recipients = recipients

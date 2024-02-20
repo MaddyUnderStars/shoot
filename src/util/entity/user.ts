@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { User } from "../../entity";
 import { config } from "../config";
 
-import { APActor, APNote, ObjectIsGroup } from "activitypub-types";
+import { APActor, APNote, APPerson, ObjectIsGroup } from "activitypub-types";
 import {
 	APError,
 	APObjectIsActor,
@@ -41,8 +41,12 @@ export const registerUser = async (
 	return user;
 };
 
-export const getOrFetchUser = async (user_id: string) => {
-	const mention = splitQualifiedMention(user_id);
+export const getOrFetchUser = async (lookup: string | APPerson) => {
+	const id = typeof lookup == "string" ? lookup : lookup.id;
+
+	if (!id) throw new APError("Cannot fetch user with undefined ID");
+
+	const mention = splitQualifiedMention(id);
 
 	let user = await User.findOne({
 		where: {
@@ -53,7 +57,7 @@ export const getOrFetchUser = async (user_id: string) => {
 
 	if (!user && config.federation.enabled) {
 		// Fetch from remote instance
-		user = await createUserForRemotePerson(user_id);
+		user = await createUserForRemotePerson(lookup);
 		await user.save();
 	} else if (!user) {
 		throw new APError("User could not be found", 404);

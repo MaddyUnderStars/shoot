@@ -9,6 +9,7 @@ import { Channel } from "../../entity/channel";
 import {
 	APError,
 	resolveAPObject,
+	resolveCollectionEntries,
 	resolveWebfinger,
 	splitQualifiedMention,
 } from "../activitypub";
@@ -97,12 +98,21 @@ export const createChannelFromRemoteGroup = async (
 	// TODO: check type of channel of remote obj
 	switch ("dm") {
 		case "dm":
+			if (!obj.followers)
+				throw new APError("DMChannel must have followers collection");
+
 			channel = DMChannel.create({
 				domain,
 
 				name: obj.name,
 				owner: await getOrFetchUser(obj.attributedTo),
-				recipients: [],
+				recipients: await Promise.all([
+					...(
+						await resolveCollectionEntries(
+							new URL(obj.followers.toString()),
+						)
+					).map((x) => getOrFetchUser(x)),
+				]),
 				remote_address: obj.id,
 				public_key: obj.publicKey.publicKeyPem,
 			});
