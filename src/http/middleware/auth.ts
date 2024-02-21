@@ -7,6 +7,11 @@ const NO_AUTH_ROUTES = [
 	"/auth/register",
 	/\.well\-known/,
 	"/nodeinfo/2.0.json",
+
+	// TODO: there are here because lemmy keeps requesting them
+	// and it throws a huge stack trace in my terminal
+	"/api/v3/site",
+	"/api/v3/federated_instances",
 ];
 
 export const authHandler: RequestHandler = async (req, res, next) => {
