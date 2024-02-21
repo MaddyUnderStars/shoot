@@ -50,15 +50,8 @@ export class Message extends BaseModel {
 			content: this.content,
 			published: this.published,
 			updated: this.updated,
-
-			// this sillyness is because typeorm's loadRelationIds: true doesn't map them into objects,
-			// but into strings. silly
-			author_id:
-				typeof this.author == "string" ? this.author : this.author.id,
-			channel_id:
-				typeof this.channel == "string"
-					? this.channel
-					: this.channel.id,
+			author_id: this.author.mention,
+			channel_id: this.channel.mention,
 		} as PublicMessage;
 	}
 

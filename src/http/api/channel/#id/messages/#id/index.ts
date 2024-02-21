@@ -28,7 +28,10 @@ router.get(
 						domain: channelMention.domain,
 					},
 				},
-				loadRelationIds: true,
+				loadRelationIds: {
+					relations: ["channel", "author"],
+					disableMixedMap: true,
+				},
 			});
 			return res.json(message.toPublic());
 		},

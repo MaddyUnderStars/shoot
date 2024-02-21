@@ -12,9 +12,13 @@ export class Channel extends Actor {
 	@Column({ type: String, nullable: true })
 	remote_id: string | null;
 
+	public get mention() {
+		return `${this.remote_id ?? this.id}@${this.domain}`;
+	}
+
 	public toPublic(): PublicChannel {
 		return {
-			id: this.id,
+			id: this.remote_id ?? this.id,
 			name: this.name,
 			domain: this.domain,
 		};

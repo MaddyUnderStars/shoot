@@ -82,7 +82,10 @@ router.get(
 				order: {
 					published: "DESC",
 				},
-				loadRelationIds: true,
+				loadRelationIds: {
+					relations: ["channel", "author"],
+					disableMixedMap: true,
+				},
 			});
 
 			return res.json(messages.map((x) => x.toPublic()));
