@@ -34,5 +34,5 @@ export const FollowActivityHandler: ActivityHandler = async (
 		object: activity,
 	});
 
-	await sendActivity(new URL(actor.collections.inbox), accept, target);
+	await sendActivity(actor, accept, target);
 };

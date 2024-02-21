@@ -38,11 +38,7 @@ export const acceptOrCreateRelationship = async (
 				actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(from)}`,
 				object: existing.reference_object.raw,
 			};
-			await sendActivity(
-				new URL(from.collections.inbox),
-				addContext(follow),
-				from,
-			);
+			await sendActivity(from, addContext(follow), from);
 		}
 
 		return existing;
@@ -71,11 +67,7 @@ export const acceptOrCreateRelationship = async (
 			actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(relationship.from)}`,
 			object: to.remote_address,
 		};
-		await sendActivity(
-			new URL(to.collections.inbox),
-			addContext(follow),
-			from,
-		);
+		await sendActivity(to, addContext(follow), from);
 	}
 
 	return relationship;

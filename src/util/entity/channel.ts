@@ -70,10 +70,10 @@ export const getOrFetchChannel = async (channel_id: string) => {
 export const createChannelFromRemoteGroup = async (
 	lookup: string | APActor,
 ) => {
-	const domain =
+	const mention =
 		typeof lookup == "string"
-			? splitQualifiedMention(lookup).domain
-			: new URL(lookup.id!).hostname;
+			? splitQualifiedMention(lookup)
+			: splitQualifiedMention(lookup.id!);
 
 	const obj =
 		typeof lookup == "string"
@@ -94,6 +94,9 @@ export const createChannelFromRemoteGroup = async (
 			"Resolved group doesn't have attributedTo, we don't know what owns it",
 		);
 
+	if (typeof obj.inbox != "string" || typeof obj.outbox != "string")
+		throw new APError("don't know how to handle embedded inbox/outbox");
+
 	let channel: Channel;
 	// TODO: check type of channel of remote obj
 	switch ("dm") {
@@ -101,22 +104,40 @@ export const createChannelFromRemoteGroup = async (
 			if (!obj.followers)
 				throw new APError("DMChannel must have followers collection");
 
+			// note for next time u open:
+			// messages federate properly,
+			// but remote server can't fetch them because
+			// it tries to fetch by local id and not remote id
+			// so need to save remote id to db and fetch by that
+
 			channel = DMChannel.create({
-				domain,
+				domain: mention.domain,
+				remote_id: mention.user,
 
 				name: obj.name,
 				owner: await getOrFetchUser(obj.attributedTo),
+
+				// TODO: fetch recipients over time
 				recipients: await Promise.all([
 					...(
 						await resolveCollectionEntries(
 							new URL(obj.followers.toString()),
 						)
-					).map((x) => getOrFetchUser(x)),
+					)
+						.filter((x) => x != obj.attributedTo)
+						.map((x) => getOrFetchUser(x)),
 				]),
 				remote_address: obj.id,
 				public_key: obj.publicKey.publicKeyPem,
+
+				collections: {
+					inbox: obj.inbox,
+					shared_inbox: obj.endpoints?.sharedInbox,
+					outbox: obj.outbox,
+					followers: obj.followers?.toString(),
+					following: obj.following?.toString(),
+				},
 			});
-			// TODO: start fetching recipients over time
 			break;
 		default:
 			throw new APError("Resolved group was not a recognisable type");

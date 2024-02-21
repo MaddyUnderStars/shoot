@@ -1,5 +1,5 @@
 import { ObjectIsNote } from "activitypub-types";
-import { DMChannel, Message } from "../../entity";
+import { Actor, DMChannel, Message } from "../../entity";
 import { sendActivity } from "../../sender";
 import {
 	APError,
@@ -34,29 +34,40 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	if (!federate) return;
 
-	let recipients;
-	if (message.channel instanceof DMChannel) {
-		recipients = [message.channel]; //.recipients;
-	} else throw new APError("aaaaaaa!");
+	const note =
+		message.reference_object && ObjectIsNote(message.reference_object.raw)
+			? message.reference_object.raw
+			: buildAPNote(message);
 
-	recipients = recipients
-		.filter((x) => x.collections?.inbox)
-		.map((x) => new URL(x.collections!.inbox));
+	// await sendActivity(
+	// 	recipients,
+	// 	addContext(buildAPCreateNote(note)),
+	// 	message.author,
+	// );
 
-	if (!recipients.length) return;
+	if (message.channel.remote_address) {
+		// We don't own this room, send create to channel
 
-	let note;
-	if (message.reference_object && ObjectIsNote(message.reference_object.raw))
-		note = message.reference_object.raw;
-	else note = buildAPNote(message);
+		const create = buildAPCreateNote(note);
 
-	const announce = buildAPAnnounceNote(note, message.channel.id);
+		await sendActivity(message.channel, addContext(create), message.author);
+	} else {
+		// we're the owner of the channel, send the announce to each member
 
-	await sendActivity(
-		recipients,
-		addContext(buildAPCreateNote(note)),
-		message.author,
-	);
+		const announce = buildAPAnnounceNote(note, message.channel.id);
 
-	await sendActivity(recipients, addContext(announce), message.channel);
+		let recipients: Array<Actor> =
+			message.channel instanceof DMChannel
+				? [...message.channel.recipients, message.channel.owner]
+				: [];
+
+		// remove the author's instance from the recipients
+		// since they author'd it and already have a copy
+		// TODO: maybe this should be used as an acknowledge instead? or send an `Acknowledge` activity?
+		recipients = recipients.filter(
+			(x) => x.domain != message.author.domain,
+		);
+
+		await sendActivity(recipients, addContext(announce), message.channel);
+	}
 };
