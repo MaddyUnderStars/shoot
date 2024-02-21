@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { PublicChannel } from "../../../../entity";
 import { getOrFetchUser, route } from "../../../../util";
 import { createDmChannel } from "../../../../util/entity/channel";
 
@@ -18,6 +19,7 @@ router.post(
 			params: z.object({
 				user_id: z.string(),
 			}),
+			response: PublicChannel,
 		},
 		async (req, res) => {
 			const { user_id } = req.params;

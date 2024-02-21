@@ -1,4 +1,5 @@
 import { Column, Entity, TableInheritance } from "typeorm";
+import { z } from "zod";
 import { Actor } from "./actor";
 
 @Entity("channels")
@@ -25,3 +26,11 @@ export class Channel extends Actor {
 }
 
 export type PublicChannel = Pick<Channel, "id" | "name" | "domain">;
+
+export const PublicChannel: z.ZodType<PublicChannel> = z
+	.object({
+		id: z.string(),
+		name: z.string(),
+		domain: z.string(),
+	})
+	.openapi("PublicChannel");

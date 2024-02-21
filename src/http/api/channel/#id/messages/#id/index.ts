@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message } from "../../../../../../entity";
+import { Message, PublicMessage } from "../../../../../../entity";
 import { route, splitQualifiedMention } from "../../../../../../util";
 
 const router = Router({ mergeParams: true });
@@ -13,6 +13,7 @@ router.get(
 				channel_id: z.string(),
 				message_id: z.string(),
 			}),
+			response: PublicMessage,
 		},
 		async (req, res) => {
 			const channelMention = splitQualifiedMention(req.params.channel_id);

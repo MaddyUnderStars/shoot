@@ -13,6 +13,16 @@
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"preLaunchTask": "tsc: build - tsconfig.json",
 			"outputCapture": "std"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Current File",
+			"skipFiles": ["<node_internals>/**"],
+			"program": "${file}",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "tsc: build - tsconfig.json",
+			"outputCapture": "std"
 		}
 	]
 }

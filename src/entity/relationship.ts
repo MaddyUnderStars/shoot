@@ -7,6 +7,7 @@ import {
 	ManyToOne,
 	OneToOne,
 } from "typeorm";
+import { z } from "zod";
 import { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
 import { User } from "./user";
@@ -60,3 +61,12 @@ export class Relationship extends BaseModel {
 		};
 	}
 }
+
+export const PrivateRelationship = z
+	.object({
+		created: z.date(),
+		from_id: z.string(),
+		to_id: z.string(),
+		type: z.number(), // TODO
+	})
+	.openapi("PrivateRelationship");

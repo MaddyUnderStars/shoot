@@ -41,4 +41,13 @@ export type READY = {
 	channels: Array<PublicChannel>;
 };
 
-export type GATEWAY_EVENT = MESSAGE_CREATE | RELATIONSHIP_CREATE | READY;
+export type HEARTBEAT_ACK = {
+	// The expected sequence number
+	type: "HEARTBEAT_ACK";
+};
+
+export type GATEWAY_EVENT =
+	| MESSAGE_CREATE
+	| RELATIONSHIP_CREATE
+	| READY
+	| HEARTBEAT_ACK;

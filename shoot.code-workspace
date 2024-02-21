@@ -9,6 +9,10 @@
 			"name": "config",
 		},
 		{
+			"path": "./assets",
+			"name": "assets",
+		},
+		{
 			"path": ".",
 		},
 	],
