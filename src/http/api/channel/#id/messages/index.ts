@@ -64,12 +64,20 @@ router.get(
 
 			// TODO: handle after, before, around
 			const messages = await Message.find({
-				where: {
-					channel: {
-						id: channelMention.user,
-						domain: channelMention.domain,
+				where: [
+					{
+						channel: {
+							id: channelMention.user,
+							domain: channelMention.domain,
+						},
 					},
-				},
+					{
+						channel: {
+							remote_id: channelMention.user,
+							domain: channelMention.domain,
+						},
+					},
+				],
 				take: req.params.limit,
 				order: {
 					published: "DESC",

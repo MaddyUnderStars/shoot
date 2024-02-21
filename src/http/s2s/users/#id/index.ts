@@ -1,10 +1,15 @@
+import { AnyAPObject } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { User } from "../../../../entity";
+import { Message, User } from "../../../../entity";
+import { Relationship } from "../../../../entity/relationship";
 import { addContext, config, route } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
 import { makeOrderedCollection } from "../../../../util/activitypub/orderedCollection";
-import { buildAPPerson } from "../../../../util/activitypub/transformers";
+import {
+	buildAPNote,
+	buildAPPerson,
+} from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
 
@@ -60,22 +65,67 @@ router.get(
 		async (req, res) => {
 			const { user_id, collection } = req.params;
 
-			const user = await User.findOneOrFail({
-				where: { name: user_id },
-			});
+			// const user = await User.findOneOrFail({
+			// 	where: { name: user_id },
+			// });
 
 			return res.json(
 				addContext(
-					await makeOrderedCollection({
+					await makeOrderedCollection<AnyAPObject>({
 						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
 						page: req.query.page ?? false,
 						min_id: req.query.min_id,
 						max_id: req.query.max_id,
 						getElements: async () => {
-							return [];
+							switch (collection) {
+								case "outbox":
+									return (
+										await Message.find({
+											where: {
+												author: { name: user_id },
+											},
+											relations: {
+												author: true,
+												channel: true,
+											},
+										})
+									).map((msg) => buildAPNote(msg));
+								case "followers":
+									return (
+										await Relationship.find({
+											where: {
+												to: {
+													name: user_id,
+													domain: config.federation
+														.webapp_url.hostname,
+												},
+											},
+											relations: { from: true },
+										})
+									).map((x) => buildAPPerson(x.from));
+								case "following":
+									return [];
+							}
 						},
 						getTotalElements: async () => {
-							return 0;
+							switch (collection) {
+								case "outbox":
+									return await Message.count({
+										where: { author: { name: user_id } },
+									});
+								case "followers":
+									return await Relationship.count({
+										where: {
+											to: {
+												name: user_id,
+												domain: config.federation
+													.webapp_url.hostname,
+											},
+										},
+									});
+								case "following":
+									return 0;
+							}
 						},
 					}),
 				),

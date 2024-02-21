@@ -1,8 +1,11 @@
 import { APAccept } from "activitypub-types";
 import { ActivityHandler } from ".";
+import { Channel, User } from "../../../../entity";
+import { RelationshipType } from "../../../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
 import { getOrFetchUser } from "../../../entity";
+import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { APError } from "../../error";
 import { addContext } from "../../util";
 
@@ -10,15 +13,20 @@ export const FollowActivityHandler: ActivityHandler = async (
 	activity,
 	target,
 ) => {
-	const to = activity.actor;
-	if (typeof to != "string")
+	const from = activity.actor;
+	if (typeof from != "string")
 		throw new APError("Follow activity must have single actor");
 
-	const actor = await getOrFetchUser(to);
+	const actor = await getOrFetchUser(from);
 	if (!actor.collections?.inbox)
 		throw new APError("Received follow from actor without inbox");
 
-	// TODO
+	if (target instanceof User) {
+		const relationship = await acceptOrCreateRelationship(target, actor);
+		if (relationship.type != RelationshipType.accepted) return;
+	} else if (target instanceof Channel) {
+		// TODO: check for an invite to this channel
+	} else throw new APError("Cannot accept follows for this target");
 
 	const accept: APAccept = addContext({
 		type: "Accept",
@@ -26,5 +34,5 @@ export const FollowActivityHandler: ActivityHandler = async (
 		object: activity,
 	});
 
-	await sendActivity(new URL(actor.collections.inbox), accept, target);
+	await sendActivity(actor, accept, target);
 };

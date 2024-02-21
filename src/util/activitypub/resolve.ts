@@ -1,9 +1,15 @@
 import { hasAPContext } from "./util";
 
-import { AnyAPObject } from "activitypub-types";
+import {
+	APCollectionPage,
+	APObject,
+	APOrderedCollectionPage,
+	AnyAPObject,
+} from "activitypub-types";
 import { XMLParser } from "fast-xml-parser";
 import { ApCache } from "../../entity";
 import { WebfingerResponse } from "../../http/wellknown/webfinger";
+import { config } from "../config";
 import { createLogger } from "../log";
 import { USER_AGENT } from "./constants";
 import { APError } from "./error";
@@ -15,18 +21,27 @@ const Log = createLogger("ap:resolve");
 
 export const resolveAPObject = async <T extends AnyAPObject>(
 	data: string | T,
+	noCache = false,
 ): Promise<T> => {
 	// we were already given an object
 	if (typeof data != "string") {
-		await ApCache.create({
-			id: data.id,
-			raw: data,
-		}).save();
+		if (!noCache)
+			await ApCache.create({
+				id: data.id,
+				raw: data,
+			}).save();
 		return data;
 	}
 
-	const cache = await ApCache.findOne({ where: { id: data } });
-	if (cache) return cache.raw as T;
+	if (!noCache) {
+		const cache = await ApCache.findOne({ where: { id: data } });
+		if (cache) return cache.raw as T;
+	}
+
+	if (new URL(data).hostname == config.federation.instance_url.hostname)
+		throw new APError(
+			`Tried to resolve remote resource, but we are the remote!`,
+		);
 
 	Log.verbose(`Fetching from remote ${data}`);
 
@@ -46,10 +61,11 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
-	await ApCache.create({
-		id: json.id,
-		raw: json,
-	}).save();
+	if (!noCache)
+		await ApCache.create({
+			id: json.id,
+			raw: json,
+		}).save();
 
 	return json as T;
 };
@@ -123,4 +139,64 @@ export const resolveWebfinger = async (
 	if (!link) throw new APError(".well-known did not contain rel=self link");
 
 	return await resolveAPObject<AnyAPObject>(link.href);
+};
+
+/**
+ * Returns all the IDs of a collection
+ */
+export const resolveCollectionEntries = async (
+	collection: URL,
+	limit: number = 10,
+): Promise<Array<string>> => {
+	const ret: Array<string> = [];
+
+	const parent = await resolveAPObject(collection.toString());
+
+	if (!ObjectIsCollection(parent))
+		throw new APError(`${collection} is not a collection`);
+
+	const items =
+		"items" in parent
+			? parent.items
+			: "orderedItems" in parent
+				? parent.orderedItems
+				: undefined;
+
+	if (!items && parent.first)
+		return await resolveCollectionEntries(new URL(parent.first.toString()));
+	else if (!items) throw new APError("can't find collection items");
+
+	for (const item of items) {
+		// if we just return all the IDs, then collections that just return the full objects won't be cached!
+
+		let id =
+			typeof item == "string" ? item : "id" in item ? item.id : undefined;
+
+		if (!id) continue;
+
+		ret.push(id);
+	}
+
+	if (parent.next && typeof parent.next == "string") {
+		Log.verbose(`Resolving next page of collection ${parent.id}`);
+		ret.push(
+			...(await resolveCollectionEntries(
+				new URL(parent.next),
+				limit - 1,
+			)),
+		);
+	}
+
+	return ret;
+};
+
+const ObjectIsCollection = (
+	obj: APObject,
+): obj is APCollectionPage | APOrderedCollectionPage => {
+	return (
+		obj.type == "OrderedCollection" ||
+		obj.type == "OrderedCollectionPage" ||
+		obj.type == "Collection" ||
+		obj.type == "CollectionPage"
+	);
 };

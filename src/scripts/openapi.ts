@@ -12,7 +12,6 @@ import { AnyZodObject, z } from "zod";
 extendZodWithOpenApi(z);
 
 import apiRoutes from "../http/api";
-import activitypubRoutes from "../http/s2s";
 
 const getRoutes = (router: Router) => {
 	const convertRegexToPath = (regexp: RegExp, keys: any[]) => {
@@ -121,11 +120,11 @@ writeFileSync(
 	JSON.stringify(document),
 );
 
-document = generateOpenapi(activitypubRoutes, "application/activity+json");
-writeFileSync(
-	path.join(__dirname, "..", "..", "assets", "activitypub.json"),
-	JSON.stringify(document),
-);
+// document = generateOpenapi(activitypubRoutes, "application/activity+json");
+// writeFileSync(
+// 	path.join(__dirname, "..", "..", "assets", "activitypub.json"),
+// 	JSON.stringify(document),
+// );
 
 // Internal express types that don't get exposed because they hate me :(
 type Key = {

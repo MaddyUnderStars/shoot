@@ -127,6 +127,24 @@ export class HttpSig {
 				);
 		}
 
+		if (requestHeaders["digest"] || activity) {
+			if (!activity || !requestHeaders["digest"])
+				throw new APError(
+					"If message provided, digest must be too and vice versa",
+				);
+
+			const digest = crypto
+				.createHash("sha256")
+				.update(JSON.stringify(activity))
+				.digest("base64");
+
+			// TODO: support different digest algos
+			if (requestHeaders["digest"] != `SHA-256=${digest}`)
+				throw new APError(
+					"b64 sha256 digest of message does not match provided digest header",
+				);
+		}
+
 		const expected = this.getSignString(
 			target,
 			method,
@@ -173,9 +191,9 @@ export class HttpSig {
 		const now = new Date();
 
 		const url = new URL(target);
-		const inboxFrag = url.pathname;
+		const requestTarget = url.pathname + url.search;
 		const toSign =
-			`(request-target): ${method.toLowerCase()} ${inboxFrag}` +
+			`(request-target): ${method.toLowerCase()} ${requestTarget}` +
 			`\nhost: ${url.hostname}` +
 			`\ndate: ${now.toUTCString()}` +
 			(digest ? `\ndigest: SHA-256=${digest}` : "");
@@ -196,16 +214,20 @@ export class HttpSig {
 			`headers="(request-target) host date${digest ? " digest" : ""}",` +
 			`signature="${sig_b64}"`;
 
-		return {
+		const ret = {
 			method,
 			headers: {
 				...ACTIVITYPUB_FETCH_OPTS.headers,
-				Host: url.hostname,
-				Date: now.toUTCString(),
-				Digest: digest ? `SHA-256=${digest}` : undefined,
-				Signature: header,
+				host: url.hostname,
+				date: now.toUTCString(),
+				digest: digest ? `SHA-256=${digest}` : undefined,
+				signature: header,
 			},
 			body: message ? JSON.stringify(message) : undefined,
-		} as RequestInit;
+		};
+
+		if (!ret.headers.digest) delete ret.headers.digest;
+
+		return ret as RequestInit;
 	}
 }

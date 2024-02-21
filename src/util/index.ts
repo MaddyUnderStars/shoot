@@ -2,6 +2,7 @@ export * from "./activitypub";
 export * from "./config";
 export * from "./database";
 export * from "./entity";
+export * from "./events";
 export * from "./httperror";
 export * from "./log";
 export * from "./misc";

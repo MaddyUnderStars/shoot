@@ -1,20 +1,7 @@
-import { z } from "zod";
 import { makeHandler } from ".";
-import {
-	DMChannel,
-	PrivateSession,
-	PrivateUser,
-	PublicChannel,
-	Session,
-} from "../../entity";
+import { DMChannel, Session } from "../../entity";
 import { getDatabase, getUserFromToken } from "../../util";
-
-const IdentifyPayload = z.object({
-	op: z.literal("identify"),
-
-	/** User token to use to login */
-	token: z.string(),
-});
+import { IDENTIFY, READY, consume, listenEvents } from "../util";
 
 /**
  * - Authenticate user
@@ -33,9 +20,15 @@ export const onIdentify = makeHandler(async function (payload) {
 
 		getDatabase()
 			.createQueryBuilder(DMChannel, "dm")
-			.leftJoin("dm.recipients", "recipients", "recipients.id = :id", {
-				id: user.id,
-			})
+			.leftJoinAndSelect(
+				"dm.recipients",
+				"recipients",
+				"recipients.id = :id",
+				{
+					id: user.id,
+				},
+			)
+			.leftJoinAndSelect("dm.owner", "owner")
 			.getMany(),
 
 		// TODO: guilds, relationships
@@ -43,7 +36,13 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	this.session = session;
 
-	const ret: ReadyPayload = {
+	await listenEvents(
+		this,
+		[...dmChannels].map((x) => x.id),
+	);
+
+	const ret: READY = {
+		type: "READY",
 		session: this.session.toPrivate(),
 		user: user.toPrivate(),
 		channels: dmChannels.map((x) => x.toPublic()),
@@ -51,18 +50,5 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	clearTimeout(this.auth_timeout);
 
-	return this.send(ret);
-}, IdentifyPayload);
-
-export type ReadyPayload = {
-	/** The authenticated user */
-	user: PrivateUser;
-
-	/** The session associated with this connection */
-	session: PrivateSession;
-
-	/** DM channels this user is a part of */
-	channels: Array<PublicChannel>;
-
-	// TODO: guilds, relationships
-};
+	return await consume(this, ret);
+}, IDENTIFY);

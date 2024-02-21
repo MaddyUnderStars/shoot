@@ -1,15 +1,13 @@
-import { APOrderedCollection, CollectionCurrentField } from "activitypub-types";
+import { APCollectionPage } from "activitypub-types";
 
-export const makeOrderedCollection = async <
-	T extends CollectionCurrentField,
->(opts: {
+export const makeOrderedCollection = async <T extends APCollectionPage>(opts: {
 	page: boolean;
 	min_id?: string;
 	max_id?: string;
 	id: string;
 	getTotalElements: () => Promise<number>;
 	getElements: (before?: string, after?: string) => Promise<T[]>;
-}): Promise<APOrderedCollection> => {
+}): Promise<APCollectionPage> => {
 	const { page, min_id, max_id, id, getTotalElements, getElements } = opts;
 
 	if (!page)
@@ -32,9 +30,8 @@ export const makeOrderedCollection = async <
 	return {
 		id: `${id}?page=true`,
 		type: "OrderedCollection",
-		first: new URL(`${id}?page=true`),
-		last: new URL(`${id}?page=true&min_id=0`),
+		next: new URL(`${id}?min_id=${elems[elems.length - 1].id}`).toString(),
 		totalItems: await getTotalElements(),
-		orderedItems: elems,
+		items: elems,
 	};
 };

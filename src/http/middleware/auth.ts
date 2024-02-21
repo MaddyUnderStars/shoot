@@ -6,7 +6,7 @@ const NO_AUTH_ROUTES = [
 	"/auth/login",
 	"/auth/register",
 	/\.well\-known/,
-	"/nodeinfo/2.0",
+	"/nodeinfo/2.0.json",
 ];
 
 export const authHandler: RequestHandler = async (req, res, next) => {

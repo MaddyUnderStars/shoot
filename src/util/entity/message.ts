@@ -1,12 +1,14 @@
 import { ObjectIsNote } from "activitypub-types";
-import { DMChannel, Message } from "../../entity";
+import { Actor, DMChannel, Message } from "../../entity";
 import { sendActivity } from "../../sender";
 import {
 	APError,
 	addContext,
 	buildAPAnnounceNote,
+	buildAPCreateNote,
 	buildAPNote,
 } from "../activitypub";
+import { emitGatewayEvent } from "../events";
 
 /**
  * Handle a new message by validating it, sending gateway event, and sending an Announce
@@ -25,28 +27,47 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	await Message.insert(message);
 
-	// TODO: gateway event send
+	emitGatewayEvent(message.channel.id, {
+		type: "MESSAGE_CREATE",
+		message: message.toPublic(),
+	});
 
 	if (!federate) return;
 
-	let note;
-	if (message.reference_object && ObjectIsNote(message.reference_object.raw))
-		note = message.reference_object.raw;
-	else note = buildAPNote(message);
+	const note =
+		message.reference_object && ObjectIsNote(message.reference_object.raw)
+			? message.reference_object.raw
+			: buildAPNote(message);
 
-	const announce = buildAPAnnounceNote(note, message.channel.id);
-	const withContext = addContext(announce);
+	// await sendActivity(
+	// 	recipients,
+	// 	addContext(buildAPCreateNote(note)),
+	// 	message.author,
+	// );
 
-	let recipients;
-	if (message.channel instanceof DMChannel) {
-		recipients = message.channel.recipients;
-	} else throw new APError("aaaaaaa!");
+	if (message.channel.remote_address) {
+		// We don't own this room, send create to channel
 
-	recipients = recipients
-		.filter((x) => x.collections?.inbox)
-		.map((x) => new URL(x.collections!.inbox));
+		const create = buildAPCreateNote(note);
 
-	if (!recipients.length) return;
+		await sendActivity(message.channel, addContext(create), message.author);
+	} else {
+		// we're the owner of the channel, send the announce to each member
 
-	await sendActivity(recipients, withContext, message.channel);
+		const announce = buildAPAnnounceNote(note, message.channel.id);
+
+		let recipients: Array<Actor> =
+			message.channel instanceof DMChannel
+				? [...message.channel.recipients, message.channel.owner]
+				: [];
+
+		// remove the author's instance from the recipients
+		// since they author'd it and already have a copy
+		// TODO: maybe this should be used as an acknowledge instead? or send an `Acknowledge` activity?
+		recipients = recipients.filter(
+			(x) => x.domain != message.author.domain,
+		);
+
+		await sendActivity(recipients, addContext(announce), message.channel);
+	}
 };

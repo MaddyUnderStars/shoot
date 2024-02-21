@@ -71,6 +71,29 @@
 					"domain"
 				]
 			},
+			"PrivateRelationship": {
+				"type": "object",
+				"properties": {
+					"created": {
+						"type": "string"
+					},
+					"from_id": {
+						"type": "string"
+					},
+					"to_id": {
+						"type": "string"
+					},
+					"type": {
+						"type": "number"
+					}
+				},
+				"required": [
+					"created",
+					"from_id",
+					"to_id",
+					"type"
+				]
+			},
 			"PublicMessage": {
 				"type": "object",
 				"properties": {
@@ -106,7 +129,7 @@
 		"parameters": {}
 	},
 	"paths": {
-		"/nodeinfo/2.0/": {
+		"/nodeinfo/2.0.json/": {
 			"get": {
 				"summary": "",
 				"responses": {
@@ -128,11 +151,15 @@
 												},
 												"version": {
 													"type": "string"
+												},
+												"homepage": {
+													"type": "string"
 												}
 											},
 											"required": [
 												"name",
-												"version"
+												"version",
+												"homepage"
 											]
 										},
 										"protocols": {
@@ -168,7 +195,7 @@
 				"summary": "",
 				"requestBody": {
 					"content": {
-						"requestContentType": {
+						"application/json": {
 							"schema": {
 								"type": "object",
 								"properties": {
@@ -217,7 +244,7 @@
 				"summary": "",
 				"requestBody": {
 					"content": {
-						"requestContentType": {
+						"application/json": {
 							"schema": {
 								"type": "object",
 								"properties": {
@@ -282,7 +309,7 @@
 				"summary": "",
 				"requestBody": {
 					"content": {
-						"requestContentType": {
+						"application/json": {
 							"schema": {
 								"type": "object",
 								"properties": {
@@ -306,6 +333,26 @@
 								"schema": {
 									"type": "object",
 									"properties": {}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/@me/channels/": {
+			"get": {
+				"summary": "",
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/PublicChannel"
+									}
 								}
 							}
 						}
@@ -355,7 +402,7 @@
 				],
 				"requestBody": {
 					"content": {
-						"requestContentType": {
+						"application/json": {
 							"schema": {
 								"type": "object",
 								"properties": {
@@ -384,6 +431,187 @@
 				}
 			}
 		},
+		"/users/{user_id}/relationship/": {
+			"get": {
+				"summary": "",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PrivateRelationship"
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"summary": "",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"type": {
+										"anyOf": [
+											{
+												"type": "string",
+												"enum": [
+													"blocked"
+												]
+											},
+											{
+												"type": "string",
+												"enum": [
+													"pending"
+												]
+											}
+										]
+									}
+								},
+								"required": [
+									"type"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PrivateRelationship"
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"summary": "",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "number",
+									"enum": [
+										200
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/": {
+			"get": {
+				"summary": "",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					}
+				}
+			},
+			"patch": {
+				"summary": "",
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
 		"/channel/{channel_id}/messages/": {
 			"post": {
 				"summary": "",
@@ -399,7 +627,7 @@
 				],
 				"requestBody": {
 					"content": {
-						"requestContentType": {
+						"application/json": {
 							"schema": {
 								"type": "object",
 								"properties": {
