@@ -2,6 +2,7 @@ import { makeHandler } from ".";
 import { DMChannel, Session } from "../../entity";
 import { getDatabase, getUserFromToken } from "../../util";
 import { IDENTIFY, READY, consume, listenEvents } from "../util";
+import { heartbeatTimeout } from "./heartbeat";
 
 /**
  * - Authenticate user
@@ -47,6 +48,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		user: user.toPrivate(),
 		channels: dmChannels.map((x) => x.toPublic()),
 	};
+
+	this.heartbeat_timeout = setTimeout(() => heartbeatTimeout(this), 5000);
 
 	clearTimeout(this.auth_timeout);
 

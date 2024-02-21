@@ -17,6 +17,9 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	/** When triggered, disconnect this client. They have not authed in time */
 	auth_timeout?: NodeJS.Timeout;
 
+	/** When triggered, disconnect this client. They have not sent a heartbeat in time */
+	heartbeat_timeout?: NodeJS.Timeout;
+
 	/** Event emitter UUID -> listener cancel function */
 	listeners: Record<string, () => unknown>;
 
