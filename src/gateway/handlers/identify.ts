@@ -1,8 +1,8 @@
 import { makeHandler } from ".";
 import { DMChannel, Session } from "../../entity";
 import { getDatabase, getUserFromToken } from "../../util";
-import { IDENTIFY, READY, consume, listenEvents } from "../util";
-import { heartbeatTimeout } from "./heartbeat";
+import { CLOSE_CODES, IDENTIFY, READY, consume, listenEvents } from "../util";
+import { startHeartbeatTimeout } from "./heartbeat";
 
 /**
  * - Authenticate user
@@ -11,7 +11,14 @@ import { heartbeatTimeout } from "./heartbeat";
  * - Build payload and send to user
  */
 export const onIdentify = makeHandler(async function (payload) {
-	const user = await getUserFromToken(payload.token);
+	let user;
+	try {
+		user = await getUserFromToken(payload.token);
+	} catch (e) {
+		this.close(CLOSE_CODES.BAD_TOKEN);
+		return;
+	}
+
 	this.user_id = user.id;
 
 	const [session, dmChannels] = await Promise.all([
@@ -37,7 +44,7 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	this.session = session;
 
-	await listenEvents(
+	listenEvents(
 		this,
 		[...dmChannels].map((x) => x.id),
 	);
@@ -49,7 +56,7 @@ export const onIdentify = makeHandler(async function (payload) {
 		channels: dmChannels.map((x) => x.toPublic()),
 	};
 
-	this.heartbeat_timeout = setTimeout(() => heartbeatTimeout(this), 5000);
+	startHeartbeatTimeout(this);
 
 	clearTimeout(this.auth_timeout);
 

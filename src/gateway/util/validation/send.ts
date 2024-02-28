@@ -2,6 +2,7 @@ import {
 	PrivateSession,
 	PrivateUser,
 	PublicChannel,
+	PublicDmChannel,
 	PublicMessage,
 } from "../../../entity";
 import { Relationship } from "../../../entity/relationship";
@@ -28,6 +29,11 @@ export type MESSAGE_CREATE = {
 	message: PublicMessage;
 };
 
+export type CHANNEL_CREATE = {
+	type: "CHANNEL_CREATE";
+	channel: PublicDmChannel;
+};
+
 export type RELATIONSHIP_CREATE = {
 	type: "RELATIONSHIP_CREATE";
 	relationship: Relationship;
@@ -48,6 +54,7 @@ export type HEARTBEAT_ACK = {
 
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
+	| CHANNEL_CREATE
 	| RELATIONSHIP_CREATE
 	| READY
 	| HEARTBEAT_ACK;

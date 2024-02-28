@@ -15,6 +15,7 @@ import {
 } from "../activitypub";
 import { config } from "../config";
 import { getDatabase } from "../database";
+import { emitGatewayEvent } from "../events";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 import { getOrFetchUser } from "./user";
@@ -34,6 +35,11 @@ export const createDmChannel = async (
 	await channel.save();
 
 	setImmediate(() => generateSigningKeys(channel));
+
+	emitGatewayEvent([...recipients.map((x) => x.id), owner.id], {
+		type: "CHANNEL_CREATE",
+		channel: channel.toPublic(),
+	});
 
 	// federate dm channel creation
 

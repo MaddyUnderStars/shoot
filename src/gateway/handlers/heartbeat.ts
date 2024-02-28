@@ -1,5 +1,11 @@
 import { makeHandler } from ".";
-import { HEARTBEAT, HEARTBEAT_ACK, Websocket, consume } from "../util";
+import {
+	CLOSE_CODES,
+	HEARTBEAT,
+	HEARTBEAT_ACK,
+	Websocket,
+	consume,
+} from "../util";
 
 export const onHeartbeat = makeHandler(async function (payload) {
 	if (payload.s != this.sequence)
@@ -7,7 +13,7 @@ export const onHeartbeat = makeHandler(async function (payload) {
 		throw new Error("Out of sync. Reconnect");
 
 	clearTimeout(this.heartbeat_timeout);
-	this.heartbeat_timeout = setTimeout(() => heartbeatTimeout(this), 5000);
+	startHeartbeatTimeout(this);
 
 	const ret: HEARTBEAT_ACK = {
 		type: "HEARTBEAT_ACK",
@@ -17,5 +23,12 @@ export const onHeartbeat = makeHandler(async function (payload) {
 }, HEARTBEAT);
 
 export const heartbeatTimeout = (socket: Websocket) => {
-	socket.close();
+	socket.close(CLOSE_CODES.HEARTBEAT_TIMEOUT);
+};
+
+export const startHeartbeatTimeout = (socket: Websocket) => {
+	socket.heartbeat_timeout = setTimeout(
+		() => heartbeatTimeout(socket),
+		10_000,
+	);
 };

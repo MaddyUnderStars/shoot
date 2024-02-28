@@ -39,12 +39,6 @@ export const handleMessage = async (message: Message, federate = true) => {
 			? message.reference_object.raw
 			: buildAPNote(message);
 
-	// await sendActivity(
-	// 	recipients,
-	// 	addContext(buildAPCreateNote(note)),
-	// 	message.author,
-	// );
-
 	if (message.channel.remote_address) {
 		// We don't own this room, send create to channel
 

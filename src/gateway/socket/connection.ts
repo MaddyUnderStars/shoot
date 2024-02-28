@@ -1,7 +1,7 @@
 import { IncomingMessage } from "http";
 import ws from "ws";
 import { createLogger } from "../../util";
-import { Websocket, send } from "../util";
+import { CLOSE_CODES, Websocket, send } from "../util";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 
@@ -34,11 +34,14 @@ export function onConnection(
 		try {
 			await onMessage.call(socket, ev);
 		} catch (e) {
-			this.close();
+			this.close(CLOSE_CODES.SERVER_ERROR);
 			Log.error(`message handler failed with`, e);
 		}
 	});
 
 	// Trigger auth timeout after 10 seconds
-	socket.auth_timeout = setTimeout(() => socket.close(), 10_000);
+	socket.auth_timeout = setTimeout(
+		() => socket.close(CLOSE_CODES.IDENTIFY_TIMEOUT),
+		10_000,
+	);
 }

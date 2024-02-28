@@ -1,5 +1,6 @@
 import { ZodSchema } from "zod";
 import { createLogger } from "../../util";
+import { CLOSE_CODES } from "../util";
 import { Websocket } from "../util/websocket";
 
 const Log = createLogger("gateway");
@@ -17,7 +18,7 @@ export const makeHandler = <T>(
 		const ret = schema.safeParse(data);
 		if (!ret.success) {
 			Log.verbose(`${this.ip_address} sent malformed data`);
-			this.close();
+			this.close(CLOSE_CODES.BAD_PAYLOAD);
 			return;
 		}
 

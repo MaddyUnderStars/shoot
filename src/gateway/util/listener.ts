@@ -7,7 +7,7 @@ import { Websocket } from "./websocket";
  * @param socket
  * @param emitters UUIDs of all event emitters, i.e. guilds, channels, users
  */
-export const listenEvents = async (socket: Websocket, emitters: string[]) => {
+export const listenEvents = (socket: Websocket, emitters: string[]) => {
 	for (const emitter of emitters) {
 		listenGatewayEvent(emitter, (payload) => consume(socket, payload));
 	}
@@ -15,6 +15,13 @@ export const listenEvents = async (socket: Websocket, emitters: string[]) => {
 
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
+		case "CHANNEL_CREATE":
+			// TODO: check we're actually in this channel
+
+			// subscribe to this channel
+			listenEvents(socket, [payload.channel.id]);
+			break;
+
 		default:
 			break;
 	}
