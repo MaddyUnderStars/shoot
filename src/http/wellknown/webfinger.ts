@@ -10,13 +10,14 @@ import {
 	route,
 	splitQualifiedMention,
 } from "../../util";
+import { WebfingerResponse } from "../../util/activitypub/constants";
 
 const router = Router();
 
 const WebfingerRequest = z.object({ resource: z.string() });
 
-const uuid =
-	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+// const uuid =
+// /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 router.get(
 	"/webfinger",
@@ -73,16 +74,3 @@ router.get(
 );
 
 export default router;
-
-interface WebfingerLink {
-	rel: string;
-	type?: string;
-	href: string;
-	template?: string;
-}
-
-export interface WebfingerResponse {
-	subject: string;
-	aliases: string[];
-	links: WebfingerLink[];
-}

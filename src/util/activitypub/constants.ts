@@ -1,3 +1,5 @@
+import z from "zod";
+
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 
 export const ACTIVITY_JSON_ACCEPT = [
@@ -18,3 +20,29 @@ export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 };
 
 export type ActorMention = `${string}@${string}`;
+
+interface WebfingerLink {
+	rel: string;
+	type?: string;
+	href?: string;
+	template?: string;
+}
+
+export interface WebfingerResponse {
+	subject: string;
+	aliases: string[];
+	links: WebfingerLink[];
+}
+
+export const WebfingerResponse: z.ZodType<WebfingerResponse> = z.object({
+	subject: z.string(),
+	aliases: z.string().array(),
+	links: z
+		.object({
+			rel: z.string(),
+			type: z.string().optional(),
+			href: z.string().optional(),
+			template: z.string().optional(),
+		})
+		.array(),
+});

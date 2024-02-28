@@ -8,10 +8,13 @@ import {
 } from "activitypub-types";
 import { XMLParser } from "fast-xml-parser";
 import { ApCache } from "../../entity";
-import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { config } from "../config";
 import { createLogger } from "../log";
-import { ACTIVITY_JSON_ACCEPT, USER_AGENT } from "./constants";
+import {
+	ACTIVITY_JSON_ACCEPT,
+	USER_AGENT,
+	WebfingerResponse,
+} from "./constants";
 import { APError } from "./error";
 import { HttpSig } from "./httpsig";
 import { InstanceActor } from "./instanceActor";
@@ -60,7 +63,7 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	const json = await res.json();
 
 	const header = res.headers.get("content-type");
-	if (!header || !ACTIVITY_JSON_ACCEPT.includes(header))
+	if (!header || !ACTIVITY_JSON_ACCEPT.find((x) => header.includes(x)))
 		throw new APError(
 			`Fetched resource ${data} did not return an activitypub/jsonld content type`,
 		);
@@ -101,8 +104,7 @@ export const doWebfingerOrFindTemplate = async (
 				`Remote server sent code ${res.status} : ${res.statusText}`,
 			);
 
-		// TODO: validation
-		return await res.json();
+		return WebfingerResponse.parse(await res.json());
 	}
 
 	Log.verbose(`Attempting to find webfinger template to resolve ${lookup}`);
@@ -128,7 +130,7 @@ export const doWebfingerOrFindTemplate = async (
 			`Remote server sent code ${res.status} : ${res.statusText}`,
 		);
 
-	return await res.json();
+	return WebfingerResponse.parse(await res.json());
 };
 
 export const resolveWebfinger = async (
@@ -144,7 +146,8 @@ export const resolveWebfinger = async (
 		);
 
 	const link = wellknown.links.find((x) => x.rel == "self");
-	if (!link) throw new APError(".well-known did not contain rel=self link");
+	if (!link || !link.href)
+		throw new APError(".well-known did not contain rel=self href");
 
 	return await resolveAPObject<AnyAPObject>(link.href);
 };
