@@ -11,7 +11,7 @@ import { ApCache } from "../../entity";
 import { WebfingerResponse } from "../../http/wellknown/webfinger";
 import { config } from "../config";
 import { createLogger } from "../log";
-import { USER_AGENT } from "./constants";
+import { ACTIVITY_JSON_ACCEPT, USER_AGENT } from "./constants";
 import { APError } from "./error";
 import { HttpSig } from "./httpsig";
 import { InstanceActor } from "./instanceActor";
@@ -59,6 +59,12 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	const json = await res.json();
 
+	const header = res.headers.get("content-type");
+	if (!header || !ACTIVITY_JSON_ACCEPT.includes(header))
+		throw new APError(
+			`Fetched resource ${data} did not return an activitypub/jsonld content type`,
+		);
+
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
 	if (!noCache)
@@ -94,6 +100,8 @@ export const doWebfingerOrFindTemplate = async (
 			throw new APError(
 				`Remote server sent code ${res.status} : ${res.statusText}`,
 			);
+
+		// TODO: validation
 		return await res.json();
 	}
 
