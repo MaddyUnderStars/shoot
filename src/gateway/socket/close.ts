@@ -10,5 +10,5 @@ export async function onClose(this: Websocket, event: CloseEvent) {
 
 	clearTimeout(this.auth_timeout);
 
-	await Session.delete({ id: this.session.id });
+	if (this.session) await Session.delete({ id: this.session.id });
 }
