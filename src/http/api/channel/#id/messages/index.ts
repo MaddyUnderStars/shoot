@@ -56,6 +56,7 @@ router.get(
 				before: z.string().optional(),
 				around: z.string().optional(),
 			}),
+			response: z.array(PublicMessage),
 		},
 		async (req, res) => {
 			const channelMention = splitQualifiedMention(req.params.channel_id);
@@ -82,9 +83,9 @@ router.get(
 				order: {
 					published: "DESC",
 				},
-				loadRelationIds: {
-					relations: ["channel", "author"],
-					disableMixedMap: true,
+				relations: {
+					author: true,
+					channel: true,
 				},
 			});
 

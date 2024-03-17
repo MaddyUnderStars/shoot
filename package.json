@@ -7,7 +7,8 @@
 		"start": "node dist/bootstrap.js",
 		"cli": "node dist/cli.js",
 		"build": "tsc",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"openapi": "node dist/scripts/openapi.js"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",

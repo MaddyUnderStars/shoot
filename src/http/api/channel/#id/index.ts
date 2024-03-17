@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel } from "../../../../entity";
+import { Channel, PublicChannel } from "../../../../entity";
 import {
 	config,
 	getOrFetchChannel,
@@ -19,6 +19,7 @@ router.get(
 	route(
 		{
 			params,
+			response: PublicChannel,
 		},
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
