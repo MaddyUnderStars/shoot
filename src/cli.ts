@@ -1,7 +1,10 @@
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
+extendZodWithOpenApi(z);
+
 import crypto from "crypto";
 import fs from "fs/promises";
 import { promisify } from "util";
-import { closeDatabase, config, initDatabase, registerUser } from "./util";
 import { createLogger } from "./util/log";
 import { KEY_OPTIONS } from "./util/rsa";
 const generateKeyPair = promisify(crypto.generateKeyPair);
@@ -80,6 +83,10 @@ const handlers = {
 			Log.error("Must specify username");
 			return;
 		}
+
+		const { config } = await import("./util/config");
+		const { closeDatabase, initDatabase } = await import("./util/database");
+		const { registerUser } = await import("./util/entity/user");
 
 		const handle = `${username}@${config.federation.webapp_url.hostname}`;
 
