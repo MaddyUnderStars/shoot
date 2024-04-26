@@ -9,7 +9,9 @@ import { Websocket } from "./websocket";
  */
 export const listenEvents = (socket: Websocket, emitters: string[]) => {
 	for (const emitter of emitters) {
-		listenGatewayEvent(emitter, (payload) => consume(socket, payload));
+		socket.events[emitter] = listenGatewayEvent(emitter, (payload) =>
+			consume(socket, payload),
+		);
 	}
 };
 

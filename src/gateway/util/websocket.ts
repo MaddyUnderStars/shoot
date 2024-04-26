@@ -21,7 +21,7 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	heartbeat_timeout?: NodeJS.Timeout;
 
 	/** Event emitter UUID -> listener cancel function */
-	listeners: Record<string, () => unknown>;
+	events: Record<string, () => unknown>;
 
 	/** The original socket.send function */
 	raw_send: (

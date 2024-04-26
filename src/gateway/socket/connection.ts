@@ -12,6 +12,8 @@ export function onConnection(
 	socket: Websocket,
 	request: IncomingMessage,
 ) {
+	socket.events = {};
+
 	socket.sequence = 0;
 
 	//@ts-expect-error

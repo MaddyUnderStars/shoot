@@ -18,5 +18,11 @@ export const listenGatewayEvent = (
 	target: string,
 	callback: (payload: GATEWAY_EVENT) => unknown,
 ) => {
+	events.setMaxListeners(events.getMaxListeners() + 1);
 	events.addListener(target, callback);
+
+	return () => {
+		events.removeListener(target, callback);
+		events.setMaxListeners(events.getMaxListeners() - 1);
+	};
 };
