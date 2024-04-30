@@ -6,6 +6,9 @@ export abstract class Actor extends BaseModel {
 	@Column({ nullable: true, type: String })
 	remote_address: string | null;
 
+	@Column({ type: String, nullable: true })
+	remote_id: string | null;
+
 	/** The domain of this actor. null if local */
 	@Column({ type: String, nullable: true })
 	domain: string | null;

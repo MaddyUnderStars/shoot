@@ -1,8 +1,10 @@
-import {
+import type {
 	PrivateSession,
 	PrivateUser,
 	PublicChannel,
 	PublicDmChannel,
+	PublicGuild,
+	PublicGuildTextChannel,
 	PublicMessage,
 } from "../../../entity";
 import { Relationship } from "../../../entity/relationship";
@@ -31,7 +33,12 @@ export type MESSAGE_CREATE = {
 
 export type CHANNEL_CREATE = {
 	type: "CHANNEL_CREATE";
-	channel: PublicDmChannel;
+	channel: PublicDmChannel | PublicGuildTextChannel;
+};
+
+export type GUILD_CREATE = {
+	type: "GUILD_CREATE";
+	guild: PublicGuild;
 };
 
 export type RELATIONSHIP_CREATE = {
@@ -45,6 +52,7 @@ export type READY = {
 	user: PrivateUser;
 	session: PrivateSession;
 	channels: Array<PublicChannel>;
+	guilds: Array<PublicGuild>;
 };
 
 export type HEARTBEAT_ACK = {
@@ -55,6 +63,7 @@ export type HEARTBEAT_ACK = {
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
 	| CHANNEL_CREATE
+	| GUILD_CREATE
 	| RELATIONSHIP_CREATE
 	| READY
 	| HEARTBEAT_ACK;

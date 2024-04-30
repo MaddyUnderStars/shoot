@@ -1,5 +1,5 @@
 import { makeHandler } from ".";
-import { DMChannel, Session } from "../../entity";
+import { DMChannel, Guild, Session } from "../../entity";
 import { getDatabase, getUserFromToken } from "../../util";
 import { CLOSE_CODES, IDENTIFY, READY, consume, listenEvents } from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
@@ -21,7 +21,7 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	this.user_id = user.id;
 
-	const [session, dmChannels] = await Promise.all([
+	const [session, dmChannels, guilds] = await Promise.all([
 		Session.create({
 			user,
 		}).save(),
@@ -39,21 +39,29 @@ export const onIdentify = makeHandler(async function (payload) {
 			.leftJoinAndSelect("dm.owner", "owner")
 			.getMany(),
 
-		// TODO: guilds, relationships
+		// TODO: guild members
+		Guild.find({
+			where: { owner: { id: this.user_id } },
+			relations: { channels: true },
+		}),
+		// TODO: relationships
 	]);
 
 	this.session = session;
 
-	listenEvents(
-		this,
-		[...dmChannels].map((x) => x.id),
-	);
+	listenEvents(this, [
+		this.user_id,
+		...dmChannels.map((x) => x.id),
+		...guilds.map((x) => x.id),
+		...guilds.flatMap((x) => x.channels.map((y) => y.id)),
+	]);
 
 	const ret: READY = {
 		type: "READY",
 		session: this.session.toPrivate(),
 		user: user.toPrivate(),
 		channels: dmChannels.map((x) => x.toPublic()),
+		guilds: guilds.map((x) => x.toPublic()),
 	};
 
 	startHeartbeatTimeout(this);

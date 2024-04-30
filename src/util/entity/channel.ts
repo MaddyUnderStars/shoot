@@ -3,7 +3,7 @@ import { promisify } from "util";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 import { APActor, ObjectIsGroup } from "activitypub-types";
-import { User } from "../../entity";
+import { Guild, GuildTextChannel, User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
 import {
@@ -19,6 +19,25 @@ import { emitGatewayEvent } from "../events";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 import { getOrFetchUser } from "./user";
+
+export const createGuildTextChannel = async (name: string, guild: Guild) => {
+	const channel = GuildTextChannel.create({
+		name,
+		guild,
+		domain: config.federation.webapp_url.hostname,
+	});
+
+	await channel.save();
+
+	setImmediate(() => generateSigningKeys(channel));
+
+	emitGatewayEvent([guild.owner.id], {
+		type: "CHANNEL_CREATE",
+		channel: channel.toPublic(),
+	});
+
+	return channel;
+};
 
 export const createDmChannel = async (
 	name: string,
