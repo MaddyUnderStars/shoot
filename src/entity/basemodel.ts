@@ -1,4 +1,4 @@
-import merge from "ts-deepmerge";
+import { merge } from "ts-deepmerge";
 import { BaseEntity, PrimaryGeneratedColumn } from "typeorm";
 
 export abstract class BaseModel extends BaseEntity {

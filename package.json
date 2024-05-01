@@ -5,7 +5,7 @@
 	"main": "dist/bootstrap.js",
 	"scripts": {
 		"start": "node dist/bootstrap.js",
-		"cli": "node dist/cli.js",
+		"cli": "node dist/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky install",
 		"openapi": "node dist/scripts/openapi.js"
@@ -13,7 +13,7 @@
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
-		"@asteasolutions/zod-to-openapi": "^6.3.1",
+		"@asteasolutions/zod-to-openapi": "^7.0.0",
 		"@types/bcrypt": "^5.0.2",
 		"@types/config": "^3.3.3",
 		"@types/cors": "^2.8.17",
@@ -40,7 +40,7 @@
 		"morgan": "^1.10.0",
 		"pg": "^8.11.3",
 		"sqlite3": "^5.1.6",
-		"ts-deepmerge": "^6.2.0",
+		"ts-deepmerge": "^7.0.0",
 		"typeorm": "^0.3.17",
 		"ws": "^8.16.0",
 		"zod": "^3.22.4",
