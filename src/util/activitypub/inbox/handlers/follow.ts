@@ -1,6 +1,6 @@
 import { APAccept } from "activitypub-types";
 import { ActivityHandler } from ".";
-import { Channel, User } from "../../../../entity";
+import { Channel, Guild, User } from "../../../../entity";
 import { RelationshipType } from "../../../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
@@ -26,6 +26,10 @@ export const FollowActivityHandler: ActivityHandler = async (
 		if (relationship.type != RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
+		throw new APError("not implemented");
+	} else if (target instanceof Guild) {
+		// TODO: check invites
+		throw new APError("not implemented");
 	} else throw new APError("Cannot accept follows for this target");
 
 	const accept: APAccept = addContext({

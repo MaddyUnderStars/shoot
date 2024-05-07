@@ -55,9 +55,9 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	if (!res.ok)
 		throw new APError(
-			`Remote server sent code ${res.status} : ${
-				res.statusText
-			} : ${await res.text()}`,
+			`Remote server sent code ${res.status} : ${res.statusText}`,
+			400,
+			await res.text(),
 		);
 
 	const json = await res.json();
@@ -159,7 +159,17 @@ export const resolveCollectionEntries = async (
 	collection: URL,
 	limit: number = 10,
 ): Promise<Array<string>> => {
+	if (limit < 0) throw new APError(`Limit reached when resolving collection`);
+	limit--;
+
 	const ret: Array<string> = [];
+
+	/**
+	 * TOOD: Is disabling cache for collections a good idea?
+	 * We might want to actually disable cache for only the last page,
+	 * and then when we refetch this collection, we just need to start from the end again
+	 * But that might be a bit complicated?
+	 */
 
 	const parent = await resolveAPObject(collection.toString());
 
@@ -174,11 +184,15 @@ export const resolveCollectionEntries = async (
 				: undefined;
 
 	if (!items && parent.first)
-		return await resolveCollectionEntries(new URL(parent.first.toString()));
+		return await resolveCollectionEntries(
+			new URL(parent.first.toString()),
+			limit,
+		);
 	else if (!items) throw new APError("can't find collection items");
 
 	for (const item of items) {
-		// if we just return all the IDs, then collections that just return the full objects won't be cached!
+		// TODO: if we just return all the IDs, then collections that just return the full objects won't be cached!
+		// this is bad btw!!!
 
 		let id =
 			typeof item == "string" ? item : "id" in item ? item.id : undefined;
@@ -191,10 +205,7 @@ export const resolveCollectionEntries = async (
 	if (parent.next && typeof parent.next == "string") {
 		Log.verbose(`Resolving next page of collection ${parent.id}`);
 		ret.push(
-			...(await resolveCollectionEntries(
-				new URL(parent.next),
-				limit - 1,
-			)),
+			...(await resolveCollectionEntries(new URL(parent.next), limit)),
 		);
 	}
 

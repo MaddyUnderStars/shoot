@@ -16,13 +16,12 @@ router.use("/", (req, res, next) => {
 			req.headers["content-type"]?.includes(v),
 		)
 	) {
-		return s2s(req, res, next);
+		s2s(req, res, next);
+	} else {
+		api(req, res, next);
 	}
-
-	return next();
 });
 
-router.use("/", api);
 router.use("/", wellknown);
 
 export default router;

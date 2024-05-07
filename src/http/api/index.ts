@@ -16,6 +16,9 @@ router.use("/auth", auth_register, auth_login);
 import users_me from "./users/@me";
 router.use("/users/@me", users_me);
 
+import users_me_guilds from "./users/@me/guilds";
+router.use("/users/@me/guilds", users_me_guilds);
+
 import users_me_channels from "./users/@me/channels";
 router.use("/users/@me/channels", users_me_channels);
 
@@ -30,6 +33,9 @@ router.use("/users/:user_id/relationship", users_id_relationship);
 
 import guild from "./guild";
 router.use("/guild", guild);
+
+import guild_id from "./guild/#id";
+router.use("/guild/:guild_id", guild_id);
 
 import channels_id from "./channel/#id";
 router.use("/channel/:channel_id", channels_id);

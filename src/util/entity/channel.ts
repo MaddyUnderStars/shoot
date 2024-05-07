@@ -2,7 +2,12 @@ import crypto from "crypto";
 import { promisify } from "util";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
-import { APActor, ObjectIsGroup } from "activitypub-types";
+import {
+	APActor,
+	ObjectIsGroup,
+	ObjectIsOrganization,
+	ObjectIsPerson,
+} from "activitypub-types";
 import { Guild, GuildTextChannel, User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
@@ -18,7 +23,9 @@ import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
-import { getOrFetchUser } from "./user";
+import { createGuildFromRemoteOrg } from "./guild";
+import { findActorOfAnyType } from "./resolve";
+import { createUserForRemotePerson, getOrFetchUser } from "./user";
 
 export const createGuildTextChannel = async (name: string, guild: Guild) => {
 	const channel = GuildTextChannel.create({
@@ -74,6 +81,7 @@ export const getOrFetchChannel = async (channel_id: string) => {
 		.select("channels")
 		.leftJoinAndSelect("channels.recipients", "recipients")
 		.leftJoinAndSelect("channels.owner", "owner")
+		.leftJoinAndSelect("channels.guild", "guild")
 		.where((qb) => {
 			qb.where("channels.id = :id", { id: mention.user }).andWhere(
 				"channels.domain = :domain",
@@ -122,51 +130,80 @@ export const createChannelFromRemoteGroup = async (
 	if (typeof obj.inbox != "string" || typeof obj.outbox != "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
-	let channel: Channel;
-	// TODO: check type of channel of remote obj
-	switch ("dm") {
-		case "dm":
-			if (!obj.followers)
-				throw new APError("DMChannel must have followers collection");
+	if (!obj.id) throw new APError("Remote object did not have ID");
 
-			// note for next time u open:
-			// messages federate properly,
-			// but remote server can't fetch them because
-			// it tries to fetch by local id and not remote id
-			// so need to save remote id to db and fetch by that
+	if (!obj.name) throw new APError("Remote 'channel' did not have name");
 
-			channel = DMChannel.create({
-				domain: mention.domain,
-				remote_id: mention.user,
+	const owner = await resolveChannelOwner(obj.attributedTo);
 
-				name: obj.name,
-				owner: await getOrFetchUser(obj.attributedTo),
+	if (!owner) throw new APError("Could not resolve channel owner");
 
-				// TODO: fetch recipients over time
-				recipients: await Promise.all([
-					...(
-						await resolveCollectionEntries(
-							new URL(obj.followers.toString()),
-						)
+	let channel: Channel = Channel.create({
+		domain: mention.domain,
+		remote_id: mention.user,
+		name: obj.name,
+		remote_address: obj.id,
+		public_key: obj.publicKey.publicKeyPem,
+		collections: {
+			inbox: obj.inbox,
+			shared_inbox: obj.endpoints?.sharedInbox,
+			outbox: obj.outbox,
+			followers: obj.followers?.toString(),
+			following: obj.following?.toString(),
+		},
+	});
+
+	if (owner instanceof User) {
+		if (!obj.followers)
+			throw new APError("DMChannel must have followers collection");
+
+		// note for next time u open:
+		// messages federate properly,
+		// but remote server can't fetch them because
+		// it tries to fetch by local id and not remote id
+		// so need to save remote id to db and fetch by that
+
+		channel = DMChannel.create({
+			...channel,
+
+			owner,
+
+			// TODO: fetch recipients over time
+			recipients: await Promise.all([
+				...(
+					await resolveCollectionEntries(
+						new URL(obj.followers.toString()),
 					)
-						.filter((x) => x != obj.attributedTo)
-						.map((x) => getOrFetchUser(x)),
-				]),
-				remote_address: obj.id,
-				public_key: obj.publicKey.publicKeyPem,
+				)
+					.filter((x) => x != obj.attributedTo)
+					.map((x) => getOrFetchUser(x)),
+			]),
+		});
+	} else if (owner instanceof Guild) {
+		channel = GuildTextChannel.create({
+			...channel,
 
-				collections: {
-					inbox: obj.inbox,
-					shared_inbox: obj.endpoints?.sharedInbox,
-					outbox: obj.outbox,
-					followers: obj.followers?.toString(),
-					following: obj.following?.toString(),
-				},
-			});
-			break;
-		default:
-			throw new APError("Resolved group was not a recognisable type");
-	}
+			guild: owner,
+		});
+	} else throw new APError("Unrecognised channel type");
 
 	return channel;
+};
+
+const resolveChannelOwner = async (lookup: string) => {
+	// is lookup on our domain?
+
+	const mention = splitQualifiedMention(lookup);
+
+	const actor = await findActorOfAnyType(mention.user, mention.domain);
+	if (actor) return actor;
+
+	// otherwise, do a remote lookup
+
+	const obj = await resolveAPObject(lookup);
+
+	if (ObjectIsPerson(obj)) return await createUserForRemotePerson(obj);
+	else if (ObjectIsOrganization(obj))
+		return await createGuildFromRemoteOrg(obj);
+	else throw new APError("unimplemented");
 };

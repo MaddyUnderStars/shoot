@@ -30,7 +30,8 @@ export const makeOrderedCollection = async <T extends APCollectionPage>(opts: {
 	return {
 		id: `${id}?page=true`,
 		type: "OrderedCollection",
-		next: new URL(`${id}?min_id=${elems[elems.length - 1].id}`).toString(),
+		// next: elems.length > 0 ? new URL(`${id}?min_id=${elems[elems.length - 1].id}`).toString() : undefined,
+		next: undefined,
 		totalItems: await getTotalElements(),
 		items: elems,
 	};

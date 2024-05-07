@@ -20,7 +20,7 @@ export abstract class Actor extends BaseModel {
 	collections: {
 		inbox: string;
 		outbox: string;
-		shared_inbox: string;
+		shared_inbox: string | undefined;
 		followers?: string;
 		following?: string;
 	} | null;

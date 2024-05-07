@@ -1,4 +1,4 @@
-import { Response, Router } from "express";
+import { Router } from "express";
 import { z } from "zod";
 import { PublicUser } from "../../../../entity";
 import { getOrFetchUser, route } from "../../../../util";
@@ -14,12 +14,11 @@ router.get(
 			}),
 			response: PublicUser,
 		},
-		async (req, res: Response<PublicUser>) => {
+		async (req, res) => {
 			const { user_id } = req.params;
 
 			const user = await getOrFetchUser(user_id);
 
-			//@ts-ignore
 			return res.json(user.toPublic());
 		},
 	),

@@ -3,15 +3,23 @@ import {
 	APCreate,
 	APGroup,
 	APNote,
+	APOrganization,
 	APPerson,
 } from "activitypub-types";
-import { ApCache, DMChannel, User } from "../../entity";
+import {
+	ApCache,
+	DMChannel,
+	Guild,
+	GuildTextChannel,
+	User,
+} from "../../entity";
 import { Channel } from "../../entity/channel";
 import { Message } from "../../entity/message";
 import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
 import { getOrFetchAttributedUser } from "../entity";
 import { createXsdDate } from "../misc";
+import { APError } from "./error";
 import { InstanceActor } from "./instanceActor";
 
 export const buildMessageFromAPNote = async (
@@ -116,15 +124,47 @@ export const buildAPPerson = (user: User): APPerson => {
 	};
 };
 
-export const buildAPGroup = (channel: Channel): APGroup => {
-	const id = `/channel/${channel.id}`;
+export const buildAPOrganization = (guild: Guild): APOrganization => {
+	const id = getExternalPathFromActor(guild);
 
 	const { webapp_url, instance_url } = config.federation;
 
-	const owner =
-		channel instanceof DMChannel
-			? `${instance_url.origin}/users/${channel.owner.name}`
-			: undefined;
+	const owner = `${instance_url.origin}${getExternalPathFromActor(guild.owner)}`;
+
+	return {
+		type: "Organization",
+		id: `${instance_url.origin}${id}`,
+		url: `${webapp_url.origin}${id}`,
+
+		attributedTo: owner,
+
+		preferredUsername: guild.id,
+		name: guild.name,
+
+		inbox: `${instance_url.origin}${id}/inbox`,
+		outbox: `${instance_url.origin}${id}/outbox`,
+		followers: `${instance_url.origin}${id}/followers`,
+		following: `${instance_url.origin}${id}/following`,
+
+		publicKey: {
+			id: `${instance_url.origin}${id}`,
+			owner: `${webapp_url.origin}${id}`,
+			publicKeyPem: guild.public_key,
+		},
+	};
+};
+
+export const buildAPGroup = (channel: Channel): APGroup => {
+	const id = getExternalPathFromActor(channel);
+
+	const { webapp_url, instance_url } = config.federation;
+
+	let owner;
+	if (channel instanceof DMChannel)
+		owner = `${instance_url.origin}${getExternalPathFromActor(channel.owner)}`;
+	else if (channel instanceof GuildTextChannel)
+		owner = `${instance_url.origin}${getExternalPathFromActor(channel.guild)}`;
+	else throw new APError("huh?");
 
 	return {
 		type: "Group",

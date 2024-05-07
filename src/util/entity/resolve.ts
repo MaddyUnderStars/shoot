@@ -1,4 +1,4 @@
-import { Channel, User } from "../../entity";
+import { Channel, Guild, User } from "../../entity";
 import { InstanceActor } from "../activitypub";
 
 const uuid =
@@ -8,23 +8,52 @@ export const findActorOfAnyType = async (id: string, domain: string) => {
 	if (id == InstanceActor.id && domain == InstanceActor.domain)
 		return InstanceActor;
 
-	const [user, channel] = await Promise.all([
-		User.findOne({
-			where: {
-				name: id,
-				domain: domain,
-			},
-		}),
-		// todo: awful
+	// todo: awful
+	const [user, channel, guild] = await Promise.all([
+		uuid.test(id)
+			? null
+			: User.findOne({
+					where: [
+						{
+							name: id,
+							domain: domain,
+						},
+						{
+							remote_id: id,
+							domain,
+						},
+					],
+				}),
 		uuid.test(id)
 			? Channel.findOne({
-					where: {
-						id,
-						domain,
-					},
+					where: [
+						{
+							id,
+							domain,
+						},
+						{
+							remote_id: id,
+							domain,
+						},
+					],
+				})
+			: null,
+
+		uuid.test(id)
+			? Guild.findOne({
+					where: [
+						{
+							id,
+							domain,
+						},
+						{
+							remote_id: id,
+							domain,
+						},
+					],
 				})
 			: null,
 	]);
 
-	return user ?? channel;
+	return user ?? channel ?? guild;
 };

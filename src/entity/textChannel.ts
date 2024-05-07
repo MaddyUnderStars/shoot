@@ -8,7 +8,7 @@ export class GuildTextChannel extends Channel {
 	// permission overwrites
 	// category?
 
-	@ManyToOne("guilds")
+	@ManyToOne("guilds", { onDelete: "CASCADE" })
 	guild: Guild;
 
 	public toPublic(): PublicGuildTextChannel {

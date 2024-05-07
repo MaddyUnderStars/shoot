@@ -1,5 +1,5 @@
 import { APActivity } from "activitypub-types";
-import { Actor, Channel, User } from "../entity";
+import { Actor, Channel, Guild, User } from "../entity";
 import { APError, HttpSig, InstanceActor, config } from "../util";
 import { createLogger } from "../util/log";
 
@@ -63,5 +63,6 @@ export const getExternalPathFromActor = (actor: Actor) => {
 	if (actor.id == InstanceActor.id) return "/actor";
 	if (actor instanceof Channel) return `/channel/${actor.id}`;
 	if (actor instanceof User) return `/users/${actor.name}`;
+	if (actor instanceof Guild) return `/guild/${actor.id}`;
 	throw new APError("unknown actor type");
 };

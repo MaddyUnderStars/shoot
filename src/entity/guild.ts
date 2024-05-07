@@ -39,7 +39,7 @@ export class Guild extends Actor {
 
 	@ManyToMany("users")
 	@JoinTable()
-	members: Member;
+	members: Member[];
 
 	public get mention() {
 		return `${this.remote_id ?? this.id}@${this.domain}`;

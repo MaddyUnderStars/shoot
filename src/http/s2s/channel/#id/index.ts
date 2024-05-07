@@ -27,11 +27,12 @@ router.get(
 		async (req, res) => {
 			const { channel_id } = req.params;
 
-			let channel = await getDatabase()
+			const channel = await getDatabase()
 				.createQueryBuilder(Channel, "channels")
 				.select("channels")
 				.leftJoinAndSelect("channels.recipients", "recipients")
 				.leftJoinAndSelect("channels.owner", "owner")
+				.leftJoinAndSelect("channels.guild", "guild")
 				.where("channels.id = :id", { id: channel_id })
 				.andWhere("channels.domain = :domain", {
 					domain: config.federation.webapp_url.hostname,
@@ -56,6 +57,7 @@ router.post(
 				.select("channels")
 				.leftJoinAndSelect("channels.recipients", "recipients")
 				.leftJoinAndSelect("channels.owner", "owner")
+				.leftJoinAndSelect("channels.guild", "guild")
 				.where("channels.id = :id", { id: req.params.channel_id })
 				.andWhere("channels.domain = :domain", {
 					domain: config.federation.webapp_url.hostname,

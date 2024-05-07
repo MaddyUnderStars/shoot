@@ -19,7 +19,10 @@ router.get(
 		const { user_id } = req.params;
 
 		const user = await User.findOneOrFail({
-			where: { name: user_id },
+			where: {
+				name: user_id,
+				domain: config.federation.webapp_url.hostname,
+			},
 		});
 
 		return res.json(addContext(buildAPPerson(user)));
