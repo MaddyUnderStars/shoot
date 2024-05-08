@@ -5,6 +5,7 @@ import type {
 	PublicDmChannel,
 	PublicGuild,
 	PublicGuildTextChannel,
+	PublicInvite,
 	PublicMessage,
 } from "../../../entity";
 import { Relationship } from "../../../entity/relationship";
@@ -43,7 +44,12 @@ export type GUILD_CREATE = {
 
 export type RELATIONSHIP_CREATE = {
 	type: "RELATIONSHIP_CREATE";
-	relationship: Relationship;
+	relationship: Relationship; // TODO: public relationship type
+};
+
+export type INVITE_CREATE = {
+	type: "INVITE_CREATE";
+	invite: PublicInvite;
 };
 
 /** Sent by gateway after a user has been authenticated with IDENTIFY */
@@ -65,5 +71,6 @@ export type GATEWAY_EVENT =
 	| CHANNEL_CREATE
 	| GUILD_CREATE
 	| RELATIONSHIP_CREATE
+	| INVITE_CREATE
 	| READY
 	| HEARTBEAT_ACK;

@@ -3,6 +3,7 @@ export * from "./actor";
 export * from "./apcache";
 export * from "./channel";
 export * from "./guild";
+export * from "./invite";
 export * from "./member";
 export * from "./message";
 export * from "./migrations";

@@ -3,6 +3,7 @@ import {
 	APCreate,
 	APGroup,
 	APNote,
+	APObject,
 	APOrganization,
 	APPerson,
 } from "activitypub-types";
@@ -11,6 +12,7 @@ import {
 	DMChannel,
 	Guild,
 	GuildTextChannel,
+	Invite,
 	User,
 } from "../../entity";
 import { Channel } from "../../entity/channel";
@@ -186,5 +188,15 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 			owner: `${webapp_url.origin}${id}`,
 			publicKeyPem: channel.public_key,
 		},
+	};
+};
+
+type APGuildInvite = APObject & { type: "GuildInvite" };
+
+export const buildAPGuildInvite = (invite: Invite): APGuildInvite => {
+	return {
+		type: "GuildInvite",
+		id: `${config.federation.instance_url.origin}/invite/${invite.code}`,
+		// attributedTo: `${config.federation.instance_url.origin}${getExternalPathFromActor(invite.guild)}`,
 	};
 };

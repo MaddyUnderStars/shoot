@@ -18,6 +18,8 @@ import { generateSigningKeys } from "./actor";
 import { createGuildTextChannel, getOrFetchChannel } from "./channel";
 import { getOrFetchUser } from "./user";
 
+export const joinGuild = async (user_id: string, guild_id: string) => {};
+
 export const getOrFetchGuild = async (lookup: string | APOrganization) => {
 	const id = typeof lookup == "string" ? lookup : lookup.id;
 

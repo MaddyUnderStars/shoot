@@ -17,6 +17,9 @@ router.use("/channel/:channel_id", channel_id);
 import guilds_id from "./guild/#id";
 router.use("/guild/:guild_id", guilds_id);
 
+import invite_id from "./invite/#id";
+router.use("/invite/:invite_id", invite_id);
+
 import channel_id_message_id from "./channel/#id/message/#id";
 router.use("/channel/:channel_id/message/:message_id", channel_id_message_id);
 
