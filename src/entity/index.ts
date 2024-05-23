@@ -7,6 +7,8 @@ export * from "./invite";
 export * from "./member";
 export * from "./message";
 export * from "./migrations";
+export * from "./relationship";
+export * from "./role";
 export * from "./session";
 export * from "./textChannel";
 export * from "./user";

@@ -18,6 +18,7 @@ import { DefaultPermissions } from "../permission";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 import { createGuildTextChannel, getOrFetchChannel } from "./channel";
+import { createRoleFromRemote } from "./role";
 import { getOrFetchUser } from "./user";
 
 export const joinGuild = async (user_id: string, guild_id: string) => {
@@ -174,6 +175,8 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 		// to be assigned later
 		channels: [],
 
+		roles: [], // to be assigned later
+
 		// members: await Promise.all([
 		// 	...(
 		// 		await resolveCollectionEntries(
@@ -206,6 +209,22 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 
 	guild.channels = channels;
 	await guild.save();
+
+	const roles = await Promise.all([
+		...(
+			await resolveCollectionEntries(new URL(obj.followers.toString()))
+		).map((x) => createRoleFromRemote(x)),
+	]);
+
+	const everyone = roles.find((x) => x.remote_id == guild.remote_id);
+	if (!everyone)
+		// TOOD: construct one based on membership of all other roles?
+		throw new APError("Remote guild did not have everyone role");
+
+	// this should be modifying a reference, as roles are not primitives
+	everyone.id = guild.id;
+
+	guild.roles = roles;
 
 	return guild;
 };
