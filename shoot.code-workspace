@@ -5,6 +5,10 @@
 			"name": "src",
 		},
 		{
+			"path": "./test",
+			"name": "test",
+		},
+		{
 			"path": "./config",
 			"name": "config",
 		},

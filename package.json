@@ -30,7 +30,6 @@
 	"dependencies": {
 		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
 		"bcrypt": "^5.1.1",
-		"bufferutil": "^4.0.8",
 		"config": "^3.3.9",
 		"cors": "^2.8.5",
 		"dotenv": "^16.3.1",
@@ -39,7 +38,6 @@
 		"jsonwebtoken": "^9.0.2",
 		"morgan": "^1.10.0",
 		"pg": "^8.11.3",
-		"sqlite3": "^5.1.6",
 		"ts-deepmerge": "^7.0.0",
 		"typeorm": "^0.3.17",
 		"ws": "^8.16.0",
@@ -48,5 +46,8 @@
 	},
 	"lint-staged": {
 		"*.{ts,js,md}": "prettier --write"
+	},
+	"optionalDependencies": {
+		"bufferutil": "^4.0.8"
 	}
 }
