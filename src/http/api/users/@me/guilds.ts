@@ -16,7 +16,7 @@ router.get(
 			const guilds = await Guild.find({
 				where: [
 					{ owner: { id: user_id } },
-					{ members: { id: user_id } },
+					{ roles: { members: { id: user_id } } },
 				],
 			});
 

@@ -1,4 +1,4 @@
-import { Column } from "typeorm";
+import { Column, Index } from "typeorm";
 import { BaseModel } from "./basemodel";
 
 export abstract class Actor extends BaseModel {
@@ -7,6 +7,7 @@ export abstract class Actor extends BaseModel {
 	remote_address: string | null;
 
 	@Column({ type: String, nullable: true })
+	@Index({ unique: true, where: "remote_id IS NOT NULL" })
 	remote_id: string | null;
 
 	/** The domain of this actor. null if local */

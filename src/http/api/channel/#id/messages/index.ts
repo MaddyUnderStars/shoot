@@ -2,7 +2,10 @@ import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../entity";
 import {
+	HttpError,
+	PERMISSION,
 	handleMessage,
+	hasPermission,
 	route,
 	splitQualifiedMention,
 } from "../../../../../util";
@@ -25,6 +28,15 @@ router.post(
 		},
 		async (req, res) => {
 			const { channel_id } = req.params;
+
+			if (
+				!(await hasPermission(
+					PERMISSION.SEND_MESSAGES,
+					req.user,
+					channel_id,
+				))
+			)
+				throw new HttpError("Cannot send messages here", 404);
 
 			const channel = await getOrFetchChannel(channel_id);
 

@@ -17,6 +17,7 @@ import {
 } from "../../entity";
 import { Channel } from "../../entity/channel";
 import { Message } from "../../entity/message";
+import { Role } from "../../entity/role";
 import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
 import { getOrFetchAttributedUser } from "../entity";
@@ -126,6 +127,10 @@ export const buildAPPerson = (user: User): APPerson => {
 	};
 };
 
+export type APGuild = APOrganization & {
+	roles: string;
+};
+
 export const buildAPOrganization = (guild: Guild): APOrganization => {
 	const id = getExternalPathFromActor(guild);
 
@@ -191,12 +196,26 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 	};
 };
 
-type APGuildInvite = APObject & { type: "GuildInvite" };
+export type APGuildInvite = APObject & { type: "GuildInvite" };
 
 export const buildAPGuildInvite = (invite: Invite): APGuildInvite => {
 	return {
 		type: "GuildInvite",
 		id: `${config.federation.instance_url.origin}/invite/${invite.code}`,
 		// attributedTo: `${config.federation.instance_url.origin}${getExternalPathFromActor(invite.guild)}`,
+	};
+};
+
+export type APRole = APObject & { type: "Role"; members: string };
+
+export const buildAPRole = (role: Role): APRole => {
+	const id = `${config.federation.instance_url.origin}${getExternalPathFromActor(role.guild)}/role/${role.id}`;
+
+	return {
+		type: "Role",
+		id,
+
+		attributedTo: `${config.federation.instance_url.origin}${getExternalPathFromActor(role.guild)}`,
+		members: `${id}/members`,
 	};
 };

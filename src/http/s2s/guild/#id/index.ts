@@ -92,7 +92,7 @@ router.get(
 								case "outbox":
 								// audit log?
 								case "followers":
-									// roles?
+									// roles
 									return [];
 								case "following":
 									// channels

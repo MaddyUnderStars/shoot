@@ -5,6 +5,7 @@ import {
 	ManyToMany,
 	ManyToOne,
 } from "typeorm";
+import { DefaultPermissions, PERMISSION } from "../util";
 import { Channel, PublicChannel } from "./channel";
 import { User } from "./user";
 
@@ -27,6 +28,18 @@ export class DMChannel extends Channel {
 			recipients: this.recipients.map((x) => x.mention),
 		};
 	}
+
+	public checkPermission = (
+		user: User,
+		permission: PERMISSION | PERMISSION[],
+	) => {
+		permission = Array.isArray(permission) ? permission : [permission];
+
+		if (this.recipients.find((x) => x.id == user.id))
+			return permission.every((x) => DefaultPermissions.includes(x));
+
+		return false;
+	};
 }
 
 export type PublicDmChannel = PublicChannel & {

@@ -4,6 +4,7 @@ import {
 	ObjectIsOrganization,
 } from "activitypub-types";
 import { Guild, GuildTextChannel, Member, User } from "../../entity";
+import { Role } from "../../entity/role";
 import {
 	APError,
 	resolveAPObject,
@@ -13,12 +14,32 @@ import {
 } from "../activitypub";
 import { config } from "../config";
 import { emitGatewayEvent } from "../events";
+import { DefaultPermissions } from "../permission";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 import { createGuildTextChannel, getOrFetchChannel } from "./channel";
 import { getOrFetchUser } from "./user";
 
-export const joinGuild = async (user_id: string, guild_id: string) => {};
+export const joinGuild = async (user_id: string, guild_id: string) => {
+	const member = await Member.create({
+		user: User.create({ id: user_id }),
+		roles: [Role.create({ id: guild_id })],
+	}).save();
+
+	emitGatewayEvent(guild_id, {
+		type: "MEMBER_JOIN",
+		member: member.toPublic(),
+	});
+
+	emitGatewayEvent(user_id, {
+		type: "GUILD_CREATE",
+		guild: (
+			await Guild.findOneOrFail({ where: { id: guild_id } })
+		).toPublic(),
+	});
+
+	return member;
+};
 
 export const getOrFetchGuild = async (lookup: string | APOrganization) => {
 	const id = typeof lookup == "string" ? lookup : lookup.id;
@@ -65,7 +86,7 @@ export const createGuild = async (name: string, owner: User) => {
 
 	setImmediate(() => generateSigningKeys(guild));
 
-	emitGatewayEvent([owner.id], {
+	emitGatewayEvent(owner.id, {
 		type: "GUILD_CREATE",
 		guild: guild.toPublic(),
 	});
@@ -73,6 +94,24 @@ export const createGuild = async (name: string, owner: User) => {
 	// create channels
 
 	await createGuildTextChannel("general", guild);
+
+	// create roles
+
+	// everyone
+	const everyone = await Role.create({
+		id: guild.id,
+		name: "everyone",
+		guild,
+		allow: DefaultPermissions,
+		position: 0,
+	}).save();
+
+	guild.roles = [everyone];
+
+	emitGatewayEvent(guild.id, {
+		type: "ROLE_CREATE",
+		role: everyone.toPublic(),
+	});
 
 	return guild;
 };
@@ -135,15 +174,15 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 		// to be assigned later
 		channels: [],
 
-		members: await Promise.all([
-			...(
-				await resolveCollectionEntries(
-					new URL(obj.followers.toString()),
-				)
-			)
-				.filter((x) => x != obj.attributedTo)
-				.map((x) => getOrFetchMember(x)),
-		]),
+		// members: await Promise.all([
+		// 	...(
+		// 		await resolveCollectionEntries(
+		// 			new URL(obj.followers.toString()),
+		// 		)
+		// 	)
+		// 		.filter((x) => x != obj.attributedTo)
+		// 		.map((x) => getOrFetchMember(x)),
+		// ]),
 
 		remote_address: obj.id,
 		public_key: obj.publicKey.publicKeyPem,

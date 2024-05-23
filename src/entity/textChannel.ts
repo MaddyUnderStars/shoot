@@ -1,15 +1,21 @@
-import { ChildEntity, ManyToOne } from "typeorm";
+import { ChildEntity, Column, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
+import { PERMISSION, checkPermission } from "../util";
 import { Channel } from "./channel";
 import { Guild } from "./guild";
+import { User } from "./user";
 
 @ChildEntity("guild_text")
+@Index(["position", "guild"], { unique: true })
 export class GuildTextChannel extends Channel {
 	// permission overwrites
 	// category?
 
 	@ManyToOne("guilds", { onDelete: "CASCADE" })
 	guild: Guild;
+
+	@Column()
+	position: number;
 
 	public toPublic(): PublicGuildTextChannel {
 		return {
@@ -21,6 +27,11 @@ export class GuildTextChannel extends Channel {
 	public toPrivate(): PublicGuildTextChannel {
 		return this.toPublic();
 	}
+
+	public checkPermission = (
+		user: User,
+		permission: PERMISSION | PERMISSION[],
+	) => checkPermission(user, this.guild, permission);
 }
 
 export type PublicGuildTextChannel = Pick<

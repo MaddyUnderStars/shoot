@@ -9,17 +9,17 @@ const router = Router({ mergeParams: true });
 // TODO: fetch federated invites
 
 router.post(
-	"/",
+	"/:invite_code",
 	route(
 		{
-			body: z.object({ code: z.string() }),
+			params: z.object({ code: z.string() }),
 		},
 		async (req, res) => {
 			// accept an invite code
 
 			const invite = await Invite.findOneOrFail({
 				where: {
-					code: req.body.code,
+					code: req.params.code,
 				},
 				loadRelationIds: {
 					relations: ["guild"],
@@ -35,7 +35,7 @@ router.post(
 );
 
 router.delete(
-	"/",
+	"/:invite_code",
 	route(
 		{
 			params: z.object({ code: z.string() }),

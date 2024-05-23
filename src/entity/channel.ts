@@ -8,10 +8,6 @@ export class Channel extends Actor {
 	@Column()
 	name: string;
 
-	/** The remote ID of this channel, forms its mention */
-	@Column({ type: String, nullable: true })
-	remote_id: string | null;
-
 	public get mention() {
 		return `${this.remote_id ?? this.id}@${this.domain}`;
 	}

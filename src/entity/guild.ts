@@ -1,33 +1,34 @@
 import {
+	AfterLoad,
 	Column,
 	Entity,
 	JoinColumn,
 	JoinTable,
-	ManyToMany,
 	ManyToOne,
 	OneToMany,
 } from "typeorm";
 import { z } from "zod";
+import { PERMISSION, checkPermission } from "../util";
 import { Actor } from "./actor";
 import { PublicChannel } from "./channel";
-import { Member } from "./member";
+import { PublicRole, Role } from "./role";
 import { GuildTextChannel } from "./textChannel";
 import { User } from "./user";
-
-// TODO: instead of storing guild members as a manytomany here
-// use the @everyone role to store them
 
 @Entity("guilds")
 export class Guild extends Actor {
 	@Column()
 	name: string;
 
+	@Column({ type: String, nullable: true })
+	summary: string | null;
+
+	@OneToMany("roles", "guild")
+	roles: Role[];
+
 	@ManyToOne("users")
 	@JoinColumn()
 	owner: User;
-
-	// description
-	// roles
 
 	@Column({ type: String, nullable: true })
 	remote_id: string | null;
@@ -36,10 +37,6 @@ export class Guild extends Actor {
 	@OneToMany("channels", "guild")
 	@JoinTable()
 	channels: GuildTextChannel[];
-
-	@ManyToMany("users")
-	@JoinTable()
-	members: Member[];
 
 	public get mention() {
 		return `${this.remote_id ?? this.id}@${this.domain}`;
@@ -54,16 +51,29 @@ export class Guild extends Actor {
 			channels: this.channels
 				? this.channels.map((x) => x.toPublic())
 				: undefined,
+
+			roles: this.roles ? this.roles.map((x) => x.toPublic()) : undefined,
 		};
 	}
 
 	public toPrivate(): PublicGuild {
 		return this.toPublic();
 	}
+
+	public checkPermission = (
+		user: User,
+		permission: PERMISSION | PERMISSION[],
+	) => checkPermission(user, this, permission);
+
+	@AfterLoad()
+	_sortRoles = () => {
+		if (this.roles) this.roles.sort((a, b) => b.position - a.position);
+	};
 }
 
 export type PublicGuild = Pick<Guild, "id" | "name" | "domain"> & {
 	channels?: PublicChannel[];
+	roles?: PublicRole[];
 };
 
 export const PublicGuild: z.ZodType<PublicGuild> = z
@@ -72,5 +82,6 @@ export const PublicGuild: z.ZodType<PublicGuild> = z
 		name: z.string(),
 		domain: z.string(),
 		channels: PublicChannel.array().optional(),
+		roles: PublicRole.array().optional(),
 	})
 	.openapi("PublicGuild");
