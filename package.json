@@ -4,16 +4,18 @@
 	"description": "Activitypub federated instant messaging server",
 	"main": "dist/bootstrap.js",
 	"scripts": {
-		"start": "node dist/bootstrap.js",
+		"start": "node dist/src/bootstrap.js",
 		"cli": "node dist/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky install",
-		"openapi": "node dist/scripts/openapi.js"
+		"openapi": "node dist/scripts/openapi.js",
+		"test": "ava"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
 		"@asteasolutions/zod-to-openapi": "^7.0.0",
+		"@ava/typescript": "^5.0.0",
 		"@types/bcrypt": "^5.0.2",
 		"@types/config": "^3.3.3",
 		"@types/cors": "^2.8.17",
@@ -21,7 +23,9 @@
 		"@types/jsonwebtoken": "^9.0.5",
 		"@types/morgan": "^1.9.9",
 		"@types/node": "^20.10.4",
+		"@types/pg": "^8.11.6",
 		"@types/ws": "^8.5.10",
+		"ava": "^6.1.3",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.2.0",
 		"prettier": "^3.2.4",
@@ -49,5 +53,18 @@
 	},
 	"optionalDependencies": {
 		"bufferutil": "^4.0.8"
+	},
+	"ava": {
+		"typescript": {
+			"rewritePaths": {
+				"src/": "dist/src/",
+				"test/": "dist/test/"
+			},
+			"compile": "tsc"
+		},
+		"files": [
+			"test/**",
+			"!test/helpers/**"
+		]
 	}
 }

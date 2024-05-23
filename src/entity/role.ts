@@ -7,7 +7,7 @@ import {
 	ManyToOne,
 } from "typeorm";
 import { z } from "zod";
-import { DefaultPermissions, PERMISSION } from "../util";
+import { DefaultPermissions, PERMISSION } from "../util/permission";
 import { BaseModel } from "./basemodel";
 import { Guild } from "./guild";
 import { Member } from "./member";
@@ -35,7 +35,6 @@ export class Role extends BaseModel {
 	@Column({
 		type: "enum",
 		enum: PERMISSION,
-		enumName: "PERMISSION",
 		array: true,
 		default: DefaultPermissions,
 	})
@@ -44,7 +43,6 @@ export class Role extends BaseModel {
 	@Column({
 		type: "enum",
 		enum: PERMISSION,
-		enumName: "PERMISSION",
 		array: true,
 		default: DefaultPermissions,
 	})

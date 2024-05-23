@@ -1,6 +1,8 @@
 import { Column, Entity, TableInheritance } from "typeorm";
 import { z } from "zod";
+import { PERMISSION } from "../util";
 import { Actor } from "./actor";
+import { User } from "./user";
 
 @Entity("channels")
 @TableInheritance({ column: { type: String, name: "type" } })
@@ -23,6 +25,12 @@ export class Channel extends Actor {
 	public toPrivate(): PublicChannel {
 		return this.toPublic();
 	}
+
+	//
+	public checkPermission = (
+		user: User,
+		permission: PERMISSION | PERMISSION[],
+	): boolean => false;
 }
 
 export type PublicChannel = Pick<Channel, "id" | "name" | "domain">;

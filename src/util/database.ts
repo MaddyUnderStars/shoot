@@ -32,7 +32,7 @@ export const initDatabase = async () => {
 	if (connection) return connection;
 	if (initCalled) return await initCalled;
 
-	Log.msg(`Connecting to ${CONNECTION_TYPE}`);
+	Log.msg(`Connecting to ${CONNECTION_STRING}`);
 
 	try {
 		initCalled = DATASOURCE_OPTIONS.initialize();

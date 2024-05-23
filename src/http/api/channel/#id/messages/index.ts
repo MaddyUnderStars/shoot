@@ -5,7 +5,6 @@ import {
 	HttpError,
 	PERMISSION,
 	handleMessage,
-	hasPermission,
 	route,
 	splitQualifiedMention,
 } from "../../../../../util";
@@ -29,16 +28,11 @@ router.post(
 		async (req, res) => {
 			const { channel_id } = req.params;
 
-			if (
-				!(await hasPermission(
-					PERMISSION.SEND_MESSAGES,
-					req.user,
-					channel_id,
-				))
-			)
-				throw new HttpError("Cannot send messages here", 404);
-
 			const channel = await getOrFetchChannel(channel_id);
+
+			// TODO: check if channel is the right type????
+			if (!channel.checkPermission(req.user, PERMISSION.VIEW_CHANNEL))
+				throw new HttpError("Missing permission VIEW_CHANNEL", 400);
 
 			const message = Message.create({
 				channel,

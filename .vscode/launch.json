@@ -23,6 +23,18 @@
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"preLaunchTask": "tsc: build - tsconfig.json",
 			"outputCapture": "std"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug test file",
+			"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
+			"args": ["${file}"],
+			"outputCapture": "std",
+			"skipFiles": ["<node_internals>/**/*.js"],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
 		}
 	]
 }
