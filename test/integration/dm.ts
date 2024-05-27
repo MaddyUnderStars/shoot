@@ -3,7 +3,7 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { createTestUser, setupTests } from "../helpers";
+import { createTestDm, createTestUser, setupTests } from "../helpers";
 setupTests(test);
 
 import request from "supertest";
@@ -12,11 +12,11 @@ test("Can create DM channels", async (t) => {
 	const { APIServer } = await import("../../src/http/server");
 	const api = new APIServer();
 
-	const user1 = await createTestUser("user1");
-	const user2 = await createTestUser("user2");
+	const user1 = await createTestUser("create_user1");
+	const user2 = await createTestUser("create_user2");
 
 	const res = await request(api.app)
-		.post(`/users/user2@localhost/channels`)
+		.post(`/users/create_user2@localhost/channels`)
 		.auth(user1, { type: "bearer" })
 		.send({ name: "dm channel" })
 		.expect(200);
@@ -36,4 +36,36 @@ test("Can create DM channels", async (t) => {
 		.then((x) => t.assert(x.body.find((i: any) => i.id == channel_id)));
 
 	t.pass();
+});
+
+test("Can send messages to dm", async (t) => {
+	const { APIServer } = await import("../../src/http/server");
+	const api = new APIServer();
+
+	const user1 = await createTestUser("messages_user1");
+	const user2 = await createTestUser("messages_user2");
+
+	const channel = await createTestDm("dm", "messages_user1@localhost", [
+		"messages_user2@localhost",
+	]);
+
+	const response = await request(api.app)
+		.post(`/channel/${channel.mention}/messages`)
+		.auth(user1, { type: "bearer" })
+		.send({ content: "test message" })
+		.expect(200);
+
+	const message_id = response.body.id;
+
+	await request(api.app)
+		.get(`/channel/${channel.mention}/messages`)
+		.auth(user1, { type: "bearer" })
+		.expect(200)
+		.then((x) => t.assert(x.body.find((i: any) => i.id == message_id)));
+
+	await request(api.app)
+		.get(`/channel/${channel.mention}/messages`)
+		.auth(user2, { type: "bearer" })
+		.expect(200)
+		.then((x) => t.assert(x.body.find((i: any) => i.id == message_id)));
 });

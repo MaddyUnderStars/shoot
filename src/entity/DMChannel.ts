@@ -35,7 +35,10 @@ export class DMChannel extends Channel {
 	) => {
 		permission = Array.isArray(permission) ? permission : [permission];
 
-		if (this.recipients.find((x) => x.id == user.id))
+		if (
+			this.owner.id == user.id ||
+			this.recipients.find((x) => x.id == user.id)
+		)
 			return permission.every((x) => DefaultPermissions.includes(x));
 
 		return false;
