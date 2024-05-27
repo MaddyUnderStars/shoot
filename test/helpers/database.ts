@@ -21,10 +21,8 @@ export const createRandomDatabase = async (host: string) => {
 	return name;
 };
 
-let name: string | undefined = undefined;
-
 export const connectToRandomDb = async (host: string) => {
-	name = await createRandomDatabase(host);
+	const name = await createRandomDatabase(host);
 
 	const config = JSON.parse(process.env.NODE_CONFIG as string);
 
@@ -38,9 +36,11 @@ export const connectToRandomDb = async (host: string) => {
 
 	const { initDatabase } = await import("../../src/util/database");
 	await initDatabase();
+
+	return name;
 };
 
-export const deleteDatabase = async (host: string) => {
+export const deleteDatabase = async (host: string, name: string) => {
 	const client = new pg.Client({
 		connectionString: host,
 	});

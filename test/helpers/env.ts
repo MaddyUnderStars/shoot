@@ -6,7 +6,12 @@ export const setupTests = (test: TestFn) => {
 	proxyConfig();
 	test.beforeEach("setup", async (t) => {
 		global.console.log = () => {};
-		await connectToRandomDb("postgres://postgres:postgres@127.0.0.1/");
+		const db = await connectToRandomDb(
+			"postgres://postgres:postgres@127.0.0.1/",
+		);
+
+		//@ts-ignore
+		t.context.database_name = db;
 	});
 
 	test.afterEach("teardown", async (t) => {
@@ -15,6 +20,10 @@ export const setupTests = (test: TestFn) => {
 		const { closeDatabase } = await import("../../src/util");
 		await closeDatabase();
 
-		deleteDatabase("postgres://postgres:postgres@127.0.0.1/");
+		deleteDatabase(
+			"postgres://postgres:postgres@127.0.0.1/",
+			//@ts-ignore
+			t.context.database_name,
+		);
 	});
 };
