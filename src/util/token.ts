@@ -12,6 +12,8 @@ export type UserTokenData = {
 
 export const getUserFromToken = (token: string): Promise<User> =>
 	new Promise((resolve, reject) => {
+		token = token.replace("Bearer ", "");
+
 		jwt.verify(
 			token,
 			config.security.jwt_secret,

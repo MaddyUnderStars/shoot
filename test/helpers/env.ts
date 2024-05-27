@@ -5,7 +5,7 @@ import { connectToRandomDb, deleteDatabase } from "./database";
 export const setupTests = (test: TestFn) => {
 	proxyConfig();
 	test.beforeEach("setup", async (t) => {
-		global.console.log = t.log;
+		global.console.log = () => {};
 		await connectToRandomDb("postgres://postgres:postgres@127.0.0.1/");
 	});
 
