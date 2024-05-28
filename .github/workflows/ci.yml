@@ -27,8 +27,12 @@ jobs:
                     --health-retries 5
 
         strategy:
+            fail-fast: false
+
             matrix:
                 node-version: [20.x]
+                node_index: [0, 1, 2, 3]
+                total_nodes: [4]
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
         steps:
@@ -43,3 +47,6 @@ jobs:
             - run: npm ci
             - run: npm run build --if-present
             - run: npm test --if-present
+              env:
+                  CI_NODE_INDEX: ${{ matrix.node_index }}
+                  CI_NODE_TOTAL: ${{ matrix.total_nodes }}
