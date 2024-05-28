@@ -4,17 +4,20 @@ import { connectToRandomDb, deleteDatabase } from "./database";
 
 export const setupTests = (test: TestFn) => {
 	proxyConfig();
-	test.beforeEach("setup", async (t) => {
+	test.before("setup", async (t) => {
 		global.console.log = () => {};
+		delete process.env.NODE_ENV;
+		process.env.SUPPRESS_NO_CONFIG_WARNING = "1";
 		const db = await connectToRandomDb(
 			"postgres://postgres:postgres@127.0.0.1/",
 		);
+		process.env.NODE_ENV = "test";
 
 		//@ts-ignore
 		t.context.database_name = db;
 	});
 
-	test.afterEach("teardown", async (t) => {
+	test.after("teardown", async (t) => {
 		// delete temp db?
 
 		const { closeDatabase } = await import("../../src/util");
