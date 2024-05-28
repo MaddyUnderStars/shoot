@@ -2,3 +2,4 @@ node_modules
 config
 dist
 database.db
+coverage

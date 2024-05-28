@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import { KEY_OPTIONS } from "../../src/util/rsa";
 
-export const RANDOM_PORT = Math.round(Math.random() * 4) + 1000;
+// export const RANDOM_PORT = Math.round(Math.random() * 4) + 1000;
 
-process.env.PORT = RANDOM_PORT.toString();
+// process.env.PORT = RANDOM_PORT.toString();
 
 export const proxyConfig = () => {
 	const keys = crypto.generateKeyPairSync("rsa", KEY_OPTIONS);
@@ -22,8 +22,8 @@ export const proxyConfig = () => {
 		},
 		federation: {
 			enabled: true,
-			webapp_url: new URL(`http://localhost:${RANDOM_PORT}`),
-			instance_url: new URL(`http://localhost:${RANDOM_PORT}`),
+			webapp_url: new URL(`http://localhost`),
+			instance_url: new URL(`http://localhost`),
 			require_http_signatures: true,
 			public_key: keys.publicKey,
 			private_key: keys.privateKey,
