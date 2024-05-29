@@ -18,4 +18,6 @@ export const generateSigningKeys = async (actor: Actor) => {
 	Log.verbose(
 		`Generated keys for actor ${actor.id} in ${Date.now() - start}ms`,
 	);
+
+	return actor;
 };
