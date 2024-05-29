@@ -34,13 +34,7 @@ export const sendActivity = async (
 			continue;
 		}
 
-		const signed = HttpSig.sign(
-			inbox,
-			"POST",
-			sender,
-			getExternalPathFromActor(sender),
-			activity,
-		);
+		const signed = HttpSig.sign(inbox, "POST", sender, activity);
 
 		const res = await fetch(inbox, signed);
 		if (!res.ok) {

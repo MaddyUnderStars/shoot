@@ -1,8 +1,10 @@
 import { APActivity } from "activitypub-types";
 import crypto from "crypto";
 import { IncomingHttpHeaders } from "http";
-import { Actor, Channel, User } from "../../entity";
+import { Actor, Channel, Guild, User } from "../../entity";
+import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
+import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
 import { createUserForRemotePerson } from "../entity/user";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
@@ -75,20 +77,13 @@ export class HttpSig {
 		const url = new URL(keyId);
 		const actorId = `${url.origin}${url.pathname}`; // likely wrong
 
-		// TODO: this breaks channel federation
-		// since channels don't have usernames
-		// maybe it would be better to have an `RemoteActors` table and store
-		// keys in there? it would simplify this greatly
-		// const remoteUser =
-		// 	(await User.findOne({ where: { remote_address: actorId } })) ??
-		// 	(await (await createUserForRemotePerson(actorId)).save());
-
-		const [user, channel] = await Promise.all([
+		const [user, channel, guild] = await Promise.all([
 			User.findOne({ where: { remote_address: actorId } }),
 			Channel.findOne({ where: { remote_address: actorId } }),
+			Guild.findOne({ where: { remote_address: actorId } }),
 		]);
 
-		let actor = user ?? channel;
+		let actor = user ?? channel ?? guild;
 
 		if (!actor) {
 			const remoteActor = await resolveAPObject(actorId);
@@ -104,6 +99,9 @@ export class HttpSig {
 			switch (remoteActor.type) {
 				case "Group":
 					actor = await createChannelFromRemoteGroup(remoteActor);
+					break;
+				case "Organization":
+					actor = await createGuildFromRemoteOrg(remoteActor);
 					break;
 				default:
 					// treat as person
@@ -175,7 +173,6 @@ export class HttpSig {
 		target: string,
 		method: string,
 		keys: Actor,
-		id: string,
 		message?: APActivity,
 	) {
 		if (!keys.private_key)
@@ -210,7 +207,7 @@ export class HttpSig {
 		// 		: `/users/${keys.username}`;
 
 		const header =
-			`keyId="${config.federation.instance_url.origin}${id}",` +
+			`keyId="${config.federation.instance_url.origin}${getExternalPathFromActor(keys)}",` +
 			`headers="(request-target) host date${digest ? " digest" : ""}",` +
 			`signature="${sig_b64}"`;
 
