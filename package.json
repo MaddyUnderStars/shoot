@@ -8,7 +8,7 @@
 		"cli": "node dist/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky install",
-		"openapi": "node dist/scripts/openapi.js",
+		"openapi": "node dist/src/scripts/openapi.js",
 		"test": "c8 ava"
 	},
 	"author": "MaddyUnderStars",

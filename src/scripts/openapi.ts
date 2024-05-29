@@ -116,7 +116,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 
 let document = generateOpenapi(apiRoutes, "application/json");
 writeFileSync(
-	path.join(__dirname, "..", "..", "assets", "client.json"),
+	path.join(__dirname, "..", "..", "..", "assets", "client.json"),
 	JSON.stringify(document),
 );
 
