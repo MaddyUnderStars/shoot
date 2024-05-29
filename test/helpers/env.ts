@@ -17,7 +17,7 @@ export const setupTests = (test: TestFn) => {
 		t.context.database_name = db;
 	});
 
-	test.after("teardown", async (t) => {
+	test.after.always("teardown", async (t) => {
 		// delete temp db?
 
 		const { closeDatabase } = await import("../../src/util");
