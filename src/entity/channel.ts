@@ -1,6 +1,6 @@
 import { Column, Entity, TableInheritance } from "typeorm";
 import { z } from "zod";
-import { PERMISSION } from "../util";
+import { HttpError, PERMISSION } from "../util";
 import { Actor } from "./actor";
 import { User } from "./user";
 
@@ -26,7 +26,16 @@ export class Channel extends Actor {
 		return this.toPublic();
 	}
 
-	//
+	public throwPermission = (
+		user: User,
+		permission: PERMISSION | PERMISSION[],
+	) => {
+		// todo: which permision?
+		if (!this.checkPermission(user, permission))
+			throw new HttpError(`Missing permission`, 400);
+		return true;
+	};
+
 	public checkPermission = (
 		user: User,
 		permission: PERMISSION | PERMISSION[],

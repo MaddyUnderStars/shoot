@@ -8,7 +8,7 @@ import {
 	OneToMany,
 } from "typeorm";
 import { z } from "zod";
-import { PERMISSION, checkPermission } from "../util";
+import { HttpError, PERMISSION, checkPermission } from "../util";
 import { Actor } from "./actor";
 import { PublicChannel } from "./channel";
 import { PublicRole, Role } from "./role";
@@ -59,6 +59,16 @@ export class Guild extends Actor {
 	public toPrivate(): PublicGuild {
 		return this.toPublic();
 	}
+
+	public throwPermission = (
+		user: User,
+		permission: PERMISSION | PERMISSION[],
+	) => {
+		// todo: which permision?
+		if (!this.checkPermission(user, permission))
+			throw new HttpError(`Missing permission`, 400);
+		return true;
+	};
 
 	public checkPermission = (
 		user: User,

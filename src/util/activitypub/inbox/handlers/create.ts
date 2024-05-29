@@ -2,6 +2,7 @@ import { ObjectIsNote } from "activitypub-types";
 import { ActivityHandler } from ".";
 import { Channel } from "../../../../entity";
 import { handleMessage } from "../../../entity";
+import { PERMISSION } from "../../../permission";
 import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
 import { buildMessageFromAPNote } from "../../transformers";
@@ -33,5 +34,11 @@ export const CreateActivityHandler: ActivityHandler = async (
 		throw new APError(`Cannot accept Create<${inner.type}>`);
 
 	const message = await buildMessageFromAPNote(inner, target);
+
+	target.throwPermission(message.author, [
+		PERMISSION.VIEW_CHANNEL,
+		PERMISSION.SEND_MESSAGES,
+	]);
+
 	await handleMessage(message);
 };
