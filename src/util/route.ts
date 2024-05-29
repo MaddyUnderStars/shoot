@@ -21,6 +21,7 @@ export const route = <Params, Response, Body, Query>(
 	) => {
 		return validateRequest(opts).call(this, req, res, async () => {
 			try {
+				// The handler may be async, so this await is required
 				return await handler.call(this, req, res, next);
 			} catch (e) {
 				next(e);
@@ -28,6 +29,7 @@ export const route = <Params, Response, Body, Query>(
 		});
 	};
 
+	// For openapi generation
 	Object.assign(ret, { ROUTE_OPTIONS: opts });
 
 	return ret;
