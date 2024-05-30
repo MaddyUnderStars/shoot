@@ -16,8 +16,6 @@ export const listenEvents = (socket: Websocket, emitters: string[]) => {
 };
 
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
-	console.log(payload.type);
-
 	switch (payload.type) {
 		case "CHANNEL_CREATE":
 			// TODO: check we're actually in this channel
