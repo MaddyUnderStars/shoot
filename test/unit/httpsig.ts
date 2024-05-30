@@ -12,7 +12,10 @@ test("Using Instance Actor", async (t) => {
 	const { HttpSig, InstanceActor } = await import("../../src/util");
 	const { User } = await import("../../src/entity");
 
-	const clock = sinon.useFakeTimers(new Date(2024, 1, 1));
+	const clock = sinon.useFakeTimers({
+		now: new Date(2024, 1, 1),
+		shouldClearNativeTimers: true,
+	});
 
 	const actor = await User.create({
 		...InstanceActor,
@@ -34,5 +37,6 @@ test("Using Instance Actor", async (t) => {
 		signed.headers,
 	);
 
+	clock.restore();
 	t.pass();
 });
