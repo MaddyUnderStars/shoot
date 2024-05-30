@@ -29,7 +29,7 @@ export const connectToRandomDb = async (host: string) => {
 	process.env.NODE_CONFIG = JSON.stringify({
 		...config,
 		database: {
-			log: true,
+			// log: true,
 			url: `${host}${name}`,
 		},
 	});
