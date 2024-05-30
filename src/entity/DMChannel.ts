@@ -6,8 +6,9 @@ import {
 	ManyToOne,
 } from "typeorm";
 import { DefaultPermissions, PERMISSION } from "../util";
-import { Channel, PublicChannel } from "./channel";
-import { User } from "./user";
+import type { PublicChannel } from "./channel";
+import { Channel } from "./channel";
+import type { User } from "./user";
 
 @ChildEntity("dm")
 export class DMChannel extends Channel {
