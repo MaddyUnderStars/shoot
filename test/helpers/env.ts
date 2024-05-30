@@ -5,7 +5,7 @@ import { connectToRandomDb, deleteDatabase } from "./database";
 export const setupTests = (test: TestFn) => {
 	proxyConfig();
 	test.before("setup", async (t) => {
-		global.console.log = t.log;
+		global.console.log = () => {};
 		delete process.env.NODE_ENV;
 		process.env.SUPPRESS_NO_CONFIG_WARNING = "1";
 		const db = await connectToRandomDb(
@@ -15,6 +15,7 @@ export const setupTests = (test: TestFn) => {
 
 		//@ts-ignore
 		t.context.database_name = db;
+		global.console.log = t.log;
 	});
 
 	test.after.always("teardown", async (t) => {
