@@ -67,6 +67,6 @@ export const PrivateRelationship = z
 		created: z.date(),
 		from_id: z.string(),
 		to_id: z.string(),
-		type: z.number(), // TODO
+		type: z.nativeEnum(RelationshipType),
 	})
 	.openapi("PrivateRelationship");
