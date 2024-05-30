@@ -12,8 +12,8 @@ import { HttpError, PERMISSION, checkPermission } from "../util";
 import { Actor } from "./actor";
 import { PublicChannel } from "./channel";
 import { PublicRole, Role } from "./role";
-import { GuildTextChannel } from "./textChannel";
-import { User } from "./user";
+import type { GuildTextChannel } from "./textChannel";
+import type { User } from "./user";
 
 @Entity("guilds")
 export class Guild extends Actor {

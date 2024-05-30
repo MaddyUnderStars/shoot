@@ -9,8 +9,8 @@ import {
 import { z } from "zod";
 import { DefaultPermissions, PERMISSION } from "../util/permission";
 import { BaseModel } from "./basemodel";
-import { Guild } from "./guild";
-import { Member } from "./member";
+import type { Guild } from "./guild";
+import type { Member } from "./member";
 
 @Entity("roles")
 @Index(["position", "guild"], { unique: true })

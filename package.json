@@ -5,7 +5,7 @@
 	"main": "dist/bootstrap.js",
 	"scripts": {
 		"start": "node dist/src/bootstrap.js",
-		"cli": "node dist/cli/index.js",
+		"cli": "node dist/src/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky install",
 		"openapi": "node dist/src/scripts/openapi.js",

@@ -25,8 +25,8 @@ const DATASOURCE_OPTIONS = new DataSource({
 	logging: config.database.log,
 });
 
-let connection: DataSource;
-let initCalled: Promise<DataSource>;
+let connection: DataSource | null = null;
+let initCalled: Promise<DataSource> | null = null;
 
 export const initDatabase = async () => {
 	if (connection) return connection;
@@ -44,13 +44,24 @@ export const initDatabase = async () => {
 	await doFirstSync();
 
 	Log.msg(`Connected`);
+
+	return connection;
 };
 
-export const getDatabase = () => connection ?? null;
+export const getDatabase = () => {
+	if (!connection) throw Error("Tried accessing database before connecting");
+	return connection;
+};
 
-export const closeDatabase = () => connection?.destroy();
+export const closeDatabase = () => {
+	connection?.destroy();
+	connection = null;
+	initCalled = null;
+};
 
 const doFirstSync = async () => {
+	if (!connection) return; // not possible
+
 	if (!(await dbExists())) {
 		Log.msg("This appears to be a fresh database. Synchronising.");
 		await connection.synchronize();
