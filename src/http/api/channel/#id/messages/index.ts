@@ -2,7 +2,6 @@ import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../entity";
 import {
-	HttpError,
 	PERMISSION,
 	handleMessage,
 	route,
@@ -30,9 +29,7 @@ router.post(
 
 			const channel = await getOrFetchChannel(channel_id);
 
-			// TODO: check if channel is the right type????
-			if (!channel.checkPermission(req.user, PERMISSION.VIEW_CHANNEL))
-				throw new HttpError("Missing permission VIEW_CHANNEL", 400);
+			channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
 			const message = Message.create({
 				channel,
@@ -53,15 +50,21 @@ router.get(
 	"/",
 	route(
 		{
-			params: z.object({
-				channel_id: z.string(),
-				limit: z.number({ coerce: true }).max(50).min(1).default(50),
-
-				// TODO: only allow a single of the following:
-				after: z.string().optional(),
-				before: z.string().optional(),
-				around: z.string().optional(),
-			}),
+			params: z
+				.object({
+					channel_id: z.string(),
+					limit: z
+						.number({ coerce: true })
+						.max(50)
+						.min(1)
+						.default(50),
+				})
+				.and(
+					z
+						.object({ after: z.string().optional() })
+						.or(z.object({ before: z.string().optional() }))
+						.or(z.object({ around: z.string().optional() })),
+				),
 			response: z.array(PublicMessage),
 		},
 		async (req, res) => {
