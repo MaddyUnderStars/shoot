@@ -13,10 +13,10 @@ extendZodWithOpenApi(z);
 
 process.env.NODE_CONFIG = JSON.stringify({
 	database: {
-		url: "sqlite://databsae.db",
+		url: "postgres://127.0.0.1",
 	},
 	security: {
-		jwt_secret: "",
+		jwt_secret: "a",
 	},
 });
 
