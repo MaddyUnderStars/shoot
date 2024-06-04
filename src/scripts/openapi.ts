@@ -11,6 +11,12 @@ import { AnyZodObject, z } from "zod";
 
 extendZodWithOpenApi(z);
 
+process.env.NODE_CONFIG = JSON.stringify({
+	security: {
+		jwt_secret: "",
+	},
+});
+
 import apiRoutes from "../http/api";
 
 const getRoutes = (router: Router) => {
