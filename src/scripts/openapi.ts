@@ -37,13 +37,14 @@ const getRoutes = (router: Router) => {
 			};
 		}> = [];
 
-		for (const layer of router.stack as Layer[]) {
+		for (const layer of router.stack) {
 			if (layer.name != "router" && layer.name != "bound dispatch")
 				continue;
 
 			if (layer.handle.name == "router") {
 				ret.push(
 					..._getRoutes(
+						//@ts-ignore
 						layer.handle,
 						convertRegexToPath(layer.regexp, layer.keys),
 					),
@@ -52,10 +53,12 @@ const getRoutes = (router: Router) => {
 			}
 
 			ret.push({
-				path: prefix + layer.route.path,
-				method: Object.entries(layer.route.methods)[0][0] as Method,
+				path: prefix + layer.route!.path,
+				//@ts-ignore
+				method: Object.entries(layer.route!.methods)[0][0] as Method,
 				// TODO: this will probably break
-				options: layer.route.stack[0].handle.ROUTE_OPTIONS,
+				//@ts-ignore
+				options: layer.route!.stack[0].handle.ROUTE_OPTIONS,
 			});
 		}
 

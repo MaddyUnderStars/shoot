@@ -45,26 +45,20 @@ router.post(
 	),
 );
 
+const MessageFetchOpts = z.object({
+	channel_id: z.string(),
+	limit: z.number({ coerce: true }).max(50).min(1).default(50),
+	after: z.string().optional(),
+	before: z.string().optional(),
+	around: z.string().optional(),
+});
+
 // Get messages of a channel
 router.get(
 	"/",
 	route(
 		{
-			params: z
-				.object({
-					channel_id: z.string(),
-					limit: z
-						.number({ coerce: true })
-						.max(50)
-						.min(1)
-						.default(50),
-				})
-				.and(
-					z
-						.object({ after: z.string().optional() })
-						.or(z.object({ before: z.string().optional() }))
-						.or(z.object({ around: z.string().optional() })),
-				),
+			params: MessageFetchOpts,
 			response: z.array(PublicMessage),
 		},
 		async (req, res) => {
