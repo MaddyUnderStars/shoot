@@ -41,6 +41,8 @@ jobs:
 
             - run: npm ci
 
-            - run: npm run build --if-present
+            - run: npm run build
 
-            - run: npm test --if-present
+            - run: npm run openapi
+
+            - run: npm test
