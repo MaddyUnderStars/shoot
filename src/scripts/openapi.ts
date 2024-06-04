@@ -12,6 +12,9 @@ import { AnyZodObject, z } from "zod";
 extendZodWithOpenApi(z);
 
 process.env.NODE_CONFIG = JSON.stringify({
+	database: {
+		url: "",
+	},
 	security: {
 		jwt_secret: "",
 	},
