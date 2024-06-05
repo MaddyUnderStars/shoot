@@ -16,6 +16,22 @@ const config = Object.freeze({
 		 * Example `-` will log all responses
 		 */
 		log: ifExistsGet<string>("http.log"),
+
+		/** Ratelimiter */
+		rate: Object.fromEntries(
+			["s2s", "auth", "nodeinfo", "wellknown", "global"].map((type) => [
+				type,
+				{
+					/** Milliseconds. Default: 15 minutes */
+					window:
+						ifExistsGet<number>(`http.rate.${type}.window`) ??
+						15 * 60 * 1000,
+
+					/** Number of requests per window. Default: 100 */
+					limit: ifExistsGet<number>(`http.rate.${type}limit`) ?? 100,
+				},
+			]),
+		),
 	},
 
 	security: {

@@ -1,17 +1,21 @@
 import { Router } from "express";
-import { authHandler } from "../middleware";
+import { authHandler, rateLimiter } from "../middleware";
 
 const router = Router();
 
 // BEFORE auth handler
 import nodeInfo from "./nodeinfo";
+router.use("/nodeinfo", rateLimiter("nodeinfo"));
 router.use("/nodeinfo/2.0.json", nodeInfo);
 
 router.use(authHandler);
 
 import auth_login from "./auth/login";
 import auth_register from "./auth/register";
+router.use("/auth", rateLimiter("auth"));
 router.use("/auth", auth_register, auth_login);
+
+router.use(rateLimiter("global"));
 
 import users_me from "./users/@me";
 router.use("/users/@me", users_me);

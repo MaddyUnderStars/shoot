@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { verifyHttpSig } from "../middleware";
+import { rateLimiter, verifyHttpSig } from "../middleware";
 
 const router = Router();
 
 router.use(verifyHttpSig);
+
+router.use(rateLimiter("s2s"));
 
 import inbox from "./inbox";
 router.use("/inbox", inbox);
