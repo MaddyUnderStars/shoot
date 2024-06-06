@@ -49,6 +49,12 @@ export type ROLE_CREATE = {
 	role: PublicRole;
 };
 
+export type ROLE_MEMBER_ADD = {
+	type: "ROLE_MEMBER_ADD";
+	role_id: string;
+	user_id: string;
+};
+
 export type MEMBER_JOIN = {
 	type: "MEMBER_JOIN";
 	member: PublicMember;
@@ -83,6 +89,7 @@ export type GATEWAY_EVENT =
 	| CHANNEL_CREATE
 	| GUILD_CREATE
 	| ROLE_CREATE
+	| ROLE_MEMBER_ADD
 	| MEMBER_JOIN
 	| RELATIONSHIP_CREATE
 	| INVITE_CREATE

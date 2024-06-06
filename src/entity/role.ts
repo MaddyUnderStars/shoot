@@ -44,7 +44,7 @@ export class Role extends BaseModel {
 		type: "enum",
 		enum: PERMISSION,
 		array: true,
-		default: DefaultPermissions,
+		default: [],
 	})
 	deny: PERMISSION[];
 

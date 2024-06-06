@@ -114,6 +114,12 @@ export const createGuild = async (name: string, owner: User) => {
 		role: everyone.toPublic(),
 	});
 
+	emitGatewayEvent(guild.id, {
+		type: "ROLE_MEMBER_ADD",
+		user_id: owner.id,
+		role_id: everyone.id,
+	});
+
 	return guild;
 };
 

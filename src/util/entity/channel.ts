@@ -82,6 +82,7 @@ export const getOrFetchChannel = async (channel_id: string) => {
 		.leftJoinAndSelect("channels.recipients", "recipients")
 		.leftJoinAndSelect("channels.owner", "owner")
 		.leftJoinAndSelect("channels.guild", "guild")
+		.leftJoinAndSelect("guild.owner", "guild_owner")
 		.where((qb) => {
 			qb.where("channels.id = :id", { id: mention.user }).andWhere(
 				"channels.domain = :domain",
