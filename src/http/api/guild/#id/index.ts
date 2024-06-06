@@ -1,13 +1,10 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Invite, PublicGuild } from "../../../../entity";
-import {
-	emitGatewayEvent,
-	route,
-	splitQualifiedMention,
-} from "../../../../util";
+import { PERMISSION, emitGatewayEvent, route } from "../../../../util";
 import { getOrFetchGuild } from "../../../../util/entity/guild";
 import { generateInviteCode } from "../../../../util/entity/invite";
+import { isMemberOfGuildThrow } from "../../../../util/entity/member";
 
 const router = Router({ mergeParams: true });
 
@@ -22,6 +19,8 @@ router.get(
 		},
 		async (req, res) => {
 			const { guild_id } = req.params;
+
+			await isMemberOfGuildThrow(guild_id, req.user);
 
 			const guild = await getOrFetchGuild(guild_id);
 
@@ -41,7 +40,9 @@ router.post(
 			const { guild_id } = req.params;
 			const { expiry } = req.body;
 
-			const mention = splitQualifiedMention(guild_id);
+			const guild = await getOrFetchGuild(guild_id);
+
+			await guild.throwPermission(req.user, PERMISSION.CREATE_INVITE);
 
 			const expires = expiry ? new Date(expiry) : undefined;
 
@@ -49,7 +50,7 @@ router.post(
 				expires,
 
 				code: await generateInviteCode(),
-				guild: { id: mention.user, domain: mention.domain },
+				guild: { id: guild.id },
 			}).save();
 
 			emitGatewayEvent(guild_id, {

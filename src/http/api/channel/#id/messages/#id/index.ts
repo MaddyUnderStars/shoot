@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../../entity";
-import { route, splitQualifiedMention } from "../../../../../../util";
+import { PERMISSION, getOrFetchChannel, route } from "../../../../../../util";
 
 const router = Router({ mergeParams: true });
 
@@ -16,23 +16,23 @@ router.get(
 			response: PublicMessage,
 		},
 		async (req, res) => {
-			const channelMention = splitQualifiedMention(req.params.channel_id);
+			const channel = await getOrFetchChannel(req.params.channel_id);
+
+			channel.throwPermission(req.user, [PERMISSION.VIEW_CHANNEL]);
 
 			// TODO: fetch remote messages
 
 			const message = await Message.findOneOrFail({
 				where: {
+					channel: { id: channel.id },
 					id: req.params.message_id,
-					channel: {
-						id: channelMention.user,
-						domain: channelMention.domain,
-					},
 				},
 				loadRelationIds: {
 					relations: ["channel", "author"],
 					disableMixedMap: true,
 				},
 			});
+
 			return res.json(message.toPublic());
 		},
 	),

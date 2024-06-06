@@ -2,10 +2,11 @@ import { Router } from "express";
 import { z } from "zod";
 import { Channel, PublicChannel } from "../../../../entity";
 import {
+	HttpError,
+	PERMISSION,
 	config,
 	getOrFetchChannel,
 	route,
-	splitQualifiedMention,
 } from "../../../../util";
 
 const router = Router({ mergeParams: true });
@@ -24,6 +25,8 @@ router.get(
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
+			channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
+
 			return res.json(channel.toPublic());
 		},
 	),
@@ -40,13 +43,17 @@ router.patch(
 		// Otherwise, send a Update activity to the channel
 		// and then update the local representation when we receive an Acknowledge activity
 
-		const mention = splitQualifiedMention(req.params.channel_id);
+		const channel = await getOrFetchChannel(req.params.channel_id);
 
-		if (mention.domain == config.federation.webapp_url.hostname) {
+		channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
+
+		if (channel.domain == config.federation.webapp_url.hostname) {
 			// This is a local channel
 
-			await Channel.update({ id: mention.user }, req.body);
+			await Channel.update({ id: channel.id }, req.body);
 			return res.sendStatus(200);
+		} else {
+			throw new HttpError("Not implemented", 500);
 		}
 
 		// TODO: federate Update channel activity to remote server

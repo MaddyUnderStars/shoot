@@ -1,12 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../entity";
-import {
-	PERMISSION,
-	handleMessage,
-	route,
-	splitQualifiedMention,
-} from "../../../../../util";
+import { PERMISSION, handleMessage, route } from "../../../../../util";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 
 const MessageCreate = z.object({
@@ -62,26 +57,15 @@ router.get(
 			response: z.array(PublicMessage),
 		},
 		async (req, res) => {
-			const channelMention = splitQualifiedMention(req.params.channel_id);
+			const channel = await getOrFetchChannel(req.params.channel_id);
+
+			channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
 			// TODO: handle not fetched federated channels
 
 			// TODO: handle after, before, around
 			const messages = await Message.find({
-				where: [
-					{
-						channel: {
-							id: channelMention.user,
-							domain: channelMention.domain,
-						},
-					},
-					{
-						channel: {
-							remote_id: channelMention.user,
-							domain: channelMention.domain,
-						},
-					},
-				],
+				where: { channel: { id: channel.id } },
 				take: req.params.limit,
 				order: {
 					published: "DESC",
