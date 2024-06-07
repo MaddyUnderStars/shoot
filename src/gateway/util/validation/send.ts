@@ -1,4 +1,5 @@
 import type {
+	PrivateRelationship,
 	PrivateSession,
 	PrivateUser,
 	PublicChannel,
@@ -77,6 +78,7 @@ export type READY = {
 	session: PrivateSession;
 	channels: Array<PublicChannel>;
 	guilds: Array<PublicGuild>;
+	relationships: Array<PrivateRelationship>;
 };
 
 export type HEARTBEAT_ACK = {

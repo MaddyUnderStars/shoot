@@ -10,7 +10,7 @@ import {
 import { z } from "zod";
 import { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
-import { User } from "./user";
+import { PublicUser, User } from "./user";
 
 export enum RelationshipType {
 	pending = 0,
@@ -49,15 +49,21 @@ export class Relationship extends BaseModel {
 	reference_object: ApCache | null;
 
 	public toPublic() {
-		throw new Error("Do not return relationships publicly");
+		throw new Error("Use .toClient");
 	}
 
 	public toPrivate() {
+		throw new Error("Use .toClient");
+	}
+
+	public toClient(our_id: string): PrivateRelationship {
 		return {
-			from_id: this.from.mention,
-			to_id: this.to.mention,
-			type: this.type,
 			created: this.created,
+			user:
+				this.to?.id == our_id
+					? this.from.toPublic()
+					: this.to.toPublic(),
+			type: this.type,
 		};
 	}
 }
@@ -65,8 +71,9 @@ export class Relationship extends BaseModel {
 export const PrivateRelationship = z
 	.object({
 		created: z.date(),
-		from_id: z.string(),
-		to_id: z.string(),
+		user: PublicUser,
 		type: z.nativeEnum(RelationshipType),
 	})
 	.openapi("PrivateRelationship");
+
+export type PrivateRelationship = z.infer<typeof PrivateRelationship>;

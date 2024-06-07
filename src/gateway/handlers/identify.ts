@@ -1,5 +1,12 @@
+import { Not } from "typeorm";
 import { makeHandler } from ".";
-import { DMChannel, Guild, Session } from "../../entity";
+import {
+	DMChannel,
+	Guild,
+	Relationship,
+	RelationshipType,
+	Session,
+} from "../../entity";
 import { getDatabase, getUserFromToken } from "../../util";
 import { CLOSE_CODES, IDENTIFY, READY, consume, listenEvents } from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
@@ -21,7 +28,7 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	this.user_id = user.id;
 
-	const [session, dmChannels, guilds] = await Promise.all([
+	const [session, dmChannels, guilds, relationships] = await Promise.all([
 		Session.create({
 			user,
 		}).save(),
@@ -42,15 +49,32 @@ export const onIdentify = makeHandler(async function (payload) {
 		// TODO: guild members
 		Guild.find({
 			where: { owner: { id: this.user_id } },
-			relations: { channels: true },
+			relations: { channels: true, roles: true },
 		}),
-		// TODO: relationships
+
+		Relationship.find({
+			where: [
+				// We created this relationship
+				{ to: { id: this.user_id } },
+				//Or we are the target, and are not blocked
+				{
+					from: { id: this.user_id },
+					type: Not(RelationshipType.blocked),
+				},
+			],
+			relations: { to: true, from: true },
+		}),
 	]);
 
 	this.session = session;
 
+	const relationshipUsers = relationships.map((x) =>
+		x.to.id == this.user_id ? x.from : x.to,
+	);
+
 	listenEvents(this, [
 		this.user_id,
+		...relationshipUsers.map((x) => x.id),
 		...dmChannels.map((x) => x.id),
 		...guilds.map((x) => x.id),
 		...guilds.flatMap((x) => x.channels.map((y) => y.id)),
@@ -62,6 +86,7 @@ export const onIdentify = makeHandler(async function (payload) {
 		user: user.toPrivate(),
 		channels: dmChannels.map((x) => x.toPublic()),
 		guilds: guilds.map((x) => x.toPublic()),
+		relationships: relationships.map((x) => x.toClient(this.user_id)),
 	};
 
 	startHeartbeatTimeout(this);

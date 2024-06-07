@@ -17,16 +17,18 @@ export const listenEvents = (socket: Websocket, emitters: string[]) => {
 
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
+		case "RELATIONSHIP_CREATE":
+			let other =
+				payload.relationship.to.id == socket.user_id
+					? payload.relationship.from.id
+					: payload.relationship.to.id;
+			listenEvents(socket, [other]);
+			break;
 		case "CHANNEL_CREATE":
-			// TODO: check we're actually in this channel
-
-			// subscribe to this channel
 			listenEvents(socket, [payload.channel.id]);
 			break;
-
 		case "GUILD_CREATE":
 			listenEvents(socket, [payload.guild.id]);
-
 			break;
 		default:
 			break;

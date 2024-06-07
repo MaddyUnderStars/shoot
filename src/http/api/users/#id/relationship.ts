@@ -40,7 +40,7 @@ router.get(
 				},
 			});
 
-			return res.json(relationship.toPrivate());
+			return res.json(relationship.toClient(req.user.id));
 		},
 	),
 );
@@ -50,18 +50,21 @@ router.post(
 	route(
 		{
 			params: z.object({ user_id: z.string() }),
-			body: z
-				.object({
-					type: z.union([z.literal("blocked"), z.literal("pending")]),
-				})
-				.optional(),
+			body: z.object({
+				type: z
+					.union([z.literal("blocked"), z.literal("pending")])
+					.optional(),
+			}),
 			response: PrivateRelationship,
 		},
 		async (req, res) => {
 			const { user_id } = req.params;
+
+			// TODO: block
+
 			const to = await getOrFetchUser(user_id);
 			const relationship = await acceptOrCreateRelationship(to, req.user);
-			return res.json(relationship.toPrivate());
+			return res.json(relationship.toClient(req.user.id));
 		},
 	),
 );
