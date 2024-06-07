@@ -3,7 +3,6 @@ import {
 	Column,
 	Entity,
 	JoinColumn,
-	JoinTable,
 	ManyToOne,
 	OneToMany,
 } from "typeorm";
@@ -33,9 +32,7 @@ export class Guild extends Actor {
 	@Column({ type: String, nullable: true })
 	remote_id: string | null;
 
-	// TODO: channel sorting
 	@OneToMany("channels", "guild")
-	@JoinTable()
 	channels: GuildTextChannel[];
 
 	public get mention() {
@@ -76,8 +73,10 @@ export class Guild extends Actor {
 	) => checkPermission(user, this, permission);
 
 	@AfterLoad()
-	_sortRoles = () => {
+	_sort = () => {
 		if (this.roles) this.roles.sort((a, b) => b.position - a.position);
+		if (this.channels)
+			this.channels.sort((a, b) => b.position - a.position);
 	};
 }
 

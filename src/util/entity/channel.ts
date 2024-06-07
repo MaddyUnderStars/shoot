@@ -32,6 +32,9 @@ export const createGuildTextChannel = async (name: string, guild: Guild) => {
 		name,
 		guild,
 		domain: config.federation.webapp_url.hostname,
+		position: await GuildTextChannel.count({
+			where: { guild: { id: guild.id } },
+		}),
 	});
 
 	await channel.save();
