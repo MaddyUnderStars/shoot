@@ -1,9 +1,12 @@
+import { APUpdate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Channel, PublicChannel } from "../../../../entity";
+import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import {
-	HttpError,
 	PERMISSION,
+	addContext,
+	buildAPGroup,
 	config,
 	getOrFetchChannel,
 	route,
@@ -32,7 +35,7 @@ router.get(
 	),
 );
 
-const ChannelModifySchema: z.ZodType<Partial<Channel>> = z.object({
+export const ChannelModifySchema: z.ZodType<Partial<Channel>> = z.object({
 	name: z.string(),
 });
 
@@ -52,11 +55,31 @@ router.patch(
 
 			await Channel.update({ id: channel.id }, req.body);
 			return res.sendStatus(200);
-		} else {
-			throw new HttpError("Not implemented", 500);
 		}
 
-		// TODO: federate Update channel activity to remote server
+		// send Update
+
+		channel.assign(req.body);
+
+		// TODO: refactor buildAP* transformers
+		// to allow for building remote objects
+		// ( the ID hostname and such shouldn't be ours constantly )
+
+		const apchannel = buildAPGroup(channel);
+
+		await sendActivity(
+			channel,
+			addContext({
+				type: "Update",
+				// TOOD: random id
+				id: `${config.federation.instance_url.origin}${getExternalPathFromActor(req.user)}/update/${channel.id}`,
+				actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(req.user)}`,
+				to: apchannel.id,
+				object: apchannel,
+			} as APUpdate),
+			req.user,
+		);
+
 		return res.sendStatus(202);
 	}),
 );

@@ -63,7 +63,7 @@ export type MEMBER_JOIN = {
 
 export type RELATIONSHIP_CREATE = {
 	type: "RELATIONSHIP_CREATE";
-	relationship: Relationship; // TODO: public relationship type
+	relationship: Relationship;
 };
 
 export type INVITE_CREATE = {
