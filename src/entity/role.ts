@@ -56,7 +56,7 @@ export class Role extends BaseModel {
 		return {
 			id: this.remote_id ?? this.id,
 			name: this.name,
-			guild_id: this.guild.id,
+			guild_id: this.guild?.id,
 			allow: this.allow,
 			deny: this.deny,
 		};
@@ -68,7 +68,7 @@ export class Role extends BaseModel {
 }
 
 export type PublicRole = Pick<Role, "id" | "name" | "allow" | "deny"> & {
-	guild_id: string;
+	guild_id?: string;
 };
 
 export const PublicRole: z.ZodType<PublicRole> = z.object({
@@ -76,5 +76,5 @@ export const PublicRole: z.ZodType<PublicRole> = z.object({
 	name: z.string(),
 	allow: z.number().array(),
 	deny: z.number().array(),
-	guild_id: z.string(),
+	guild_id: z.string().optional(),
 });

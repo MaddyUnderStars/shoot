@@ -10,7 +10,6 @@ import type {
 	PublicMember,
 	PublicMessage,
 } from "../../../entity";
-import { Relationship } from "../../../entity/relationship";
 import { PublicRole } from "../../../entity/role";
 
 export type GATEWAY_PAYLOAD = {
@@ -63,7 +62,7 @@ export type MEMBER_JOIN = {
 
 export type RELATIONSHIP_CREATE = {
 	type: "RELATIONSHIP_CREATE";
-	relationship: Relationship; // TODO: public relationship type
+	relationship: PrivateRelationship; // TODO: public relationship type
 };
 
 export type INVITE_CREATE = {

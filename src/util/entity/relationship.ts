@@ -57,7 +57,7 @@ export const acceptOrCreateRelationship = async (
 	// Send the gateway event to both
 	emitGatewayEvent([to.id, from.id], {
 		type: "RELATIONSHIP_CREATE",
-		relationship: relationship,
+		relationship: relationship.toClient(from.id),
 	});
 
 	if (to.collections?.inbox && to.remote_address) {

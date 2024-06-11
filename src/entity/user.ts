@@ -41,6 +41,7 @@ export class User extends Actor {
 
 	public toPublic = (): PublicUser => {
 		return {
+			id: this.id,
 			name: this.name,
 			display_name: this.display_name,
 			domain: this.domain,
@@ -59,12 +60,13 @@ export class User extends Actor {
 
 export type PublicUser = Pick<
 	User,
-	"name" | "summary" | "display_name" | "domain"
+	"name" | "summary" | "display_name" | "domain" | "id"
 >;
 export type PrivateUser = PublicUser & Pick<User, "email">;
 
 export const PublicUser: z.ZodType<PublicUser> = z
 	.object({
+		id: z.string(),
 		name: z.string(),
 		summary: z.string(),
 		display_name: z.string(),
