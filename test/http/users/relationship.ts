@@ -7,7 +7,7 @@ import { createTestUser, setupTests } from "../../helpers";
 setupTests(test);
 
 import request from "supertest";
-import { RelationshipType } from "../../../src/entity";
+import { RelationshipType } from "../../../src/entity/relationship";
 
 test("Create and delete", async (t) => {
 	const { APIServer } = await import("../../../src/http/server");
