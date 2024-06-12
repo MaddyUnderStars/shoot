@@ -7,6 +7,7 @@ import { createTestUser, setupTests } from "../../helpers";
 setupTests(test);
 
 import request from "supertest";
+import { RelationshipType } from "../../../src/entity";
 
 test("Create and delete", async (t) => {
 	const { APIServer } = await import("../../../src/http/server");
@@ -32,7 +33,7 @@ test("Create and delete", async (t) => {
 				.auth(user1, { type: "bearer" })
 				.expect(200)
 		).body,
-		res1.body,
+		{ ...res1.body, type: RelationshipType.accepted },
 	);
 
 	t.deepEqual(
@@ -42,6 +43,6 @@ test("Create and delete", async (t) => {
 				.auth(user2, { type: "bearer" })
 				.expect(200)
 		).body,
-		res2.body,
+		{ ...res2.body, type: RelationshipType.accepted },
 	);
 });
