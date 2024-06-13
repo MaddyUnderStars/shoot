@@ -4,7 +4,6 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 
 import {
 	APActor,
-	APCreate,
 	ObjectIsGroup,
 	ObjectIsOrganization,
 	ObjectIsPerson,
@@ -13,11 +12,8 @@ import { Brackets } from "typeorm";
 import { Guild, GuildTextChannel, User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
-import { getExternalPathFromActor, sendActivity } from "../../sender";
 import {
 	APError,
-	addContext,
-	buildAPGroup,
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveWebfinger,
@@ -58,6 +54,7 @@ export const createDmChannel = async (
 	name: string,
 	owner: User,
 	recipients: User[],
+	onKeyGen?: (channel: DMChannel) => Promise<void> | void,
 ) => {
 	const channel = DMChannel.create({
 		name,
@@ -70,16 +67,7 @@ export const createDmChannel = async (
 
 	setImmediate(async () => {
 		await generateSigningKeys(channel);
-		await sendActivity(
-			channel.recipients,
-			addContext({
-				type: "Create",
-				id: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/create`,
-				actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel.owner)}`,
-				object: buildAPGroup(channel),
-			}) as APCreate,
-			channel.owner,
-		);
+		if (onKeyGen) await onKeyGen(channel);
 	});
 
 	emitGatewayEvent([...recipients.map((x) => x.id), owner.id], {

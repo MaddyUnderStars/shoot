@@ -1,7 +1,15 @@
+import { APCreate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { PublicChannel } from "../../../../entity";
-import { getOrFetchUser, route } from "../../../../util";
+import { DMChannel, PublicChannel } from "../../../../entity";
+import { getExternalPathFromActor, sendActivity } from "../../../../sender";
+import {
+	addContext,
+	buildAPGroup,
+	config,
+	getOrFetchUser,
+	route,
+} from "../../../../util";
 import { createDmChannel } from "../../../../util/entity/channel";
 
 const router = Router({ mergeParams: true });
@@ -24,14 +32,35 @@ router.post(
 		async (req, res) => {
 			const { user_id } = req.params;
 
+			const existing = await DMChannel.findOne({
+				where: [
+					{ owner: { id: req.user.id } },
+					{ recipients: { id: req.user.id } },
+				],
+			});
+
+			if (existing) return res.json(existing.toPublic());
+
 			const owner = req.user;
 			const recipient = await getOrFetchUser(user_id);
 
-			// TODO: find existing dm channel
-
-			const channel = await createDmChannel(req.body.name, owner, [
-				recipient,
-			]);
+			const channel = await createDmChannel(
+				req.body.name,
+				owner,
+				[recipient],
+				async () => {
+					await sendActivity(
+						channel.recipients,
+						addContext({
+							type: "Create",
+							id: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/create`,
+							actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel.owner)}`,
+							object: buildAPGroup(channel),
+						}) as APCreate,
+						channel.owner,
+					);
+				},
+			);
 
 			// TODO: federate channel creation
 			// Probably create it locally and then send a Follow to recipient
