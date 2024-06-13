@@ -59,6 +59,6 @@ test("Identify", async (t) => {
 	const data = ready.d as READY;
 
 	t.is(ready.t, "READY");
-	t.deepEqual(data.channels[0], { ...dm.toPublic(), recipients: [] });
+	t.deepEqual(data.channels[0], { ...dm.toPublic() });
 	t.is(data.user.name, "user1");
 });
