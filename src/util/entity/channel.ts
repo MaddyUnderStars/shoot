@@ -4,15 +4,20 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 
 import {
 	APActor,
+	APCreate,
 	ObjectIsGroup,
 	ObjectIsOrganization,
 	ObjectIsPerson,
 } from "activitypub-types";
+import { Brackets } from "typeorm";
 import { Guild, GuildTextChannel, User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
+import { getExternalPathFromActor, sendActivity } from "../../sender";
 import {
 	APError,
+	addContext,
+	buildAPGroup,
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveWebfinger,
@@ -63,14 +68,24 @@ export const createDmChannel = async (
 
 	await channel.save();
 
-	setImmediate(() => generateSigningKeys(channel));
+	setImmediate(async () => {
+		await generateSigningKeys(channel);
+		await sendActivity(
+			channel.recipients,
+			addContext({
+				type: "Create",
+				id: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/create`,
+				actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel.owner)}`,
+				object: buildAPGroup(channel),
+			}) as APCreate,
+			channel.owner,
+		);
+	});
 
 	emitGatewayEvent([...recipients.map((x) => x.id), owner.id], {
 		type: "CHANNEL_CREATE",
 		channel: channel.toPublic(),
 	});
-
-	// federate dm channel creation
 
 	return channel;
 };
@@ -92,7 +107,17 @@ export const getOrFetchChannel = async (channel_id: string) => {
 				{ domain: mention.domain },
 			);
 		})
-		.orWhere("channels.remote_address = :lookup", { lookup: channel_id })
+		.orWhere(
+			new Brackets((inner) => {
+				inner
+					.where("channels.remote_id = :lookup", {
+						lookup: mention.user,
+					})
+					.andWhere("channels.domain = :domain", {
+						domain: mention.domain,
+					});
+			}),
+		)
 		.getOne();
 
 	if (!channel && config.federation.enabled) {
