@@ -7,7 +7,7 @@ import {
 	RelationshipType,
 	Session,
 } from "../../entity";
-import { getDatabase, getUserFromToken } from "../../util";
+import { getUserFromToken } from "../../util";
 import { CLOSE_CODES, IDENTIFY, READY, consume, listenEvents } from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
 
@@ -33,20 +33,15 @@ export const onIdentify = makeHandler(async function (payload) {
 			user,
 		}).save(),
 
-		getDatabase()
-			.createQueryBuilder(DMChannel, "dm")
-			.leftJoinAndSelect(
-				"dm.recipients",
-				"recipients",
-				"recipients.id = :id",
-				{
-					id: user.id,
-				},
-			)
-			.leftJoinAndSelect("dm.owner", "owner")
-			.getMany(),
+		DMChannel.find({
+			where: [
+				{ owner: { id: this.user_id } },
+				{ recipients: { id: this.user_id } },
+			],
+			relations: { recipients: true, owner: true },
+		}),
 
-		// TODO: guild members
+		// TODO: guild members api like discord's GUILD_MEMBER_LIST_UPDATE
 		Guild.find({
 			where: { owner: { id: this.user_id } },
 			relations: { channels: true, roles: true },
