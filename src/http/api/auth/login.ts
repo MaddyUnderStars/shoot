@@ -21,27 +21,33 @@ const INVALID_LOGIN = "Invalid login";
 
 router.post(
 	"/login",
-	route({ body: LoginRequest, response: LoginResponse }, async (req, res) => {
-		const { username, password } = req.body;
+	route(
+		{
+			body: LoginRequest,
+			response: LoginResponse,
+		},
+		async (req, res) => {
+			const { username, password } = req.body;
 
-		const user = await User.findOneOrFail({
-			where: {
-				name: username,
-				domain: config.federation.webapp_url.hostname,
-			},
-		}).catch(() => {
-			// Throw the same error, to prevent knowing accounts exists
-			throw new HttpError(INVALID_LOGIN, 401);
-		});
+			const user = await User.findOneOrFail({
+				where: {
+					name: username,
+					domain: config.federation.webapp_url.hostname,
+				},
+			}).catch(() => {
+				// Throw the same error, to prevent knowing accounts exists
+				throw new HttpError(INVALID_LOGIN, 401);
+			});
 
-		if (!(await bcrypt.compare(password, user.password_hash!)))
-			throw new HttpError(INVALID_LOGIN, 401);
+			if (!(await bcrypt.compare(password, user.password_hash!)))
+				throw new HttpError(INVALID_LOGIN, 401);
 
-		return res.json({
-			token: await generateToken(user.id),
-			user: user.toPrivate(),
-		});
-	}),
+			return res.json({
+				token: await generateToken(user.id),
+				user: user.toPrivate(),
+			});
+		},
+	),
 );
 
 export default router;

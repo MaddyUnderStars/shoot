@@ -20,6 +20,7 @@ process.env.NODE_CONFIG = JSON.stringify({
 	},
 });
 
+import { NO_AUTH_ROUTES } from "../http";
 import apiRoutes from "../http/api";
 
 const getRoutes = (router: Router) => {
@@ -38,11 +39,13 @@ const getRoutes = (router: Router) => {
 		let ret: Array<{
 			path: string;
 			method: Method;
+			requires_auth: boolean;
 			options: {
 				params: AnyZodObject;
 				body: AnyZodObject;
 				query: AnyZodObject;
 				response: AnyZodObject;
+				errors: Record<number, AnyZodObject>;
 			};
 		}> = [];
 
@@ -68,6 +71,12 @@ const getRoutes = (router: Router) => {
 				// TODO: this will probably break
 				//@ts-ignore
 				options: layer.route!.stack[0].handle.ROUTE_OPTIONS,
+
+				requires_auth: !NO_AUTH_ROUTES.some((x) => {
+					if (typeof x == "string")
+						return (prefix + layer.route!.path).startsWith(x);
+					return x.test(prefix + layer.route!.path);
+				}),
 			});
 		}
 
@@ -83,13 +92,28 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 
 	const routes = getRoutes(router);
 
+	const bearerAuth = registry.registerComponent(
+		"securitySchemes",
+		"bearerAuth",
+		{
+			type: "http",
+			scheme: "bearer",
+			bearerFormat: "JWT",
+		},
+	);
+
 	for (const route of routes) {
 		registry.registerPath({
 			method: route.method,
 			path: route.path,
-			summary: "",
+			security: route.requires_auth
+				? [{ [bearerAuth.name]: [] }]
+				: undefined,
 			request: {
 				params: route.options.params,
+				headers: z.object({
+					"content-type": z.literal("application/json"),
+				}),
 				body: route.options.body
 					? {
 							content: {
@@ -103,13 +127,28 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 			},
 			responses: {
 				"200": {
-					description: "",
+					description: route.options.response?.description ?? "",
 					content: {
 						"application/json": {
 							schema: route.options.response ?? z.object({}),
 						},
 					},
 				},
+				...Object.fromEntries(
+					Object.entries(route.options.errors ?? {}).map(
+						([code, schema]) => [
+							code,
+							{
+								description: schema?.description ?? "",
+								content: {
+									"application/json": {
+										schema: schema ?? z.object({}),
+									},
+								},
+							},
+						],
+					),
+				),
 			},
 		});
 	}

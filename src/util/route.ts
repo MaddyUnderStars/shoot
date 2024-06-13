@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { ZodSchema } from "zod";
+import { ZodSchema, z } from "zod";
 import { RequestValidation, validateRequest } from "zod-express-middleware";
 
 export type RouteOptions<Params, Response, Body, Query> = RequestValidation<
@@ -8,12 +8,27 @@ export type RouteOptions<Params, Response, Body, Query> = RequestValidation<
 	Body
 > & {
 	response?: ZodSchema<Response>;
+	summary?: string;
+	errors?: Record<number, ZodSchema>;
 };
+
+const ZodHttpError = z
+	.object({
+		message: z.string(),
+		code: z.number(),
+	})
+	.openapi("HttpError");
 
 export const route = <Params, Response, Body, Query>(
 	opts: RouteOptions<Params, Response, Body, Query>,
 	handler: RequestHandler<Params, Response, Body, Query>,
 ) => {
+	opts.errors = opts.errors ?? {};
+	opts.errors[401] = opts.errors[401] ?? ZodHttpError;
+	opts.errors[404] = opts.errors[404] ?? ZodHttpError;
+	opts.errors[404] = opts.errors[400] ?? ZodHttpError;
+	opts.errors[500] = opts.errors[500] ?? ZodHttpError;
+
 	const ret: RequestHandler<Params, Response, Body, Query> = (
 		req,
 		res,

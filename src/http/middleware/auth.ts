@@ -2,7 +2,7 @@ import { RequestHandler } from "express";
 import type { User } from "../../entity";
 import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
 
-const NO_AUTH_ROUTES = [
+export const NO_AUTH_ROUTES = [
 	"/auth/login",
 	"/auth/register",
 	/\.well\-known/,
