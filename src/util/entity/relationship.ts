@@ -1,29 +1,31 @@
 import { APAccept, APFollow } from "activitypub-types";
-import { ApCache, User } from "../../entity";
+import { Not } from "typeorm";
+import { User } from "../../entity";
 import { Relationship, RelationshipType } from "../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../sender";
 import { addContext } from "../activitypub";
 import { config } from "../config";
 import { emitGatewayEvent } from "../events";
 
-export const acceptOrCreateRelationship = async (
-	to: User,
-	from: User,
-	follow_activity?: ApCache,
-) => {
+export const acceptOrCreateRelationship = async (to: User, from: User) => {
 	// Check if there is a relationship in the other direction
 	const existing = await Relationship.findOne({
 		where: {
 			from: { id: to.id },
 			to: { id: from.id },
+			from_state: Not(RelationshipType.blocked),
 		},
 		relations: { to: true, from: true },
 	});
 
 	if (existing) {
 		// Accept it
-		existing.type = RelationshipType.accepted;
-		await Relationship.update({ id: existing.id }, { type: existing.type });
+		existing.from_state = RelationshipType.accepted;
+		existing.to_state = RelationshipType.accepted;
+		await Relationship.update(
+			{ id: existing.id },
+			{ from_state: existing.from_state, to_state: existing.to_state },
+		);
 
 		// Send the gateway event to both clients
 
@@ -51,7 +53,8 @@ export const acceptOrCreateRelationship = async (
 	const relationship = await Relationship.create({
 		from,
 		to,
-		type: RelationshipType.pending,
+		from_state: RelationshipType.accepted,
+		to_state: RelationshipType.pending,
 	}).save();
 
 	// Send the gateway event to both

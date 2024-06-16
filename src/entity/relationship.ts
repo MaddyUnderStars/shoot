@@ -15,13 +15,6 @@ import { PublicUser, User } from "./user";
 export enum RelationshipType {
 	pending = 0,
 	accepted = 1,
-
-	// TODO: Modeling blocks this way will make it impossible to model 2 way blocks
-	// or to know which of the two has blocked eachother
-	// Removing the unique index on `from` and `to` would allow for 2 Relationship entities to exist
-	// with type = block, but now you have to remove the constraint, so likely no.
-	// We could instead use 3 block states (toBlocked, fromBlocked, bothBlocked)
-	// but that is kind of messy.
 	blocked = 2,
 }
 
@@ -34,8 +27,12 @@ export class Relationship extends BaseModel {
 	@ManyToOne("users")
 	to: User;
 
+	/** The state of the relationship in the direction of from user -> to user */
 	@Column({ enum: RelationshipType })
-	type: RelationshipType;
+	from_state: RelationshipType;
+
+	@Column({ enum: RelationshipType })
+	to_state: RelationshipType;
 
 	@CreateDateColumn()
 	created: Date;
@@ -57,13 +54,12 @@ export class Relationship extends BaseModel {
 	}
 
 	public toClient(our_id: string): PrivateRelationship {
+		const dir = this.to?.id == our_id;
+
 		return {
 			created: this.created,
-			user:
-				this.to?.id == our_id
-					? this.from.toPublic()
-					: this.to.toPublic(),
-			type: this.type,
+			user: dir ? this.from.toPublic() : this.to.toPublic(),
+			type: dir ? this.to_state : this.from_state,
 		};
 	}
 }

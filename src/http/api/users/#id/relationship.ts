@@ -31,7 +31,7 @@ router.get(
 					{
 						to: { id: req.user.id },
 						from: { id: user.id },
-						type: Not(RelationshipType.blocked),
+						from_state: Not(RelationshipType.blocked),
 					},
 				],
 				relations: {

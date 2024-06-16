@@ -23,7 +23,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 
 	if (target instanceof User) {
 		const relationship = await acceptOrCreateRelationship(target, actor);
-		if (relationship.type != RelationshipType.accepted) return;
+		if (relationship.to_state != RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
 		throw new APError("not implemented");

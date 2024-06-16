@@ -54,7 +54,7 @@ export const onIdentify = makeHandler(async function (payload) {
 				//Or we are the target, and are not blocked
 				{
 					from: { id: this.user_id },
-					type: Not(RelationshipType.blocked),
+					from_state: Not(RelationshipType.blocked),
 				},
 			],
 			relations: { to: true, from: true },
