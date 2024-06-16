@@ -5,7 +5,7 @@ import {
 	ManyToMany,
 	ManyToOne,
 } from "typeorm";
-import { DefaultPermissions, PERMISSION } from "../util";
+import { DefaultPermissions, PERMISSION } from "../util/permission";
 import type { PublicChannel } from "./channel";
 import { Channel } from "./channel";
 import type { User } from "./user";

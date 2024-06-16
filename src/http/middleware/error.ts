@@ -12,9 +12,6 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 	let code = 400;
 	let message: string = error.message;
 
-	// TODO: configure
-	Log.error(error);
-
 	switch (true) {
 		case error instanceof HttpError:
 			code = error.code;
@@ -42,6 +39,9 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 				error?.cause?.errors?.[0]?.message ||
 				error?.cause?.message ||
 				error.message;
+			break;
+		default:
+			Log.error(error);
 			break;
 	}
 
