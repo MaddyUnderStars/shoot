@@ -1,11 +1,11 @@
 import { APAccept, APFollow } from "activitypub-types";
-import { Not } from "typeorm";
 import { User } from "../../entity";
 import { Relationship, RelationshipType } from "../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../sender";
 import { addContext } from "../activitypub";
 import { config } from "../config";
 import { emitGatewayEvent } from "../events";
+import { HttpError } from "../httperror";
 
 export const acceptOrCreateRelationship = async (to: User, from: User) => {
 	// Check if there is a relationship in the other direction
@@ -13,12 +13,11 @@ export const acceptOrCreateRelationship = async (to: User, from: User) => {
 		where: {
 			from: { id: to.id },
 			to: { id: from.id },
-			from_state: Not(RelationshipType.blocked),
 		},
 		relations: { to: true, from: true },
 	});
 
-	if (existing) {
+	if (existing && existing.from_state != RelationshipType.blocked) {
 		// Accept it
 		existing.from_state = RelationshipType.accepted;
 		existing.to_state = RelationshipType.accepted;
@@ -44,9 +43,9 @@ export const acceptOrCreateRelationship = async (to: User, from: User) => {
 		}
 
 		return existing;
+	} else if (existing && existing.from_state == RelationshipType.blocked) {
+		throw new HttpError("Object could not be found", 404);
 	}
-
-	// TODO: check if blocked
 
 	// Otherwise create the relationship
 

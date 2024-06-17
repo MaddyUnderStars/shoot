@@ -159,18 +159,6 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 
 	if (!obj.id) throw new APError("Org must have ID");
 
-	const getOrFetchMember = async (id: string) => {
-		const user = await getOrFetchUser(id);
-
-		const member = Member.create({
-			user,
-
-			// TODO: roles and shit
-		});
-
-		return member;
-	};
-
 	const guild = Guild.create({
 		domain: mention.domain,
 		remote_id: mention.user,
@@ -182,16 +170,6 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 		channels: [],
 
 		roles: [], // to be assigned later
-
-		// members: await Promise.all([
-		// 	...(
-		// 		await resolveCollectionEntries(
-		// 			new URL(obj.followers.toString()),
-		// 		)
-		// 	)
-		// 		.filter((x) => x != obj.attributedTo)
-		// 		.map((x) => getOrFetchMember(x)),
-		// ]),
 
 		remote_address: obj.id,
 		public_key: obj.publicKey.publicKeyPem,
