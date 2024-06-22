@@ -110,6 +110,17 @@ const config = Object.freeze({
 				private_key: "",
 			},
 
+	webrtc: {
+		/** Janus gateway api secret */
+		janus_secret: ifExistsGet<string>("webrtc.janus_secret"),
+		/**
+		 * Janus gateway url. Websocket, http, or unix socket
+		 * @default "ws://localhos:8188"
+		 */
+		janus_url:
+			ifExistsGet<string>("webrtc.janus_url") ?? "ws://localhost:8188",
+	},
+
 	registration: ifExistsGet<boolean>("registration.enabled")
 		? {
 				/**

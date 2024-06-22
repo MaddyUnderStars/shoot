@@ -29,9 +29,6 @@ export class Guild extends Actor {
 	@JoinColumn()
 	owner: User;
 
-	@Column({ type: String, nullable: true })
-	remote_id: string | null;
-
 	@OneToMany("channels", "guild")
 	channels: GuildTextChannel[];
 

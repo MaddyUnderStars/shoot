@@ -6,6 +6,7 @@ import "dotenv/config";
 import { createServer } from "http";
 import { GatewayServer } from "./gateway/server";
 import { APIServer } from "./http/server";
+import { MediaGatewayServer } from "./media/server";
 import { createLogger } from "./util";
 
 const Log = createLogger("bootstrap");
@@ -28,4 +29,6 @@ const http = createServer();
 const api = new APIServer(http);
 const gateway = new GatewayServer(http);
 
-Promise.all([api.listen(PORT), gateway.listen(PORT)]);
+const media = new MediaGatewayServer();
+
+Promise.all([api.listen(PORT), gateway.listen(PORT), media.listen(3002)]);
