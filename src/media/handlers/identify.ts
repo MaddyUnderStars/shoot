@@ -1,6 +1,7 @@
 import { makeHandler } from ".";
+import { Channel, User } from "../../entity";
 import { CLOSE_CODES } from "../../gateway/util";
-import { getUserFromToken } from "../../util";
+import { validateMediaToken } from "../../util/voice";
 import { IDENTIFY } from "../util";
 import { getJanus } from "../util/janus";
 import { startHeartbeatTimeout } from "./heartbeat";
@@ -8,9 +9,11 @@ import { startHeartbeatTimeout } from "./heartbeat";
 import { EchoTestPlugin } from "janode";
 
 export const onIdentify = makeHandler(async function (payload) {
-	let user;
+	let user: User, channel: Channel;
 	try {
-		user = await getUserFromToken(payload.token);
+		const ret = await validateMediaToken(payload.token);
+		user = ret.user;
+		channel = ret.channel;
 	} catch (e) {
 		this.close(CLOSE_CODES.BAD_TOKEN);
 		return;

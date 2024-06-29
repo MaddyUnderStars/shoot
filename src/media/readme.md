@@ -1,9 +1,14 @@
-# Gateway
+# WebRTC Signalling
 
-Real time communication with connected clients about events like message/channel/guild CRUD
+WebRTC signalling server for voice and video
 
-On client connect:
+1. Client requests voice token from host instance
+    - For local users, this is just a POST request
+    - For remote users, this is an activity to the voice channel inbox
+2. Client identifies with signalling server of instance that owns VC
+    - Provides above token, webrtc offer and candidates
+3. Signalling sends answer and call can begin.
 
-1. Client sends Identify to authenticate
-2. Gateway responds Ready with initial sync data: guilds, channels, relationships, presence data
-3. On CRUD for objects client cares about, Gateway sends those events
+Notes:
+
+-   All channels are callable, which should simplify database and code as there is no distinction between 'voice channels' and text channels

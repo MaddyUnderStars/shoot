@@ -44,4 +44,9 @@ export abstract class Actor extends BaseModel {
 	public toPrivate() {
 		return this.toPublic();
 	}
+
+	/** Whether or not this actor is controlled by us */
+	public isRemote() {
+		return !!this.remote_address;
+	}
 }

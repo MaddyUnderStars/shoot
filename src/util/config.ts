@@ -7,6 +7,16 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 	return nodeConfig.has(key) ? nodeConfig.get(key) : undefined;
 };
 
+const getArray = <T>(key: string): T[] => {
+	let i = 0;
+	const ret: T[] = [];
+	while (nodeConfig.has(`${key}[${i}]`)) {
+		ret.push(nodeConfig.get(`${key}[${i}]`));
+		i++;
+	}
+	return ret;
+};
+
 const config = Object.freeze({
 	http: {
 		/**
@@ -119,6 +129,9 @@ const config = Object.freeze({
 		 */
 		janus_url:
 			ifExistsGet<string>("webrtc.janus_url") ?? "ws://localhost:8188",
+
+		// signalling_servers: getArray<string>("webrtc.signalling_servers"),
+		signal_address: ifExistsGet<string>("webrtc.signal_address"),
 	},
 
 	registration: ifExistsGet<boolean>("registration.enabled")

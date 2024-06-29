@@ -111,9 +111,9 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 				: undefined,
 			request: {
 				params: route.options.params,
-				headers: z.object({
-					"content-type": z.literal("application/json"),
-				}),
+				// headers: z.object({
+				// "content-type": z.literal("application/json"),
+				// }),
 				body: route.options.body
 					? {
 							content: {

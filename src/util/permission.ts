@@ -15,7 +15,8 @@ export enum PERMISSION {
 	SEND_MESSAGES, // can send messages in this channel
 
 	MANAGE_CHANNELS, // can modify, delete, add channels in this guild
-	VIEW_CHANNEL,
+	VIEW_CHANNEL, // can view this channel.
+	CALL_CHANNEL, // can start or join this channel's voice call
 
 	MANAGE_GUILD, // can modify this guild
 
@@ -26,6 +27,7 @@ export enum PERMISSION {
 export const DefaultPermissions: PERMISSION[] = [
 	PERMISSION.SEND_MESSAGES,
 	PERMISSION.VIEW_CHANNEL,
+	PERMISSION.CALL_CHANNEL,
 	PERMISSION.CREATE_INVITE,
 ];
 
