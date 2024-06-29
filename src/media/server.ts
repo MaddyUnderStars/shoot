@@ -1,11 +1,11 @@
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import http from "http";
-import Janode from "janode";
 import ws from "ws";
 import { config, createLogger, initDatabase } from "../util";
 import { onConnection } from "./socket/connection";
+import { initJanus } from "./util/janus";
 
-const Log = createLogger("GATEWAY");
+const Log = createLogger("MEDIA");
 
 export class MediaGatewayServer {
 	server: http.Server;
@@ -29,18 +29,9 @@ export class MediaGatewayServer {
 
 		await initDatabase();
 
-		this.janus = await Janode.connect({
-			address: {
-				url: config.webrtc.janus_url,
-				apisecret: config.webrtc.janus_secret,
-			},
-		});
+		await initJanus();
 
 		Log.msg(`Connected to janus on ${config.webrtc.janus_url}`);
-
-		this.janus.once(Janode.EVENT.CONNECTION_CLOSED, () => {
-			Log.error(`Janus closed, TOOD: retry`);
-		});
 
 		if (!this.server.listening) this.server.listen(port);
 	}

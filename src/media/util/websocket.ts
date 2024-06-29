@@ -1,8 +1,11 @@
+import { Session } from "janode";
 import { MEDIA_EVENT } from "./validation";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
 	/** Janode media session */
-	media_session: any;
+	media_session: Session;
+
+	media_handle: any;
 
 	/** Before is copied from gateway src */
 

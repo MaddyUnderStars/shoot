@@ -6,7 +6,7 @@ import { MediaSocket, send } from "../util";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 
-const Log = createLogger("GATEWAY");
+const Log = createLogger("media");
 
 export function onConnection(
 	this: ws.Server,
