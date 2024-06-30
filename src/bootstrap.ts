@@ -23,6 +23,9 @@ if (NODE_MAJOR_VERSION < NODE_REQUIRED_VERSION) {
 }
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+const MEDIA_PORT = process.env.MEDIA_PORT
+	? parseInt(process.env.MEDIA_PORT)
+	: 3002;
 
 const http = createServer();
 
@@ -31,4 +34,4 @@ const gateway = new GatewayServer(http);
 
 const media = new MediaGatewayServer();
 
-Promise.all([api.listen(PORT), gateway.listen(PORT), media.listen(4001)]);
+Promise.all([api.listen(PORT), gateway.listen(PORT), media.listen(MEDIA_PORT)]);
