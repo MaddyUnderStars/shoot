@@ -28,9 +28,14 @@ export function onConnection(
 
 	Log.verbose(`New client from '${socket.ip_address}'`);
 
-	//@ts-ignore what is wrong here
-	socket.addEventListener("close", onClose);
-	//@ts-ignore
+	socket.addEventListener("close", async (ev) => {
+		try {
+			await onClose.call(socket, ev);
+		} catch (e) {
+			Log.error(`close handler failed with `, e);
+		}
+	});
+
 	socket.addEventListener("message", async function (ev) {
 		try {
 			await onMessage.call(socket, ev);
