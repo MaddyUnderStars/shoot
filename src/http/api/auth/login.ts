@@ -31,7 +31,7 @@ router.post(
 
 			const user = await User.findOneOrFail({
 				where: {
-					name: username,
+					name: username.toLowerCase(),
 					domain: config.federation.webapp_url.hostname,
 				},
 			}).catch(() => {

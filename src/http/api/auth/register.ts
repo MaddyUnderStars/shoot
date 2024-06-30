@@ -30,7 +30,11 @@ router.post(
 
 			const { username, email, password } = req.body;
 
-			const user = await registerUser(username, password, email);
+			const user = await registerUser(
+				username.toLowerCase(),
+				password,
+				email,
+			);
 
 			return res.json({ token: await generateToken(user.id) });
 		},
