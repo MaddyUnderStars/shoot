@@ -5,7 +5,13 @@ import { CLOSE_CODES } from "../../gateway/util";
 import { validateMediaToken } from "../../util/voice";
 import { IDENTIFY } from "../util";
 import { getJanusHandle, getJanusSession } from "../util/janus";
-import { getRoomId, setRoomId } from "../util/rooms";
+import {
+	getPeerId,
+	getRoomId,
+	removePeerId,
+	setPeerId,
+	setRoomId,
+} from "../util/rooms";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 export const onIdentify = makeHandler(async function (payload) {
@@ -23,8 +29,6 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	clearTimeout(this.auth_timeout);
 
-	this.user_id = user.id;
-
 	const manager = getJanusHandle();
 
 	let room_id = getRoomId(channel.id);
@@ -37,7 +41,11 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	this.media_handle = await getJanusSession().attach(AudioBridgePlugin);
 
-	await this.media_handle.join({ room: room_id });
+	await this.media_handle.join({
+		room: room_id,
+		display: user.mention,
+		quality: 10,
+	});
 
 	const response = await this.media_handle.configure({ jsep: payload.offer });
 
@@ -47,6 +55,18 @@ export const onIdentify = makeHandler(async function (payload) {
 	}
 
 	await this.media_handle.trickleComplete();
+
+	this.media_handle.on("audiobridge_peer_joined", (data: any) => {
+		setPeerId(data.feed, data.display);
+		this.send({ type: "PEER_JOINED", user_id: data.display });
+	});
+
+	this.media_handle.on("audiobridge_peer_leaving", (data: any) => {
+		const id = getPeerId(data.feed);
+		if (!id) return;
+		this.send({ type: "PEER_LEFT", user_id: id });
+		removePeerId(data.feed);
+	});
 
 	this.send({ type: "READY", answer: response });
 }, IDENTIFY);

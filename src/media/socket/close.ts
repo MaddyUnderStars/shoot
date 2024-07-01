@@ -10,7 +10,8 @@ export async function onClose(this: MediaSocket, event: CloseEvent) {
 	clearTimeout(this.heartbeat_timeout);
 
 	if (this.media_handle) {
-		await this.media_handle.leave();
-		await this.media_handle.detach();
+		this.media_handle.removeAllListeners();
+		await this.media_handle.leave().catch(() => {});
+		await this.media_handle.detach().catch(() => {});
 	}
 }
