@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToMany, ManyToOne } from "typeorm";
 import { z } from "zod";
 import { BaseModel } from "./basemodel";
-import { Role } from "./role";
-import { PublicUser, User } from "./user";
+import type { Role } from "./role";
+import { PublicUser, type User } from "./user";
 
 @Entity("guild_members")
 export class Member extends BaseModel {

@@ -6,9 +6,16 @@ import {
 	Relationship,
 	RelationshipType,
 	Session,
+	type User,
 } from "../../entity";
 import { getUserFromToken } from "../../util";
-import { CLOSE_CODES, IDENTIFY, READY, consume, listenEvents } from "../util";
+import {
+	CLOSE_CODES,
+	IDENTIFY,
+	consume,
+	listenEvents,
+	type READY,
+} from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 /**
@@ -18,7 +25,7 @@ import { startHeartbeatTimeout } from "./heartbeat";
  * - Build payload and send to user
  */
 export const onIdentify = makeHandler(async function (payload) {
-	let user;
+	let user: User;
 	try {
 		user = await getUserFromToken(payload.token);
 	} catch (e) {
@@ -64,7 +71,7 @@ export const onIdentify = makeHandler(async function (payload) {
 	this.session = session;
 
 	const relationshipUsers = relationships.map((x) =>
-		x.to.id == this.user_id ? x.from : x.to,
+		x.to.id === this.user_id ? x.from : x.to,
 	);
 
 	listenEvents(this, [

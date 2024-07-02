@@ -1,26 +1,27 @@
 import { Role } from "../../entity/role";
 import {
 	APError,
-	APRole,
 	resolveAPObject,
 	resolveCollectionEntries,
 	splitQualifiedMention,
+	type APRole,
 } from "../activitypub";
 import { getOrFetchGuild } from "./guild";
 import { getOrFetchMember } from "./member";
 
 export const createRoleFromRemote = async (lookup: string | APRole) => {
 	const mention =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? splitQualifiedMention(lookup)
-			: splitQualifiedMention(lookup.id!);
+			: // biome-ignore lint/style/noNonNullAssertion: <explanation>
+				splitQualifiedMention(lookup.id!);
 
 	const obj = await resolveAPObject(lookup);
 
-	if (obj.type != "Role")
+	if (obj.type !== "Role")
 		throw new APError(`Expected role but found ${obj.type}`);
 
-	if (!obj.attributedTo || typeof obj.attributedTo != "string")
+	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
 		throw new APError("role requires attributedTo guild");
 
 	const role = Role.create({

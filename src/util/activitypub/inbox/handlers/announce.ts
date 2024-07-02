@@ -1,5 +1,5 @@
 import { ObjectIsNote } from "activitypub-types";
-import { ActivityHandler } from ".";
+import type { ActivityHandler } from ".";
 import { User } from "../../../../entity";
 import { getOrFetchChannel, handleMessage } from "../../../entity";
 import { APError } from "../../error";
@@ -36,7 +36,7 @@ export const AnnounceActivityHandler: ActivityHandler = async (
 	if (Array.isArray(activity.actor))
 		throw new APError("Cannot accept Announce with multiple `actor`s");
 
-	if (typeof activity.actor != "string")
+	if (typeof activity.actor !== "string")
 		throw new APError("Cannot accept Announce with non-string actor");
 
 	const channel = await getOrFetchChannel(activity.actor);

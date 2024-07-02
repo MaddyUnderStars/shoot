@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { createLogger } from "../../util/log";
 
 const Log = createLogger("cli");

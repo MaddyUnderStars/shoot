@@ -1,5 +1,5 @@
-import EventEmitter from "events";
-import { GATEWAY_EVENT } from "../gateway/util";
+import EventEmitter from "node:events";
+import type { GATEWAY_EVENT } from "../gateway/util";
 
 const events = new EventEmitter();
 

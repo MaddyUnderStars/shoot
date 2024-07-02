@@ -1,5 +1,10 @@
-import EventEmitter from "events";
-import { AudioBridgePlugin, Connection, Janode, Session } from "janode";
+import {
+	AudioBridgePlugin,
+	Janode,
+	type Connection,
+	type Session,
+} from "janode";
+import type EventEmitter from "node:events";
 import { config, createLogger } from "../../util";
 
 const Log = createLogger("media");
@@ -8,7 +13,8 @@ type jcon = Connection & EventEmitter;
 
 let connection: jcon;
 let session: Session;
-let adminHandle: any; // TODO types
+// biome-ignore lint/suspicious/noExplicitAny: TODO
+let adminHandle: any;
 
 export const initJanus = async () => {
 	connection = await Janode.connect({
@@ -19,7 +25,7 @@ export const initJanus = async () => {
 	});
 
 	connection.once(Janode.EVENT.CONNECTION_CLOSED, () => {
-		Log.error(`Janus closed, TOOD: retry`);
+		Log.error("Janus closed, TOOD: retry");
 	});
 
 	session = await connection.create();

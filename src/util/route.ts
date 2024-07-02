@@ -1,6 +1,9 @@
-import { RequestHandler } from "express";
-import { ZodSchema, z } from "zod";
-import { RequestValidation, validateRequest } from "zod-express-middleware";
+import type { RequestHandler } from "express";
+import { type ZodSchema, z } from "zod";
+import {
+	type RequestValidation,
+	validateRequest,
+} from "zod-express-middleware";
 
 export type RouteOptions<Params, Response, Body, Query> = RequestValidation<
 	Params,

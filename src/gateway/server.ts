@@ -1,4 +1,4 @@
-import http from "http";
+import http from "node:http";
 import ws from "ws";
 import { createLogger, initDatabase } from "../util";
 import { onConnection } from "./socket/connection";

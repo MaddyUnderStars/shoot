@@ -1,6 +1,6 @@
 import { hasAPContext } from "./util";
 
-import {
+import type {
 	APCollectionPage,
 	APObject,
 	APOrderedCollectionPage,
@@ -16,7 +16,7 @@ import {
 	WebfingerResponse,
 } from "./constants";
 import { APError } from "./error";
-import { HttpSig } from "./httpsig";
+import { signWithHttpSignature } from "./httpsig";
 import { InstanceActor } from "./instanceActor";
 import { splitQualifiedMention } from "./util";
 
@@ -27,7 +27,7 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	noCache = false,
 ): Promise<T> => {
 	// we were already given an object
-	if (typeof data != "string") {
+	if (typeof data !== "string") {
 		if (!noCache)
 			await ApCache.create({
 				id: data.id,
@@ -41,15 +41,15 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 		if (cache) return cache.raw as T;
 	}
 
-	if (new URL(data).hostname == config.federation.instance_url.hostname)
+	if (new URL(data).hostname === config.federation.instance_url.hostname)
 		throw new APError(
-			`Tried to resolve remote resource, but we are the remote!`,
+			"Tried to resolve remote resource, but we are the remote!",
 		);
 
 	Log.verbose(`Fetching from remote ${data}`);
 
 	// sign the request
-	const signed = HttpSig.sign(data, "get", InstanceActor);
+	const signed = signWithHttpSignature(data, "get", InstanceActor);
 
 	const res = await fetch(data, signed);
 
@@ -99,7 +99,7 @@ export const doWebfingerOrFindTemplate = async (
 	let res = await fetch(url, opts);
 
 	if (res.ok) {
-		if (res.status == 404)
+		if (res.status === 404)
 			throw new APError(
 				`Remote server sent code ${res.status} : ${res.statusText}`,
 			);
@@ -145,7 +145,7 @@ export const resolveWebfinger = async (
 			`webfinger did not return any links for actor ${lookup}`,
 		);
 
-	const link = wellknown.links.find((x) => x.rel == "self");
+	const link = wellknown.links.find((x) => x.rel === "self");
 	if (!link || !link.href)
 		throw new APError(".well-known did not contain rel=self href");
 
@@ -157,9 +157,9 @@ export const resolveWebfinger = async (
  */
 export const resolveCollectionEntries = async (
 	collection: URL,
-	limit: number = 10,
+	limit = 10,
 ): Promise<Array<string>> => {
-	if (limit < 0) throw new APError(`Limit reached when resolving collection`);
+	if (limit < 0) throw new APError("Limit reached when resolving collection");
 	limit--;
 
 	const ret: Array<string> = [];
@@ -188,21 +188,26 @@ export const resolveCollectionEntries = async (
 			new URL(parent.first.toString()),
 			limit,
 		);
-	else if (!items) throw new APError("can't find collection items");
+
+	if (!items) throw new APError("can't find collection items");
 
 	for (const item of items) {
 		// TODO: if we just return all the IDs, then collections that just return the full objects won't be cached!
 		// this is bad btw!!!
 
-		let id =
-			typeof item == "string" ? item : "id" in item ? item.id : undefined;
+		const id =
+			typeof item === "string"
+				? item
+				: "id" in item
+					? item.id
+					: undefined;
 
 		if (!id) continue;
 
 		ret.push(id);
 	}
 
-	if (parent.next && typeof parent.next == "string") {
+	if (parent.next && typeof parent.next === "string") {
 		Log.verbose(`Resolving next page of collection ${parent.id}`);
 		ret.push(
 			...(await resolveCollectionEntries(new URL(parent.next), limit)),
@@ -216,9 +221,9 @@ const ObjectIsCollection = (
 	obj: APObject,
 ): obj is APCollectionPage | APOrderedCollectionPage => {
 	return (
-		obj.type == "OrderedCollection" ||
-		obj.type == "OrderedCollectionPage" ||
-		obj.type == "Collection" ||
-		obj.type == "CollectionPage"
+		obj.type === "OrderedCollection" ||
+		obj.type === "OrderedCollectionPage" ||
+		obj.type === "Collection" ||
+		obj.type === "CollectionPage"
 	);
 };

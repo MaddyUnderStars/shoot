@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import type { RequestHandler } from "express";
 import type { User } from "../../entity";
 import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
 
@@ -19,7 +19,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 
 	if (
 		NO_AUTH_ROUTES.some((x) => {
-			if (typeof x == "string") return url.startsWith(x);
+			if (typeof x === "string") return url.startsWith(x);
 			return x.test(url);
 		}) ||
 		ACTIVITY_JSON_ACCEPT.some((v) => req.headers.accept?.includes(v)) ||
@@ -33,7 +33,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 	if (!authorization)
 		return next(new HttpError("Missing `authorization` header", 401));
 
-	let user;
+	let user: User;
 	try {
 		user = await getUserFromToken(authorization);
 	} catch (e) {

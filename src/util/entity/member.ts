@@ -1,4 +1,4 @@
-import { Member, User } from "../../entity";
+import { Member, type User } from "../../entity";
 import { splitQualifiedMention } from "../activitypub";
 import { HttpError } from "../httperror";
 import { getOrFetchUser } from "./user";
@@ -6,7 +6,7 @@ import { getOrFetchUser } from "./user";
 export const getOrFetchMember = async (lookup: string) => {
 	const mention = splitQualifiedMention(lookup);
 
-	let member = await Member.findOne({
+	const member = await Member.findOne({
 		where: {
 			user: {
 				name: mention.user,
@@ -46,6 +46,6 @@ export const isMemberOfGuild = async (guild_id: string, user: User) => {
 				},
 				user: { id: user.id },
 			},
-		})) != 0
+		})) !== 0
 	);
 };

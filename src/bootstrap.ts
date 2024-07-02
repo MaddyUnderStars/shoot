@@ -3,7 +3,7 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import "dotenv/config";
-import { createServer } from "http";
+import { createServer } from "node:http";
 import { GatewayServer } from "./gateway/server";
 import { APIServer } from "./http/server";
 import { MediaGatewayServer } from "./media/server";
@@ -22,9 +22,9 @@ if (NODE_MAJOR_VERSION < NODE_REQUIRED_VERSION) {
 	process.exit(1);
 }
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3001;
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3001;
 const MEDIA_PORT = process.env.MEDIA_PORT
-	? parseInt(process.env.MEDIA_PORT)
+	? Number.parseInt(process.env.MEDIA_PORT)
 	: 3002;
 
 const http = createServer();

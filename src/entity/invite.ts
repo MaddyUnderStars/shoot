@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 import { z } from "zod";
 import { BaseModel } from "./basemodel";
-import { Guild, PublicGuild } from "./guild";
+import { type Guild, PublicGuild } from "./guild";
 
 @Entity("invites")
 export class Invite extends BaseModel {

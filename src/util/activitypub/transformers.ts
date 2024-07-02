@@ -1,4 +1,4 @@
-import {
+import type {
 	APAnnounce,
 	APCreate,
 	APGroup,
@@ -10,19 +10,19 @@ import {
 import {
 	ApCache,
 	DMChannel,
-	Guild,
 	GuildTextChannel,
-	Invite,
-	User,
+	type Guild,
+	type Invite,
+	type User,
 } from "../../entity";
-import { Channel } from "../../entity/channel";
+import type { Channel } from "../../entity/channel";
 import { Message } from "../../entity/message";
-import { Role } from "../../entity/role";
+import type { Role } from "../../entity/role";
 import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
 import { getOrFetchAttributedUser } from "../entity";
 import { createXsdDate } from "../misc";
-import { PERMISSION } from "../permission";
+import type { PERMISSION } from "../permission";
 import { APError } from "./error";
 import { InstanceActor } from "./instanceActor";
 
@@ -66,7 +66,7 @@ export const buildAPNote = (message: Message): APNote => {
 export const buildAPCreateNote = (inner: APNote): APCreate => {
 	return {
 		type: "Create",
-		id: inner.id + "/create",
+		id: `${inner.id}/create`,
 		actor: inner.attributedTo,
 		to: inner.to,
 		cc: inner.cc,
@@ -95,7 +95,7 @@ export const buildAPAnnounceNote = (
 };
 
 export const buildAPPerson = (user: User): APPerson => {
-	const id = user.id == InstanceActor.id ? `/actor` : `/users/${user.name}`;
+	const id = user.id === InstanceActor.id ? "/actor" : `/users/${user.name}`;
 
 	const { webapp_url, instance_url } = config.federation;
 
@@ -167,7 +167,7 @@ export const buildAPGroup = (channel: Channel): APGroup => {
 
 	const { webapp_url, instance_url } = config.federation;
 
-	let owner;
+	let owner: string;
 	if (channel instanceof DMChannel)
 		owner = `${instance_url.origin}${getExternalPathFromActor(channel.owner)}`;
 	else if (channel instanceof GuildTextChannel)

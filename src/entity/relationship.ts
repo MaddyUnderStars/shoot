@@ -8,9 +8,9 @@ import {
 	OneToOne,
 } from "typeorm";
 import { z } from "zod";
-import { ApCache } from "./apcache";
+import type { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
-import { PublicUser, User } from "./user";
+import { PublicUser, type User } from "./user";
 
 export enum RelationshipType {
 	pending = 0,
@@ -54,7 +54,7 @@ export class Relationship extends BaseModel {
 	}
 
 	public toClient(our_id: string): PrivateRelationship {
-		const dir = this.to?.id == our_id;
+		const dir = this.to?.id === our_id;
 
 		return {
 			created: this.created,

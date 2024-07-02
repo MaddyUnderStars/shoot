@@ -2,14 +2,19 @@ import bcrypt from "bcrypt";
 import { User } from "../../entity";
 import { config } from "../config";
 
-import { APActor, APNote, APPerson, ObjectIsGroup } from "activitypub-types";
+import {
+	ObjectIsGroup,
+	type APActor,
+	type APNote,
+	type APPerson,
+} from "activitypub-types";
 import {
 	APError,
 	APObjectIsActor,
-	ActorMention,
 	resolveAPObject,
 	resolveWebfinger,
 	splitQualifiedMention,
+	type ActorMention,
 } from "../activitypub";
 import { createLogger } from "../log";
 import { tryParseUrl } from "../url";
@@ -42,7 +47,7 @@ export const registerUser = async (
 };
 
 export const getOrFetchUser = async (lookup: string | APPerson) => {
-	const id = typeof lookup == "string" ? lookup : lookup.id;
+	const id = typeof lookup === "string" ? lookup : lookup.id;
 
 	if (!id) throw new APError("Cannot fetch user with undefined ID");
 
@@ -72,14 +77,14 @@ export const batchGetUsers = async (users: ActorMention[]) => {
 
 export const createUserForRemotePerson = async (lookup: string | APActor) => {
 	const domain =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? splitQualifiedMention(lookup).domain
-			: new URL(lookup.id!).hostname;
+			: new URL(lookup.id || "").hostname;
 
 	// If we were given a URL, this is probably a actor URL
 	// otherwise, treat it as a username@domain handle
 	const obj =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? tryParseUrl(lookup)
 				? await resolveAPObject(lookup)
 				: await resolveWebfinger(lookup)
@@ -100,7 +105,7 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 
 	if (!obj.id) throw new APError("Resolved object must have ID");
 
-	if (typeof obj.inbox != "string" || typeof obj.outbox != "string")
+	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
 	return User.create({
@@ -134,7 +139,7 @@ export const getOrFetchAttributedUser = async (
 			"Cannot assign single author to this note with multiple attributedTo",
 		);
 
-	if (typeof attributed == "string") return await getOrFetchUser(attributed);
+	if (typeof attributed === "string") return await getOrFetchUser(attributed);
 
 	if (!APObjectIsActor(attributed))
 		throw new APError("note.attributedTo must be actor");

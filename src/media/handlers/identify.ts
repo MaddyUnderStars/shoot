@@ -1,6 +1,6 @@
 import { AudioBridgePlugin } from "janode";
 import { makeHandler } from ".";
-import { Channel, User } from "../../entity";
+import type { Channel, User } from "../../entity";
 import { CLOSE_CODES } from "../../gateway/util";
 import { validateMediaToken } from "../../util/voice";
 import { IDENTIFY } from "../util";
@@ -15,7 +15,8 @@ import {
 import { startHeartbeatTimeout } from "./heartbeat";
 
 export const onIdentify = makeHandler(async function (payload) {
-	let user: User, channel: Channel;
+	let user: User;
+	let channel: Channel;
 	try {
 		const ret = await validateMediaToken(payload.token);
 		user = ret.user;
@@ -56,17 +57,32 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	await this.media_handle.trickleComplete();
 
-	this.media_handle.on("audiobridge_peer_joined", (data: any) => {
-		setPeerId(data.feed, data.display);
-		this.send({ type: "PEER_JOINED", user_id: data.display });
-	});
+	this.media_handle.on(
+		"audiobridge_peer_joined",
+		(data: JANUS_PEER_JOINED) => {
+			setPeerId(data.feed, data.display);
+			this.send({ type: "PEER_JOINED", user_id: data.display });
+		},
+	);
 
-	this.media_handle.on("audiobridge_peer_leaving", (data: any) => {
-		const id = getPeerId(data.feed);
-		if (!id) return;
-		this.send({ type: "PEER_LEFT", user_id: id });
-		removePeerId(data.feed);
-	});
+	this.media_handle.on(
+		"audiobridge_peer_leaving",
+		(data: JANUS_PEER_LEAVING) => {
+			const id = getPeerId(data.feed);
+			if (!id) return;
+			this.send({ type: "PEER_LEFT", user_id: id });
+			removePeerId(data.feed);
+		},
+	);
 
 	this.send({ type: "READY", answer: response });
 }, IDENTIFY);
+
+type JANUS_PEER_JOINED = {
+	feed: number;
+	display: string;
+};
+
+type JANUS_PEER_LEAVING = {
+	feed: number;
+};

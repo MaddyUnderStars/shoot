@@ -1,6 +1,6 @@
 import { CreateDateColumn, Entity, ManyToOne } from "typeorm";
 import { BaseModel } from "./basemodel";
-import { User } from "./user";
+import type { User } from "./user";
 
 @Entity("sessions")
 export class Session extends BaseModel {

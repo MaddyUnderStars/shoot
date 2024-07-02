@@ -1,6 +1,6 @@
-import { APActivity } from "activitypub-types";
-import { Actor, Channel, Guild, User } from "../entity";
-import { APError, HttpSig, InstanceActor, config } from "../util";
+import type { APActivity } from "activitypub-types";
+import { Channel, Guild, User, type Actor } from "../entity";
+import { APError, InstanceActor, config, signWithHttpSignature } from "../util";
 import { createLogger } from "../util/log";
 
 const Log = createLogger("ap:distribute");
@@ -8,18 +8,16 @@ const Log = createLogger("ap:distribute");
 export const sendActivity = async (
 	targets: Actor | Actor[],
 	activity: APActivity,
-	sender?: Actor,
+	sender: Actor = InstanceActor,
 ) => {
 	targets = Array.isArray(targets) ? targets : [targets];
 
 	// todo: handle shared inbox
 
-	sender = sender ?? InstanceActor;
-
 	for (const target of targets) {
 		if (
 			!target.remote_address ||
-			target.domain == config.federation.instance_url.hostname
+			target.domain === config.federation.instance_url.hostname
 		)
 			continue;
 
@@ -34,7 +32,7 @@ export const sendActivity = async (
 			continue;
 		}
 
-		const signed = HttpSig.sign(inbox, "POST", sender, activity);
+		const signed = signWithHttpSignature(inbox, "POST", sender, activity);
 
 		const res = await fetch(inbox, signed);
 		if (!res.ok) {
@@ -54,7 +52,7 @@ export const sendActivity = async (
 };
 
 export const getExternalPathFromActor = (actor: Actor) => {
-	if (actor.id == InstanceActor.id) return "/actor";
+	if (actor.id === InstanceActor.id) return "/actor";
 	if (actor instanceof Channel) return `/channel/${actor.id}`;
 	if (actor instanceof User) return `/users/${actor.name}`;
 	if (actor instanceof Guild) return `/guild/${actor.id}`;

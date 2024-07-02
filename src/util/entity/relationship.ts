@@ -1,5 +1,5 @@
-import { APAccept, APFollow } from "activitypub-types";
-import { User } from "../../entity";
+import type { APAccept, APFollow } from "activitypub-types";
+import type { User } from "../../entity";
 import { Relationship, RelationshipType } from "../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../sender";
 import { addContext } from "../activitypub";
@@ -17,7 +17,7 @@ export const acceptOrCreateRelationship = async (to: User, from: User) => {
 		relations: { to: true, from: true },
 	});
 
-	if (existing && existing.from_state != RelationshipType.blocked) {
+	if (existing && existing.from_state !== RelationshipType.blocked) {
 		// Accept it
 		existing.from_state = RelationshipType.accepted;
 		existing.to_state = RelationshipType.accepted;
@@ -43,7 +43,9 @@ export const acceptOrCreateRelationship = async (to: User, from: User) => {
 		}
 
 		return existing;
-	} else if (existing && existing.from_state == RelationshipType.blocked) {
+	}
+
+	if (existing && existing.from_state === RelationshipType.blocked) {
 		throw new HttpError("Object could not be found", 404);
 	}
 

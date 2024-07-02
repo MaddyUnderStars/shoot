@@ -1,5 +1,5 @@
 import { ObjectIsNote } from "activitypub-types";
-import { Actor, DMChannel, Message } from "../../entity";
+import { DMChannel, Message, type Actor } from "../../entity";
 import { sendActivity } from "../../sender";
 import {
 	APError,
@@ -21,7 +21,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 		message.reference_object &&
 		(await Message.count({
 			where: { reference_object: { id: message.reference_object.id } },
-		})) != 0
+		})) !== 0
 	)
 		throw new APError("Already processed", 200);
 
@@ -59,7 +59,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 		// since they author'd it and already have a copy
 		// TODO: maybe this should be used as an acknowledge instead? or send an `Acknowledge` activity?
 		recipients = recipients.filter(
-			(x) => x.domain != message.author.domain,
+			(x) => x.domain !== message.author.domain,
 		);
 
 		await sendActivity(recipients, addContext(announce), message.channel);

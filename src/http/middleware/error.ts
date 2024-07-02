@@ -1,4 +1,4 @@
-import { ErrorRequestHandler } from "express";
+import type { ErrorRequestHandler } from "express";
 import z from "zod";
 import { HttpError, createLogger } from "../../util";
 
@@ -19,18 +19,19 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 		case error instanceof z.ZodError:
 			message = error.errors[0].message;
 			break;
-		case error.name === "EntityNotFoundError":
+		case error.name === "EntityNotFoundError": {
 			code = 404;
 			const name =
 				error.message.match(ENTITY_NOT_FOUND_REGEX)?.[1] || "Object";
 			message = `${name} could not be found`;
 			break;
+		}
 		case error.name === "QueryFailedError":
 			code = 500;
 
 			if (error.message.toLowerCase().includes("unique")) {
 				code = 400;
-				message = `Object already exists`;
+				message = "Object already exists";
 			}
 			break;
 		case error.message === "fetch failed":

@@ -1,7 +1,7 @@
-import { CloseEvent } from "ws";
+import type { CloseEvent } from "ws";
 import { Session } from "../../entity";
 import { createLogger } from "../../util";
-import { Websocket } from "../util/websocket";
+import type { Websocket } from "../util/websocket";
 
 const Log = createLogger("gateway");
 

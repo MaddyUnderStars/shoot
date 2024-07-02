@@ -10,7 +10,7 @@ import type {
 	PublicMember,
 	PublicMessage,
 } from "../../../entity";
-import { PublicRole } from "../../../entity/role";
+import type { PublicRole } from "../../../entity/role";
 
 export type GATEWAY_PAYLOAD = {
 	/**

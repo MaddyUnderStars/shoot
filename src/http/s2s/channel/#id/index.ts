@@ -1,4 +1,4 @@
-import { APCollection, APCollectionPage } from "activitypub-types";
+import type { APCollection, APCollectionPage } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { DMChannel, Message } from "../../../../entity";
@@ -151,9 +151,11 @@ router.get(
 			const collection = buildCollectionPage(colId, page, nextPage);
 
 			collection.items = channel.recipients
+				// biome-ignore lint/style/noNonNullAssertion: <explanation>
 				.map((x) => x.remote_address ?? buildAPPerson(x).id!)
 				.concat(
 					channel.owner.remote_address ??
+						// biome-ignore lint/style/noNonNullAssertion: <explanation>
 						buildAPPerson(channel.owner).id!,
 				);
 

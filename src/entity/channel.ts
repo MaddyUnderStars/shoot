@@ -1,8 +1,8 @@
 import { Column, Entity, TableInheritance } from "typeorm";
 import { z } from "zod";
-import { HttpError, PERMISSION } from "../util";
+import { HttpError, type PERMISSION } from "../util";
 import { Actor } from "./actor";
-import { User } from "./user";
+import type { User } from "./user";
 
 @Entity("channels")
 @TableInheritance({ column: { type: String, name: "type" } })
@@ -32,7 +32,7 @@ export class Channel extends Actor {
 	) => {
 		// todo: which permision?
 		if (!this.checkPermission(user, permission))
-			throw new HttpError(`Missing permission`, 400);
+			throw new HttpError("Missing permission", 400);
 		return true;
 	};
 

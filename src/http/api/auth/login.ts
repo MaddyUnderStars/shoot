@@ -39,7 +39,9 @@ router.post(
 				throw new HttpError(INVALID_LOGIN, 401);
 			});
 
-			if (!(await bcrypt.compare(password, user.password_hash!)))
+			if (!user.password_hash) throw new HttpError(INVALID_LOGIN, 401);
+
+			if (!(await bcrypt.compare(password, user.password_hash)))
 				throw new HttpError(INVALID_LOGIN, 401);
 
 			return res.json({

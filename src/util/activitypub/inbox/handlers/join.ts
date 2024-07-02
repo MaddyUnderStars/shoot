@@ -1,5 +1,5 @@
-import { APAccept } from "activitypub-types";
-import { ActivityHandler } from ".";
+import type { APAccept } from "activitypub-types";
+import type { ActivityHandler } from ".";
 import { Channel } from "../../../../entity";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
@@ -18,7 +18,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 
 	if (!activity.actor) throw new APError("Who is actor?");
 
-	if (typeof activity.actor != "string")
+	if (typeof activity.actor !== "string")
 		throw new APError("Actor must be string");
 
 	if (Array.isArray(activity.actor))
@@ -30,7 +30,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 		throw new APError("Cannot accept multiple objects");
 
 	if (
-		`${config.federation.instance_url.origin}${getExternalPathFromActor(target)}` !=
+		`${config.federation.instance_url.origin}${getExternalPathFromActor(target)}` !==
 		activity.object
 	)
 		throw new APError("Object and target mismatch?");

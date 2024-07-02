@@ -1,9 +1,9 @@
-import { EventEmitter } from "events";
-import http from "http";
+import type { EventEmitter } from "node:events";
+import http from "node:http";
 import ws from "ws";
 import { config, createLogger, initDatabase } from "../util";
+import { Janus } from "./janus";
 import { onConnection } from "./socket/connection";
-import { initJanus } from "./util/janus";
 
 const Log = createLogger("MEDIA");
 
@@ -29,9 +29,12 @@ export class MediaGatewayServer {
 
 		await initDatabase();
 
-		await initJanus();
+		const janus = new Janus();
+		janus.connect({ address: { url: config.webrtc.janus_url } });
 
-		Log.msg(`Connected to janus on ${config.webrtc.janus_url}`);
+		// await initJanus();
+
+		// Log.msg(`Connected to janus on ${config.webrtc.janus_url}`);
 
 		if (!this.server.listening) this.server.listen(port);
 	}

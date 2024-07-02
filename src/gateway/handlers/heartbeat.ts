@@ -2,13 +2,13 @@ import { makeHandler } from ".";
 import {
 	CLOSE_CODES,
 	HEARTBEAT,
-	HEARTBEAT_ACK,
-	Websocket,
 	consume,
+	type HEARTBEAT_ACK,
+	type Websocket,
 } from "../util";
 
 export const onHeartbeat = makeHandler(async function (payload) {
-	if (payload.s != this.sequence)
+	if (payload.s !== this.sequence)
 		// TODO: send them back the missing events
 		throw new Error("Out of sync. Reconnect");
 

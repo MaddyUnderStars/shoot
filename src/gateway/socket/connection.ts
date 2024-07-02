@@ -1,7 +1,7 @@
-import { IncomingMessage } from "http";
-import ws from "ws";
+import type { IncomingMessage } from "node:http";
+import type ws from "ws";
 import { createLogger } from "../../util";
-import { CLOSE_CODES, Websocket, send } from "../util";
+import { CLOSE_CODES, send, type Websocket } from "../util";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 
@@ -37,7 +37,7 @@ export function onConnection(
 			await onMessage.call(socket, ev);
 		} catch (e) {
 			this.close(CLOSE_CODES.SERVER_ERROR);
-			Log.error(`message handler failed with`, e);
+			Log.error("message handler failed with", e);
 		}
 	});
 

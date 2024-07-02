@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { Invite } from "../../entity";
 
 const CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -14,7 +14,7 @@ export const generateInviteCode = async () => {
 			.map((x) => CHARACTERS[x % CHARACTERS.length])
 			.join("");
 
-		if ((await Invite.count({ where: { code: tryCode } })) != 0) {
+		if ((await Invite.count({ where: { code: tryCode } })) !== 0) {
 			// failed
 			INVITE_LENGTH++;
 			continue;

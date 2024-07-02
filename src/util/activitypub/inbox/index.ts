@@ -1,10 +1,10 @@
-import { APActivity } from "activitypub-types";
-import { Actor, ApCache } from "../../../entity";
+import type { APActivity } from "activitypub-types";
+import { ApCache, type Actor } from "../../../entity";
 import { APError } from "../error";
 import { ActivityHandlers } from "./handlers";
 
 export const handleInbox = async (activity: APActivity, target: Actor) => {
-	delete activity["@context"];
+	activity["@context"] = undefined;
 
 	if (!activity.type) throw new APError("Activity does not have type");
 	if (Array.isArray(activity.type))

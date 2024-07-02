@@ -1,7 +1,7 @@
-import { ZodSchema } from "zod";
+import type { ZodSchema } from "zod";
 import { CLOSE_CODES } from "../../gateway/util";
 import { createLogger } from "../../util";
-import { MediaSocket } from "../util/websocket";
+import type { MediaSocket } from "../util/websocket";
 
 const Log = createLogger("gateway");
 
@@ -26,7 +26,7 @@ export const makeHandler = <T>(
 	};
 };
 
-export const handlers: Record<string, GatewayMessageHandler<any>> = {
+export const handlers: Record<string, GatewayMessageHandler<unknown>> = {
 	identify: require("./identify").onIdentify,
 	heartbeat: require("./heartbeat").onHeartbeat,
 };

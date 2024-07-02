@@ -47,17 +47,17 @@ router.patch(
 
 		channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
-		if (channel.domain == config.federation.webapp_url.hostname) {
+		if (channel.domain === config.federation.webapp_url.hostname) {
 			// This is a local channel
 
 			await Channel.update({ id: channel.id }, req.body);
 			return res.sendStatus(200);
-		} else {
-			throw new HttpError("Not implemented", 500);
 		}
 
+		throw new HttpError("Not implemented", 500);
+
 		// TODO: federate Update channel activity to remote server
-		return res.sendStatus(202);
+		//return res.sendStatus(202);
 	}),
 );
 

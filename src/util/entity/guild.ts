@@ -1,9 +1,9 @@
 import {
-	APActor,
-	APOrganization,
 	ObjectIsOrganization,
+	type APActor,
+	type APOrganization,
 } from "activitypub-types";
-import { Guild, GuildTextChannel, Member, User } from "../../entity";
+import { Guild, Member, User, type GuildTextChannel } from "../../entity";
 import { Role } from "../../entity/role";
 import {
 	APError,
@@ -43,7 +43,7 @@ export const joinGuild = async (user_id: string, guild_id: string) => {
 };
 
 export const getOrFetchGuild = async (lookup: string | APOrganization) => {
-	const id = typeof lookup == "string" ? lookup : lookup.id;
+	const id = typeof lookup === "string" ? lookup : lookup.id;
 
 	if (!id) throw new APError("Cannot fetch guild without ID");
 
@@ -125,12 +125,13 @@ export const createGuild = async (name: string, owner: User) => {
 
 export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 	const mention =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? splitQualifiedMention(lookup)
-			: splitQualifiedMention(lookup.id!);
+			: // biome-ignore lint/style/noNonNullAssertion: <explanation>
+				splitQualifiedMention(lookup.id!);
 
 	const obj =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? tryParseUrl(lookup)
 				? await resolveAPObject(lookup)
 				: await resolveWebfinger(lookup)
@@ -144,12 +145,12 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 			"Resolved object is Org but does not contain public key",
 		);
 
-	if (!obj.attributedTo || typeof obj.attributedTo != "string")
+	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
 		throw new APError(
 			"Resolved org doesn't have attributedTo, we don't know what owns it",
 		);
 
-	if (typeof obj.inbox != "string" || typeof obj.outbox != "string")
+	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
 	if (!obj.following || !obj.followers)
@@ -200,7 +201,7 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 		).map((x) => createRoleFromRemote(x)),
 	]);
 
-	const everyone = roles.find((x) => x.remote_id == guild.remote_id);
+	const everyone = roles.find((x) => x.remote_id === guild.remote_id);
 	if (!everyone)
 		// TOOD: construct one based on membership of all other roles?
 		throw new APError("Remote guild did not have everyone role");

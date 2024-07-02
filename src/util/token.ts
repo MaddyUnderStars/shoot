@@ -28,11 +28,12 @@ export const getUserFromToken = (token: string): Promise<User> =>
 					where: { id: decoded.id },
 				});
 
-				if (!user) return reject(INVALID_TOKEN);
+				if (!user || !user.valid_tokens_since)
+					return reject(INVALID_TOKEN);
 
 				if (
 					decoded.iat * 1000 <
-					new Date(user.valid_tokens_since!).setSeconds(0, 0)
+					new Date(user.valid_tokens_since).setSeconds(0, 0)
 				)
 					return reject(INVALID_TOKEN);
 

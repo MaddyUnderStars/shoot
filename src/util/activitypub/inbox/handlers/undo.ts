@@ -1,5 +1,5 @@
 import { ActivityIsFollow } from "activitypub-types";
-import { ActivityHandler } from ".";
+import type { ActivityHandler } from ".";
 import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
 

@@ -1,12 +1,12 @@
-import crypto from "crypto";
-import { promisify } from "util";
+import crypto from "node:crypto";
+import { promisify } from "node:util";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 import {
-	APActor,
 	ObjectIsGroup,
 	ObjectIsOrganization,
 	ObjectIsPerson,
+	type APActor,
 } from "activitypub-types";
 import { Brackets } from "typeorm";
 import { Guild, GuildTextChannel, User } from "../../entity";
@@ -121,12 +121,13 @@ export const createChannelFromRemoteGroup = async (
 	lookup: string | APActor,
 ) => {
 	const mention =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? splitQualifiedMention(lookup)
-			: splitQualifiedMention(lookup.id!);
+			: // biome-ignore lint/style/noNonNullAssertion: TODO
+				splitQualifiedMention(lookup.id!);
 
 	const obj =
-		typeof lookup == "string"
+		typeof lookup === "string"
 			? tryParseUrl(lookup)
 				? await resolveAPObject(lookup)
 				: await resolveWebfinger(lookup)
@@ -139,12 +140,12 @@ export const createChannelFromRemoteGroup = async (
 			"Resolved object is Group but does not contain public key",
 		);
 
-	if (!obj.attributedTo || typeof obj.attributedTo != "string")
+	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
 		throw new APError(
 			"Resolved group doesn't have attributedTo, we don't know what owns it",
 		);
 
-	if (typeof obj.inbox != "string" || typeof obj.outbox != "string")
+	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
 	if (!obj.id) throw new APError("Remote object did not have ID");
@@ -192,7 +193,7 @@ export const createChannelFromRemoteGroup = async (
 						new URL(obj.followers.toString()),
 					)
 				)
-					.filter((x) => x != obj.attributedTo)
+					.filter((x) => x !== obj.attributedTo)
 					.map((x) => getOrFetchUser(x)),
 			]),
 		});
@@ -220,7 +221,8 @@ const resolveChannelOwner = async (lookup: string) => {
 	const obj = await resolveAPObject(lookup);
 
 	if (ObjectIsPerson(obj)) return await createUserForRemotePerson(obj);
-	else if (ObjectIsOrganization(obj))
-		return await createGuildFromRemoteOrg(obj);
-	else throw new APError("unimplemented");
+
+	if (ObjectIsOrganization(obj)) return await createGuildFromRemoteOrg(obj);
+
+	throw new APError("unimplemented");
 };

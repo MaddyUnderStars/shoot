@@ -8,11 +8,11 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 import { z } from "zod";
-import { AttributesOnly } from "../util";
-import { ApCache } from "./apcache";
+import type { AttributesOnly } from "../util";
+import type { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
-import { Channel } from "./channel";
-import { User } from "./user";
+import type { Channel } from "./channel";
+import type { User } from "./user";
 
 @Entity("messages")
 export class Message extends BaseModel {

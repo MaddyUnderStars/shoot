@@ -1,4 +1,4 @@
-import { APCollectionPage } from "activitypub-types";
+import type { APCollectionPage } from "activitypub-types";
 
 export const makeOrderedCollection = async <T extends APCollectionPage>(opts: {
 	page: boolean;

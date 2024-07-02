@@ -3,11 +3,11 @@ import {
 	OpenApiGeneratorV3,
 	extendZodWithOpenApi,
 } from "@asteasolutions/zod-to-openapi";
-import { Router } from "express";
+import type { Router } from "express";
 
-import { writeFileSync } from "fs";
-import path from "path";
-import { AnyZodObject, z } from "zod";
+import { writeFileSync } from "node:fs";
+import path from "node:path";
+import { z, type AnyZodObject } from "zod";
 
 extendZodWithOpenApi(z);
 
@@ -24,7 +24,7 @@ import { NO_AUTH_ROUTES } from "../http";
 import apiRoutes from "../http/api";
 
 const getRoutes = (router: Router) => {
-	const convertRegexToPath = (regexp: RegExp, keys: any[]) => {
+	const convertRegexToPath = (regexp: RegExp, keys: { name: string }[]) => {
 		return regexp
 			.toString()
 			.replaceAll("/^", "")
@@ -32,11 +32,11 @@ const getRoutes = (router: Router) => {
 			.replaceAll("\\.", ".")
 			.replaceAll("/?(?=/|$)", "")
 			.replaceAll("/i", "")
-			.replaceAll("(?:([^/]+?))", () => "{" + keys.shift().name + "}");
+			.replaceAll("(?:([^/]+?))", () => `{${keys.shift()?.name}`);
 	};
 
 	const _getRoutes = (router: Router, prefix = "") => {
-		let ret: Array<{
+		const ret: Array<{
 			path: string;
 			method: Method;
 			requires_auth: boolean;
@@ -50,32 +50,35 @@ const getRoutes = (router: Router) => {
 		}> = [];
 
 		for (const layer of router.stack) {
-			if (layer.name != "router" && layer.name != "bound dispatch")
+			if (layer.name !== "router" && layer.name !== "bound dispatch")
 				continue;
 
-			if (layer.handle.name == "router") {
+			if (layer.handle.name === "router") {
 				ret.push(
 					..._getRoutes(
 						//@ts-ignore
 						layer.handle,
+						//@ts-ignore
 						convertRegexToPath(layer.regexp, layer.keys),
 					),
 				);
 				continue;
 			}
 
+			if (!layer.route) continue;
+
 			ret.push({
-				path: prefix + layer.route!.path,
+				path: prefix + layer.route.path,
 				//@ts-ignore
-				method: Object.entries(layer.route!.methods)[0][0] as Method,
+				method: Object.entries(layer.route.methods)[0][0] as Method,
 				// TODO: this will probably break
 				//@ts-ignore
-				options: layer.route!.stack[0].handle.ROUTE_OPTIONS,
+				options: layer.route.stack[0].handle.ROUTE_OPTIONS,
 
 				requires_auth: !NO_AUTH_ROUTES.some((x) => {
-					if (typeof x == "string")
-						return (prefix + layer.route!.path).startsWith(x);
-					return x.test(prefix + layer.route!.path);
+					if (typeof x === "string")
+						return (prefix + layer.route?.path).startsWith(x);
+					return x.test(prefix + layer.route?.path);
 				}),
 			});
 		}
@@ -165,7 +168,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 	});
 };
 
-let document = generateOpenapi(apiRoutes, "application/json");
+const document = generateOpenapi(apiRoutes, "application/json");
 writeFileSync(
 	path.join(__dirname, "..", "..", "..", "assets", "client.json"),
 	JSON.stringify(document),
@@ -191,7 +194,7 @@ type Route = {
 };
 
 type Layer = {
-	handle: any;
+	handle: unknown;
 	keys: Key[];
 	name: string;
 	path: unknown;

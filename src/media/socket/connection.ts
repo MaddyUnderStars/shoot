@@ -1,8 +1,8 @@
-import { IncomingMessage } from "http";
-import ws from "ws";
+import type { IncomingMessage } from "node:http";
+import type ws from "ws";
 import { CLOSE_CODES } from "../../gateway/util";
 import { createLogger } from "../../util";
-import { MediaSocket, send } from "../util";
+import { send, type MediaSocket } from "../util";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 
@@ -32,7 +32,7 @@ export function onConnection(
 		try {
 			await onClose.call(socket, ev);
 		} catch (e) {
-			Log.error(`close handler failed with `, e);
+			Log.error("close handler failed with", e);
 		}
 	});
 
@@ -41,7 +41,7 @@ export function onConnection(
 			await onMessage.call(socket, ev);
 		} catch (e) {
 			this.close(CLOSE_CODES.SERVER_ERROR);
-			Log.error(`message handler failed with`, e);
+			Log.error("message handler failed with", e);
 		}
 	});
 

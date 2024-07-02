@@ -1,6 +1,7 @@
-import { MEDIA_EVENT } from "./validation";
+import type { MEDIA_EVENT } from "./validation";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
+	// biome-ignore lint/suspicious/noExplicitAny: TODO
 	media_handle: any;
 
 	/** Before is copied from gateway src */

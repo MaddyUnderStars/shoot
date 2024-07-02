@@ -9,7 +9,8 @@ setupTests(test);
 import sinon from "sinon";
 
 test("Using Instance Actor", async (t) => {
-	const { HttpSig, InstanceActor } = await import("../../src/util");
+	const { signWithHttpSignature, validateHttpSignature, InstanceActor } =
+		await import("../../src/util");
 	const { User } = await import("../../src/entity");
 
 	const clock = sinon.useFakeTimers({
@@ -24,13 +25,13 @@ test("Using Instance Actor", async (t) => {
 		id: undefined,
 	}).save();
 
-	const signed = HttpSig.sign(
+	const signed = signWithHttpSignature(
 		"https://chat.understars.dev/inbox",
 		"GET",
 		actor,
 	);
 
-	await HttpSig.validate(
+	await validateHttpSignature(
 		"https://chat.understars.dev/inbox",
 		"GET",
 		//@ts-ignore

@@ -9,9 +9,9 @@ export const handleCli = async (argv: string[]) => {
 
 	if (!cmd) {
 		Log.warn(
-			`Syntax: \`npm run cli -- [option]. Options:\n` +
-				`generate-keys - Generate signing keys for federation HTTP signatures and user tokens\n` +
-				`add-user [username] [email?] - Register a new user`,
+			"Syntax: `npm run cli -- [option]. Options:\n" +
+				"generate-keys - Generate signing keys for federation HTTP signatures and user tokens\n" +
+				"add-user [username] [email?] - Register a new user",
 		);
 		return;
 	}

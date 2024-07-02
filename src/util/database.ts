@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { DataSource } from "typeorm";
 import { Migration } from "../entity/migrations";
 import { config } from "./config";
@@ -11,7 +11,7 @@ const CONNECTION_TYPE = CONNECTION_STRING.split("://")?.[0]?.replace(
 	"+src",
 	"",
 );
-const IS_SQLITE = CONNECTION_TYPE == "sqlite";
+const IS_SQLITE = CONNECTION_TYPE === "sqlite";
 
 const DATASOURCE_OPTIONS = new DataSource({
 	//@ts-ignore
@@ -43,7 +43,7 @@ export const initDatabase = async () => {
 	}
 	await doFirstSync();
 
-	Log.msg(`Connected`);
+	Log.msg("Connected");
 
 	return connection;
 };

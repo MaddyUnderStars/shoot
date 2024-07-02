@@ -1,9 +1,9 @@
 import { ChildEntity, Column, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
-import { PERMISSION, checkPermission } from "../util";
+import { type PERMISSION, checkPermission } from "../util";
 import { Channel } from "./channel";
-import { Guild } from "./guild";
-import { User } from "./user";
+import type { Guild } from "./guild";
+import type { User } from "./user";
 
 @ChildEntity("guild_text")
 @Index(["position", "guild"], { unique: true })

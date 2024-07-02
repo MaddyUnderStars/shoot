@@ -38,7 +38,7 @@ router.post(
 			);
 
 			// TODO
-			return res.json({ token, ip: config.webrtc.signal_address! });
+			return res.json({ token, ip: config.webrtc.signal_address || "" });
 		},
 	),
 );

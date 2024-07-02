@@ -1,5 +1,5 @@
-import { APActivity } from "activitypub-types";
-import { Actor } from "../../../../entity";
+import type { APActivity } from "activitypub-types";
+import type { Actor } from "../../../../entity";
 import { AcceptActivityHandler } from "./accept";
 import { AnnounceActivityHandler } from "./announce";
 import { CreateActivityHandler } from "./create";

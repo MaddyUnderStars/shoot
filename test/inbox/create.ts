@@ -23,8 +23,12 @@ test("Create<Note> at channel", async (t) => {
 		"remote@remote",
 	]);
 
-	const { HttpSig, buildAPNote, buildAPCreateNote, addContext } =
-		await import("../../src/util");
+	const {
+		signWithHttpSignature,
+		buildAPNote,
+		buildAPCreateNote,
+		addContext,
+	} = await import("../../src/util");
 	const { Message } = await import("../../src/entity");
 
 	const reference_message = Message.create({
@@ -44,7 +48,7 @@ test("Create<Note> at channel", async (t) => {
 		),
 	);
 
-	const signed = HttpSig.sign(
+	const signed = signWithHttpSignature(
 		`http://localhost/channel/${channel.id}/inbox`,
 		"POST",
 		remote,
@@ -52,7 +56,7 @@ test("Create<Note> at channel", async (t) => {
 	);
 
 	//@ts-ignore
-	signed.headers!.signature = signed.headers!.signature.replace(
+	signed.headers.signature = signed.headers?.signature.replace(
 		"localhost",
 		"remote",
 	);
@@ -64,7 +68,8 @@ test("Create<Note> at channel", async (t) => {
 		.set("accept", "application/activity+json")
 		.set("content-type", "application/activity+json")
 		//@ts-ignore
-		.set(signed.headers!)
+		.set(signed.headers)
+		// biome-ignore lint/style/noNonNullAssertion: <explanation>
 		.send(signed.body!)
 		.expect(200);
 
@@ -93,8 +98,12 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 		"remote2@remote",
 	]);
 
-	const { HttpSig, buildAPNote, buildAPCreateNote, addContext } =
-		await import("../../src/util");
+	const {
+		signWithHttpSignature,
+		buildAPNote,
+		buildAPCreateNote,
+		addContext,
+	} = await import("../../src/util");
 	const { Message } = await import("../../src/entity");
 
 	const reference_message = Message.create({
@@ -114,7 +123,7 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 		),
 	);
 
-	const signed = HttpSig.sign(
+	const signed = signWithHttpSignature(
 		`http://localhost/channel/${channel.id}/inbox`,
 		"POST",
 		notmember,
@@ -122,7 +131,8 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 	);
 
 	//@ts-ignore
-	signed.headers!.signature = signed.headers!.signature.replace(
+	// biome-ignore lint/style/noNonNullAssertion: <explanation>
+	signed.headers!.signature = signed.headers?.signature.replace(
 		"localhost",
 		"remote",
 	);
@@ -134,7 +144,8 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 		.set("accept", "application/activity+json")
 		.set("content-type", "application/activity+json")
 		//@ts-ignore
-		.set(signed.headers!)
+		.set(signed.headers)
+		// biome-ignore lint/style/noNonNullAssertion: <explanation>
 		.send(signed.body!)
 		.expect(400);
 

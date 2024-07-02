@@ -1,4 +1,4 @@
-import { APJoin } from "activitypub-types";
+import type { APJoin } from "activitypub-types";
 import jwt from "jsonwebtoken";
 import { Channel, User } from "../entity";
 import { getExternalPathFromActor, sendActivity } from "../sender";

@@ -1,10 +1,10 @@
 import {
-	APActivity,
-	APActor,
 	ObjectIsGroup,
 	ObjectIsNote,
+	type APActivity,
+	type APActor,
 } from "activitypub-types";
-import { ActivityHandler } from ".";
+import type { ActivityHandler } from ".";
 import { Channel, User } from "../../../../entity";
 import { createChannelFromRemoteGroup, handleMessage } from "../../../entity";
 import { emitGatewayEvent } from "../../../events";
@@ -23,7 +23,9 @@ export const CreateActivityHandler: ActivityHandler = async (
 ) => {
 	if (target instanceof Channel) {
 		return await CreateAtChannel(activity, target);
-	} else if (target instanceof User) {
+	}
+
+	if (target instanceof User) {
 		return await CreateAtUser(activity, target);
 	}
 };
@@ -39,13 +41,12 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 			"Cannot accept Create activity with multiple `object`s",
 		);
 
-	// TOOD: typing
-	if (!ObjectIsGroup(activity.object as any))
-		throw new APError("Must create group at users");
-
 	const inner = await createChannelFromRemoteGroup(
 		activity.object as APActor,
 	);
+
+	// TOOD: typing
+	if (!ObjectIsGroup(inner)) throw new APError("Must create group at users");
 
 	await inner.save();
 

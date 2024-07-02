@@ -1,4 +1,4 @@
-import { APActivity, AnyAPObject } from "activitypub-types";
+import type { APActivity, AnyAPObject } from "activitypub-types";
 import {
 	BaseEntity,
 	Column,

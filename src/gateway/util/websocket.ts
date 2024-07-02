@@ -1,5 +1,5 @@
-import { Session } from "../../entity";
-import { GATEWAY_PAYLOAD } from "./validation";
+import type { Session } from "../../entity";
+import type { GATEWAY_PAYLOAD } from "./validation";
 
 export interface Websocket extends Omit<WebSocket, "send"> {
 	/** The source IP address of this socket */

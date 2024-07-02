@@ -1,8 +1,8 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
-import http from "http";
 import morgan from "morgan";
+import http from "node:http";
 
 import { errorHandler, routes } from ".";
 import { config, createLogger, initDatabase } from "../util";
@@ -33,9 +33,9 @@ export class APIServer {
 				morgan("combined", {
 					skip(req, res) {
 						const log = config.http.log;
-						let skip =
-							log!.includes(res.statusCode.toString()) ?? false;
-						return log?.charAt(0) == "-" ? skip : !skip;
+						const skip =
+							log?.includes(res.statusCode.toString()) ?? false;
+						return log?.charAt(0) === "-" ? skip : !skip;
 					},
 				}),
 			);

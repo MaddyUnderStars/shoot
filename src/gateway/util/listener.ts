@@ -1,6 +1,6 @@
-import { GATEWAY_EVENT } from ".";
+import type { GATEWAY_EVENT } from ".";
 import { listenGatewayEvent } from "../../util/events";
-import { Websocket } from "./websocket";
+import type { Websocket } from "./websocket";
 
 /**
  * Register listeners for each event emitter to a gateway client

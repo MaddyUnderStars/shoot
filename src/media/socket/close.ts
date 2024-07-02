@@ -1,5 +1,5 @@
 import { createLogger } from "../../util";
-import { MediaSocket } from "../util/websocket";
+import type { MediaSocket } from "../util/websocket";
 
 const Log = createLogger("media");
 

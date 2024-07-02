@@ -1,6 +1,6 @@
 // Permissions regarding actions within a channel.
 
-import { Guild, User } from "../entity";
+import type { Guild, User } from "../entity";
 
 // TODO: allow/deny rather than just allow
 // can't use enums
@@ -10,18 +10,18 @@ import { Guild, User } from "../entity";
 export enum PERMISSION {
 	NONE = 0, // no permissions
 	OWNER = 1, // all permissions + delete
-	ADMIN, // all permissions
+	ADMIN = 2, // all permissions
 
-	SEND_MESSAGES, // can send messages in this channel
+	SEND_MESSAGES = 3, // can send messages in this channel
 
-	MANAGE_CHANNELS, // can modify, delete, add channels in this guild
-	VIEW_CHANNEL, // can view this channel.
-	CALL_CHANNEL, // can start or join this channel's voice call
+	MANAGE_CHANNELS = 4, // can modify, delete, add channels in this guild
+	VIEW_CHANNEL = 5, // can view this channel.
+	CALL_CHANNEL = 6, // can start or join this channel's voice call
 
-	MANAGE_GUILD, // can modify this guild
+	MANAGE_GUILD = 7, // can modify this guild
 
-	MANAGE_INVITES, // can modify or delete invites
-	CREATE_INVITE, // can invite people to this channel
+	MANAGE_INVITES = 8, // can modify or delete invites
+	CREATE_INVITE = 9, // can invite people to this channel
 }
 
 export const DefaultPermissions: PERMISSION[] = [
@@ -38,11 +38,11 @@ export const checkPermission = (
 ) => {
 	permission = Array.isArray(permission) ? permission : [permission];
 
-	if (guild.owner.id == user.id) return true;
+	if (guild.owner.id === user.id) return true;
 
 	const roles = guild.roles
 		// every role our user is a member of
-		.filter((x) => x.members.find((x) => x.user.id == user.id));
+		.filter((x) => x.members.find((x) => x.user.id === user.id));
 
 	let allowed = false;
 	// for every role in order

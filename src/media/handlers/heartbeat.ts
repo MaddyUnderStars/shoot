@@ -1,9 +1,9 @@
 import { makeHandler } from ".";
 import { CLOSE_CODES } from "../../gateway/util";
-import { HEARTBEAT, HEARTBEAT_ACK, MediaSocket } from "../util";
+import { HEARTBEAT, type HEARTBEAT_ACK, type MediaSocket } from "../util";
 
 export const onHeartbeat = makeHandler(async function (payload) {
-	if (payload.s != this.sequence)
+	if (payload.s !== this.sequence)
 		// TODO: send them back the missing events
 		throw new Error("Out of sync. Reconnect");
 

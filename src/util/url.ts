@@ -1,4 +1,4 @@
-export const tryParseUrl = (input: any) => {
+export const tryParseUrl = (input: string) => {
 	try {
 		return new URL(input);
 	} catch (e) {

@@ -1,4 +1,4 @@
-import { AnyAPObject } from "activitypub-types";
+import type { AnyAPObject } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Guild, GuildTextChannel } from "../../../../entity";

@@ -1,9 +1,9 @@
 import { createLogger } from "../../util/log";
 import { KEY_OPTIONS } from "../../util/rsa";
 
-import crypto from "crypto";
-import fs from "fs/promises";
-import { promisify } from "util";
+import crypto from "node:crypto";
+import fs from "node:fs/promises";
+import { promisify } from "node:util";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 const Log = createLogger("cli");
@@ -13,13 +13,13 @@ export const generateKeys = async () => {
 
 	const keys = await generateKeyPair("rsa", KEY_OPTIONS);
 
-	const filename = `./config/default.json`;
-	let existing: any = { federation: {} };
+	const filename = "./config/default.json";
+	let file: string | undefined = undefined;
 	try {
-		existing = (await fs.readFile(filename)).toString();
+		file = (await fs.readFile(filename)).toString();
 	} catch (e) {}
 
-	existing = JSON.parse(JSON.stringify(existing));
+	const config = file ? JSON.parse(JSON.stringify(file)) : { federation: {} };
 
 	await fs.mkdir("./config", { recursive: true });
 	await fs.writeFile(

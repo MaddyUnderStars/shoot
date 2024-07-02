@@ -1,4 +1,4 @@
-import { APPerson } from "activitypub-types";
+import type { APPerson } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Member } from "../../../../../entity";

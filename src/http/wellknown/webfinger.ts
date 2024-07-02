@@ -1,4 +1,4 @@
-import { Response, Router } from "express";
+import { Router, type Response } from "express";
 import z from "zod";
 import { Invite, User } from "../../entity";
 import { getExternalPathFromActor } from "../../sender";
@@ -10,7 +10,7 @@ import {
 	route,
 	splitQualifiedMention,
 } from "../../util";
-import { WebfingerResponse } from "../../util/activitypub/constants";
+import type { WebfingerResponse } from "../../util/activitypub/constants";
 
 const router = Router();
 
@@ -30,7 +30,7 @@ const webfingerLookupAcct = async (lookup: string) => {
 
 	// this is really, really gross. TODO: fix
 	const id =
-		actor instanceof User || actor.id == InstanceActor.id
+		actor instanceof User || actor.id === InstanceActor.id
 			? actor.name
 			: actor.id;
 	const path = getExternalPathFromActor(actor);
@@ -65,15 +65,15 @@ router.get(
 			let resource = req.query.resource;
 
 			const type =
-				resource.indexOf(":") == -1 ? "acct" : resource.split(":")[0];
+				resource.indexOf(":") === -1 ? "acct" : resource.split(":")[0];
 			resource = resource.replace(`${type}:`, "");
 
 			const { webapp_url, instance_url } = config.federation;
 
 			const mention = splitQualifiedMention(resource);
 			if (
-				mention.domain != webapp_url.hostname &&
-				mention.domain != instance_url.hostname
+				mention.domain !== webapp_url.hostname &&
+				mention.domain !== instance_url.hostname
 			)
 				throw new HttpError("Resource not found", 404);
 

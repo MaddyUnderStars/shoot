@@ -1,4 +1,4 @@
-import { APCreate } from "activitypub-types";
+import type { APCreate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { DMChannel, PublicChannel } from "../../../../entity";

@@ -1,5 +1,5 @@
-import { APAccept } from "activitypub-types";
-import { ActivityHandler } from ".";
+import type { APAccept } from "activitypub-types";
+import type { ActivityHandler } from ".";
 import { Channel, Guild, User } from "../../../../entity";
 import { RelationshipType } from "../../../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
@@ -14,7 +14,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 	target,
 ) => {
 	const from = activity.actor;
-	if (typeof from != "string")
+	if (typeof from !== "string")
 		throw new APError("Follow activity must have single actor");
 
 	const actor = await getOrFetchUser(from);
@@ -23,7 +23,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 
 	if (target instanceof User) {
 		const relationship = await acceptOrCreateRelationship(target, actor);
-		if (relationship.to_state != RelationshipType.accepted) return;
+		if (relationship.to_state !== RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
 		throw new APError("not implemented");

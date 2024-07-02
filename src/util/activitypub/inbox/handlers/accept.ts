@@ -1,5 +1,5 @@
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
-import { ActivityHandler } from ".";
+import type { ActivityHandler } from ".";
 import { User } from "../../../../entity";
 import { getOrFetchUser } from "../../../entity";
 import { acceptOrCreateRelationship } from "../../../entity/relationship";
@@ -12,7 +12,7 @@ import { resolveAPObject } from "../../resolve";
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
 
-	if (typeof activity.actor != "string")
+	if (typeof activity.actor !== "string")
 		throw new APError("Actor must be string");
 
 	if (Array.isArray(activity.actor))
@@ -22,11 +22,11 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 		throw new APError("Cannot Accept<Join> at non-user");
 
 	if (!activity.result) throw new APError("Media token not provided");
-	if (typeof activity.result != "string")
+	if (typeof activity.result !== "string")
 		throw new APError("unknown token format");
 
 	if (!activity.target) throw new APError("Signal server ip not provided");
-	if (typeof activity.target != "string")
+	if (typeof activity.target !== "string")
 		throw new APError("unknown signal server ip format");
 
 	const from = await getOrFetchUser(activity.actor);
@@ -41,7 +41,7 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 const AcceptFollow: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
 
-	if (typeof activity.actor != "string")
+	if (typeof activity.actor !== "string")
 		throw new APError("Actor must be string");
 
 	if (Array.isArray(activity.actor))

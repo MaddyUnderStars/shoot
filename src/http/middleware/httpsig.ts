@@ -1,17 +1,19 @@
-import { RequestHandler } from "express";
-import { APError, HttpSig, config, createLogger } from "../../util";
+import type { RequestHandler } from "express";
+import {
+	APError,
+	config,
+	createLogger,
+	validateHttpSignature,
+} from "../../util";
 
 const Log = createLogger("httpsignatures");
 
 export const verifyHttpSig: RequestHandler = async (req, res, next) => {
-	if (req.originalUrl == "/actor" && req.method == "GET") {
+	if (req.originalUrl === "/actor" && req.method === "GET") {
 		return next(); // allow GET /actor unsigned
 	}
 
-	if (
-		!req.headers["signature"] &&
-		!config.federation.require_http_signatures
-	) {
+	if (!req.headers.signature && !config.federation.require_http_signatures) {
 		// not a signed request
 
 		// TODO: does this endpoint require signing?
@@ -22,7 +24,7 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 
 	try {
 		if (
-			!(await HttpSig.validate(
+			!(await validateHttpSignature(
 				req.originalUrl,
 				req.method,
 				req.headers,
