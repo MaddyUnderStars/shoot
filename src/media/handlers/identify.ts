@@ -1,17 +1,10 @@
-import { AudioBridgePlugin } from "janode";
 import { makeHandler } from ".";
 import type { Channel, User } from "../../entity";
 import { CLOSE_CODES } from "../../gateway/util";
 import { validateMediaToken } from "../../util/voice";
 import { IDENTIFY } from "../util";
-import { getJanusHandle, getJanusSession } from "../util/janus";
-import {
-	getPeerId,
-	getRoomId,
-	removePeerId,
-	setPeerId,
-	setRoomId,
-} from "../util/rooms";
+import { getJanus } from "../util/janus";
+import { getRoomId, setRoomId } from "../util/rooms";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 export const onIdentify = makeHandler(async function (payload) {
@@ -30,52 +23,63 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	clearTimeout(this.auth_timeout);
 
-	const manager = getJanusHandle();
+	const janus = getJanus();
 
 	let room_id = getRoomId(channel.id);
 	if (!room_id) {
 		// Room doesn't exist yet, make it
-		const res = await manager.create({});
+		const res = await janus.createRoom();
 		setRoomId(channel.id, res.room);
 		room_id = res.room;
 	}
 
-	this.media_handle = await getJanusSession().attach(AudioBridgePlugin);
+	this.media_handle_id = (await janus.attachHandle(janus.session)).id;
 
-	await this.media_handle.join({
-		room: room_id,
-		display: user.mention,
-		quality: 10,
-	});
-
-	const response = await this.media_handle.configure({ jsep: payload.offer });
-
-	// TODO: ice fails and 'failed to add some remote candidates'
-	for (const candidate of payload.candidates) {
-		await this.media_handle.trickle(candidate);
-	}
-
-	await this.media_handle.trickleComplete();
-
-	this.media_handle.on(
-		"audiobridge_peer_joined",
-		(data: JANUS_PEER_JOINED) => {
-			setPeerId(data.feed, data.display);
-			this.send({ type: "PEER_JOINED", user_id: data.display });
-		},
+	await janus.joinRoom(
+		janus.session,
+		this.media_handle_id,
+		room_id,
+		user.mention,
 	);
 
-	this.media_handle.on(
-		"audiobridge_peer_leaving",
-		(data: JANUS_PEER_LEAVING) => {
-			const id = getPeerId(data.feed);
-			if (!id) return;
-			this.send({ type: "PEER_LEFT", user_id: id });
-			removePeerId(data.feed);
-		},
+	const response = await janus.configure(
+		janus.session,
+		this.media_handle_id,
+		payload.offer,
 	);
 
-	this.send({ type: "READY", answer: response });
+	await janus.trickle(
+		janus.session,
+		this.media_handle_id,
+		payload.candidates,
+	);
+
+	// // TODO: ice fails and 'failed to add some remote candidates'
+	// for (const candidate of payload.candidates) {
+	// 	await this.media_handle.trickle(candidate);
+	// }
+
+	// await this.media_handle.trickleComplete();
+
+	// this.media_handle.on(
+	// 	"audiobridge_peer_joined",
+	// 	(data: JANUS_PEER_JOINED) => {
+	// 		setPeerId(data.feed, data.display);
+	// 		this.send({ type: "PEER_JOINED", user_id: data.display });
+	// 	},
+	// );
+
+	// this.media_handle.on(
+	// 	"audiobridge_peer_leaving",
+	// 	(data: JANUS_PEER_LEAVING) => {
+	// 		const id = getPeerId(data.feed);
+	// 		if (!id) return;
+	// 		this.send({ type: "PEER_LEFT", user_id: id });
+	// 		removePeerId(data.feed);
+	// 	},
+	// );
+
+	this.send({ type: "READY", answer: { jsep: response.jsep } });
 }, IDENTIFY);
 
 type JANUS_PEER_JOINED = {

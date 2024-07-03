@@ -9,9 +9,9 @@ export async function onClose(this: MediaSocket, event: CloseEvent) {
 	clearTimeout(this.auth_timeout);
 	clearTimeout(this.heartbeat_timeout);
 
-	if (this.media_handle) {
-		this.media_handle.removeAllListeners();
-		await this.media_handle.leave().catch(() => {});
-		await this.media_handle.detach().catch(() => {});
-	}
+	// if (this.media_handle) {
+	// 	this.media_handle.removeAllListeners();
+	// 	await this.media_handle.leave().catch(() => {});
+	// 	await this.media_handle.detach().catch(() => {});
+	// }
 }

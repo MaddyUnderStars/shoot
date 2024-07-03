@@ -5,7 +5,7 @@ export type HEARTBEAT_ACK = {
 
 export type READY = {
 	type: "READY";
-	answer: { jsep: string };
+	answer: { jsep: { type: "answer"; sdp: string } };
 };
 
 export type PEER_JOINED = {

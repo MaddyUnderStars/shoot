@@ -1,84 +1,19 @@
-import WebSocket, { type ErrorEvent, type MessageEvent } from "ws";
+import WebSocket, { type RawData } from "ws";
 import { createLogger } from "../../util";
+import type {
+	JANUS_REQUEST,
+	JANUS_RESPONSE,
+	JANUS_RESPONSE_DATA,
+	RESPONSE_ATTACH_HANDLE,
+	RESPONSE_CONFIGURE,
+	RESPONSE_CREATE_ROOM,
+	RESPONSE_CREATE_SESSION,
+	RESPONSE_JOIN_ROOM,
+} from "./types";
 
 const HEARTBEAT_INTERVAL = 10 * 1000;
 
 const Log = createLogger("JANUS");
-
-export class Janus {
-	private socket: WebSocket;
-	private heartbeatInterval: NodeJS.Timeout;
-	private token?: string;
-
-	connect = (config: JanusConfiguration) => {
-		this.token = config.address.token;
-
-		this.socket = new WebSocket(
-			new URL(config.address.url),
-			"janus-protocol",
-		);
-
-		this.socket.addEventListener("open", this.onOpen, { once: true });
-		this.socket.addEventListener("message", this.onMessage);
-		this.socket.addEventListener("close", this.onClose);
-		this.socket.addEventListener("error", this.onError);
-	};
-
-	private onOpen = () => {
-		Log.msg("Connected");
-		this.startHeartbeat();
-
-		// Make a session
-		this.send({ janus: "create" });
-	};
-
-	private onMessage = (data: MessageEvent) => {
-		const json = JSON.parse(data.data.toString());
-
-		console.log(json);
-	};
-
-	private onClose = () => {
-		clearTimeout(this.heartbeatInterval);
-	};
-
-	private onError = (e: ErrorEvent) => {
-		Log.error(e);
-	};
-
-	private send = async (payload: JanusRequest) => {
-		const decorated = { ...payload, token: this.token };
-
-		this.socket.send(JSON.stringify(decorated));
-	};
-
-	private startHeartbeat = () => {
-		this.heartbeatInterval = setInterval(() => {
-			let _timeout: NodeJS.Timeout;
-
-			const timeout = new Promise((_, reject) => {
-				_timeout = setTimeout(
-					() => reject("timed out"),
-					HEARTBEAT_INTERVAL + 1000,
-				);
-			}); // 1 second grace
-
-			const ping = new Promise<void>((resolve, reject) => {
-				this.socket.ping(`${Date.now()}`, undefined, (error) => {
-					clearTimeout(_timeout);
-					reject(error);
-				});
-
-				this.socket.once("pong", () => {
-					clearTimeout(_timeout);
-					resolve();
-				});
-			});
-
-			return Promise.race([timeout, ping]);
-		}, HEARTBEAT_INTERVAL); // 10 seconds
-	};
-}
 
 type JanusConfiguration = {
 	address: {
@@ -87,8 +22,212 @@ type JanusConfiguration = {
 	};
 };
 
-type JANUS_CREATE = {
-	janus: "create";
-};
+export class Janus {
+	private socket: WebSocket;
+	private heartbeatInterval: NodeJS.Timeout;
+	private token?: string;
+	private sequence = 0;
+	private _adminSession: number;
+	private _adminhandle: number;
 
-type JanusRequest = JANUS_CREATE;
+	get session() {
+		return this._adminSession;
+	}
+
+	public connect = (config: JanusConfiguration): Promise<void> => {
+		this.token = config.address.token;
+
+		this.socket = new WebSocket(
+			new URL(config.address.url),
+			"janus-protocol",
+		);
+
+		this.socket.on("close", this.onClose);
+		this.socket.on("error", this.onError);
+		this.socket.on("message", this.onMessage);
+
+		return new Promise((resolve) => {
+			this.socket.once("open", () => {
+				this.onOpen();
+				resolve();
+			});
+		});
+	};
+
+	// Generic handler for spospontaneous events
+	private onMessage = async (data: RawData) => {
+		Log.msg(data.toString());
+	};
+
+	private onOpen = async () => {
+		Log.msg("Connected");
+		this.startHeartbeat();
+
+		this._adminSession = (await this.createSession()).id;
+		this._adminhandle = (await this.attachHandle(this._adminSession)).id;
+	};
+
+	public createSession = () =>
+		this.send<RESPONSE_CREATE_SESSION>({ janus: "create" });
+
+	public attachHandle = (session_id: number) =>
+		this.send<RESPONSE_ATTACH_HANDLE>({
+			janus: "attach",
+			session_id,
+			plugin: "janus.plugin.audiobridge",
+		});
+
+	public createRoom = () =>
+		this.send<RESPONSE_CREATE_ROOM>({
+			janus: "message",
+			body: {
+				request: "create",
+			},
+			session_id: this._adminSession,
+			handle_id: this._adminhandle,
+		});
+
+	public joinRoom = (
+		session_id: number,
+		handle_id: number,
+		room_id: number,
+		display: string,
+	) =>
+		this.send<RESPONSE_JOIN_ROOM>({
+			janus: "message",
+			body: {
+				request: "join",
+				display,
+				room: room_id,
+			},
+			session_id,
+			handle_id,
+		});
+
+	public configure = (
+		session_id: number,
+		handle_id: number,
+		jsep?: { type: string; sdp: string },
+	) =>
+		this.send<RESPONSE_CONFIGURE>({
+			janus: "message",
+			body: {
+				request: "configure",
+			},
+			jsep,
+			session_id,
+			handle_id,
+		});
+
+	public trickle = (
+		session_id: number,
+		handle_id: number,
+		candidates: RTCIceCandidateInit[],
+	) =>
+		this.send({
+			janus: "trickle",
+			session_id,
+			handle_id,
+			candidates: [...candidates, null],
+		});
+
+	private onClose = (code: number, reason: string) => {
+		Log.msg(`Closed with code ${code} : ${reason}`);
+		clearTimeout(this.heartbeatInterval);
+	};
+
+	private onError = (e: Error) => {
+		Log.error(e);
+	};
+
+	// TODO: reject on timeout?
+	// TODO: rewrite
+	private send = <
+		O extends JANUS_RESPONSE_DATA,
+		I extends JANUS_REQUEST = JANUS_REQUEST,
+	>(
+		payload: I,
+	): Promise<O> =>
+		new Promise((resolve, reject) => {
+			const transaction = `${this.sequence++}`;
+			const decorated = { ...payload, token: this.token, transaction };
+
+			const listener = (data: RawData) => {
+				// TODO: is `listener` unique for each call to send?
+				const json = JSON.parse(data.toString()) as JANUS_RESPONSE<O>;
+
+				if (json.transaction !== transaction) return;
+
+				if ("plugindata" in json && json.plugindata) {
+					json.data = json.plugindata;
+					if ("data" in json.data)
+						json.data = json.data.data as unknown as O;
+					json.plugindata = undefined;
+				}
+
+				if (
+					"data" in json &&
+					"audiobridge" in json.data &&
+					json.data.audiobridge === "event" &&
+					json.jsep
+				) {
+					json.data.jsep = json.jsep;
+				}
+
+				if ("data" in json) {
+					this.socket.removeListener("message", listener);
+					this.socket.setMaxListeners(
+						this.socket.getMaxListeners() - 1,
+					);
+					return resolve(json.data);
+				}
+
+				if (
+					payload.janus === "trickle" ||
+					(payload.janus === "message" &&
+						payload.body.request !== "configure")
+				) {
+					this.socket.removeListener("message", listener);
+					this.socket.setMaxListeners(
+						this.socket.getMaxListeners() - 1,
+					);
+					resolve({} as O);
+				}
+			};
+
+			this.socket.setMaxListeners(this.socket.getMaxListeners() + 1);
+			this.socket.on("message", listener);
+
+			this.socket.send(JSON.stringify(decorated));
+		});
+
+	private startHeartbeat = () => {
+		const heartbeat = async () => {
+			let _timeout: NodeJS.Timeout;
+
+			const timeout = new Promise((_, reject) => {
+				_timeout = setTimeout(
+					() => reject("timed out"),
+					HEARTBEAT_INTERVAL + 1000, // 1 second grace
+				);
+			});
+
+			const ping = new Promise<void>((resolve, reject) => {
+				this.socket.ping(`${Date.now()}`, undefined, (err) => {
+					clearTimeout(_timeout);
+
+					if (err) reject(err);
+
+					resolve();
+				});
+			});
+
+			return Promise.race([timeout, ping]);
+		};
+
+		this.heartbeatInterval = setInterval(
+			() => heartbeat().catch(() => this.socket.close()),
+			HEARTBEAT_INTERVAL,
+		); // 10 seconds
+	};
+}
