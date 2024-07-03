@@ -202,31 +202,12 @@ export class Janus {
 		});
 
 	private startHeartbeat = () => {
-		const heartbeat = async () => {
-			let _timeout: NodeJS.Timeout;
-
-			const timeout = new Promise((_, reject) => {
-				_timeout = setTimeout(
-					() => reject("timed out"),
-					HEARTBEAT_INTERVAL + 1000, // 1 second grace
-				);
-			});
-
-			const ping = new Promise<void>((resolve, reject) => {
-				this.socket.ping(`${Date.now()}`, undefined, (err) => {
-					clearTimeout(_timeout);
-
-					if (err) reject(err);
-
-					resolve();
-				});
-			});
-
-			return Promise.race([timeout, ping]);
-		};
-
 		this.heartbeatInterval = setInterval(
-			() => heartbeat().catch(() => this.socket.close()),
+			() =>
+				this.send({
+					janus: "keepalive",
+					session_id: this.session,
+				}),
 			HEARTBEAT_INTERVAL,
 		); // 10 seconds
 	};

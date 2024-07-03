@@ -54,6 +54,11 @@ export type JANUS_RESPONSE<T extends JANUS_RESPONSE_DATA> =
 	| JANUS_SUCCESS<T>
 	| JANUS_ACK;
 
+type REQUEST_KEEPALIVE = {
+	janus: "keepalive";
+	session_id: number;
+};
+
 type REQUEST_TRICKLE = {
 	janus: "trickle";
 	candidates: Array<RTCIceCandidateInit | null>;
@@ -110,6 +115,7 @@ type REQUEST_ATTACH_HANDLE = {
 };
 
 export type JANUS_REQUEST =
+	| REQUEST_KEEPALIVE
 	| REQUEST_TRICKLE
 	| REQUEST_JOIN_ROOM
 	| REQUEST_CONFIGURE
