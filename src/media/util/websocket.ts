@@ -1,7 +1,9 @@
 import type { MEDIA_EVENT } from "./validation";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
-	media_handle_id: number;
+	media_handle_id?: number;
+
+	room_id?: number;
 
 	/** Before is copied from gateway src */
 
@@ -19,6 +21,12 @@ export interface MediaSocket extends Omit<WebSocket, "send"> {
 
 	/** When triggered, disconnect this client. They have not sent a heartbeat in time */
 	heartbeat_timeout?: NodeJS.Timeout;
+
+	/**
+	 * Event emitter UUID -> listener cancel function
+	 * We're only ever in a single room at a time, so we only have the 1 listener
+	 */
+	events: () => unknown;
 
 	/** The original socket.send function */
 	raw_send: (

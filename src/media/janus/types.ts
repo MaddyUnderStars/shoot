@@ -12,12 +12,28 @@ export type RESPONSE_CREATE_ROOM = {
 	permanent: boolean;
 };
 
+export type RESPONSE_LEAVE_ROOM = {
+	audiobridge: "left";
+	room: number;
+	id: number;
+};
+
+type JANUS_PARTICIPANT = {
+	id: number;
+	display?: string;
+	setup: boolean;
+	muted: boolean;
+	suspended: boolean;
+	talking: boolean;
+	spatial_position: boolean;
+};
+
 export type RESPONSE_JOIN_ROOM = {
 	audiobridge: "joined";
 	room: number;
 	id: number;
 	display: string;
-	participants: string[];
+	participants: JANUS_PARTICIPANT[];
 };
 
 export type RESPONSE_CONFIGURE = {
@@ -27,6 +43,7 @@ export type RESPONSE_CONFIGURE = {
 };
 
 export type JANUS_RESPONSE_DATA =
+	| RESPONSE_LEAVE_ROOM
 	| RESPONSE_CONFIGURE
 	| RESPONSE_JOIN_ROOM
 	| RESPONSE_CREATE_ROOM
@@ -93,11 +110,23 @@ type REQUEST_JOIN_ROOM = {
 	handle_id: number;
 };
 
+type REQUEST_LEAVE_ROOM = {
+	janus: "message";
+	body: {
+		request: "leave";
+	};
+
+	session_id: number;
+	handle_id: number;
+};
+
 type REQUEST_CREATE_ROOM = {
 	janus: "message";
 	body: {
 		request: "create";
 		room?: number;
+
+		audiolevel_event?: boolean;
 	};
 
 	session_id: number;
@@ -115,6 +144,7 @@ type REQUEST_ATTACH_HANDLE = {
 };
 
 export type JANUS_REQUEST =
+	| REQUEST_LEAVE_ROOM
 	| REQUEST_KEEPALIVE
 	| REQUEST_TRICKLE
 	| REQUEST_JOIN_ROOM

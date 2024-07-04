@@ -1,3 +1,4 @@
+import EventEmitter from "node:events";
 import WebSocket, { type RawData } from "ws";
 import { createLogger } from "../../util";
 import type {
@@ -9,6 +10,7 @@ import type {
 	RESPONSE_CREATE_ROOM,
 	RESPONSE_CREATE_SESSION,
 	RESPONSE_JOIN_ROOM,
+	RESPONSE_LEAVE_ROOM,
 } from "./types";
 
 const HEARTBEAT_INTERVAL = 10 * 1000;
@@ -22,7 +24,7 @@ type JanusConfiguration = {
 	};
 };
 
-export class Janus {
+export class Janus extends EventEmitter {
 	private socket: WebSocket;
 	private heartbeatInterval: NodeJS.Timeout;
 	private token?: string;
@@ -44,7 +46,6 @@ export class Janus {
 
 		this.socket.on("close", this.onClose);
 		this.socket.on("error", this.onError);
-		this.socket.on("message", this.onMessage);
 
 		return new Promise((resolve) => {
 			this.socket.once("open", () => {
@@ -52,11 +53,6 @@ export class Janus {
 				resolve();
 			});
 		});
-	};
-
-	// Generic handler for spospontaneous events
-	private onMessage = async (data: RawData) => {
-		Log.msg(data.toString());
 	};
 
 	private onOpen = async () => {
@@ -82,6 +78,7 @@ export class Janus {
 			janus: "message",
 			body: {
 				request: "create",
+				audiolevel_event: true,
 			},
 			session_id: this._adminSession,
 			handle_id: this._adminhandle,
@@ -99,6 +96,16 @@ export class Janus {
 				request: "join",
 				display,
 				room: room_id,
+			},
+			session_id,
+			handle_id,
+		});
+
+	public leaveRoom = (session_id: number, handle_id: number) =>
+		this.send<RESPONSE_LEAVE_ROOM>({
+			janus: "message",
+			body: {
+				request: "leave",
 			},
 			session_id,
 			handle_id,
