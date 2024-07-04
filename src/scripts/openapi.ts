@@ -7,7 +7,7 @@ import type { Router } from "express";
 
 import { writeFileSync } from "node:fs";
 import path from "node:path";
-import { z, type AnyZodObject } from "zod";
+import { type AnyZodObject, z } from "zod";
 
 extendZodWithOpenApi(z);
 
@@ -32,7 +32,7 @@ const getRoutes = (router: Router) => {
 			.replaceAll("\\.", ".")
 			.replaceAll("/?(?=/|$)", "")
 			.replaceAll("/i", "")
-			.replaceAll("(?:([^/]+?))", () => `{${keys.shift()?.name}`);
+			.replaceAll("(?:([^/]+?))", () => `{${keys.shift()?.name}}`);
 	};
 
 	const _getRoutes = (router: Router, prefix = "") => {
