@@ -1,13 +1,4 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
-extendZodWithOpenApi(z);
-
-import "dotenv/config";
-import { createServer } from "node:http";
-import { GatewayServer } from "./gateway/server";
-import { APIServer } from "./http/server";
-import { MediaGatewayServer } from "./media/server";
-import { createLogger } from "./util";
+import { createLogger } from "./util/log";
 
 const Log = createLogger("bootstrap");
 Log.msg("Starting");
@@ -26,6 +17,16 @@ const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3001;
 const MEDIA_PORT = process.env.MEDIA_PORT
 	? Number.parseInt(process.env.MEDIA_PORT)
 	: 3002;
+
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
+extendZodWithOpenApi(z);
+
+import "dotenv/config";
+import { createServer } from "node:http";
+import { GatewayServer } from "./gateway/server";
+import { APIServer } from "./http/server";
+import { MediaGatewayServer } from "./media/server";
 
 const http = createServer();
 
