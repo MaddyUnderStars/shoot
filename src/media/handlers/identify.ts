@@ -36,26 +36,13 @@ export const onIdentify = makeHandler(async function (payload) {
 		this.room_id = res.room;
 	}
 
-	this.media_handle_id = (await janus.attachHandle(janus.session)).id;
+	this.media_handle_id = (await janus.attachHandle()).id;
 
-	await janus.joinRoom(
-		janus.session,
-		this.media_handle_id,
-		this.room_id,
-		user.mention,
-	);
+	await janus.joinRoom(this.media_handle_id, this.room_id, user.mention);
 
-	const response = await janus.configure(
-		janus.session,
-		this.media_handle_id,
-		payload.offer,
-	);
+	const response = await janus.configure(this.media_handle_id, payload.offer);
 
-	await janus.trickle(
-		janus.session,
-		this.media_handle_id,
-		payload.candidates,
-	);
+	await janus.trickle(this.media_handle_id, payload.candidates);
 
 	// Notify other users we arrived
 	emitMediaEvent(this.room_id, {

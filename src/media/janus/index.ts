@@ -60,16 +60,16 @@ export class Janus extends EventEmitter {
 		this.startHeartbeat();
 
 		this._adminSession = (await this.createSession()).id;
-		this._adminhandle = (await this.attachHandle(this._adminSession)).id;
+		this._adminhandle = (await this.attachHandle()).id;
 	};
 
 	public createSession = () =>
 		this.send<RESPONSE_CREATE_SESSION>({ janus: "create" });
 
-	public attachHandle = (session_id: number) =>
+	public attachHandle = () =>
 		this.send<RESPONSE_ATTACH_HANDLE>({
 			janus: "attach",
-			session_id,
+			session_id: this.session,
 			plugin: "janus.plugin.audiobridge",
 		});
 
@@ -80,16 +80,11 @@ export class Janus extends EventEmitter {
 				request: "create",
 				audiolevel_event: true,
 			},
-			session_id: this._adminSession,
+			session_id: this.session,
 			handle_id: this._adminhandle,
 		});
 
-	public joinRoom = (
-		session_id: number,
-		handle_id: number,
-		room_id: number,
-		display: string,
-	) =>
+	public joinRoom = (handle_id: number, room_id: number, display: string) =>
 		this.send<RESPONSE_JOIN_ROOM>({
 			janus: "message",
 			body: {
@@ -97,22 +92,21 @@ export class Janus extends EventEmitter {
 				display,
 				room: room_id,
 			},
-			session_id,
+			session_id: this.session,
 			handle_id,
 		});
 
-	public leaveRoom = (session_id: number, handle_id: number) =>
+	public leaveRoom = (handle_id: number) =>
 		this.send<RESPONSE_LEAVE_ROOM>({
 			janus: "message",
 			body: {
 				request: "leave",
 			},
-			session_id,
+			session_id: this.session,
 			handle_id,
 		});
 
 	public configure = (
-		session_id: number,
 		handle_id: number,
 		jsep?: { type: string; sdp: string },
 	) =>
@@ -122,18 +116,14 @@ export class Janus extends EventEmitter {
 				request: "configure",
 			},
 			jsep,
-			session_id,
+			session_id: this.session,
 			handle_id,
 		});
 
-	public trickle = (
-		session_id: number,
-		handle_id: number,
-		candidates: RTCIceCandidateInit[],
-	) =>
+	public trickle = (handle_id: number, candidates: RTCIceCandidateInit[]) =>
 		this.send({
 			janus: "trickle",
-			session_id,
+			session_id: this.session,
 			handle_id,
 			candidates: [...candidates, null],
 		});

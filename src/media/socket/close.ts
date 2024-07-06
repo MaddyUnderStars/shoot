@@ -14,8 +14,7 @@ export async function onClose(this: MediaSocket, event: CloseEvent) {
 	const janus = getJanus();
 
 	// Leave the room
-	if (this.media_handle_id)
-		await janus.leaveRoom(janus.session, this.media_handle_id);
+	if (this.media_handle_id) await janus.leaveRoom(this.media_handle_id);
 
 	// Close our room listener if we have one
 	this.events?.();
