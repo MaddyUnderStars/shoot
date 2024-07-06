@@ -47,11 +47,21 @@ export class Janus extends EventEmitter {
 		this.socket.on("close", this.onClose);
 		this.socket.on("error", this.onError);
 
-		return new Promise((resolve) => {
-			this.socket.once("open", () => {
+		return new Promise((resolve, reject) => {
+			const open = () => {
 				this.onOpen();
+				this.socket.removeListener("error", error);
 				resolve();
-			});
+			};
+
+			const error = (err: Error) => {
+				this.onError(err);
+				this.socket.removeListener("open", open);
+				reject(err);
+			};
+
+			this.socket.once("open", open);
+			this.socket.once("error", error);
 		});
 	};
 
@@ -134,7 +144,7 @@ export class Janus extends EventEmitter {
 	};
 
 	private onError = (e: Error) => {
-		Log.error(e);
+		// TODO
 	};
 
 	// TODO: reject on timeout?
