@@ -14,7 +14,7 @@ export const createDatabase = async (name: string, host: string) => {
 };
 
 export const createRandomDatabase = async (host: string) => {
-	const name = "shoot_test_" + (Math.random() + 1).toString(36).substring(7);
+	const name = `shoot_test_${(Math.random() + 1).toString(36).substring(7)}`;
 
 	await createDatabase(name, host);
 

@@ -1,24 +1,25 @@
 {
 	"folders": [
 		{
-			"path": "./src",
 			"name": "src",
+			"path": "src"
 		},
 		{
-			"path": "./test",
 			"name": "test",
+			"path": "test"
 		},
 		{
-			"path": "./config",
 			"name": "config",
+			"path": "config"
 		},
 		{
-			"path": "./assets",
 			"name": "assets",
+			"path": "assets"
 		},
 		{
-			"path": ".",
-		},
+			"name": "shoot",
+			"path": "."
+		}
 	],
 	"settings": {
 		"typescript.tsdk": "shoot/node_modules/typescript/lib"

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { KEY_OPTIONS } from "../../src/util/rsa";
 
 // export const RANDOM_PORT = Math.round(Math.random() * 4) + 1000;
@@ -22,8 +22,8 @@ export const proxyConfig = () => {
 		},
 		federation: {
 			enabled: true,
-			webapp_url: new URL(`http://localhost`),
-			instance_url: new URL(`http://localhost`),
+			webapp_url: new URL("http://localhost"),
+			instance_url: new URL("http://localhost"),
 			require_http_signatures: true,
 			public_key: keys.publicKey,
 			private_key: keys.privateKey,
