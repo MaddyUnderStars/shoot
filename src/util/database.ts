@@ -38,7 +38,7 @@ export const initDatabase = async () => {
 		initCalled = DATASOURCE_OPTIONS.initialize();
 		connection = await initCalled;
 	} catch (e) {
-		Log.error(e);
+		Log.error(e instanceof Error ? e.message : e);
 		process.exit();
 	}
 	await doFirstSync();

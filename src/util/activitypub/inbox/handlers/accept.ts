@@ -1,11 +1,12 @@
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { User } from "../../../../entity";
-import { getOrFetchUser } from "../../../entity";
+import { Guild, User } from "../../../../entity";
+import { findActorOfAnyType, getOrFetchUser, joinGuild } from "../../../entity";
 import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
+import { splitQualifiedMention } from "../../util";
 
 // TODO: Accept<Join>
 
@@ -50,9 +51,21 @@ const AcceptFollow: ActivityHandler = async (activity, target) => {
 	if (!(target instanceof User))
 		throw new APError("Cannot Accept<Follow> at non-user");
 
-	const from = await getOrFetchUser(activity.actor);
+	// getting an accept should only happen after we send something
+	// so we should already have the actor responsible for accepting, probably
 
-	const relationship = await acceptOrCreateRelationship(target, from);
+	const mention = splitQualifiedMention(activity.actor);
+	const from = await findActorOfAnyType(mention.user, mention.domain);
+
+	if (from instanceof User) {
+		// A friend request was accepted
+		const relationship = await acceptOrCreateRelationship(target, from);
+	} else if (from instanceof Guild) {
+		// A guild join request was accepted
+		await joinGuild(target.id, from.id);
+	} else {
+		throw new APError("Don't know how to accept that");
+	}
 };
 
 // TODO: Probably would be better to use zod for this or something

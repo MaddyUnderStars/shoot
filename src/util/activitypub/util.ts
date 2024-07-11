@@ -1,15 +1,16 @@
 import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
 
 import {
-	ObjectIsApplication,
-	ObjectIsGroup,
-	ObjectIsPerson,
 	type APActivity,
 	type APActor,
 	type APObject,
 	type AnyAPObject,
 	type ContextField,
+	ObjectIsApplication,
+	ObjectIsGroup,
+	ObjectIsPerson,
 } from "activitypub-types";
+import { APError } from "./error";
 
 export const splitQualifiedMention = (lookup: string) => {
 	let domain: string;
@@ -20,9 +21,13 @@ export const splitQualifiedMention = (lookup: string) => {
 		[user, domain] = lookup.split("@");
 	} else {
 		// lookup was a URL ( hopefully )
-		const url = new URL(lookup);
-		domain = url.hostname;
-		user = url.pathname.split("/").reverse()[0];
+		try {
+			const url = new URL(lookup);
+			domain = url.hostname;
+			user = url.pathname.split("/").reverse()[0];
+		} catch (e) {
+			throw new APError("Lookup is not valid handle or URL");
+		}
 	}
 
 	return {

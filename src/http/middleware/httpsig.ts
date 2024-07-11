@@ -1,10 +1,5 @@
 import type { RequestHandler } from "express";
-import {
-	APError,
-	config,
-	createLogger,
-	validateHttpSignature,
-} from "../../util";
+import { config, createLogger, validateHttpSignature } from "../../util";
 
 const Log = createLogger("httpsignatures");
 
@@ -23,17 +18,12 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 	}
 
 	try {
-		if (
-			!(await validateHttpSignature(
-				req.originalUrl,
-				req.method,
-				req.headers,
-				Object.values(req.body).length > 0 ? req.body : undefined,
-			))
-		)
-			return next(
-				new APError("HTTP Signature could not be validated.", 401),
-			);
+		req.actor = await validateHttpSignature(
+			req.originalUrl,
+			req.method,
+			req.headers,
+			Object.values(req.body).length > 0 ? req.body : undefined,
+		);
 	} catch (e) {
 		Log.verbose(
 			`${req.originalUrl} : ${e instanceof Error ? e.message : e}`,

@@ -79,7 +79,7 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	return json as T;
 };
 
-export const doWebfingerOrFindTemplate = async (
+const doWebfingerOrFindTemplate = async (
 	lookup: string,
 ): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
@@ -159,7 +159,10 @@ export const resolveCollectionEntries = async (
 	collection: URL,
 	limit = 10,
 ): Promise<Array<string>> => {
-	if (limit < 0) throw new APError("Limit reached when resolving collection");
+	if (limit < 0) {
+		Log.warn("Limit reached when resolving collection");
+		return [];
+	}
 	limit--;
 
 	const ret: Array<string> = [];

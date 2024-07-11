@@ -17,6 +17,9 @@ router.use("/auth", auth_register, auth_login);
 
 router.use(rateLimiter("global"));
 
+import invite from "./invite";
+router.use("/invite", invite);
+
 import users_me from "./users/@me";
 router.use("/users/@me", users_me);
 

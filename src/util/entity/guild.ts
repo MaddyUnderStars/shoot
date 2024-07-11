@@ -1,9 +1,9 @@
 import {
-	ObjectIsOrganization,
 	type APActor,
 	type APOrganization,
+	ObjectIsOrganization,
 } from "activitypub-types";
-import { Guild, Member, User, type GuildTextChannel } from "../../entity";
+import { Guild, type GuildTextChannel, Member, User } from "../../entity";
 import { Role } from "../../entity/role";
 import {
 	APError,
@@ -63,7 +63,7 @@ export const getOrFetchGuild = async (lookup: string | APOrganization) => {
 				remote_address: id,
 			},
 		],
-		relations: { channels: true },
+		relations: { channels: true, owner: true },
 	});
 
 	if (!guild && config.federation.enabled) {

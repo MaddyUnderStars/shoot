@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { User } from "../../entity";
+import type { Actor, User } from "../../entity";
 import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
 
 export const NO_AUTH_ROUTES = [
@@ -48,7 +48,10 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 declare global {
 	namespace Express {
 		interface Request {
+			/** For local authenticated routes (using a token), contains the User object associated with the token */
 			user: User;
+			/** For s2s/federated routes (using http signatures), contains the Actor that signed this request */
+			actor: Actor;
 		}
 	}
 }

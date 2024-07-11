@@ -10,8 +10,8 @@ import type {
 import {
 	ApCache,
 	DMChannel,
-	GuildTextChannel,
 	type Guild,
+	GuildTextChannel,
 	type Invite,
 	type User,
 } from "../../entity";
@@ -203,7 +203,7 @@ export const buildAPGuildInvite = (invite: Invite): APGuildInvite => {
 	return {
 		type: "GuildInvite",
 		id: `${config.federation.instance_url.origin}/invite/${invite.code}`,
-		// attributedTo: `${config.federation.instance_url.origin}${getExternalPathFromActor(invite.guild)}`,
+		attributedTo: buildAPOrganization(invite.guild),
 	};
 };
 

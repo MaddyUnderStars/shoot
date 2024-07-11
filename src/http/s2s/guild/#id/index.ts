@@ -1,11 +1,12 @@
 import type { AnyAPObject } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Guild, GuildTextChannel } from "../../../../entity";
+import { Guild, GuildTextChannel, Role } from "../../../../entity";
 import {
 	addContext,
 	buildAPGroup,
 	buildAPOrganization,
+	buildAPRole,
 	config,
 	makeOrderedCollection,
 	route,
@@ -93,7 +94,14 @@ router.get(
 								// audit log?
 								case "followers":
 									// roles
-									return [];
+									return (
+										await Role.find({
+											where: {
+												guild: { id: guild_id },
+											},
+											relations: { guild: true },
+										})
+									).map((x) => buildAPRole(x));
 								case "following":
 									// channels
 									return (
@@ -110,7 +118,9 @@ router.get(
 							switch (collection) {
 								case "outbox":
 								case "followers":
-									return 0;
+									return await Role.count({
+										where: { guild: { id: guild_id } },
+									});
 								case "following":
 									return await GuildTextChannel.count({
 										where: {

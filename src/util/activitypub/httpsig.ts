@@ -1,7 +1,7 @@
 import type { APActivity } from "activitypub-types";
 import crypto from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
-import { Channel, Guild, User, type Actor } from "../../entity";
+import { type Actor, Channel, Guild, User } from "../../entity";
 import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
 import { createGuildFromRemoteOrg } from "../entity";
@@ -79,7 +79,7 @@ export const validateHttpSignature = async (
 		Guild.findOne({ where: { remote_address: actorId } }),
 	]);
 
-	let actor = user ?? channel ?? guild;
+	let actor: Actor | null = user ?? channel ?? guild;
 
 	if (!actor) {
 		const remoteActor = await resolveAPObject(actorId);
@@ -152,7 +152,15 @@ export const validateHttpSignature = async (
 	verifier.write(expected);
 	verifier.end();
 
-	return verifier.verify(actor.public_key, Buffer.from(signature, "base64"));
+	const result = verifier.verify(
+		actor.public_key,
+		Buffer.from(signature, "base64"),
+	);
+	if (!result) {
+		throw new APError("HTTP Signature could not be validated", 401);
+	}
+
+	return actor;
 };
 
 /**
@@ -212,7 +220,8 @@ export const signWithHttpSignature = (
 		body: message ? JSON.stringify(message) : undefined,
 	};
 
-	if (!ret.headers.digest) ret.headers.digest = undefined;
+	// biome-ignore lint/performance/noDelete: <explanation>
+	if (!ret.headers.digest) delete ret.headers.digest;
 
 	return ret as RequestInit;
 };

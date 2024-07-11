@@ -19,11 +19,15 @@ router.get(
 	route(
 		{ params: z.object({ guild_id: z.string(), role_id: z.string() }) },
 		async (req, res) => {
+			// if (req.actor instanceof User)
+			// 	await isMemberOfGuildThrow(req.params.guild_id, req.actor);
+			// else throw new APError("Missing permission", 400);
 			const role = await Role.findOneOrFail({
 				where: {
 					guild: { id: req.params.guild_id },
 					id: req.params.role_id,
 				},
+				relations: { guild: true },
 			});
 
 			return res.json(addContext(buildAPRole(role)));

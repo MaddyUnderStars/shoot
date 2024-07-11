@@ -31,7 +31,7 @@ const getRoutes = (router: Router) => {
 			.replaceAll("\\/", "/")
 			.replaceAll("\\.", ".")
 			.replaceAll("/?(?=/|$)", "")
-			.replaceAll("/i", "")
+			.replace(/\/i$/, "")
 			.replaceAll("(?:([^/]+?))", () => `{${keys.shift()?.name}}`);
 	};
 

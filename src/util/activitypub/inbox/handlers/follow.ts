@@ -1,13 +1,13 @@
 import type { APAccept } from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { Channel, Guild, User } from "../../../../entity";
+import { Channel, Guild, Invite, User } from "../../../../entity";
 import { RelationshipType } from "../../../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
-import { getOrFetchUser } from "../../../entity";
+import { getOrFetchUser, joinGuild } from "../../../entity";
 import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { APError } from "../../error";
-import { addContext } from "../../util";
+import { addContext, splitQualifiedMention } from "../../util";
 
 export const FollowActivityHandler: ActivityHandler = async (
 	activity,
@@ -29,10 +29,29 @@ export const FollowActivityHandler: ActivityHandler = async (
 		throw new APError("not implemented");
 	} else if (target instanceof Guild) {
 		// TODO: check invites
-		throw new APError("not implemented");
+
+		const invite_code = activity.instrument;
+		if (
+			!invite_code ||
+			Array.isArray(invite_code) ||
+			typeof invite_code !== "string"
+		)
+			throw new APError(
+				"Only one invite_code string value in instrument properly allowed",
+			);
+
+		const code = splitQualifiedMention(invite_code);
+
+		const invite = await Invite.findOneOrFail({
+			where: { code: code.user },
+			relations: { guild: true },
+		});
+
+		await joinGuild(actor.id, invite.guild.id);
 	} else throw new APError("Cannot accept follows for this target");
 
 	const accept: APAccept = addContext({
+		id: `${activity.id}/accept`,
 		type: "Accept",
 		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
 		object: activity,

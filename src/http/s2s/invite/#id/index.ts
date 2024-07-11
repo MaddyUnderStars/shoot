@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Invite } from "../../../../entity";
-import { buildAPGuildInvite, route } from "../../../../util";
+import { addContext, buildAPGuildInvite, route } from "../../../../util";
 
 const router = Router({ mergeParams: true });
 
@@ -14,9 +14,10 @@ router.get(
 			where: {
 				code: invite_id,
 			},
+			relations: ["guild", "guild.owner"],
 		});
 
-		return res.json(buildAPGuildInvite(invite));
+		return res.json(addContext(buildAPGuildInvite(invite)));
 	}),
 );
 

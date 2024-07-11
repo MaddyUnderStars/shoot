@@ -1,5 +1,5 @@
 import type { APActivity } from "activitypub-types";
-import { Channel, Guild, User, type Actor } from "../entity";
+import { type Actor, Channel, Guild, User } from "../entity";
 import { APError, InstanceActor, config, signWithHttpSignature } from "../util";
 import { createLogger } from "../util/log";
 
@@ -37,12 +37,8 @@ export const sendActivity = async (
 		const res = await fetch(inbox, signed);
 		if (!res.ok) {
 			Log.error(
-				`Sending activity ${activity.id} to ${inbox} failed : ${res.status} ${res.statusText}`,
+				`Sending activity ${activity.id} to ${inbox} failed : ${res.status} ${await res.text()}`,
 			);
-
-			// https://github.com/node-fetch/node-fetch/issues/83
-			// fix memory leak by reading the buffer
-			const leak = await res.arrayBuffer();
 		} else
 			Log.verbose(
 				`Sent activity ${activity.id} got response`,
