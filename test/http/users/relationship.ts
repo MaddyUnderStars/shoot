@@ -17,12 +17,12 @@ test("Create and delete", async (t) => {
 	const user2 = await createTestUser("create2");
 
 	const res1 = await request(api.app)
-		.post(`/users/create2@localhost/relationship`)
+		.post("/users/create2@localhost/relationship")
 		.auth(user1, { type: "bearer" })
 		.expect(200);
 
 	const res2 = await request(api.app)
-		.post(`/users/create1@localhost/relationship`)
+		.post("/users/create1@localhost/relationship")
 		.auth(user2, { type: "bearer" })
 		.expect(200);
 

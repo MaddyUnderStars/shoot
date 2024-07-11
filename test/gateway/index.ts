@@ -6,8 +6,8 @@ import test from "ava";
 import { createTestDm, createTestUser, setupTests } from "../helpers";
 setupTests(test);
 
+import { EventEmitter } from "node:stream";
 import Sinon from "sinon";
-import { EventEmitter } from "stream";
 import type { GATEWAY_PAYLOAD, READY } from "../../src/gateway/util";
 
 class FakeSocket extends EventEmitter {
@@ -26,18 +26,19 @@ class FakeSocket extends EventEmitter {
 	}
 }
 
-const sendGatewayPayload = (
-	payload: any,
+const sendGatewayPayload = async (
+	payload: object,
 	socket: EventEmitter,
-): Promise<GATEWAY_PAYLOAD> =>
-	new Promise(async (resolve, reject) => {
-		const { onMessage } = await import("../../src/gateway/socket/message");
+): Promise<GATEWAY_PAYLOAD> => {
+	const { onMessage } = await import("../../src/gateway/socket/message");
 
+	//@ts-ignore
+	await onMessage.call(socket, { data: JSON.stringify(payload) });
+
+	return new Promise((resolve) => {
 		socket.addListener("message", (msg) => resolve(msg));
-
-		//@ts-ignore
-		await onMessage.call(socket, { data: JSON.stringify(payload) });
 	});
+};
 
 test("Identify", async (t) => {
 	const clock = Sinon.useFakeTimers({

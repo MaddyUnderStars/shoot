@@ -16,7 +16,7 @@ test("Can create DM channels", async (t) => {
 	const user2 = await createTestUser("create_user2");
 
 	const res = await request(api.app)
-		.post(`/users/create_user2@localhost/channels`)
+		.post("/users/create_user2@localhost/channels")
 		.auth(user1, { type: "bearer" })
 		.send({ name: "dm channel" })
 		.expect(200);
@@ -27,13 +27,17 @@ test("Can create DM channels", async (t) => {
 		.get("/users/@me/channels")
 		.auth(user1, { type: "bearer" })
 		.expect(200)
-		.then((x) => t.assert(x.body.find((i: any) => i.id == channel_id)));
+		.then((x) =>
+			t.assert(x.body.find((i: { id: string }) => i.id === channel_id)),
+		);
 
 	await request(api.app)
 		.get("/users/@me/channels")
 		.auth(user2, { type: "bearer" })
 		.expect(200)
-		.then((x) => t.assert(x.body.find((i: any) => i.id == channel_id)));
+		.then((x) =>
+			t.assert(x.body.find((i: { id: string }) => i.id === channel_id)),
+		);
 
 	t.pass();
 });
@@ -61,11 +65,15 @@ test("Can send messages to dm", async (t) => {
 		.get(`/channel/${channel.mention}/messages`)
 		.auth(user1, { type: "bearer" })
 		.expect(200)
-		.then((x) => t.assert(x.body.find((i: any) => i.id == message_id)));
+		.then((x) =>
+			t.assert(x.body.find((i: { id: string }) => i.id === message_id)),
+		);
 
 	await request(api.app)
 		.get(`/channel/${channel.mention}/messages`)
 		.auth(user2, { type: "bearer" })
 		.expect(200)
-		.then((x) => t.assert(x.body.find((i: any) => i.id == message_id)));
+		.then((x) =>
+			t.assert(x.body.find((i: { id: string }) => i.id === message_id)),
+		);
 });
