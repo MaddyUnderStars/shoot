@@ -32,7 +32,7 @@ test("Using Instance Actor", async (t) => {
 	);
 
 	await validateHttpSignature(
-		"https://chat.understars.dev/inbox",
+		"/inbox",
 		"GET",
 		//@ts-ignore
 		signed.headers,
