@@ -32,12 +32,14 @@ const sendGatewayPayload = async (
 ): Promise<GATEWAY_PAYLOAD> => {
 	const { onMessage } = await import("../../src/gateway/socket/message");
 
+	const ret = new Promise<GATEWAY_PAYLOAD>((resolve) => {
+		socket.addListener("message", (msg) => resolve(msg));
+	});
+
 	//@ts-ignore
 	await onMessage.call(socket, { data: JSON.stringify(payload) });
 
-	return new Promise((resolve) => {
-		socket.addListener("message", (msg) => resolve(msg));
-	});
+	return ret;
 };
 
 test("Identify", async (t) => {
