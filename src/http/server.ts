@@ -5,7 +5,7 @@ import morgan from "morgan";
 import http from "node:http";
 
 import { errorHandler, routes } from ".";
-import { config, createLogger, initDatabase } from "../util";
+import { config, createLogStream, createLogger, initDatabase } from "../util";
 
 const Log = createLogger("API");
 
@@ -31,6 +31,7 @@ export class APIServer {
 		if (config.http.log)
 			this.app.use(
 				morgan(config.http.log_format, {
+					stream: createLogStream("HTTP"),
 					skip(req, res) {
 						const log = config.http.log;
 						const skip =

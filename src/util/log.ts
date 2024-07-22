@@ -1,3 +1,6 @@
+import type internal from "node:stream";
+import { Writable } from "node:stream";
+
 export const createLogger = (context: string) => {
 	context = context.toUpperCase();
 	const doLog = (level: "error" | "warn" | "log", ...args: unknown[]) => {
@@ -12,3 +15,23 @@ export const createLogger = (context: string) => {
 		verbose: (...args: unknown[]) => doLog("log", ...args),
 	};
 };
+
+class LogStream extends Writable {
+	private logger;
+
+	constructor(context: string, opts?: internal.WritableOptions) {
+		super(opts);
+		this.logger = createLogger(context);
+	}
+
+	_write(
+		chunk: unknown,
+		encoding: BufferEncoding,
+		callback: (error?: Error | null) => void,
+	): void {
+		this.logger.msg(String(chunk).trimEnd());
+		callback();
+	}
+}
+
+export const createLogStream = (context: string) => new LogStream(context);
