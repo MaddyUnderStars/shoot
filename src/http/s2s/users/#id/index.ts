@@ -1,15 +1,15 @@
-import type { AnyAPObject } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Message, User } from "../../../../entity";
-import { Relationship } from "../../../../entity/relationship";
-import { addContext, config, route } from "../../../../util";
-import { handleInbox } from "../../../../util/activitypub/inbox";
-import { makeOrderedCollection } from "../../../../util/activitypub/orderedCollection";
+import { Relationship, User } from "../../../../entity";
 import {
-	buildAPNote,
-	buildAPPerson,
-} from "../../../../util/activitypub/transformers";
+	addContext,
+	config,
+	getDatabase,
+	orderedCollectionHandler,
+	route,
+} from "../../../../util";
+import { handleInbox } from "../../../../util/activitypub/inbox";
+import { buildAPPerson } from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
 
@@ -47,94 +47,43 @@ router.post(
 	),
 );
 
+const COLLECTION_PARAMS = {
+	params: z.object({
+		user_id: z.string(),
+	}),
+	query: z.object({
+		before: z.string().optional(),
+		after: z.string().optional(),
+	}),
+};
+
 router.get(
-	"/:collection",
-	route(
-		{
-			params: z.object({
-				user_id: z.string(),
-				collection: z.union([
-					z.literal("followers"),
-					z.literal("following"),
-					z.literal("outbox"),
-				]),
-			}),
-			query: z.object({
-				page: z.boolean({ coerce: true }).default(false).optional(),
-				min_id: z.string().optional(),
-				max_id: z.string().optional(),
-			}),
-		},
-		async (req, res) => {
-			const { user_id, collection } = req.params;
-
-			// const user = await User.findOneOrFail({
-			// 	where: { name: user_id },
-			// });
-
-			return res.json(
-				addContext(
-					await makeOrderedCollection<AnyAPObject>({
-						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
-						page: req.query.page ?? false,
-						min_id: req.query.min_id,
-						max_id: req.query.max_id,
-						getElements: async () => {
-							switch (collection) {
-								case "outbox":
-									return (
-										await Message.find({
-											where: {
-												author: { name: user_id },
-											},
-											relations: {
-												author: true,
-												channel: true,
-											},
-										})
-									).map((msg) => buildAPNote(msg));
-								case "followers":
-									return (
-										await Relationship.find({
-											where: {
-												to: {
-													name: user_id,
-													domain: config.federation
-														.webapp_url.hostname,
-												},
-											},
-											relations: { from: true },
-										})
-									).map((x) => buildAPPerson(x.from));
-								case "following":
-									return [];
-							}
-						},
-						getTotalElements: async () => {
-							switch (collection) {
-								case "outbox":
-									return await Message.count({
-										where: { author: { name: user_id } },
-									});
-								case "followers":
-									return await Relationship.count({
-										where: {
-											to: {
-												name: user_id,
-												domain: config.federation
-													.webapp_url.hostname,
-											},
-										},
-									});
-								case "following":
-									return 0;
-							}
-						},
-					}),
+	"/following",
+	route(COLLECTION_PARAMS, async (req, res) =>
+		res.json(
+			await orderedCollectionHandler({
+				id: new URL(
+					`${config.federation.instance_url.origin}/users/${req.params.user_id}/followers`,
 				),
-			);
-		},
+				...req.query,
+				convert: (x) => buildAPPerson(x.from),
+				entity: Relationship,
+				qb: getDatabase()
+					.getRepository(Relationship)
+					.createQueryBuilder("relationship")
+					.leftJoinAndSelect("relationship.from", "from")
+					.leftJoin("relationship.to", "to")
+					.where("to.name = :name", {
+						name: req.params.user_id,
+					})
+					.andWhere("to.domain = :domain", {
+						domain: config.federation.webapp_url.hostname,
+					}),
+			}),
+		),
 	),
 );
+
+// TODO: outbox, followers
 
 export default router;

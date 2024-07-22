@@ -1,14 +1,14 @@
-import type { AnyAPObject } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Guild, GuildTextChannel, Role } from "../../../../entity";
+import { Channel, Guild, Role } from "../../../../entity";
 import {
 	addContext,
 	buildAPGroup,
 	buildAPOrganization,
 	buildAPRole,
 	config,
-	makeOrderedCollection,
+	getDatabase,
+	orderedCollectionHandler,
 	route,
 } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
@@ -56,84 +56,63 @@ router.post(
 	),
 );
 
+const COLLECTION_PARAMS = {
+	params: z.object({
+		guild_id: z.string(),
+	}),
+	query: z.object({
+		before: z.string().optional(),
+		after: z.string().optional(),
+	}),
+};
+
 router.get(
-	"/:collection",
-	route(
-		{
-			params: z.object({
-				guild_id: z.string(),
-				collection: z.union([
-					z.literal("followers"),
-					z.literal("following"),
-					z.literal("outbox"),
-				]),
-			}),
-			query: z.object({
-				page: z.boolean({ coerce: true }).default(false).optional(),
-				min_id: z.string().optional(),
-				max_id: z.string().optional(),
-			}),
-		},
-		async (req, res) => {
-			const { guild_id, collection } = req.params;
-
-			// const user = await User.findOneOrFail({
-			// 	where: { name: user_id },
-			// });
-
-			return res.json(
-				addContext(
-					await makeOrderedCollection<AnyAPObject>({
-						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
-						page: req.query.page ?? false,
-						min_id: req.query.min_id,
-						max_id: req.query.max_id,
-						getElements: async () => {
-							switch (collection) {
-								case "outbox":
-								// audit log?
-								case "followers":
-									// roles
-									return (
-										await Role.find({
-											where: {
-												guild: { id: guild_id },
-											},
-											relations: { guild: true },
-										})
-									).map((x) => buildAPRole(x));
-								case "following":
-									// channels
-									return (
-										await GuildTextChannel.find({
-											where: {
-												guild: { id: guild_id },
-											},
-											relations: { guild: true },
-										})
-									).map((x) => buildAPGroup(x));
-							}
-						},
-						getTotalElements: async () => {
-							switch (collection) {
-								case "outbox":
-								case "followers":
-									return await Role.count({
-										where: { guild: { id: guild_id } },
-									});
-								case "following":
-									return await GuildTextChannel.count({
-										where: {
-											guild: { id: guild_id },
-										},
-									});
-							}
-						},
-					}),
+	"/followers",
+	route(COLLECTION_PARAMS, async (req, res) =>
+		res.json(
+			await orderedCollectionHandler({
+				id: new URL(
+					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/followers`,
 				),
-			);
-		},
+				before: req.query.before,
+				after: req.query.after,
+				convert: buildAPRole,
+				entity: Role,
+				qb: getDatabase()
+					.getRepository(Role)
+					.createQueryBuilder("role")
+					.leftJoinAndSelect("role.guild", "guild")
+					.where("guild.id = :guild_id", {
+						guild_id: req.params.guild_id,
+					}),
+			}),
+		),
 	),
 );
+
+router.get(
+	"/following",
+	route(COLLECTION_PARAMS, async (req, res) =>
+		res.json(
+			await orderedCollectionHandler({
+				id: new URL(
+					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/followers`,
+				),
+				...req.query,
+				convert: buildAPGroup,
+				entity: Channel,
+				qb: getDatabase()
+					.getRepository(Channel)
+					.createQueryBuilder("channel")
+					.leftJoinAndSelect("channel.guild", "guild")
+					.where("guild.id = :guild_id", {
+						guild_id: req.params.guild_id,
+					}),
+			}),
+		),
+	),
+);
+
+// TODO: outbox = audit log?
 
 export default router;

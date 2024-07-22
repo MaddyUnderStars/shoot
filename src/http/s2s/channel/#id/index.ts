@@ -1,14 +1,12 @@
-import type { APCollection, APCollectionPage } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { DMChannel, Message } from "../../../../entity";
+import { Message, User } from "../../../../entity";
 import { Channel } from "../../../../entity/channel";
-import { getExternalPathFromActor } from "../../../../sender";
 import {
 	addContext,
 	config,
 	getDatabase,
-	makeOrderedCollection,
+	orderedCollectionHandler,
 	route,
 } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
@@ -70,131 +68,75 @@ router.post(
 	),
 );
 
+const COLLECTION_PARAMS = {
+	params: z.object({
+		channel_id: z.string(),
+	}),
+	query: z.object({
+		before: z.string().optional(),
+		after: z.string().optional(),
+	}),
+};
+
 router.get(
 	"/outbox",
-	route(
-		{
-			params: z.object({
-				channel_id: z.string(),
-			}),
-			query: z.object({
-				page: z.boolean({ coerce: true }).default(false).optional(),
-				min_id: z.string().optional(),
-				max_id: z.string().optional(),
-			}),
-		},
-		async (req, res) => {
-			const { channel_id } = req.params;
-
-			return res.json(
-				addContext(
-					await makeOrderedCollection({
-						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
-						page: req.query.page ?? false,
-						min_id: req.query.min_id,
-						max_id: req.query.max_id,
-						getElements: async (before, after) => {
-							return (
-								await Message.find({
-									where: { channel: { id: channel_id } },
-									relations: {
-										author: true,
-										channel: true,
-									},
-								})
-							).map((msg) => buildAPNote(msg));
-						},
-						getTotalElements: async () => {
-							return await Message.count({
-								where: { channel: { id: channel_id } },
-							});
-						},
-					}),
+	route(COLLECTION_PARAMS, async (req, res) =>
+		res.json(
+			await orderedCollectionHandler({
+				id: new URL(
+					`${config.federation.instance_url.origin}/channel/${req.params.channel_id}/outbox`,
 				),
-			);
-		},
+				keys: ["published"],
+				before: req.query.before,
+				after: req.query.after,
+				convert: buildAPNote,
+				entity: Message,
+				qb: getDatabase()
+					.getRepository(Message)
+					.createQueryBuilder("message")
+					.where("message.channelId = :channel_id", {
+						channel_id: req.params.channel_id,
+					})
+					.leftJoinAndSelect("message.channel", "channel")
+					.leftJoinAndSelect("message.author", "author"),
+			}),
+		),
 	),
 );
 
+/**
+ * Gets the recipients of a DM CHANNEL only.
+ * For guild members, use the guild followers
+ *
+ * TODO: also needs to get the owner
+ * Alternatively, could just add the owner as a recipient as well.
+ */
 router.get(
 	"/followers",
-	route(
-		{
-			params: z.object({
-				channel_id: z.string(),
+	route(COLLECTION_PARAMS, async (req, res) =>
+		res.json(
+			await orderedCollectionHandler({
+				id: new URL(
+					`${config.federation.instance_url.origin}/channel/${req.params.channel_id}/followers`,
+				),
+				before: req.query.before,
+				after: req.query.after,
+				convert: buildAPPerson,
+				entity: User,
+				qb: getDatabase()
+					.getRepository(User)
+					.createQueryBuilder("user")
+					.leftJoin(
+						"channels_recipients_users",
+						"recipients",
+						"recipients.usersId = user.id",
+					)
+					.where("recipients.channelsId = :channel_id", {
+						channel_id: req.params.channel_id,
+					}),
 			}),
-			query: z.object({
-				page: z.string().optional(),
-			}),
-		},
-		async (req, res) => {
-			const { channel_id } = req.params;
-			const { page } = req.query;
-
-			const channel = await DMChannel.findOneOrFail({
-				where: { id: channel_id },
-				relations: { recipients: true, owner: true },
-			});
-
-			const colId = `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/followers`;
-
-			if (!page)
-				return res.json(
-					addContext(
-						buildCollection(colId, channel.recipients.length + 1), // add owner
-					),
-				);
-
-			const nextPage = undefined;
-			//channel.recipients[channel.recipients.length - 1].id;
-
-			const collection = buildCollectionPage(colId, page, nextPage);
-
-			collection.items = channel.recipients
-				// biome-ignore lint/style/noNonNullAssertion: <explanation>
-				.map((x) => x.remote_address ?? buildAPPerson(x).id!)
-				.concat(
-					channel.owner.remote_address ??
-						// biome-ignore lint/style/noNonNullAssertion: <explanation>
-						buildAPPerson(channel.owner).id!,
-				);
-
-			return res.json(addContext(collection));
-		},
+		),
 	),
 );
-
-const buildCollectionPage = (
-	id: string,
-	currentPage: string,
-	nextPage?: string,
-	ordered = false,
-): APCollectionPage => {
-	return {
-		id: setUrlParam(id, "page", currentPage),
-		type: ordered ? "OrderedCollectionPage" : "CollectionPage",
-		partOf: id,
-		next: nextPage ? setUrlParam(id, "page", nextPage) : undefined,
-	};
-};
-
-const buildCollection = (
-	id: string,
-	totalItems: number,
-	ordered = false,
-): APCollection => {
-	return {
-		id,
-		totalItems,
-		type: ordered ? "OrderedCollection" : "Collection",
-		first: setUrlParam(id, "page", "true"),
-	};
-};
-
-const setUrlParam = (url: string, param: string, value: string) => {
-	const ret = new URL(url);
-	ret.searchParams.set(param, value);
-	return ret.toString();
-};
 
 export default router;

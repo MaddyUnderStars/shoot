@@ -50,6 +50,7 @@
 		"pg": "^8.12.0",
 		"ts-deepmerge": "^7.0.0",
 		"typeorm": "^0.3.17",
+		"typeorm-cursor-pagination": "^0.10.1",
 		"ws": "^8.18.0",
 		"zod": "^3.23.8",
 		"zod-express-middleware": "^1.4.0"

@@ -1,38 +1,60 @@
-import type { APCollectionPage } from "activitypub-types";
+import type { APOrderedCollectionPage, AnyAPObject } from "activitypub-types";
+import type { ObjectType, SelectQueryBuilder } from "typeorm";
+import { buildPaginator } from "typeorm-cursor-pagination";
+import type { BaseModel } from "../../entity/basemodel";
+import { addContext } from "./util";
 
-export const makeOrderedCollection = async <T extends APCollectionPage>(opts: {
-	page: boolean;
-	min_id?: string;
-	max_id?: string;
-	id: string;
-	getTotalElements: () => Promise<number>;
-	getElements: (before?: string, after?: string) => Promise<T[]>;
-}): Promise<APCollectionPage> => {
-	const { page, min_id, max_id, id, getTotalElements, getElements } = opts;
+type Props<T extends BaseModel> = {
+	entity: ObjectType<T>;
+	qb: SelectQueryBuilder<T>;
+	keys?: string[];
+	id: URL;
+	convert: (data: T) => AnyAPObject;
+	before?: string;
+	after?: string;
+};
 
-	if (!page)
-		return {
-			id: id,
-			type: "OrderedCollection",
-			totalItems: await getTotalElements(),
-			first: new URL(`${id}?page=true`),
-			last: new URL(`${id}?page=true&min_id=0`),
-		};
+export const orderedCollectionHandler = async <T extends BaseModel>(
+	props: Props<T>,
+): Promise<APOrderedCollectionPage> => {
+	const { qb, entity, id, convert } = props;
 
-	const after = min_id ? `${min_id}` : undefined;
-	const before = max_id ? `${max_id}` : undefined;
+	const paginator = buildPaginator({
+		entity,
+		//@ts-expect-error
+		paginationKeys: props.keys ? props.keys : ["id"],
+		query: {
+			limit: 50,
+			order: "ASC",
+			afterCursor: "after" in props ? props.after : undefined,
+			beforeCursor: "before" in props ? props.before : undefined,
+		},
+	});
 
-	const elems = await getElements(before, after);
+	const { data, cursor } = await paginator.paginate(qb);
 
-	// TODO: we need to specify next/prev props
-	// and should probably let the caller of this function specify what they are
-	// along with first/last
-	return {
-		id: `${id}?page=true`,
+	let next: URL | undefined;
+	if (cursor.afterCursor) {
+		next = new URL(id);
+		next.searchParams.set("after", cursor.afterCursor);
+		next.searchParams.delete("before");
+	}
+
+	let prev: URL | undefined;
+	if (cursor.beforeCursor) {
+		prev = new URL(id);
+		prev.searchParams.set("before", cursor.beforeCursor);
+		prev.searchParams.delete("after");
+	}
+
+	return addContext({
+		id: id.toString(),
+
 		type: "OrderedCollection",
-		// next: elems.length > 0 ? new URL(`${id}?min_id=${elems[elems.length - 1].id}`).toString() : undefined,
-		next: undefined,
-		totalItems: await getTotalElements(),
-		items: elems,
-	};
+		next: next ? next.toString() : undefined,
+		prev: prev ? prev.toString() : undefined,
+
+		totalItems: await qb.getCount(),
+		items: (data as T[]).map(convert),
+	});
 };
