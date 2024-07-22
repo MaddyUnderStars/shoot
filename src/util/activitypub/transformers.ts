@@ -207,6 +207,9 @@ export const buildAPGuildInvite = (invite: Invite): APGuildInvite => {
 	};
 };
 
+export const ObjectIsRole = (role: APObject): role is APRole =>
+	role.type === "Role";
+
 export type APRole = APObject & {
 	type: "Role";
 	members: string;

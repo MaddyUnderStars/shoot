@@ -3,10 +3,11 @@ import { promisify } from "node:util";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 import {
+	type APActor,
+	type APGroup,
 	ObjectIsGroup,
 	ObjectIsOrganization,
 	ObjectIsPerson,
-	type APActor,
 } from "activitypub-types";
 import { Brackets } from "typeorm";
 import { Guild, GuildTextChannel, User } from "../../entity";
@@ -42,7 +43,9 @@ export const createGuildTextChannel = async (name: string, guild: Guild) => {
 
 	setImmediate(() => generateSigningKeys(channel));
 
-	emitGatewayEvent([guild.owner.id], {
+	// TODO: when a channel with permission overwrites is created
+	// this should only emit to the role or users given permission
+	emitGatewayEvent(guild.id, {
 		type: "CHANNEL_CREATE",
 		channel: channel.toPublic(),
 	});
@@ -78,8 +81,11 @@ export const createDmChannel = async (
 	return channel;
 };
 
-export const getOrFetchChannel = async (channel_id: string) => {
-	const mention = splitQualifiedMention(channel_id);
+export const getOrFetchChannel = async (lookup: string | APGroup) => {
+	const id = typeof lookup === "string" ? lookup : lookup.id;
+	if (!id) throw new APError("Cannot fetch channel without ID");
+
+	const mention = splitQualifiedMention(id);
 
 	// TODO: this may break when we have other channel types
 	let channel = await getDatabase()
@@ -110,7 +116,7 @@ export const getOrFetchChannel = async (channel_id: string) => {
 
 	if (!channel && config.federation.enabled) {
 		// fetch from remote instance
-		channel = await createChannelFromRemoteGroup(channel_id);
+		channel = await createChannelFromRemoteGroup(lookup);
 		await channel.save();
 	} else if (!channel) throw new APError("Channel could not be found", 404);
 
@@ -192,9 +198,21 @@ export const createChannelFromRemoteGroup = async (
 					await resolveCollectionEntries(
 						new URL(obj.followers.toString()),
 					)
-				)
-					.filter((x) => x !== obj.attributedTo)
-					.map((x) => getOrFetchUser(x)),
+				).reduce(
+					(prev, curr) => {
+						const id = typeof curr === "string" ? curr : curr.id;
+						if (id !== obj.attributedTo) {
+							if (
+								typeof curr === "string" ||
+								ObjectIsPerson(curr)
+							)
+								prev.push(getOrFetchUser(curr));
+						}
+
+						return prev;
+					},
+					[] as Array<Promise<User>>,
+				),
 			]),
 		});
 	} else if (owner instanceof Guild) {

@@ -1,10 +1,12 @@
+import { ObjectIsPerson } from "activitypub-types";
+import type { Member } from "../../entity";
 import { Role } from "../../entity/role";
 import {
 	APError,
+	type APRole,
 	resolveAPObject,
 	resolveCollectionEntries,
 	splitQualifiedMention,
-	type APRole,
 } from "../activitypub";
 import { getOrFetchGuild } from "./guild";
 import { getOrFetchMember } from "./member";
@@ -34,8 +36,14 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 	});
 
 	const members = await Promise.all([
-		...(await resolveCollectionEntries(new URL(obj.members))).map((x) =>
-			getOrFetchMember(x),
+		...(await resolveCollectionEntries(new URL(obj.members))).reduce(
+			(prev, curr) => {
+				if (typeof curr === "string" || ObjectIsPerson(curr)) {
+					prev.push(getOrFetchMember(curr));
+				}
+				return prev;
+			},
+			[] as Array<Promise<Member>>,
 		),
 	]);
 

@@ -153,26 +153,19 @@ export const resolveWebfinger = async (
 };
 
 /**
- * Returns all the IDs of a collection
+ * Returns all (to limit) entries of a collection
  */
 export const resolveCollectionEntries = async (
 	collection: URL,
 	limit = 10,
-): Promise<Array<string>> => {
+): Promise<Array<string | AnyAPObject>> => {
 	if (limit < 0) {
 		Log.warn("Limit reached when resolving collection");
 		return [];
 	}
 	limit--;
 
-	const ret: Array<string> = [];
-
-	/**
-	 * TOOD: Is disabling cache for collections a good idea?
-	 * We might want to actually disable cache for only the last page,
-	 * and then when we refetch this collection, we just need to start from the end again
-	 * But that might be a bit complicated?
-	 */
+	const ret: Array<string | AnyAPObject> = [];
 
 	const parent = await resolveAPObject(collection.toString());
 
@@ -194,21 +187,7 @@ export const resolveCollectionEntries = async (
 
 	if (!items) throw new APError("can't find collection items");
 
-	for (const item of items) {
-		// TODO: if we just return all the IDs, then collections that just return the full objects won't be cached!
-		// this is bad btw!!!
-
-		const id =
-			typeof item === "string"
-				? item
-				: "id" in item
-					? item.id
-					: undefined;
-
-		if (!id) continue;
-
-		ret.push(id);
-	}
+	ret.push(...items);
 
 	if (parent.next && typeof parent.next === "string") {
 		Log.verbose(`Resolving next page of collection ${parent.id}`);

@@ -2,19 +2,18 @@ import { Not } from "typeorm";
 import { makeHandler } from ".";
 import {
 	DMChannel,
-	Guild,
 	Relationship,
 	RelationshipType,
 	Session,
 	type User,
 } from "../../entity";
-import { getUserFromToken } from "../../util";
+import { getGuilds, getUserFromToken } from "../../util";
 import {
 	CLOSE_CODES,
 	IDENTIFY,
+	type READY,
 	consume,
 	listenEvents,
-	type READY,
 } from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
 
@@ -48,11 +47,7 @@ export const onIdentify = makeHandler(async function (payload) {
 			relations: { recipients: true, owner: true },
 		}),
 
-		// TODO: guild members api like discord's GUILD_MEMBER_LIST_UPDATE
-		Guild.find({
-			where: { owner: { id: this.user_id } },
-			relations: { channels: true, roles: true },
-		}),
+		getGuilds(this.user_id),
 
 		Relationship.find({
 			where: [

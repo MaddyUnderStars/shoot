@@ -1,18 +1,27 @@
 import {
 	type APActor,
 	type APOrganization,
+	ObjectIsGroup,
 	ObjectIsOrganization,
 } from "activitypub-types";
-import { Guild, type GuildTextChannel, Member, User } from "../../entity";
+import {
+	type Channel,
+	Guild,
+	type GuildTextChannel,
+	Member,
+	User,
+} from "../../entity";
 import { Role } from "../../entity/role";
 import {
 	APError,
+	ObjectIsRole,
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveWebfinger,
 	splitQualifiedMention,
 } from "../activitypub";
 import { config } from "../config";
+import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
 import { DefaultPermissions } from "../permission";
 import { tryParseUrl } from "../url";
@@ -20,6 +29,54 @@ import { generateSigningKeys } from "./actor";
 import { createGuildTextChannel, getOrFetchChannel } from "./channel";
 import { createRoleFromRemote } from "./role";
 import { getOrFetchUser } from "./user";
+
+export const getGuilds = (user_id: string) =>
+	/*
+		select * from guilds
+		left join roles "roles" on "roles"."guildId"  = guilds.id
+		left join roles_members_guild_members "gm" on "gm"."rolesId"  = roles.id
+		where "gm"."guildMembersId" in (select id from guild_members where "guild_members"."userId" = '992e56a2-079e-4a13-8293-d6e779b464ac')
+	*/
+
+	// TODO: guild members api like discord's GUILD_MEMBER_LIST_UPDATE
+	// Guild.find({
+	// 	where: { roles: { members: { id: this.user_id } } },
+	// 	relations: { channels: true, roles: true },
+	// }),
+
+	// getDatabase()
+	// 	.getRepository(Guild)
+	// 	.createQueryBuilder("guild")
+	// 	.leftJoinAndSelect("guild.channels", "channels")
+	// 	.leftJoinAndSelect("guild.roles", "roles")
+	// 	.leftJoin("roles.members", "members")
+	// 	.where("members.id = :user_id", { user_id: this.user_id })
+	// 	.getMany(),
+
+	// TODO: this code is awful and I hate it
+	// it's also probably really slow too
+
+	getDatabase()
+		.getRepository(Guild)
+		.createQueryBuilder("guild")
+		.leftJoinAndSelect("guild.channels", "channels")
+		.leftJoinAndSelect("guild.roles", "roles")
+		.leftJoin("roles.members", "members")
+		.where((qb) => {
+			const sub = qb
+				.subQuery()
+				.select("id")
+				.from(Member, "members")
+				.where("members.userId = :user_id", {
+					user_id: user_id,
+				})
+				.getQuery();
+
+			qb.where(`roles_members.guildMembersId in ${sub}`);
+
+			// return `\"roles_members\".\"guildMembersId\" in ${sub}`;
+		})
+		.getMany();
 
 export const joinGuild = async (user_id: string, guild_id: string) => {
 	const member = await Member.create({
@@ -114,6 +171,11 @@ export const createGuild = async (name: string, owner: User) => {
 		role: everyone.toPublic(),
 	});
 
+	await Member.create({
+		user: owner,
+		roles: [everyone],
+	}).save();
+
 	emitGatewayEvent(guild.id, {
 		type: "ROLE_MEMBER_ADD",
 		user_id: owner.id,
@@ -189,7 +251,15 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 	const channels = (await Promise.all([
 		...(
 			await resolveCollectionEntries(new URL(obj.following.toString()))
-		).map((x) => getOrFetchChannel(x)),
+		).reduce(
+			(prev, curr) => {
+				if (typeof curr === "string" || ObjectIsGroup(curr)) {
+					prev.push(getOrFetchChannel(curr));
+				}
+				return prev;
+			},
+			[] as Array<Promise<Channel>>,
+		),
 	])) as GuildTextChannel[];
 
 	guild.channels = channels;
@@ -198,7 +268,16 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 	const roles = await Promise.all([
 		...(
 			await resolveCollectionEntries(new URL(obj.followers.toString()))
-		).map((x) => createRoleFromRemote(x)),
+		).reduce(
+			(prev, curr) => {
+				if (typeof curr === "string" || ObjectIsRole(curr)) {
+					prev.push(createRoleFromRemote(curr));
+				}
+				return prev;
+			},
+			[] as Array<Promise<Role>>,
+		),
+		//.map((x) => createRoleFromRemote(x)),
 	]);
 
 	const everyone = roles.find((x) => x.remote_id === guild.remote_id);
