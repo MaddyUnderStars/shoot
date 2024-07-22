@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Channel, Guild, Role } from "../../../../entity";
 import {
 	addContext,
-	buildAPGroup,
+	buildAPActor,
 	buildAPOrganization,
 	buildAPRole,
 	config,
@@ -99,7 +99,7 @@ router.get(
 					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/followers`,
 				),
 				...req.query,
-				convert: buildAPGroup,
+				convert: buildAPActor,
 				entity: Channel,
 				qb: getDatabase()
 					.getRepository(Channel)

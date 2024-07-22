@@ -1,9 +1,4 @@
-import {
-	ObjectIsGroup,
-	ObjectIsNote,
-	type APActivity,
-	type APActor,
-} from "activitypub-types";
+import { type APActivity, type APActor, ObjectIsNote } from "activitypub-types";
 import type { ActivityHandler } from ".";
 import { Channel, User } from "../../../../entity";
 import { createChannelFromRemoteGroup, handleMessage } from "../../../entity";
@@ -44,9 +39,6 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 	const inner = await createChannelFromRemoteGroup(
 		activity.object as APActor,
 	);
-
-	// TOOD: typing
-	if (!ObjectIsGroup(inner)) throw new APError("Must create group at users");
 
 	await inner.save();
 

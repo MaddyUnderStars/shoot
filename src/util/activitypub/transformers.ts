@@ -8,16 +8,17 @@ import type {
 	APPerson,
 } from "activitypub-types";
 import {
+	type Actor,
 	ApCache,
 	DMChannel,
-	type Guild,
+	Guild,
 	GuildTextChannel,
 	type Invite,
-	type User,
+	type Role,
+	User,
 } from "../../entity";
-import type { Channel } from "../../entity/channel";
+import { Channel } from "../../entity/channel";
 import { Message } from "../../entity/message";
-import type { Role } from "../../entity/role";
 import { getExternalPathFromActor } from "../../sender";
 import { config } from "../config";
 import { getOrFetchAttributedUser } from "../entity";
@@ -25,6 +26,17 @@ import { createXsdDate } from "../misc";
 import type { PERMISSION } from "../permission";
 import { APError } from "./error";
 import { InstanceActor } from "./instanceActor";
+
+export const buildAPActor = (actor: Actor) => {
+	if (actor.remote_address) return actor.remote_address;
+
+	if (actor instanceof User) return buildAPPerson(actor);
+	if (actor instanceof Channel) return buildAPGroup(actor);
+	if (actor instanceof Guild) return buildAPOrganization(actor);
+	// if (actor instanceof Role) return buildAPRole(actor);
+
+	throw new APError("Don't know what type that is");
+};
 
 export const buildMessageFromAPNote = async (
 	note: APNote,

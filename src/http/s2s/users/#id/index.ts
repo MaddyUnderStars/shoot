@@ -9,7 +9,10 @@ import {
 	route,
 } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
-import { buildAPPerson } from "../../../../util/activitypub/transformers";
+import {
+	buildAPActor,
+	buildAPPerson,
+} from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
 
@@ -58,7 +61,7 @@ const COLLECTION_PARAMS = {
 };
 
 router.get(
-	"/following",
+	"/followers",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
@@ -66,7 +69,7 @@ router.get(
 					`${config.federation.instance_url.origin}/users/${req.params.user_id}/followers`,
 				),
 				...req.query,
-				convert: (x) => buildAPPerson(x.from),
+				convert: (x) => buildAPActor(x.from),
 				entity: Relationship,
 				qb: getDatabase()
 					.getRepository(Relationship)

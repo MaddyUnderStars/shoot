@@ -11,9 +11,9 @@ import {
 } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
 import {
+	buildAPActor,
 	buildAPGroup,
 	buildAPNote,
-	buildAPPerson,
 } from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
@@ -121,7 +121,7 @@ router.get(
 				),
 				before: req.query.before,
 				after: req.query.after,
-				convert: buildAPPerson,
+				convert: buildAPActor,
 				entity: User,
 				qb: getDatabase()
 					.getRepository(User)

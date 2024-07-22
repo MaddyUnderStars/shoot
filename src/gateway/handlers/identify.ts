@@ -7,7 +7,7 @@ import {
 	Session,
 	type User,
 } from "../../entity";
-import { getGuilds, getUserFromToken } from "../../util";
+import { getDatabase, getGuilds, getUserFromToken } from "../../util";
 import {
 	CLOSE_CODES,
 	IDENTIFY,
@@ -39,13 +39,22 @@ export const onIdentify = makeHandler(async function (payload) {
 			user,
 		}).save(),
 
-		DMChannel.find({
-			where: [
-				{ owner: { id: this.user_id } },
-				{ recipients: { id: this.user_id } },
-			],
-			relations: { recipients: true, owner: true },
-		}),
+		// DMChannel.find({
+		// 	where: [
+		// 		{ owner: { id: this.user_id } },
+		// 		{ recipients: { id: this.user_id } },
+		// 	],
+		// 	relations: { recipients: true, owner: true },
+		// }),
+
+		getDatabase()
+			.getRepository(DMChannel)
+			.createQueryBuilder("dm")
+			.leftJoinAndSelect("dm.owner", "owner")
+			.leftJoinAndSelect("dm.recipients", "recipients")
+			.where("owner.id = :user_id", { user_id: this.user_id })
+			.orWhere("recipients.id = :user_id", { user_id: this.user_id })
+			.getMany(),
 
 		getGuilds(this.user_id),
 

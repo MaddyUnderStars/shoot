@@ -9,7 +9,7 @@ type Props<T extends BaseModel> = {
 	qb: SelectQueryBuilder<T>;
 	keys?: string[];
 	id: URL;
-	convert: (data: T) => AnyAPObject;
+	convert: (data: T) => string | AnyAPObject;
 	before?: string;
 	after?: string;
 };

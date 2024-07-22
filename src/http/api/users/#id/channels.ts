@@ -37,6 +37,7 @@ router.post(
 					{ owner: { id: req.user.id } },
 					{ recipients: { id: req.user.id } },
 				],
+				relations: { recipients: true, owner: true },
 			});
 
 			if (existing) return res.json(existing.toPublic());
