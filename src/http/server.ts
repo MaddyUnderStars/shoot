@@ -30,7 +30,7 @@ export class APIServer {
 
 		if (config.http.log)
 			this.app.use(
-				morgan("combined", {
+				morgan(config.http.log_format, {
 					skip(req, res) {
 						const log = config.http.log;
 						const skip =

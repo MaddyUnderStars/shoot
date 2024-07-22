@@ -21,23 +21,39 @@ const config = Object.freeze({
 	http: {
 		/**
 		 * Whether to enable morgan logging of http requests.
-		 * Example: `200, 404` will log requests with status codes 200, 400
-		 * Example: `-200` will log all non-200 responses
-		 * Example `-` will log all responses
+		 * @example `200, 404` will log requests with status codes 200, 400
+		 * @example `-200` will log all non-200 responses
+		 * @example `-` will log all responses
 		 */
 		log: ifExistsGet<string>("http.log"),
 
-		/** Ratelimiter */
+		/**
+		 * Log format to use when morgan logging is enabled
+		 * @see https://www.npmjs.com/package/morgan#predefined-formats
+		 * @default "combined"
+		 */
+		log_format: ifExistsGet<string>("http.log_format") ?? "combined",
+
+		/**
+		 * Rate limiter for incoming HTTP API requests.
+		 * Valid keys: `s2s`, `auth`, `nodeinfo`, `wellknown`, `global`
+		 */
 		rate: Object.fromEntries(
 			["s2s", "auth", "nodeinfo", "wellknown", "global"].map((type) => [
 				type,
 				{
-					/** Milliseconds. Default: 15 minutes */
+					/**
+					 * Milliseconds
+					 * @default 15 minutes
+					 */
 					window:
 						ifExistsGet<number>(`http.rate.${type}.window`) ??
 						15 * 60 * 1000,
 
-					/** Number of requests per window. Default: 100 */
+					/**
+					 * Number of requests per window.
+					 * @default Default: 100
+					 */
 					limit: ifExistsGet<number>(`http.rate.${type}limit`) ?? 100,
 				},
 			]),
@@ -55,7 +71,7 @@ const config = Object.freeze({
 		 * How to determine the client IP when behind a proxy
 		 * https://expressjs.com/en/guide/behind-proxies.html
 		 *
-		 * @default loopback,uniquelocal
+		 * @default "loopback,uniquelocal"
 		 */
 		trust_proxy:
 			ifExistsGet<string>("security.trust_proxy") ??
