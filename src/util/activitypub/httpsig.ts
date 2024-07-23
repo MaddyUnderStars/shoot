@@ -7,10 +7,13 @@ import { config } from "../config";
 import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
 import { createUserForRemotePerson } from "../entity/user";
+import { createLogger } from "../log";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { resolveAPObject } from "./resolve";
 import { APObjectIsActor, hasAPContext } from "./util";
+
+const Log = createLogger("HTTPSIG");
 
 const getSignString = <T extends IncomingHttpHeaders>(
 	target: string,
@@ -35,7 +38,8 @@ export const validateHttpSignature = async (
 	method: string,
 	requestHeaders: IncomingHttpHeaders,
 	activity?: APActivity,
-) => {
+	noCache = false,
+): Promise<Actor> => {
 	const date = requestHeaders.date;
 	const sigheader = requestHeaders.signature?.toString();
 
@@ -80,8 +84,10 @@ export const validateHttpSignature = async (
 	]);
 
 	let actor: Actor | null = user ?? channel ?? guild;
+	const actorWasCached = !!actor;
 
-	if (!actor) {
+	// If we don't have a cache, or we should ignore cache
+	if (!actor || noCache) {
 		const remoteActor = await resolveAPObject(actorId);
 
 		if (!APObjectIsActor(remoteActor))
@@ -95,13 +101,16 @@ export const validateHttpSignature = async (
 		switch (remoteActor.type) {
 			case "Group":
 				actor = await createChannelFromRemoteGroup(remoteActor);
+				if (channel) actor.id = channel.id;
 				break;
 			case "Organization":
 				actor = await createGuildFromRemoteOrg(remoteActor);
+				if (guild) actor.id = guild.id;
 				break;
 			default:
 				// treat as person
 				actor = await createUserForRemotePerson(remoteActor);
+				if (user) actor.id = user.id;
 		}
 
 		await actor.save();
@@ -156,6 +165,22 @@ export const validateHttpSignature = async (
 		actor.public_key,
 		Buffer.from(signature, "base64"),
 	);
+
+	// If the actor was cached and the result fails, retry without cache
+	if (!result && actorWasCached) {
+		Log.warn(
+			`Could not verify http signature with cached actor (${actor.remote_address}) public key. Retrying without cache`,
+		);
+
+		return await validateHttpSignature(
+			target,
+			method,
+			requestHeaders,
+			activity,
+			true,
+		);
+	}
+
 	if (!result) {
 		throw new APError("HTTP Signature could not be validated", 401);
 	}
