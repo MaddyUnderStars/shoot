@@ -12,26 +12,46 @@ export const sendActivity = async (
 ) => {
 	targets = Array.isArray(targets) ? targets : [targets];
 
-	// todo: handle shared inbox
-
-	for (const target of targets) {
+	// TODO: rewrite the below shared inbox code
+	const instances = targets.reduce((ret, target) => {
 		if (
 			!target.remote_address ||
 			target.domain === config.federation.instance_url.hostname
 		)
-			continue;
+			return ret;
 
-		const inbox =
-			target.collections?.inbox ?? target.collections?.shared_inbox;
+		ret.add(new URL(target.remote_address).hostname);
 
-		if (!inbox) {
+		return ret;
+	}, new Set());
+
+	const inboxes = targets.reduce<Set<string>>((ret, target) => {
+		if (!target.remote_address) return ret; // not possible
+
+		const shared = target.collections?.shared_inbox;
+		const inbox = target.collections?.inbox;
+		if (!inbox && !shared) {
 			Log.warn(
-				`actor with local id ${target.id} could not be delivered ` +
-					`${activity.id} because they do not have an inbox`,
+				`${activity.id} could not be delivered to ${target.id} as it does not have an inbox`,
 			);
-			continue;
+			return ret;
 		}
 
+		if (instances.has(new URL(target.remote_address).hostname) && shared) {
+			ret.add(shared);
+			return ret;
+		}
+
+		if (inbox) ret.add(inbox);
+		else
+			Log.warn(
+				`${activity.id} could not be delivered to ${target.id} as it does not have an inbox`,
+			);
+
+		return ret;
+	}, new Set());
+
+	for (const inbox of inboxes) {
 		const signed = signWithHttpSignature(inbox, "POST", sender, activity);
 
 		const res = await fetch(inbox, signed);
