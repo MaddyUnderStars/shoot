@@ -1,6 +1,7 @@
 import { Column, Entity, TableInheritance } from "typeorm";
 import { z } from "zod";
-import { HttpError, type PERMISSION } from "../util";
+import type { PERMISSION } from "../util";
+import { HttpError } from "../util/httperror";
 import { Actor } from "./actor";
 import type { User } from "./user";
 

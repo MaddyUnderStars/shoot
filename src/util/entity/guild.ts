@@ -120,7 +120,7 @@ export const getOrFetchGuild = async (lookup: string | APOrganization) => {
 				remote_address: id,
 			},
 		],
-		relations: { channels: true, owner: true },
+		relations: { channels: true, owner: true, roles: true },
 	});
 
 	if (!guild && config.federation.enabled) {
@@ -151,7 +151,7 @@ export const createGuild = async (name: string, owner: User) => {
 
 	// create channels
 
-	await createGuildTextChannel("general", guild);
+	guild.channels = [await createGuildTextChannel("general", guild)];
 
 	// create roles
 

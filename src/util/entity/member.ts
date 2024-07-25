@@ -33,7 +33,7 @@ export const getOrFetchMember = async (lookup: string | APPerson) => {
 
 export const isMemberOfGuildThrow = async (guild_id: string, user: User) => {
 	if (!(await isMemberOfGuild(guild_id, user)))
-		throw new HttpError("Missing permission", 400);
+		throw new HttpError("Missing permission", 404);
 };
 
 export const isMemberOfGuild = async (guild_id: string, user: User) => {

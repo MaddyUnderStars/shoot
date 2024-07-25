@@ -7,11 +7,10 @@ import {
 	OneToMany,
 } from "typeorm";
 import { z } from "zod";
-import { HttpError, checkPermission, type PERMISSION } from "../util";
+import { HttpError, type PERMISSION, checkPermission } from "../util";
 import { Actor } from "./actor";
-import { PublicChannel } from "./channel";
 import { PublicRole, type Role } from "./role";
-import type { GuildTextChannel } from "./textChannel";
+import { type GuildTextChannel, PublicGuildTextChannel } from "./textChannel";
 import type { User } from "./user";
 
 @Entity("guilds")
@@ -78,7 +77,7 @@ export class Guild extends Actor {
 }
 
 export type PublicGuild = Pick<Guild, "id" | "name" | "domain"> & {
-	channels?: PublicChannel[];
+	channels?: PublicGuildTextChannel[];
 	roles?: PublicRole[];
 };
 
@@ -87,7 +86,7 @@ export const PublicGuild: z.ZodType<PublicGuild> = z
 		id: z.string(),
 		name: z.string(),
 		domain: z.string(),
-		channels: PublicChannel.array().optional(),
+		channels: PublicGuildTextChannel.array().optional(),
 		roles: PublicRole.array().optional(),
 	})
 	.openapi("PublicGuild");
