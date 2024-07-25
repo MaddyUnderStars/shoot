@@ -28,8 +28,6 @@ export const FollowActivityHandler: ActivityHandler = async (
 		// TODO: check for an invite to this channel
 		throw new APError("not implemented");
 	} else if (target instanceof Guild) {
-		// TODO: check invites
-
 		const invite_code = activity.instrument;
 		if (
 			!invite_code ||

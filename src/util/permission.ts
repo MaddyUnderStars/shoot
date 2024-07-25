@@ -2,10 +2,6 @@
 
 import type { Guild, User } from "../entity";
 
-// TODO: allow/deny rather than just allow
-// can't use enums
-// could use a separate column for each permission, but is that a good idea?
-
 // Stored within the role or channel overwrites
 export enum PERMISSION {
 	NONE = 0, // no permissions

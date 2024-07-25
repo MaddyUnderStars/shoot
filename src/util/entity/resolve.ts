@@ -8,7 +8,6 @@ export const findActorOfAnyType = async (id: string, domain: string) => {
 	if (id === InstanceActor.id && domain === InstanceActor.domain)
 		return InstanceActor;
 
-	// todo: awful
 	const [user, channel, guild] = await Promise.all([
 		uuid.test(id)
 			? null

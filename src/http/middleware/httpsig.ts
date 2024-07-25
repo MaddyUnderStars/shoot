@@ -9,10 +9,12 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 	}
 
 	if (!req.headers.signature && !config.federation.require_http_signatures) {
-		// not a signed request
-
-		// TODO: does this endpoint require signing?
-		// i.e. sending to an inbox, getting a user's followers/following/posts etc
+		/**
+		 * This request hasn't been signed and we don't require sigs for every req
+		 *
+		 * NOTE: If a route requires a http sig (e.g. sending a friend req), it will try to access req.actor,
+		 * which will be undefined if the signature isn't provided.
+		 */
 
 		return next();
 	}

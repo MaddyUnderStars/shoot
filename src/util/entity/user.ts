@@ -3,18 +3,18 @@ import { User } from "../../entity";
 import { config } from "../config";
 
 import {
-	ObjectIsGroup,
 	type APActor,
 	type APNote,
 	type APPerson,
+	ObjectIsGroup,
 } from "activitypub-types";
 import {
 	APError,
 	APObjectIsActor,
+	type ActorMention,
 	resolveAPObject,
 	resolveWebfinger,
 	splitQualifiedMention,
-	type ActorMention,
 } from "../activitypub";
 import { createLogger } from "../log";
 import { tryParseUrl } from "../url";
@@ -32,7 +32,7 @@ export const registerUser = async (
 		name: username,
 		email,
 		password_hash: await bcrypt.hash(password, 12),
-		public_key: "", // TODO: bad solution
+		public_key: "", // The key has yet to be generated.
 
 		display_name: username,
 		valid_tokens_since: new Date(),

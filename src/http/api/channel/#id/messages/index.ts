@@ -64,6 +64,7 @@ router.get(
 			// TODO: handle not fetched federated channels
 
 			// TODO: handle after, before, around
+			// Maybe use typeorm-pagination?
 			const messages = await Message.find({
 				where: { channel: { id: channel.id } },
 				take: req.params.limit,

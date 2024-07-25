@@ -8,8 +8,6 @@ import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
 import { splitQualifiedMention } from "../../util";
 
-// TODO: Accept<Join>
-
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
 

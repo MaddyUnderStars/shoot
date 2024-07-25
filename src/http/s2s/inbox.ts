@@ -25,6 +25,9 @@ router.post(
 
 			const activity = req.body;
 			// TODO: multiple addressing
+			// TODO: `to` field isn't always used in activities
+			// (sometimes it's `object` or whatever). So should do that
+			// Maybe have some sort of switch for which fields to use with each activity type
 			const to = Array.isArray(activity.to)
 				? activity.to[0]
 				: activity.to;
