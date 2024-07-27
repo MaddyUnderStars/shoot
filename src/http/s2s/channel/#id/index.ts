@@ -12,7 +12,6 @@ import {
 import { handleInbox } from "../../../../util/activitypub/inbox";
 import {
 	buildAPActor,
-	buildAPGroup,
 	buildAPNote,
 } from "../../../../util/activitypub/transformers";
 
@@ -37,7 +36,7 @@ router.get(
 				})
 				.getOneOrFail();
 
-			return res.json(addContext(buildAPGroup(channel)));
+			return res.json(addContext(buildAPActor(channel)));
 		},
 	),
 );

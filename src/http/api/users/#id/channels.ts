@@ -3,13 +3,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { DMChannel, PublicChannel } from "../../../../entity";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import {
-	addContext,
-	buildAPGroup,
-	config,
-	getOrFetchUser,
-	route,
-} from "../../../../util";
+import { addContext, config, getOrFetchUser, route } from "../../../../util";
+import { buildAPActor } from "../../../../util/activitypub/transformers";
 import { createDmChannel } from "../../../../util/entity/channel";
 
 const router = Router({ mergeParams: true });
@@ -56,7 +51,7 @@ router.post(
 							type: "Create",
 							id: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/create`,
 							actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel.owner)}`,
-							object: buildAPGroup(channel),
+							object: buildAPActor(channel),
 						}) as APCreate,
 						channel.owner,
 					);

@@ -3,15 +3,16 @@ import { z } from "zod";
 import { Channel, Guild, Role } from "../../../../entity";
 import {
 	addContext,
-	buildAPActor,
-	buildAPOrganization,
-	buildAPRole,
 	config,
 	getDatabase,
 	orderedCollectionHandler,
 	route,
 } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
+import {
+	buildAPActor,
+	buildAPRole,
+} from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
 
@@ -30,7 +31,7 @@ router.get(
 			},
 		});
 
-		return res.json(addContext(buildAPOrganization(guild)));
+		return res.json(addContext(buildAPActor(guild)));
 	}),
 );
 

@@ -1,6 +1,7 @@
 export * from "./constants";
 export * from "./error";
 export * from "./httpsig";
+export * from "./inbox";
 export * from "./instanceActor";
 export * from "./orderedCollection";
 export * from "./resolve";

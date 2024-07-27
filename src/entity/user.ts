@@ -1,13 +1,10 @@
-import { Column, CreateDateColumn, Entity, Index } from "typeorm";
+import { Column, Entity, Index } from "typeorm";
 import { z } from "zod";
 import { Actor } from "./actor";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
 export class User extends Actor {
-	@CreateDateColumn() // TODO: this is wrong for federated users
-	registered_date: Date;
-
 	/**
 	 * The username of this user. Forms their mention
 	 * Do not allow modification, as this will break federation.

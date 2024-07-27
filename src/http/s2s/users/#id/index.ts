@@ -9,10 +9,7 @@ import {
 	route,
 } from "../../../../util";
 import { handleInbox } from "../../../../util/activitypub/inbox";
-import {
-	buildAPActor,
-	buildAPPerson,
-} from "../../../../util/activitypub/transformers";
+import { buildAPActor } from "../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
 
@@ -28,7 +25,7 @@ router.get(
 			},
 		});
 
-		return res.json(addContext(buildAPPerson(user)));
+		return res.json(addContext(buildAPActor(user)));
 	}),
 );
 

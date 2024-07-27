@@ -1,7 +1,10 @@
-import { Column, Index } from "typeorm";
+import { Column, CreateDateColumn, Index } from "typeorm";
 import { BaseModel } from "./basemodel";
 
 export abstract class Actor extends BaseModel {
+	@CreateDateColumn()
+	created_date: Date;
+
 	/** The remote address of this actor. If this actor is local, it will be null. */
 	@Column({ nullable: true, type: String })
 	remote_address: string | null;

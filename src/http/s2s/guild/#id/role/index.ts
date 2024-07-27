@@ -4,13 +4,15 @@ import { Member } from "../../../../../entity";
 import { Role } from "../../../../../entity/role";
 import {
 	addContext,
-	buildAPPerson,
-	buildAPRole,
 	config,
 	getDatabase,
 	orderedCollectionHandler,
 	route,
 } from "../../../../../util";
+import {
+	buildAPActor,
+	buildAPRole,
+} from "../../../../../util/activitypub/transformers";
 
 const router = Router({ mergeParams: true });
 
@@ -56,7 +58,7 @@ router.get(
 					),
 					before: req.query.before,
 					after: req.query.after,
-					convert: (x) => buildAPPerson(x.user),
+					convert: (x) => buildAPActor(x.user),
 					entity: Member,
 					qb: getDatabase()
 						.getRepository(Member)
