@@ -137,6 +137,13 @@ export const buildAPPerson = (user: User): APPerson => {
 			owner: `${config.federation.webapp_url.origin}${id}`,
 			publicKeyPem: user.public_key,
 		},
+
+		// The instance actor isn't available through webfinger as they aren't a user
+		// So don't give a response here?
+		webfinger:
+			user.id !== InstanceActor.id
+				? `${user.name}@${config.federation.webapp_url.hostname}`
+				: undefined,
 	};
 };
 

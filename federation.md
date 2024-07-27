@@ -1,5 +1,17 @@
 # How we implement federation
 
+## Supported standards
+
+- [Activitypub](https://www.w3.org/TR/activitypub/)
+- [Webfinger](https://datatracker.ietf.org/doc/html/rfc7033)
+- [Http Signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures#section-2.1)
+- [NodeInfo](https://nodeinfo.diaspora.software/)
+
+- [FEP-2677: Identifying the Application Actor](https://codeberg.org/fediverse/fep/src/commit/f5ab0557712522ebb579c86f165ee1f3152a85d3/fep/2677/fep-2677.md)
+- [FEP-2c59: Discovery of a Webfinger address from an ActivityPub actor](https://codeberg.org/fediverse/fep/src/commit/f5ab0557712522ebb579c86f165ee1f3152a85d3/fep/2c59/fep-2c59.md)
+
+## Usage
+
 TBD
 
 # Helpful Activitypub Resources

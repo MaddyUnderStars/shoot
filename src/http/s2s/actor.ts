@@ -8,7 +8,12 @@ const router = Router();
 router.get(
 	"/",
 	route({}, (req, res) => {
-		return res.json(addContext(buildAPPerson(InstanceActor)));
+		return res.json(
+			addContext({
+				...buildAPPerson(InstanceActor),
+				type: "Application",
+			}),
+		);
 	}),
 );
 
