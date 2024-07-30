@@ -1,7 +1,11 @@
 import type { APActivity } from "activitypub-types";
-import { ApCache, type Actor } from "../../../entity";
+import { Queue } from "bullmq";
+import { type Actor, ApCache } from "../../../entity";
+import type { APInboundJobData } from "../../../receiver";
 import { APError } from "../error";
 import { ActivityHandlers } from "./handlers";
+
+const queue = new Queue<APInboundJobData>("inbound");
 
 export const handleInbox = async (activity: APActivity, target: Actor) => {
 	activity["@context"] = undefined;
@@ -26,5 +30,8 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 		throw new APError(`Activity with id ${activity.id} already processed`);
 	}
 
-	await handler(activity, target);
+	await queue.add(`${activity.type}-${target.id}-${Date.now()}`, {
+		activity,
+		target_id: target.id,
+	});
 };
