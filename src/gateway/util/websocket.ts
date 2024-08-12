@@ -23,6 +23,9 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	/** Event emitter UUID -> listener cancel function */
 	events: Record<string, () => unknown>;
 
+	/** The subscribed channel ranges */
+	member_range: [number, number];
+
 	/** The original socket.send function */
 	raw_send: (
 		this: Websocket,
