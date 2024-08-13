@@ -76,6 +76,11 @@ export type INVITE_CREATE = {
 	invite: PublicInvite;
 };
 
+export type MEMBERS_CHUNK = {
+	type: "MEMBERS_CHUNK";
+	items: Array<string | { id: string; name: string }>;
+};
+
 /** Sent by gateway after a user has been authenticated with IDENTIFY */
 export type READY = {
 	type: "READY";
@@ -101,5 +106,6 @@ export type GATEWAY_EVENT =
 	| MEMBER_JOIN
 	| RELATIONSHIP_CREATE
 	| INVITE_CREATE
+	| MEMBERS_CHUNK
 	| READY
 	| HEARTBEAT_ACK;

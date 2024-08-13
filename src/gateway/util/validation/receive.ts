@@ -17,5 +17,5 @@ export const SUBSCRIBE_MEMBERS = z.object({
 	 */
 	range: z.tuple([z.number(), z.number()]),
 	/** Subscribe to only online members */
-	online: z.boolean().nullable(),
+	online: z.boolean().nullable().optional(),
 });
