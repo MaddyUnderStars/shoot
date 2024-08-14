@@ -23,8 +23,8 @@ router.use("/invite", invite);
 import users_me from "./users/@me";
 router.use("/users/@me", users_me);
 
-import users_me_guilds from "./users/@me/guilds";
-router.use("/users/@me/guilds", users_me_guilds);
+import users_me_guild from "./users/@me/guild";
+router.use("/users/@me/guild", users_me_guild);
 
 import users_me_channels from "./users/@me/channels";
 router.use("/users/@me/channels", users_me_channels);
