@@ -84,6 +84,11 @@ const doWebfingerOrFindTemplate = async (
 ): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
+	if (domain === config.federation.instance_url.hostname)
+		throw new APError(
+			"Tried to resolve remote resource, but we are the remote!",
+		);
+
 	const url = new URL(
 		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
 	);
