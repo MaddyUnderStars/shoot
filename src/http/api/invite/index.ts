@@ -9,6 +9,7 @@ import {
 	config,
 	resolveWebfinger,
 	route,
+	splitQualifiedMention,
 } from "../../../util";
 import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
 
@@ -23,9 +24,11 @@ router.post(
 		async (req, res) => {
 			// accept an invite code
 
+			const mention = splitQualifiedMention(req.params.invite_code);
+
 			const invite = await Invite.findOne({
 				where: {
-					code: req.params.invite_code,
+					code: mention.user,
 				},
 				loadRelationIds: {
 					relations: ["guild"],
