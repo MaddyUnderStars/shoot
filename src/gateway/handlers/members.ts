@@ -1,6 +1,11 @@
 import { makeHandler } from ".";
-import { Member, User } from "../../entity";
-import { PERMISSION, getChannel, listenGatewayEvent } from "../../util";
+import { User } from "../../entity";
+import {
+	PERMISSION,
+	getChannel,
+	getDatabase,
+	listenGatewayEvent,
+} from "../../util";
 import { type MEMBERS_CHUNK, SUBSCRIBE_MEMBERS, type Websocket } from "../util";
 
 /**
@@ -16,6 +21,7 @@ const listenRangeEvent = (socket: Websocket, member_id: string) => {
 	// 	}
 	// })
 
+	socket.events = socket.events ?? [];
 	if (socket.events[member_id]) socket.events[member_id]();
 
 	socket.events[member_id] = listenGatewayEvent(member_id, (payload) => {
@@ -49,59 +55,64 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 	// Should probably just modify dm channels to use members channel instead of
 	// having a `recipients` property.
 
-	const members = await Member.find({
-		where: {
-			roles: {
-				guild: {
-					channels: {
-						id: channel.id,
-					},
-				},
-			},
-		},
-		skip: this.member_range[0] ?? 0,
-		take: this.member_range[1] ?? 100,
-		// order: {
-		// 	roles: {
-		// 		position: "DESC",
-		// 	},
-		// },
-		relations: {
-			user: true,
-			roles: true,
-		},
-	});
+	// TODO: broken, returns nothing
+	// const members = await getDatabase()
+	// 	.getRepository(Member)
+	// 	.createQueryBuilder("members")
+	// 	.leftJoin("members.roles", "role")
+	// 	.leftJoin(GuildTextChannel, "channel", "channel.guildId = role.guildId")
+	// 	.where("channel.id = :channel_id", { channel_id: channel.id })
+	// 	.orderBy("role.position", "DESC")
+	// 	.skip(payload.range[0] ?? 0)
+	// 	.take(payload.range[1] ?? 100)
+	// 	.addSelect("role.position")
+	// 	.getMany();
 
-	const roles = new Set(members.flatMap((m) => m.roles.map((r) => r.id)));
+	// TODO: this query will be very slow
+	const members: Array<{
+		member_id: string;
+		role_id: string;
+		user_id: string;
+		name: string;
+	}> = await getDatabase().query(`
+				select
+					"gm"."id" member_id,
+					"r"."id" role_id,
+					"users"."id" user_id,
+					"users"."name"
+				from guild_members gm
+					left join users on "users"."id" = "gm"."userId" 
+					left join roles_members_guild_members rm on "gm"."id" = "rm"."guildMembersId"
+					left join roles r on "r"."id" = "rm"."rolesId"
+					left join channels on "channels"."guildId"  = "r"."guildId"
+				where channels.id = 'f405d678-639f-47c7-a0ad-e808b2e6351a'
+				order by "r"."position" desc;
+			`);
+
+	const roles = new Set(members.map((x) => x.role_id));
 
 	const items: MEMBERS_CHUNK["items"] = [];
 
 	for (const role of roles) {
-		const [role_members] = partition(
-			members,
-			(m) => !!m.roles.find((r) => r.id === role),
-		);
+		const [role_members] = partition(members, (m) => m.role_id === role);
 
 		items.push(role);
 		items.push(
 			...role_members.reduce<{ id: string; name: string }[]>(
 				(ret, member) => {
 					if (
-						channel.checkPermission(
-							member.user,
-							PERMISSION.VIEW_CHANNEL,
-						)
+						true
+						// channel.checkPermission(
+						// 	User.create({ id: member.user_id }),
+						// 	PERMISSION.VIEW_CHANNEL,
+						// )
 					) {
-						// subscribe to the changes of this member
-
-						listenRangeEvent(this, member.id);
-
+						listenRangeEvent(this, member.member_id);
 						ret.push({
-							id: member.user.id,
-							name: member.user.display_name,
+							id: member.user_id,
+							name: member.name,
 						});
 					}
-
 					return ret;
 				},
 				[],
