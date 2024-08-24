@@ -61,6 +61,11 @@ export type ROLE_MEMBER_ADD = {
 	user_id: string;
 };
 
+export type MEMBER_LEAVE = {
+	type: "MEMBER_LEAVE";
+	user_id: string;
+};
+
 export type MEMBER_JOIN = {
 	type: "MEMBER_JOIN";
 	member: PublicMember;
@@ -104,6 +109,7 @@ export type GATEWAY_EVENT =
 	| ROLE_CREATE
 	| ROLE_MEMBER_ADD
 	| MEMBER_JOIN
+	| MEMBER_LEAVE
 	| RELATIONSHIP_CREATE
 	| INVITE_CREATE
 	| MEMBERS_CHUNK

@@ -12,7 +12,7 @@ export class Member extends BaseModel {
 	@ManyToOne("users")
 	user: User;
 
-	@ManyToMany("roles", "members")
+	@ManyToMany("roles", "members", { onDelete: "CASCADE" })
 	roles: Role[];
 
 	public toPublic() {
