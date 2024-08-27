@@ -53,17 +53,17 @@ export class Guild extends Actor {
 		return this.toPublic();
 	}
 
-	public throwPermission = (
+	public throwPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => {
 		// todo: which permision?
-		if (!this.checkPermission(user, permission))
+		if (!(await this.checkPermission(user, permission)))
 			throw new HttpError("Missing permission", 400);
 		return true;
 	};
 
-	public checkPermission = (
+	public checkPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => checkPermission(user, this, permission);

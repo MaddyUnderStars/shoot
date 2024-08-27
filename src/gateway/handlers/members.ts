@@ -41,7 +41,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 	const channel = await getChannel(payload.channel_id);
 	if (!channel) throw new Error("Channel does not exist");
 
-	channel.throwPermission(
+	await channel.throwPermission(
 		User.create({ id: this.user_id }),
 		PERMISSION.VIEW_CHANNEL,
 	);
@@ -97,27 +97,21 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 		const [role_members] = partition(members, (m) => m.role_id === role);
 
 		items.push(role);
-		items.push(
-			...role_members.reduce<{ id: string; name: string }[]>(
-				(ret, member) => {
-					if (
-						true
-						// channel.checkPermission(
-						// 	User.create({ id: member.user_id }),
-						// 	PERMISSION.VIEW_CHANNEL,
-						// )
-					) {
-						listenRangeEvent(this, member.member_id);
-						ret.push({
-							id: member.user_id,
-							name: member.name,
-						});
-					}
-					return ret;
-				},
-				[],
-			),
-		);
+
+		for (const member of role_members) {
+			if (
+				await channel.checkPermission(
+					User.create({ id: member.user_id }),
+					PERMISSION.VIEW_CHANNEL,
+				)
+			) {
+				listenRangeEvent(this, member.member_id);
+				items.push({
+					id: member.user_id,
+					name: member.name,
+				});
+			}
+		}
 	}
 
 	// Subscribe to their changes

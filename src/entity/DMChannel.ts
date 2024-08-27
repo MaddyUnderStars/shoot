@@ -34,7 +34,7 @@ export class DMChannel extends Channel {
 		};
 	}
 
-	public checkPermission = (
+	public checkPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => {

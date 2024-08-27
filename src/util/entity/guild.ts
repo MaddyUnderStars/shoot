@@ -248,7 +248,7 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 
 	await guild.save();
 
-	const channels = (await Promise.all([
+	const channels = await Promise.all([
 		...(
 			await resolveCollectionEntries(new URL(obj.following.toString()))
 		).reduce(
@@ -260,9 +260,9 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 			},
 			[] as Array<Promise<Channel>>,
 		),
-	])) as GuildTextChannel[];
+	]);
 
-	guild.channels = channels;
+	guild.channels = channels as GuildTextChannel[];
 	await guild.save();
 
 	const roles = await Promise.all([

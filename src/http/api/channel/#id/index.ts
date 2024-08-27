@@ -25,7 +25,7 @@ router.get(
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
-			channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
+			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
 			return res.json(channel.toPublic());
 		},
@@ -45,7 +45,7 @@ router.patch(
 
 		const channel = await getOrFetchChannel(req.params.channel_id);
 
-		channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
+		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
 		if (channel.domain === config.federation.webapp_url.hostname) {
 			// This is a local channel

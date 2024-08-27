@@ -28,7 +28,7 @@ export class GuildTextChannel extends Channel {
 		return this.toPublic();
 	}
 
-	public checkPermission = (
+	public checkPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => checkPermission(user, this.guild, permission);

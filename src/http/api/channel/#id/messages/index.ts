@@ -24,7 +24,7 @@ router.post(
 
 			const channel = await getOrFetchChannel(channel_id);
 
-			channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
+			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
 			const message = Message.create({
 				channel,
@@ -59,7 +59,7 @@ router.get(
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
-			channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
+			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
 			// TODO: handle not fetched federated channels
 
