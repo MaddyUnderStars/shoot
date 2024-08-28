@@ -7,7 +7,8 @@ import {
 	OneToMany,
 } from "typeorm";
 import { z } from "zod";
-import { HttpError, type PERMISSION, checkPermission } from "../util";
+import { HttpError, type PERMISSION } from "../util";
+import { checkPermission } from "../util/checkPermission";
 import { Actor } from "./actor";
 import { PublicRole, type Role } from "./role";
 import { type GuildTextChannel, PublicGuildTextChannel } from "./textChannel";

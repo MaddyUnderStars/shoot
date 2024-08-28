@@ -64,12 +64,15 @@ router.delete(
 			.andWhere('"guild_members"."userId" = :user_id', {
 				user_id: req.user.id,
 			})
+			.output("guild_members.id")
 			.execute();
 
 		if (deleted.affected) {
+			const member_id: string = deleted.raw[0].id;
+
 			emitGatewayEvent(req.params.guild_id, {
 				type: "MEMBER_LEAVE",
-				user_id: req.user.id,
+				member_id,
 			});
 		}
 

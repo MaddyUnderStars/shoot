@@ -12,28 +12,39 @@ import { type MEMBERS_CHUNK, SUBSCRIBE_MEMBERS, type Websocket } from "../util";
  * Listen to this guild member, and if they leave the range, stop listening
  */
 const listenRangeEvent = (socket: Websocket, member_id: string) => {
-	// listenEvents(this, [member.id], (socket, payload) => {
-	// 	if (payload.type === "ROLE_MEMBER_ADD" ||
-	// 		// payload.type === member leave
-	// 		// status change
-	// 		// etc
-	// 	) {
-	// 	}
-	// })
-
 	socket.events = socket.events ?? [];
 	if (socket.events[member_id]) socket.events[member_id]();
 
+	const unsubscribe = () => socket.events[member_id]();
+
 	socket.events[member_id] = listenGatewayEvent(member_id, (payload) => {
-		if (
-			payload.type === "ROLE_MEMBER_ADD"
-			// payload.type === member leave
-			// status change
-			// etc
-		) {
-			// Check if still within range
-			const position = payload.role_id;
+		// Listening to a member id is intended to only send requests about that guild member
+		// And so we just need to track the events that move their position within the list
+
+		switch (payload.type) {
+			case "ROLE_MEMBER_LEAVE":
+			case "ROLE_MEMBER_ADD": {
+				// A member had a role added or removed
+				// TODO: Find their new position and if it's outside the range, unsub
+				// I would prefer to not use any async methods here, beacuse this function is in the hot path
+				// It's called (# member updates) * (# subscribed users)
+				// Caching the results might be a solution, but then we have to hit the cache? unless it's a mem cache
+
+				// Maybe there could be metadata sent with gateway events that doesn't get sent to clients?
+				unsubscribe();
+				break;
+			}
+			case "MEMBER_LEAVE": {
+				// A member has left the guild, easy
+				unsubscribe();
+				break;
+			}
 		}
+
+		socket.send({
+			t: payload.type,
+			d: { ...payload, type: undefined },
+		});
 	});
 };
 
@@ -100,24 +111,24 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 		for (const member of role_members) {
 			if (
-				await channel.checkPermission(
+				!(await channel.checkPermission(
 					User.create({ id: member.user_id }),
 					PERMISSION.VIEW_CHANNEL,
-				)
-			) {
-				listenRangeEvent(this, member.member_id);
-				items.push({
-					id: member.user_id,
-					name: member.name,
-				});
-			}
+				))
+			)
+				continue;
+
+			listenRangeEvent(this, member.member_id);
+
+			items.push({
+				member_id: member.user_id,
+				name: member.name,
+			});
 		}
 	}
 
-	// Subscribe to their changes
-
 	// Subscribe to changes in the range
-	// I.e., when a member enters or exits the range
+	// I.e., when a member enters
 	// by changing memberships, roles, or status ( online <-> offline/invis )
 }, SUBSCRIBE_MEMBERS);
 

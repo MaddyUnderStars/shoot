@@ -1,2 +1,1 @@
 - move dm channels to be just normal guild channels, but hide the guilds from the user
-- change permission checking to be async? because otherwise we have to download full copy of memberlist for guilds? alternatively find a way to do it without that

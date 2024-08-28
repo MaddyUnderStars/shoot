@@ -18,7 +18,9 @@ export const listenEvents = (
 ) => {
 	for (const emitter of emitters) {
 		if (socket.events[emitter])
-			Log.warn(`${socket.user_id} is already listening to ${emitter}`);
+			throw new Error(
+				`${socket.user_id} is already listening to ${emitter}`,
+			);
 
 		socket.events[emitter] = listenGatewayEvent(emitter, (payload) =>
 			callback(socket, payload),
