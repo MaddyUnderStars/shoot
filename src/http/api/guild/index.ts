@@ -7,7 +7,7 @@ import { createGuild } from "../../../util/entity/guild";
 const router = Router({ mergeParams: true });
 
 const GuildCreate = z.object({
-	name: z.string(),
+	name: z.string().min(1),
 });
 
 router.post(
