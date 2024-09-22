@@ -6,7 +6,12 @@ import {
 	getDatabase,
 	listenGatewayEvent,
 } from "../../util";
-import { type MEMBERS_CHUNK, SUBSCRIBE_MEMBERS, type Websocket } from "../util";
+import {
+	type MEMBERS_CHUNK,
+	SUBSCRIBE_MEMBERS,
+	type Websocket,
+	consume,
+} from "../util";
 
 /**
  * Listen to this guild member, and if they leave the range, stop listening
@@ -85,7 +90,8 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 		role_id: string;
 		user_id: string;
 		name: string;
-	}> = await getDatabase().query(`
+	}> = await getDatabase().query(
+		`
 				select
 					"gm"."id" member_id,
 					"r"."id" role_id,
@@ -96,9 +102,11 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 					left join roles_members_guild_members rm on "gm"."id" = "rm"."guildMembersId"
 					left join roles r on "r"."id" = "rm"."rolesId"
 					left join channels on "channels"."guildId"  = "r"."guildId"
-				where channels.id = 'f405d678-639f-47c7-a0ad-e808b2e6351a'
+				where channels.id = $1
 				order by "r"."position" desc;
-			`);
+			`,
+		[channel.id],
+	);
 
 	const roles = new Set(members.map((x) => x.role_id));
 
@@ -130,6 +138,11 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 	// Subscribe to changes in the range
 	// I.e., when a member enters
 	// by changing memberships, roles, or status ( online <-> offline/invis )
+
+	consume(this, {
+		type: "MEMBERS_CHUNK",
+		items,
+	});
 }, SUBSCRIBE_MEMBERS);
 
 /* https://stackoverflow.com/a/50636286 */

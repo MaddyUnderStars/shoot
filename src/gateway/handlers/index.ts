@@ -29,4 +29,5 @@ export const makeHandler = <T>(
 export const handlers: Record<string, GatewayMessageHandler<unknown>> = {
 	identify: require("./identify").onIdentify,
 	heartbeat: require("./heartbeat").onHeartbeat,
+	members: require("./members").onSubscribeMembers,
 };
