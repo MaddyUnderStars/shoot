@@ -29,6 +29,21 @@ router.get(
 	),
 );
 
+router.delete(
+	"/",
+	route({ params: z.object({ guild_id: z.string() }) }, async (req, res) => {
+		const { guild_id } = req.params;
+
+		const guild = await getOrFetchGuild(guild_id);
+
+		guild.throwPermission(req.user, PERMISSION.ADMIN);
+
+		await guild.remove();
+
+		return res.sendStatus(204);
+	}),
+);
+
 router.post(
 	"/invite",
 	route(
