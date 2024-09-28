@@ -21,6 +21,7 @@ const UserModifySchema: z.ZodSchema<Partial<User>> = z
 	.object({
 		display_name: z.string(),
 		summary: z.string(),
+		email: z.string().email(),
 		// todo: profile picture
 	})
 	.partial()
