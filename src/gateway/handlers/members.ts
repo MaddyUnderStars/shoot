@@ -1,5 +1,5 @@
 import { makeHandler } from ".";
-import { User } from "../../entity";
+import { DMChannel, User } from "../../entity";
 import {
 	PERMISSION,
 	getChannel,
@@ -64,6 +64,20 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 	this.member_range = payload.range.sort((a, b) => a - b);
 
+	// TODO: this is a placeholder, simpler version for dm channels
+	// since they don't use the members table like guilds do
+	if (channel instanceof DMChannel) {
+		const members = [channel.owner, ...channel.recipients];
+		consume(this, {
+			type: "MEMBERS_CHUNK",
+			items: members.map((x) => ({
+				member_id: x.mention, // TODO
+				name: x.display_name ?? x.name,
+			})),
+		});
+		return;
+	}
+
 	// Get all the members in the range currently
 
 	// TODO: this logic doesn't work for dm channels
@@ -89,6 +103,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 		member_id: string;
 		role_id: string;
 		user_id: string;
+		display_name: string;
 		name: string;
 	}> = await getDatabase().query(
 		`
@@ -96,7 +111,8 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 					"gm"."id" member_id,
 					"r"."id" role_id,
 					"users"."id" user_id,
-					"users"."name"
+					"users"."display_name" display_name,
+					"users"."name" name
 				from guild_members gm
 					left join users on "users"."id" = "gm"."userId" 
 					left join roles_members_guild_members rm on "gm"."id" = "rm"."guildMembersId"
@@ -129,8 +145,8 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 			listenRangeEvent(this, member.member_id);
 
 			items.push({
-				member_id: member.user_id,
-				name: member.name,
+				member_id: member.member_id,
+				name: member.display_name ?? member.name,
 			});
 		}
 	}
