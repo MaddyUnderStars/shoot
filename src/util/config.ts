@@ -38,26 +38,34 @@ const config = Object.freeze({
 		 * Rate limiter for incoming HTTP API requests.
 		 * Valid keys: `s2s`, `auth`, `nodeinfo`, `wellknown`, `global`
 		 */
-		rate: Object.fromEntries(
-			["s2s", "auth", "nodeinfo", "wellknown", "global"].map((type) => [
-				type,
-				{
-					/**
-					 * Milliseconds
-					 * @default 15 minutes
-					 */
-					window:
-						ifExistsGet<number>(`http.rate.${type}.window`) ??
-						15 * 60 * 1000,
+		rate: ifExistsGet("http.rate")
+			? Object.fromEntries(
+					["s2s", "auth", "nodeinfo", "wellknown", "global"].map(
+						(type) => [
+							type,
+							{
+								/**
+								 * Milliseconds
+								 * @default 15 minutes
+								 */
+								window:
+									ifExistsGet<number>(
+										`http.rate.${type}.window`,
+									) ?? 15 * 60 * 1000,
 
-					/**
-					 * Number of requests per window.
-					 * @default Default: 100
-					 */
-					limit: ifExistsGet<number>(`http.rate.${type}limit`) ?? 100,
-				},
-			]),
-		),
+								/**
+								 * Number of requests per window.
+								 * @default Default: 100
+								 */
+								limit:
+									ifExistsGet<number>(
+										`http.rate.${type}limit`,
+									) ?? 100,
+							},
+						],
+					),
+				)
+			: (false as false),
 	},
 
 	security: {

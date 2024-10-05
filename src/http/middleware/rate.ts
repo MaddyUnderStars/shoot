@@ -1,9 +1,18 @@
-import rateLimit from "express-rate-limit";
+import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
 import { config } from "../../util";
+
+const NONE: RateLimitRequestHandler = (req, res, next) => {
+	return next();
+};
+
+NONE.resetKey = () => undefined;
+NONE.getKey = (key: string) => undefined;
 
 export const rateLimiter = (
 	type: "s2s" | "auth" | "nodeinfo" | "wellknown" | "global",
-) => {
+): RateLimitRequestHandler => {
+	if (!config.http.rate) return NONE;
+
 	return rateLimit({
 		windowMs: config.http.rate[type].window,
 		limit: config.http.rate[type].limit,
