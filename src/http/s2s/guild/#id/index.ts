@@ -100,7 +100,7 @@ router.get(
 					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/followers`,
 				),
 				...req.query,
-				convert: buildAPActor,
+				convert: (x) => x.remote_address ?? buildAPActor(x),
 				entity: Channel,
 				qb: getDatabase()
 					.getRepository(Channel)

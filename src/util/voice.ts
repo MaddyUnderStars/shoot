@@ -68,10 +68,10 @@ export const validateMediaToken = (
 				if (!channel) return reject(INVALID_TOKEN);
 
 				if (
-					!channel.checkPermission(user, [
+					!(await channel.checkPermission(user, [
 						PERMISSION.CALL_CHANNEL,
 						PERMISSION.VIEW_CHANNEL,
-					])
+					]))
 				)
 					return reject(INVALID_TOKEN);
 

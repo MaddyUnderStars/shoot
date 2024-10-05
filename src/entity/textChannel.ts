@@ -1,6 +1,7 @@
 import { ChildEntity, Column, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
-import { type PERMISSION, checkPermission } from "../util/permission";
+import { checkPermission } from "../util/checkPermission";
+import type { PERMISSION } from "../util/permission";
 import { Channel } from "./channel";
 import type { Guild } from "./guild";
 import type { User } from "./user";
@@ -28,7 +29,7 @@ export class GuildTextChannel extends Channel {
 		return this.toPublic();
 	}
 
-	public checkPermission = (
+	public checkPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => checkPermission(user, this.guild, permission);

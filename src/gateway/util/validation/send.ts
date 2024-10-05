@@ -58,7 +58,18 @@ export type ROLE_CREATE = {
 export type ROLE_MEMBER_ADD = {
 	type: "ROLE_MEMBER_ADD";
 	role_id: string;
-	user_id: string;
+	member: PublicMember;
+};
+
+export type ROLE_MEMBER_LEAVE = {
+	type: "ROLE_MEMBER_LEAVE";
+	role_id: string;
+	member_id: string;
+};
+
+export type MEMBER_LEAVE = {
+	type: "MEMBER_LEAVE";
+	member_id: string;
 };
 
 export type MEMBER_JOIN = {
@@ -74,6 +85,12 @@ export type RELATIONSHIP_CREATE = {
 export type INVITE_CREATE = {
 	type: "INVITE_CREATE";
 	invite: PublicInvite;
+};
+
+export type MEMBERS_CHUNK = {
+	type: "MEMBERS_CHUNK";
+	/** Role UUID or member */
+	items: Array<string | { member_id: string; name: string }>;
 };
 
 /** Sent by gateway after a user has been authenticated with IDENTIFY */
@@ -98,8 +115,11 @@ export type GATEWAY_EVENT =
 	| GUILD_CREATE
 	| ROLE_CREATE
 	| ROLE_MEMBER_ADD
+	| ROLE_MEMBER_LEAVE
 	| MEMBER_JOIN
+	| MEMBER_LEAVE
 	| RELATIONSHIP_CREATE
 	| INVITE_CREATE
+	| MEMBERS_CHUNK
 	| READY
 	| HEARTBEAT_ACK;

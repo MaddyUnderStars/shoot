@@ -18,7 +18,7 @@ router.get(
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
-			channel.throwPermission(req.user, [PERMISSION.VIEW_CHANNEL]);
+			await channel.throwPermission(req.user, [PERMISSION.VIEW_CHANNEL]);
 
 			// TODO: fetch remote messages
 

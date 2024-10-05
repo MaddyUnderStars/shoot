@@ -81,14 +81,11 @@ export const createDmChannel = async (
 	return channel;
 };
 
-export const getOrFetchChannel = async (lookup: string | APGroup) => {
-	const id = typeof lookup === "string" ? lookup : lookup.id;
-	if (!id) throw new APError("Cannot fetch channel without ID");
-
-	const mention = splitQualifiedMention(id);
+export const getChannel = async (lookup: string) => {
+	const mention = splitQualifiedMention(lookup);
 
 	// TODO: this may break when we have other channel types
-	let channel = await getDatabase()
+	return await getDatabase()
 		.createQueryBuilder(Channel, "channels")
 		.select("channels")
 		.leftJoinAndSelect("channels.recipients", "recipients")
@@ -113,6 +110,13 @@ export const getOrFetchChannel = async (lookup: string | APGroup) => {
 			}),
 		)
 		.getOne();
+};
+
+export const getOrFetchChannel = async (lookup: string | APGroup) => {
+	const id = typeof lookup === "string" ? lookup : lookup.id;
+	if (!id) throw new APError("Cannot fetch channel without ID");
+
+	let channel = await getChannel(id);
 
 	if (!channel && config.federation.enabled) {
 		// fetch from remote instance

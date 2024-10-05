@@ -66,7 +66,7 @@ const CreateAtChannel = async (activity: APActivity, target: Channel) => {
 
 	const message = await buildMessageFromAPNote(inner, target);
 
-	target.throwPermission(message.author, [
+	await target.throwPermission(message.author, [
 		PERMISSION.VIEW_CHANNEL,
 		PERMISSION.SEND_MESSAGES,
 	]);

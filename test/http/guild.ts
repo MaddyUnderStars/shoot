@@ -30,6 +30,22 @@ const createTestGuild = async (
 	return guild;
 };
 
+test("Leave guild", async (t) => {
+	const { APIServer } = await import("../../src/http/server");
+	const api = new APIServer();
+
+	const user = await createTestUser("leave");
+
+	const guild = await createTestGuild("test guild", "leave@localhost", []);
+
+	await request(api.app)
+		.delete(`/users/@me/guild/${guild.mention}`)
+		.auth(user, { type: "bearer" })
+		.expect(200);
+
+	t.pass();
+});
+
 test("Get as member", async (t) => {
 	const { APIServer } = await import("../../src/http/server");
 	const api = new APIServer();

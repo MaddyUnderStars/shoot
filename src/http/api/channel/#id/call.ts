@@ -23,7 +23,7 @@ router.post(
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
-			channel.throwPermission(req.user, PERMISSION.CALL_CHANNEL);
+			await channel.throwPermission(req.user, PERMISSION.CALL_CHANNEL);
 
 			// If this channel is remote, we have to request the token from them
 			// It'll be delivered to our inbox, and we can send it to the client over gateway

@@ -171,15 +171,15 @@ export const createGuild = async (name: string, owner: User) => {
 		role: everyone.toPublic(),
 	});
 
-	await Member.create({
+	const member = await Member.create({
 		user: owner,
 		roles: [everyone],
 	}).save();
 
 	emitGatewayEvent(guild.id, {
 		type: "ROLE_MEMBER_ADD",
-		user_id: owner.id,
 		role_id: everyone.id,
+		member: member.toPublic(),
 	});
 
 	return guild;
@@ -248,7 +248,7 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 
 	await guild.save();
 
-	const channels = (await Promise.all([
+	const channels = await Promise.all([
 		...(
 			await resolveCollectionEntries(new URL(obj.following.toString()))
 		).reduce(
@@ -260,9 +260,9 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 			},
 			[] as Array<Promise<Channel>>,
 		),
-	])) as GuildTextChannel[];
+	]);
 
-	guild.channels = channels;
+	guild.channels = channels as GuildTextChannel[];
 	await guild.save();
 
 	const roles = await Promise.all([

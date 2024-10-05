@@ -1,6 +1,6 @@
 import type { APActivity } from "activitypub-types";
 import { type Actor, Channel, Guild, User } from "../entity";
-import { APError, InstanceActor, config, signWithHttpSignature } from "../util";
+import { APError, InstanceActor, signWithHttpSignature } from "../util";
 import { createLogger } from "../util/log";
 
 const Log = createLogger("ap:distribute");
@@ -12,41 +12,21 @@ export const sendActivity = async (
 ) => {
 	targets = Array.isArray(targets) ? targets : [targets];
 
-	// TODO: rewrite the below shared inbox code
-	const instances = targets.reduce((ret, target) => {
-		if (
-			!target.remote_address ||
-			target.domain === config.federation.instance_url.hostname
-		)
-			return ret;
-
-		ret.add(new URL(target.remote_address).hostname);
-
-		return ret;
-	}, new Set());
-
 	const inboxes = targets.reduce<Set<string>>((ret, target) => {
-		if (!target.remote_address) return ret; // not possible
-
-		const shared = target.collections?.shared_inbox;
+		const shared_inbox = target.collections?.shared_inbox;
 		const inbox = target.collections?.inbox;
-		if (!inbox && !shared) {
-			Log.warn(
-				`${activity.id} could not be delivered to ${target.id} as it does not have an inbox`,
-			);
-			return ret;
-		}
 
-		if (instances.has(new URL(target.remote_address).hostname) && shared) {
-			ret.add(shared);
-			return ret;
-		}
-
-		if (inbox) ret.add(inbox);
-		else
-			Log.warn(
-				`${activity.id} could not be delivered to ${target.id} as it does not have an inbox`,
-			);
+		// If the shared inbox doesn't exist, add the inbox
+		if (!shared_inbox && inbox) ret.add(inbox);
+		// If we have a shared inbox, and this activity is going to another actor with the same shared inbox, use that
+		else if (
+			shared_inbox &&
+			targets.filter((x) => x.collections?.shared_inbox === shared_inbox)
+				.length > 1
+		)
+			ret.add(shared_inbox);
+		// otherwise, just add the inbox
+		else if (inbox) ret.add(inbox);
 
 		return ret;
 	}, new Set());

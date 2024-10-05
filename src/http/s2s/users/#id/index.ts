@@ -66,7 +66,7 @@ router.get(
 					`${config.federation.instance_url.origin}/users/${req.params.user_id}/followers`,
 				),
 				...req.query,
-				convert: (x) => buildAPActor(x.from),
+				convert: (x) => x.from.remote_address ?? buildAPActor(x.from),
 				entity: Relationship,
 				qb: getDatabase()
 					.getRepository(Relationship)

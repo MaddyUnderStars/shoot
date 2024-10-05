@@ -10,6 +10,10 @@ import type { PublicChannel } from "./channel";
 import { Channel } from "./channel";
 import type { User } from "./user";
 
+// TODO: DM channels should not exist
+// Clientside, a dm channel should just be a guild channel that gets pinned to the users channel list
+// This would allow you to convert a dm channel to a guild and back easily
+// and would simplify code a bit
 @ChildEntity("dm")
 export class DMChannel extends Channel {
 	/** The recipients of the DM channel, other than the owner */
@@ -30,7 +34,7 @@ export class DMChannel extends Channel {
 		};
 	}
 
-	public checkPermission = (
+	public checkPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => {

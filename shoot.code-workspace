@@ -23,6 +23,7 @@
 	],
 	"settings": {
 		"typescript.tsdk": "shoot/node_modules/typescript/lib",
-		"editor.defaultFormatter": "biomejs.biome"
+		"editor.defaultFormatter": "biomejs.biome",
+		"editor.formatOnSave": true
 	},
 }

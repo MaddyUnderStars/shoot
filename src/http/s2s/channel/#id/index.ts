@@ -88,7 +88,8 @@ router.get(
 				keys: ["published"],
 				before: req.query.before,
 				after: req.query.after,
-				convert: buildAPNote,
+				convert: (x) =>
+					x.reference_object ? x.reference_object.id : buildAPNote(x),
 				entity: Message,
 				qb: getDatabase()
 					.getRepository(Message)

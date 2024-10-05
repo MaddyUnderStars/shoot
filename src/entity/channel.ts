@@ -27,20 +27,20 @@ export class Channel extends Actor {
 		return this.toPublic();
 	}
 
-	public throwPermission = (
+	public throwPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => {
 		// todo: which permision?
-		if (!this.checkPermission(user, permission))
+		if (!(await this.checkPermission(user, permission)))
 			throw new HttpError("Missing permission", 400);
 		return true;
 	};
 
-	public checkPermission = (
+	public checkPermission = async (
 		user: User,
 		permission: PERMISSION | PERMISSION[],
-	): boolean => false;
+	): Promise<boolean> => false;
 }
 
 export type PublicChannel = Pick<Channel, "id" | "name" | "domain">;

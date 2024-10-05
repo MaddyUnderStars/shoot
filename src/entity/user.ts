@@ -12,10 +12,6 @@ export class User extends Actor {
 	@Column({ update: false })
 	name: string;
 
-	/** The user's bio */
-	@Column({ nullable: true, type: String })
-	summary: string | null;
-
 	/** Tokens generated past this date are valid */
 	@Column({ nullable: true, type: Date })
 	valid_tokens_since: Date | null;
@@ -24,13 +20,19 @@ export class User extends Actor {
 	@Column({ nullable: true, type: String })
 	password_hash: string | null;
 
+	/** The email address of this user */
+	@Column({ type: String, nullable: true })
+	email: string | null;
+
+	/** User customisation fields start here */
+
 	/** The preferred/display name of this user */
 	@Column()
 	display_name: string;
 
-	/** The email address of this user */
-	@Column({ type: String, nullable: true })
-	email: string | null;
+	/** The user's bio */
+	@Column({ nullable: true, type: String })
+	summary: string | null;
 
 	public get mention() {
 		return `${this.name}@${this.domain}`;

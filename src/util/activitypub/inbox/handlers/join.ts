@@ -37,7 +37,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 
 	const user = await getOrFetchUser(activity.actor);
 
-	target.throwPermission(user, [
+	await target.throwPermission(user, [
 		PERMISSION.VIEW_CHANNEL,
 		PERMISSION.CALL_CHANNEL,
 	]);

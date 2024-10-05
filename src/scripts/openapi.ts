@@ -32,7 +32,7 @@ const getRoutes = (router: Router) => {
 			.replaceAll("\\.", ".")
 			.replaceAll("/?(?=/|$)", "")
 			.replace(/\/i$/, "")
-			.replaceAll("(?:([^/]+?))", () => `{${keys.shift()?.name}}`);
+			.replaceAll("(?:/([^/]+?))", () => `/{${keys.shift()?.name}}`);
 	};
 
 	const _getRoutes = (router: Router, prefix = "") => {
@@ -66,6 +66,13 @@ const getRoutes = (router: Router) => {
 			}
 
 			if (!layer.route) continue;
+
+			layer.route.path = layer.route.path.replaceAll(
+				/:(\w*)($|\/)/gm,
+				(sub, a) => {
+					return `{${a}}`;
+				},
+			);
 
 			ret.push({
 				path: prefix + layer.route.path,
