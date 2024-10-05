@@ -1,37 +1,51 @@
 import type { APActivity } from "activitypub-types";
 import { Queue } from "bullmq";
+import { z } from "zod";
 import { type Actor, ApCache } from "../../../entity";
 import type { APInboundJobData } from "../../../receiver";
+import { config } from "../../config";
 import { APError } from "../error";
 import { ActivityHandlers } from "./handlers";
 
 const queue = new Queue<APInboundJobData>("inbound");
 
+export const AP_ACTIVITY = z
+	.object({
+		id: z.string().url(),
+		type: z
+			.string()
+			.refine(
+				(type) =>
+					!!ActivityHandlers[type.toLowerCase() as Lowercase<string>],
+				{ message: "Activity of that type has no handler" },
+			),
+	})
+	.passthrough();
+
 export const handleInbox = async (activity: APActivity, target: Actor) => {
 	activity["@context"] = undefined;
 
-	if (!activity.type) throw new APError("Activity does not have type");
-	if (Array.isArray(activity.type))
-		throw new APError("Activity has multiple types, cannot handle");
+	const safeActivity = AP_ACTIVITY.parse(activity);
 
-	if (!activity.id) throw new APError("Activity does not have id");
-
-	const handler =
-		ActivityHandlers[activity.type.toLowerCase() as Lowercase<string>];
-	if (!handler)
-		throw new APError(`Activity of type ${activity.type} has no handler`);
-
-	try {
-		await ApCache.insert({
-			id: activity.id,
-			raw: activity,
+	if (config.federation.queue?.use_inbound)
+		await queue.add(`${safeActivity.type}-${target.id}-${Date.now()}`, {
+			activity: safeActivity,
+			target_id: target.id,
 		});
-	} catch (e) {
-		throw new APError(`Activity with id ${activity.id} already processed`);
-	}
+	else {
+		try {
+			await ApCache.insert({
+				id: safeActivity.id,
+				raw: safeActivity,
+			});
+		} catch (e) {
+			throw new APError(
+				`Activity with id ${safeActivity.id} already processed`,
+			);
+		}
 
-	await queue.add(`${activity.type}-${target.id}-${Date.now()}`, {
-		activity,
-		target_id: target.id,
-	});
+		await ActivityHandlers[
+			safeActivity.type.toLowerCase() as Lowercase<string>
+		](activity, target);
+	}
 };

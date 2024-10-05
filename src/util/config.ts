@@ -120,6 +120,24 @@ const config = Object.freeze({
 						"federation.require_http_signatures",
 					) ?? false,
 
+				queue: {
+					/**
+					 * Whether or not to use the inbound queue. Requires redis.
+					 * @default true
+					 */
+					use_inbound:
+						ifExistsGet<boolean>("federation.queue.use_inbound") ??
+						true,
+
+					/**
+					 * Whether or not to use the inbound queue. Requires redis.
+					 * @default true
+					 */
+					use_outbound:
+						ifExistsGet<boolean>("federation.queue.use_outbound") ??
+						true,
+				},
+
 				/**
 				 * The public and private keys of the instance actor (/actor)
 				 * used for verifying and signing HTTP signatures
@@ -134,6 +152,10 @@ const config = Object.freeze({
 				require_http_signatures: false,
 				public_key: "",
 				private_key: "",
+				queue: {
+					use_inbound: true,
+					use_outbound: true,
+				},
 			},
 
 	webrtc: {

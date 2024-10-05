@@ -1,31 +1,63 @@
+import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
+extendZodWithOpenApi(z);
+
 import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
-import { APError, config, findActorOfAnyType } from "../util";
+import { ApCache, Channel, Guild, User } from "../entity";
+import { APError, AP_ACTIVITY, initDatabase } from "../util";
 import { ActivityHandlers } from "../util/activitypub/inbox/handlers";
 
 export type APInboundJobData = { activity: APActivity; target_id: string };
 
-const worker = new Worker("inbound", async (job: Job<APInboundJobData>) => {
+const jobHandler = async (job: Job<APInboundJobData>) => {
 	const { activity, target_id } = job.data;
+
+	console.log(`${new Date()} [${activity.type}] ${activity.id}`);
 
 	activity["@context"] = undefined;
 
-	if (!activity.type) throw new APError("Activity does not have type");
-	if (Array.isArray(activity.type))
-		throw new APError("Activity has multiple types, cannot handle");
+	const safe = AP_ACTIVITY.parse(activity);
 
-	if (!activity.id) throw new APError("Activity does not have id");
-
-	const handler =
-		ActivityHandlers[activity.type.toLowerCase() as Lowercase<string>];
-	if (!handler)
-		throw new APError(`Activity of type ${activity.type} has no handler`);
-
-	const target = await findActorOfAnyType(
-		target_id,
-		config.federation.webapp_url.hostname,
-	);
+	const [user, channel, guild] = await Promise.all([
+		await User.findOne({ where: { id: target_id } }),
+		await Channel.findOne({ where: { id: target_id } }),
+		await Guild.findOne({ where: { id: target_id } }),
+	]);
+	const target = user ?? channel ?? guild;
 	if (!target) throw new APError("Could not find target");
 
-	await handler(activity, target);
+	try {
+		await ApCache.insert({
+			id: safe.id,
+			raw: safe,
+		});
+	} catch (e) {
+		throw new APError(`Activity with id ${safe.id} already processed`);
+	}
+
+	await ActivityHandlers[safe.type.toLowerCase() as Lowercase<string>](
+		activity,
+		target,
+	);
+};
+
+const worker = new Worker("inbound", jobHandler, {
+	connection: {
+		host: "localhost",
+		port: 6379,
+	},
+	autorun: false,
 });
+
+worker.on("failed", (job) => {
+	console.warn(
+		`${new Date()} Activity ${job?.data.activity.id} failed ${job?.failedReason}`,
+	);
+});
+
+worker.on("error", (e) => {
+	console.error(e);
+});
+
+initDatabase().then(() => worker.run());

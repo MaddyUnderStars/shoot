@@ -5,6 +5,7 @@
 	"main": "dist/bootstrap.js",
 	"scripts": {
 		"start": "node dist/src/bootstrap.js",
+		"inbound_queue": "node dist/src/receiver/index.js",
 		"cli": "node dist/src/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky",
