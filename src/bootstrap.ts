@@ -28,6 +28,10 @@ import { GatewayServer } from "./gateway/server";
 import { APIServer } from "./http/server";
 import { MediaGatewayServer } from "./media/server";
 
+process.on("uncaughtException", (error, origin) => {
+	Log.error(`Caught ${origin}`, error);
+});
+
 const http = createServer();
 
 const api = new APIServer(http);
