@@ -131,19 +131,19 @@ const config = Object.freeze({
 				queue: {
 					/**
 					 * Whether or not to use the inbound queue. Requires redis.
-					 * @default true
+					 * @default false
 					 */
 					use_inbound:
 						ifExistsGet<boolean>("federation.queue.use_inbound") ??
-						true,
+						false,
 
 					/**
 					 * Whether or not to use the inbound queue. Requires redis.
-					 * @default true
+					 * @default false
 					 */
 					use_outbound:
 						ifExistsGet<boolean>("federation.queue.use_outbound") ??
-						true,
+						false,
 				},
 
 				/**
