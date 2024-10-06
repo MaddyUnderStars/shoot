@@ -5,7 +5,7 @@ import {
 	ObjectIsOrganization,
 } from "activitypub-types";
 import {
-	type Channel,
+	Channel,
 	Guild,
 	type GuildTextChannel,
 	Member,
@@ -263,7 +263,7 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 	]);
 
 	guild.channels = channels as GuildTextChannel[];
-	await guild.save();
+	await Channel.save(channels);
 
 	const roles = await Promise.all([
 		...(
@@ -289,6 +289,8 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 	everyone.id = guild.id;
 
 	guild.roles = roles;
+
+	await Role.save(roles);
 
 	return guild;
 };

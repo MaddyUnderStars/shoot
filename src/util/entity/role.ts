@@ -31,6 +31,7 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 		name: obj.name,
 		allow: obj.allow,
 		deny: obj.deny,
+		position: obj.position,
 		guild: await getOrFetchGuild(obj.attributedTo),
 		members: [], // to be fetched later
 	});

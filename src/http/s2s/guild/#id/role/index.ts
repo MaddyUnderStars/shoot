@@ -58,7 +58,8 @@ router.get(
 					),
 					before: req.query.before,
 					after: req.query.after,
-					convert: (x) => buildAPActor(x.user),
+					convert: (x) =>
+						x.user.remote_address ?? buildAPActor(x.user),
 					entity: Member,
 					qb: getDatabase()
 						.getRepository(Member)

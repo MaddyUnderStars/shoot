@@ -1,4 +1,4 @@
-import { APObject } from "activitypub-types";
+import type { APObject } from "activitypub-types";
 import type { Role } from "../../../entity";
 import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
@@ -13,6 +13,7 @@ export type APRole = APObject & {
 	name: string;
 	allow: PERMISSION[];
 	deny: PERMISSION[];
+	position: number;
 };
 
 export const buildAPRole = (role: Role): APRole => {
@@ -26,6 +27,8 @@ export const buildAPRole = (role: Role): APRole => {
 
 		allow: role.allow,
 		deny: role.deny,
+
+		position: role.position,
 
 		attributedTo: `${config.federation.instance_url.origin}${getExternalPathFromActor(role.guild)}`,
 		members: `${id}/members`,

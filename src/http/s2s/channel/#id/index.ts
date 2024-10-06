@@ -55,6 +55,7 @@ router.post(
 				.leftJoinAndSelect("channels.recipients", "recipients")
 				.leftJoinAndSelect("channels.owner", "owner")
 				.leftJoinAndSelect("channels.guild", "guild")
+				.leftJoinAndSelect("guild.owner", "g_owner")
 				.where("channels.id = :id", { id: req.params.channel_id })
 				.andWhere("channels.domain = :domain", {
 					domain: config.federation.webapp_url.hostname,
@@ -121,7 +122,7 @@ router.get(
 				),
 				before: req.query.before,
 				after: req.query.after,
-				convert: buildAPActor,
+				convert: (x) => x.remote_address ?? buildAPActor(x),
 				entity: User,
 				qb: getDatabase()
 					.getRepository(User)

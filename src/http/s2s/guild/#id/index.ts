@@ -97,7 +97,7 @@ router.get(
 		res.json(
 			await orderedCollectionHandler({
 				id: new URL(
-					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/followers`,
+					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/following`,
 				),
 				...req.query,
 				convert: (x) => x.remote_address ?? buildAPActor(x),

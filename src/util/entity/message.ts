@@ -1,5 +1,5 @@
 import { ObjectIsNote } from "activitypub-types";
-import { DMChannel, Message, type Actor } from "../../entity";
+import { DMChannel, GuildTextChannel, Member, Message } from "../../entity";
 import { sendActivity } from "../../sender";
 import {
 	APError,
@@ -8,6 +8,7 @@ import {
 	buildAPCreateNote,
 	buildAPNote,
 } from "../activitypub";
+import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
 
 /**
@@ -50,18 +51,64 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 		const announce = buildAPAnnounceNote(note, message.channel.id);
 
-		let recipients: Array<Actor> =
-			message.channel instanceof DMChannel
-				? [...message.channel.recipients, message.channel.owner]
-				: [];
+		if (message.channel instanceof DMChannel) {
+			let recipients = [
+				...message.channel.recipients,
+				message.channel.owner,
+			];
 
-		// remove the author's instance from the recipients
-		// since they author'd it and already have a copy
-		// TODO: maybe this should be used as an acknowledge instead? or send an `Acknowledge` activity?
-		recipients = recipients.filter(
-			(x) => x.domain !== message.author.domain,
-		);
+			// remove the author's instance from the recipients
+			// since they author'd it and already have a copy
+			// TODO: maybe this should be used as an acknowledge instead? or send an `Acknowledge` activity?
+			recipients = recipients.filter(
+				(x) => x.domain !== message.author.domain,
+			);
 
-		await sendActivity(recipients, addContext(announce), message.channel);
+			await sendActivity(
+				recipients,
+				addContext(announce),
+				message.channel,
+			);
+		} else if (message.channel instanceof GuildTextChannel) {
+			// TODO: for guilds, we can't download the entire members list to do dedupe for shared inbox
+			// so it would be better to do all that on the database instead
+			// i.e. a query that gets all the unique domains of each member,
+			// and then sends the activity of the shared inbox of that domain with all the members in the to field
+
+			const domains: Array<{ domain: string }> =
+				await getDatabase().query(
+					`
+				select distinct domain from users
+				left join guild_members gm on "gm"."userId" = "users"."id"
+				left join roles_members_guild_members rmgm on "rmgm"."guildMembersId" = "gm"."id"
+				where "rmgm"."rolesId" = $1
+			`,
+					[message.channel.guild.id],
+				);
+
+			for (const domain of domains.map((x) => x.domain)) {
+				if (domain === message.author.domain) continue;
+
+				const recipients = await Member.find({
+					where: {
+						roles: {
+							guild: {
+								id: message.channel.guild.id,
+							},
+						},
+						user: {
+							domain,
+						},
+					},
+					relations: { user: true },
+				});
+
+				await sendActivity(
+					recipients.map((x) => x.user),
+					addContext(announce),
+					message.channel,
+				);
+			}
+		}
 	}
 };
