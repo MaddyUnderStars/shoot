@@ -49,7 +49,7 @@ router.post(
 	route(
 		{
 			params: z.object({ guild_id: z.string() }),
-			body: z.object({ expiry: z.string().optional() }),
+			body: z.object({ expiry: z.string().datetime().optional() }),
 		},
 		async (req, res) => {
 			const { guild_id } = req.params;
