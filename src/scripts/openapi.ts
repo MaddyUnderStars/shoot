@@ -5,7 +5,7 @@ import {
 } from "@asteasolutions/zod-to-openapi";
 import type { Router } from "express";
 
-import { writeFileSync } from "node:fs";
+import { writeFile } from "node:fs";
 import path from "node:path";
 import { type AnyZodObject, z } from "zod";
 
@@ -176,9 +176,17 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 };
 
 const document = generateOpenapi(apiRoutes, "application/json");
-writeFileSync(
+writeFile(
 	path.join(__dirname, "..", "..", "..", "assets", "client.json"),
 	JSON.stringify(document),
+	{},
+	(err) => {
+		if (err) console.error(err);
+		else {
+			console.log("done");
+			process.exit();
+		}
+	},
 );
 
 // document = generateOpenapi(activitypubRoutes, "application/activity+json");
