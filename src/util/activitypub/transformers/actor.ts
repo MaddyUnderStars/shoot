@@ -32,12 +32,9 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	const { webapp_url, instance_url } = config.federation;
 
-	// If we have a name, use that, otherwise use the ID
-	const preferredUsername =
-		"name" in actor && typeof actor.name === "string"
-			? actor.name
-			: actor.id;
-	// If we have a display name, use that, otherwise use the name, or id as fallback
+	const preferredUsername = actor instanceof User ? actor.name : actor.id;
+
+	// preference: display_name, name, id
 	const name =
 		"display_name" in actor && typeof actor.display_name === "string"
 			? actor.display_name
