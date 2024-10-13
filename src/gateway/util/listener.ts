@@ -18,9 +18,7 @@ export const listenEvents = (
 ) => {
 	for (const emitter of emitters) {
 		if (socket.events[emitter])
-			throw new Error(
-				`${socket.user_id} is already listening to ${emitter}`,
-			);
+			Log.warn(`${socket.user_id} is already listening to ${emitter}`);
 
 		socket.events[emitter] = listenGatewayEvent(emitter, (payload) =>
 			callback(socket, payload),
@@ -28,10 +26,19 @@ export const listenEvents = (
 	}
 };
 
+export const removeEventListener = (socket: Websocket, id: string) => {
+	socket.events[id]();
+	delete socket.events[id];
+};
+
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
 		case "RELATIONSHIP_CREATE": {
 			listenEvents(socket, [payload.relationship.user.id]);
+			break;
+		}
+		case "RELATIONSHIP_DELETE": {
+			removeEventListener(socket, payload.user_id);
 			break;
 		}
 		case "CHANNEL_CREATE":

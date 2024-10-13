@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { Not } from "typeorm";
 import { z } from "zod";
+import type { User } from "../../../../entity";
 import {
 	PrivateRelationship,
 	Relationship,
 	RelationshipType,
 } from "../../../../entity/relationship";
-import { getOrFetchUser, route } from "../../../../util";
+import { emitGatewayEvent, getOrFetchUser, route } from "../../../../util";
 import { acceptOrCreateRelationship } from "../../../../util/entity/relationship";
 
 const router = Router({ mergeParams: true });
@@ -62,7 +63,13 @@ router.post(
 
 			// TODO: block
 
-			const to = await getOrFetchUser(user_id);
+			let to: User;
+			try {
+				to = await getOrFetchUser(user_id);
+			} catch (e) {
+				throw new Error("Could not find that user");
+			}
+
 			const relationship = await acceptOrCreateRelationship(to, req.user);
 			return res.json(relationship.toClient(req.user.id));
 		},
@@ -84,9 +91,15 @@ router.delete(
 				to: { id: to.id },
 				from: { id: req.user.id },
 			});
+
 			await Relationship.delete({
 				to: { id: req.user.id },
 				from: { id: to.id },
+			});
+
+			emitGatewayEvent([to.id, req.user.id], {
+				type: "RELATIONSHIP_DELETE",
+				user_id: to.id,
 			});
 
 			// todo federate
