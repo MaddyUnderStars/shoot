@@ -7,7 +7,11 @@ import { config } from "../config";
 import { emitGatewayEvent } from "../events";
 import { HttpError } from "../httperror";
 
-export const acceptOrCreateRelationship = async (to: User, from: User) => {
+export const acceptOrCreateRelationship = async (
+	to: User,
+	from: User,
+	reference_object?: APFollow,
+) => {
 	// Check if there is a relationship in the other direction
 	const existing = await Relationship.findOne({
 		where: {
@@ -29,8 +33,8 @@ export const acceptOrCreateRelationship = async (to: User, from: User) => {
 		// Send the gateway event to both clients
 
 		if (
-			from.collections?.inbox &&
-			from.remote_address &&
+			to.collections?.inbox &&
+			to.remote_address &&
 			existing.reference_object
 		) {
 			const follow: APAccept = {
@@ -56,6 +60,7 @@ export const acceptOrCreateRelationship = async (to: User, from: User) => {
 		to,
 		from_state: RelationshipType.accepted,
 		to_state: RelationshipType.pending,
+		reference_object,
 	}).save();
 
 	// Send the gateway event to both

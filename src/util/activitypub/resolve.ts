@@ -2,6 +2,7 @@ import { hasAPContext } from "./util";
 
 import type {
 	APCollectionPage,
+	APLink,
 	APObject,
 	APOrderedCollectionPage,
 	AnyAPObject,
@@ -10,6 +11,7 @@ import { XMLParser } from "fast-xml-parser";
 import { ApCache } from "../../entity";
 import { config } from "../config";
 import { createLogger } from "../log";
+import { tryParseUrl } from "../url";
 import {
 	ACTIVITY_JSON_ACCEPT,
 	USER_AGENT,
@@ -77,6 +79,14 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 		}).save();
 
 	return json as T;
+};
+
+export const resolveId = (prop: string | AnyAPObject | APLink) => {
+	if (typeof prop === "string" && !!tryParseUrl(prop)) return prop;
+	if (typeof prop === "string")
+		throw new APError(`Cannot resolve ${prop} to a URL ID`);
+	if ("id" in prop && prop.id) return prop.id;
+	throw new APError(`Cannot resolve ${prop} to a URL ID`);
 };
 
 const doWebfingerOrFindTemplate = async (

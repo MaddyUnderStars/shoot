@@ -1,11 +1,20 @@
-import { type APActivity, type APActor, ObjectIsNote } from "activitypub-types";
+import {
+	type APActivity,
+	ObjectIsGroup,
+	ObjectIsNote,
+} from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { Channel, User } from "../../../../entity";
-import { createChannelFromRemoteGroup, handleMessage } from "../../../entity";
+import { Channel, DMChannel, User } from "../../../../entity";
+import {
+	createChannelFromRemoteGroup,
+	createDmChannel,
+	getOrFetchUser,
+	handleMessage,
+} from "../../../entity";
 import { emitGatewayEvent } from "../../../events";
 import { PERMISSION } from "../../../permission";
 import { APError } from "../../error";
-import { resolveAPObject } from "../../resolve";
+import { resolveAPObject, resolveId } from "../../resolve";
 import { buildMessageFromAPNote } from "../../transformers";
 
 /**
@@ -36,16 +45,69 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 			"Cannot accept Create activity with multiple `object`s",
 		);
 
-	const inner = await createChannelFromRemoteGroup(
-		activity.object as APActor,
-	);
+	const inner = await resolveAPObject(activity.object);
 
-	await inner.save();
+	if (ObjectIsGroup(inner)) {
+		// Create<Group> at User
+		// We are creating a DM channel
+		const channel = await createChannelFromRemoteGroup(inner);
 
-	emitGatewayEvent([target.id], {
-		type: "CHANNEL_CREATE",
-		channel: inner.toPublic(),
-	});
+		await channel.save();
+
+		emitGatewayEvent([target.id], {
+			type: "CHANNEL_CREATE",
+			channel: channel.toPublic(),
+		});
+
+		return;
+	}
+
+	if (ObjectIsNote(inner)) {
+		// Create<Note> at User
+		// This activity is probably from Mastodon or other forgein software
+		// In this case, create a dm channel if it doesn't exist
+		// and then send this message to it
+
+		if (!activity.actor) throw new APError("Must have an actor (author)");
+
+		if (Array.isArray(activity.actor))
+			throw new APError("Don't know how to handle multiple authors.");
+
+		const sender = await getOrFetchUser(resolveId(activity.actor));
+
+		let channel = await DMChannel.findOne({
+			where: [
+				{
+					owner: { id: sender.id },
+					recipients: { id: target.id },
+				},
+				{
+					owner: { id: target.id },
+					recipients: { id: sender.id },
+				},
+			],
+		});
+
+		if (!channel) {
+			// make it since it doesn't exist
+			channel = await createDmChannel(
+				sender.display_name, // TODO
+				sender,
+				[target],
+			);
+
+			await channel.save();
+
+			emitGatewayEvent([target.id], {
+				type: "CHANNEL_CREATE",
+				channel: channel.toPublic(),
+			});
+		}
+
+		const message = await buildMessageFromAPNote(inner, channel);
+
+		await handleMessage(message);
+	}
 };
 
 const CreateAtChannel = async (activity: APActivity, target: Channel) => {

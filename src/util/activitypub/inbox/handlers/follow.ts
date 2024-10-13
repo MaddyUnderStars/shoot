@@ -1,4 +1,4 @@
-import type { APAccept } from "activitypub-types";
+import { type APAccept, ActivityIsFollow } from "activitypub-types";
 import type { ActivityHandler } from ".";
 import { Channel, Guild, Invite, User } from "../../../../entity";
 import { RelationshipType } from "../../../../entity/relationship";
@@ -13,6 +13,8 @@ export const FollowActivityHandler: ActivityHandler = async (
 	activity,
 	target,
 ) => {
+	if (!ActivityIsFollow(activity)) return;
+
 	const from = activity.actor;
 	if (typeof from !== "string")
 		throw new APError("Follow activity must have single actor");
@@ -22,7 +24,11 @@ export const FollowActivityHandler: ActivityHandler = async (
 		throw new APError("Received follow from actor without inbox");
 
 	if (target instanceof User) {
-		const relationship = await acceptOrCreateRelationship(target, actor);
+		const relationship = await acceptOrCreateRelationship(
+			target,
+			actor,
+			activity,
+		);
 		if (relationship.to_state !== RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
