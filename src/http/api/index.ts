@@ -38,6 +38,9 @@ router.use("/users/:user_id/channels", users_id_channels);
 import users_id_relationship from "./users/#id/relationship";
 router.use("/users/:user_id/relationship", users_id_relationship);
 
+import users_id_outbox from "./users/#id/outbox";
+router.use("/users/:user_id/outbox", users_id_outbox);
+
 import guild from "./guild";
 router.use("/guild", guild);
 
