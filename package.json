@@ -10,7 +10,7 @@
 		"build": "tsc",
 		"prepare": "husky",
 		"openapi": "node dist/src/scripts/openapi.js",
-		"test": "c8 --all --src ./src --exclude-after-remap -r lcov ava"
+		"test": "c8 --all --src ./src --exclude-after-remap ava"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
