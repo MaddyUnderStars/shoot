@@ -45,4 +45,19 @@ test("Create and delete", async (t) => {
 		).body,
 		{ ...res2.body, type: RelationshipType.accepted },
 	);
+
+	await request(api.app)
+		.delete("/users/create1@localhost/relationship")
+		.auth(user2, { type: "bearer" })
+		.expect(200);
+
+	await request(api.app)
+		.get("/users/create1@localhost/relationship")
+		.auth(user2, { type: "bearer" })
+		.expect(404);
+
+	await request(api.app)
+		.get("/users/create2@localhost/relationship")
+		.auth(user1, { type: "bearer" })
+		.expect(404);
 });
