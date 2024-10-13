@@ -6,6 +6,7 @@ import http from "node:http";
 
 import { errorHandler, routes } from ".";
 import { config, createLogStream, createLogger, initDatabase } from "../util";
+import { isFederationRequest } from "./routes";
 
 const Log = createLogger("API");
 
@@ -27,6 +28,13 @@ export class APIServer {
 			}),
 		);
 		this.app.use(bodyParser.urlencoded({ inflate: true, extended: true }));
+
+		morgan.token("mode", (req) =>
+			isFederationRequest(req.headers) ? "fed" : "api",
+		);
+
+		morgan.token("type", (req) => req.headers["content-type"]);
+		morgan.token("accept", (req) => req.headers.accept);
 
 		if (config.http.log)
 			this.app.use(
