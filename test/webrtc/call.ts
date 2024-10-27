@@ -3,10 +3,12 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { createTestDm, createTestUser, setupTests } from "../helpers";
+import { setupTests } from "../helpers/env";
 setupTests(test);
 
 import request from "supertest";
+import { createTestDm } from "../helpers/channel";
+import { createTestUser } from "../helpers/users";
 
 test("Get valid media token", async (t) => {
 	const { APIServer } = await import("../../src/http/server");

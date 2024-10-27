@@ -3,7 +3,7 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { setupTests } from "../../helpers";
+import { setupTests } from "../../helpers/env";
 setupTests(test);
 
 import request from "supertest";

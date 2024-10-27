@@ -5,8 +5,10 @@ extendZodWithOpenApi(z);
 import Sinon from "sinon";
 
 import test from "ava";
-import { createTestRemoteUser, setupTests } from "../helpers";
+import { setupTests } from "../helpers/env";
 setupTests(test);
+
+import { createTestRemoteUser } from "../helpers/users";
 
 test("Sends to shared inboxes", async (t) => {
 	const { sendActivity } = await import("../../src/sender");

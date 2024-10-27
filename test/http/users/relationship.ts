@@ -3,11 +3,12 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { createTestUser, setupTests } from "../../helpers";
+import { setupTests } from "../../helpers/env";
 setupTests(test);
 
 import request from "supertest";
 import { RelationshipType } from "../../../src/entity/relationship";
+import { createTestUser } from "../../helpers/users";
 
 test("Create and delete", async (t) => {
 	const { APIServer } = await import("../../../src/http/server");

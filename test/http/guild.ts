@@ -3,32 +3,12 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { createTestUser, setupTests } from "../helpers";
+import { setupTests } from "../helpers/env";
+import { createTestUser } from "../helpers/users";
 setupTests(test);
 
 import request from "supertest";
-
-/** owner: mention, members: user ids */
-const createTestGuild = async (
-	name: string,
-	owner: string,
-	members: string[],
-) => {
-	const { createGuild, getOrFetchUser, joinGuild } = await import(
-		"../../src/util"
-	);
-
-	const o = await getOrFetchUser(owner);
-	const guild = await createGuild(name, o);
-
-	await Promise.all(
-		members.map(async (x) =>
-			joinGuild((await getOrFetchUser(x)).id, guild.id),
-		),
-	);
-
-	return guild;
-};
+import { createTestGuild } from "../helpers/guild";
 
 test("Leave guild", async (t) => {
 	const { APIServer } = await import("../../src/http/server");

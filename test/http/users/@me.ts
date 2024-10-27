@@ -3,10 +3,11 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { createTestUser, setupTests } from "../../helpers";
+import { setupTests } from "../../helpers/env";
 setupTests(test);
 
 import request from "supertest";
+import { createTestUser } from "../../helpers/users";
 
 test("Can edit own user", async (t) => {
 	const token = await createTestUser("me");

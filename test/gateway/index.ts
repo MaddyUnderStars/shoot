@@ -3,12 +3,14 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import test from "ava";
-import { createTestDm, createTestUser, setupTests } from "../helpers";
+import { setupTests } from "../helpers/env";
 setupTests(test);
 
 import { EventEmitter } from "node:stream";
 import Sinon from "sinon";
 import type { GATEWAY_PAYLOAD, READY } from "../../src/gateway/util";
+import { createTestDm } from "../helpers/channel";
+import { createTestUser } from "../helpers/users";
 
 class FakeSocket extends EventEmitter {
 	sequence = 0;
