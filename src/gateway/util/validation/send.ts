@@ -39,6 +39,12 @@ export type CHANNEL_CREATE = {
 	channel: PublicDmChannel | PublicGuildTextChannel;
 };
 
+export type CHANNEL_DELETE = {
+	type: "CHANNEL_DELETE";
+	channel_id: string;
+	guild_id?: string;
+};
+
 export type MEDIA_TOKEN_RECEIVED = {
 	type: "MEDIA_TOKEN_RECEIVED";
 	token: string;
@@ -116,6 +122,7 @@ export type HEARTBEAT_ACK = {
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
 	| CHANNEL_CREATE
+	| CHANNEL_DELETE
 	| MEDIA_TOKEN_RECEIVED
 	| GUILD_CREATE
 	| ROLE_CREATE

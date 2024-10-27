@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel, PublicChannel } from "../../../../entity";
+import { Channel, GuildTextChannel, PublicChannel } from "../../../../entity";
 import {
 	HttpError,
 	PERMISSION,
 	config,
+	emitGatewayEvent,
 	getOrFetchChannel,
 	route,
 } from "../../../../util";
@@ -58,6 +59,28 @@ router.patch(
 
 		// TODO: federate Update channel activity to remote server
 		//return res.sendStatus(202);
+	}),
+);
+
+router.delete(
+	"/",
+	route({ params }, async (req, res) => {
+		const channel = await getOrFetchChannel(req.params.channel_id);
+
+		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
+
+		await channel.remove();
+
+		emitGatewayEvent(channel.id, {
+			type: "CHANNEL_DELETE",
+			channel_id: channel.mention,
+			guild_id:
+				channel instanceof GuildTextChannel
+					? channel.guild.mention
+					: undefined,
+		});
+
+		res.sendStatus(204);
 	}),
 );
 
