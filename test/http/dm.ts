@@ -18,26 +18,27 @@ test("Can create DM channels", async (t) => {
 	const res = await request(api.app)
 		.post("/users/create_user2@localhost/channels")
 		.auth(user1, { type: "bearer" })
-		.send({ name: "dm channel" })
-		.expect(200);
+		.send({ name: "dm channel" });
+
+	t.is(res.status, 200);
 
 	const channel_id = res.body.id;
 
 	await request(api.app)
 		.get("/users/@me/channels")
 		.auth(user1, { type: "bearer" })
-		.expect(200)
-		.then((x) =>
-			t.assert(x.body.find((i: { id: string }) => i.id === channel_id)),
-		);
+		.then((x) => {
+			t.is(x.status, 200);
+			t.assert(x.body.find((i: { id: string }) => i.id === channel_id));
+		});
 
 	await request(api.app)
 		.get("/users/@me/channels")
 		.auth(user2, { type: "bearer" })
-		.expect(200)
-		.then((x) =>
-			t.assert(x.body.find((i: { id: string }) => i.id === channel_id)),
-		);
+		.then((x) => {
+			t.is(x.status, 200);
+			t.assert(x.body.find((i: { id: string }) => i.id === channel_id));
+		});
 
 	t.pass();
 });
@@ -56,24 +57,25 @@ test("Can send messages to dm", async (t) => {
 	const response = await request(api.app)
 		.post(`/channel/${channel.mention}/messages`)
 		.auth(user1, { type: "bearer" })
-		.send({ content: "test message" })
-		.expect(200);
+		.send({ content: "test message" });
+
+	t.is(response.status, 200);
 
 	const message_id = response.body.id;
 
 	await request(api.app)
 		.get(`/channel/${channel.mention}/messages`)
 		.auth(user1, { type: "bearer" })
-		.expect(200)
-		.then((x) =>
-			t.assert(x.body.find((i: { id: string }) => i.id === message_id)),
-		);
+		.then((x) => {
+			t.is(x.status, 200);
+			t.assert(x.body.find((i: { id: string }) => i.id === message_id));
+		});
 
 	await request(api.app)
 		.get(`/channel/${channel.mention}/messages`)
 		.auth(user2, { type: "bearer" })
-		.expect(200)
-		.then((x) =>
-			t.assert(x.body.find((i: { id: string }) => i.id === message_id)),
-		);
+		.then((x) => {
+			t.is(x.status, 200);
+			t.assert(x.body.find((i: { id: string }) => i.id === message_id));
+		});
 });
