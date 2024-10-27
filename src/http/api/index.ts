@@ -44,6 +44,9 @@ router.use("/guild", guild);
 import guild_id from "./guild/#id";
 router.use("/guild/:guild_id", guild_id);
 
+import guild_id_channel from "./guild/#id/channel";
+router.use("/guild/:guild_id/channel", guild_id_channel);
+
 import channels_id from "./channel/#id";
 router.use("/channel/:channel_id", channels_id);
 
