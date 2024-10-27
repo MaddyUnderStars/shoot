@@ -8,8 +8,13 @@ setupTests(test);
 
 import { EventEmitter } from "node:stream";
 import Sinon from "sinon";
-import type { GATEWAY_PAYLOAD, READY } from "../../src/gateway/util";
+import type {
+	GATEWAY_PAYLOAD,
+	MEMBERS_CHUNK,
+	READY,
+} from "../../src/gateway/util";
 import { createTestDm } from "../helpers/channel";
+import { createTestGuild } from "../helpers/guild";
 import { createTestUser } from "../helpers/users";
 
 class FakeSocket extends EventEmitter {
@@ -66,4 +71,39 @@ test("Identify", async (t) => {
 	t.is(ready.t, "READY");
 	t.deepEqual(data.channels[0], { ...dm.toPublic() });
 	t.is(data.user.name, "user1");
+});
+
+test("Request members", async (t) => {
+	const user1 = await createTestUser("members_user1");
+	await createTestUser("members_user2");
+	const guild = await createTestGuild(
+		"request members",
+		"members_user1@localhost",
+		["members_user2@localhost"],
+	);
+
+	const socket = new FakeSocket();
+
+	await sendGatewayPayload({ t: "identify", token: user1 }, socket);
+
+	const res = await sendGatewayPayload(
+		{
+			t: "members",
+			channel_id: guild.channels[0].mention,
+			range: [0, 100],
+		},
+		socket,
+	);
+
+	const data = res.d as MEMBERS_CHUNK;
+
+	t.is(data.items[0], guild.id); // @everyone is guild id
+	t.assert(
+		typeof data.items[1] !== "string" &&
+			data.items[1].name === "members_user1",
+	);
+	t.assert(
+		typeof data.items[2] !== "string" &&
+			data.items[2].name === "members_user2",
+	);
 });

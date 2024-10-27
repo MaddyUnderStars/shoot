@@ -119,7 +119,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 					left join roles r on "r"."id" = "rm"."rolesId"
 					left join channels on "channels"."guildId"  = "r"."guildId"
 				where channels.id = $1
-				order by "r"."position" desc;
+				order by "r"."position" desc, "users"."name" asc;
 			`,
 		[channel.id],
 	);
