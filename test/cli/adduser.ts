@@ -9,6 +9,10 @@ setupTests(test);
 test("Can create user", async (t) => {
 	const { handleCli } = await import("../../src/cli/cli");
 	const { User } = await import("../../src/entity/user");
+	const databaseUtils = await import("../../src/util/database");
+	const closeDatabase = databaseUtils.closeDatabase;
+
+	Object.assign(databaseUtils, { closeDatabase: () => {} });
 
 	await handleCli([
 		"node",
@@ -17,6 +21,8 @@ test("Can create user", async (t) => {
 		"testuser",
 		"test@localhost",
 	]);
+
+	Object.assign(databaseUtils, { closeDatabase });
 
 	const user = await User.findOneOrFail({
 		where: { name: "testuser", email: "test@localhost" },

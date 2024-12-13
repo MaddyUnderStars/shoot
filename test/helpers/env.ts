@@ -22,7 +22,7 @@ export const setupTests = (test: TestFn) => {
 	test.after.always("teardown", async (t) => {
 		// delete temp db?
 
-		const { closeDatabase } = await import("../../src/util");
+		const { closeDatabase } = await import("../../src/util/database");
 		await closeDatabase();
 
 		deleteDatabase(
