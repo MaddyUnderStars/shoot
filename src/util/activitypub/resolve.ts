@@ -72,6 +72,13 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
+	if (!json.id) throw new APError("Object does not have an ID");
+
+	if (new URL(data).origin !== new URL(json.id).origin)
+		throw new APError(
+			"Object ID origin does not match origin of requested url",
+		);
+
 	if (!noCache)
 		await ApCache.create({
 			id: json.id,
