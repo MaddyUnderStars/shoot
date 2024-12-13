@@ -4,6 +4,7 @@ import { KEY_OPTIONS } from "../../util/rsa";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import { promisify } from "node:util";
+import { merge } from "ts-deepmerge";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 const Log = createLogger("cli");
@@ -19,13 +20,13 @@ export const generateKeys = async () => {
 		file = (await fs.readFile(filename)).toString();
 	} catch (e) {}
 
-	const config = file ? JSON.parse(JSON.stringify(file)) : { federation: {} };
+	const config = file ? JSON.parse(file) : { federation: {} };
 
 	await fs.mkdir("./config", { recursive: true });
 	await fs.writeFile(
 		filename,
 		JSON.stringify(
-			{
+			merge(config, {
 				federation: {
 					public_key: keys.publicKey,
 					private_key: keys.privateKey,
@@ -33,7 +34,7 @@ export const generateKeys = async () => {
 				security: {
 					jwt_secret: crypto.randomBytes(256).toString("base64"),
 				},
-			},
+			}),
 			null,
 			2,
 		),
