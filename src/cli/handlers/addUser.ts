@@ -38,4 +38,5 @@ export const addUser = async (username: string, email?: string) => {
 	}
 
 	Log.msg(`Registered user '${handle}' with password '${password}'`);
+	closeDatabase();
 };
