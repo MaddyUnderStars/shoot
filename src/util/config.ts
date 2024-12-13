@@ -80,7 +80,7 @@ const config = Object.freeze({
 	security: {
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.
-		 * Generate with `crypto.randomBytes(256).toString("base64")`
+		 * Generate with `crypto.randomBytes(256).toString("base64")` or `npm run cli -- generate-keys`
 		 */
 		jwt_secret: get<string>("security.jwt_secret"),
 
@@ -118,8 +118,7 @@ const config = Object.freeze({
 
 				/**
 				 * The URL of the webapp for this instance.
-				 * If not set/invalid, the webapp will simple be disabled.
-				 * The federation.instance_url will be used instead.
+				 * If not set/invalid, the federation.instance_url will be used instead.
 				 */
 				webapp_url:
 					tryParseUrl(get("federation.webapp_url")) ??
@@ -191,7 +190,7 @@ const config = Object.freeze({
 		? {
 				/**
 				 * If registration is disabled, new users cannot be created from the API.
-				 * The CLI can still be used to create users using admin opereations.
+				 * The CLI can still be used to create users using admin operations.
 				 */
 				enabled: true,
 			}
