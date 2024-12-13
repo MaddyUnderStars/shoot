@@ -40,7 +40,7 @@ const getRoutes = (router: Router) => {
 			path: string;
 			method: Method;
 			requires_auth: boolean;
-			options: {
+			options?: {
 				params: AnyZodObject;
 				body: AnyZodObject;
 				query: AnyZodObject;
@@ -120,32 +120,32 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 				? [{ [bearerAuth.name]: [] }]
 				: undefined,
 			request: {
-				params: route.options.params,
+				params: route.options?.params,
 				// headers: z.object({
 				// "content-type": z.literal("application/json"),
 				// }),
-				body: route.options.body
+				body: route.options?.body
 					? {
 							content: {
 								[requestContentType]: {
-									schema: route.options.body,
+									schema: route.options?.body,
 								},
 							},
 						}
 					: undefined,
-				query: route.options.query,
+				query: route.options?.query,
 			},
 			responses: {
 				"200": {
-					description: route.options.response?.description ?? "",
+					description: route.options?.response?.description ?? "",
 					content: {
 						"application/json": {
-							schema: route.options.response ?? z.object({}),
+							schema: route.options?.response ?? z.object({}),
 						},
 					},
 				},
 				...Object.fromEntries(
-					Object.entries(route.options.errors ?? {}).map(
+					Object.entries(route.options?.errors ?? {}).map(
 						([code, schema]) => [
 							code,
 							{
