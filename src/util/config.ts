@@ -7,6 +7,15 @@ const ifExistsGet = <T>(key: string): T | undefined => {
 	return nodeConfig.has(key) ? nodeConfig.get(key) : undefined;
 };
 
+const get = <T>(key: string): T => {
+	try {
+		return nodeConfig.get(key);
+	} catch (e) {
+		console.error(e instanceof Error ? e.message : e);
+		process.exit();
+	}
+};
+
 const getArray = <T>(key: string): T[] => {
 	let i = 0;
 	const ret: T[] = [];
@@ -73,7 +82,7 @@ const config = Object.freeze({
 		 * The Jsonwebtoken secret used to generate authentication tokens.
 		 * Generate with `crypto.randomBytes(256).toString("base64")`
 		 */
-		jwt_secret: nodeConfig.get<string>("security.jwt_secret"),
+		jwt_secret: get<string>("security.jwt_secret"),
 
 		/**
 		 * How to determine the client IP when behind a proxy
@@ -91,7 +100,7 @@ const config = Object.freeze({
 		 * A URL style database connection string
 		 * @example `mysql://username:password@address:port/database_name`
 		 */
-		url: nodeConfig.get<string>("database.url"),
+		url: get<string>("database.url"),
 
 		/**
 		 * Whether to log database operations.
@@ -113,15 +122,13 @@ const config = Object.freeze({
 				 * The federation.instance_url will be used instead.
 				 */
 				webapp_url:
-					tryParseUrl(nodeConfig.get("federation.webapp_url")) ??
-					new URL(nodeConfig.get<string>("federation.instance_url")),
+					tryParseUrl(get("federation.webapp_url")) ??
+					new URL(get<string>("federation.instance_url")),
 
 				/**
 				 * The URL of this instance. Required.
 				 */
-				instance_url: new URL(
-					nodeConfig.get<string>("federation.instance_url"),
-				),
+				instance_url: new URL(get<string>("federation.instance_url")),
 
 				require_http_signatures:
 					ifExistsGet<boolean>(
@@ -150,8 +157,8 @@ const config = Object.freeze({
 				 * The public and private keys of the instance actor (/actor)
 				 * used for verifying and signing HTTP signatures
 				 */
-				public_key: nodeConfig.get<string>("federation.public_key"),
-				private_key: nodeConfig.get<string>("federation.private_key"),
+				public_key: get<string>("federation.public_key"),
+				private_key: get<string>("federation.private_key"),
 			}
 		: {
 				enabled: false,
