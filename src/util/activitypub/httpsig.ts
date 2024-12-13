@@ -11,7 +11,7 @@ import { createLogger } from "../log";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { resolveAPObject } from "./resolve";
-import { APObjectIsActor, hasAPContext } from "./util";
+import { APObjectIsActor } from "./util";
 
 const Log = createLogger("HTTPSIG");
 
@@ -116,8 +116,8 @@ export const validateHttpSignature = async (
 		await actor.save();
 	}
 
-	// verify that the one who signed this activity was the one authoring it
-	if (activity && hasAPContext(activity)) {
+	if (activity) {
+		// verify that the one who signed this activity was the one authoring it
 		let author = activity.actor ?? activity.attributedTo;
 		author = Array.isArray(author) ? author[0] : author;
 		if (typeof author !== "string")
@@ -128,6 +128,12 @@ export const validateHttpSignature = async (
 			throw new APError(
 				`Author of activity ${activity.id} did not match signing author ${actor.remote_address}`,
 			);
+
+		if (!activity.id) throw new APError("Activity does not have ID");
+
+		// verify that key id has same origin as activity id
+		if (new URL(keyId).origin !== new URL(activity.id).origin)
+			throw new APError("Key ID does not match activity ID");
 	}
 
 	if (requestHeaders.digest || activity) {
