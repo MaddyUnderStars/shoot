@@ -7,7 +7,7 @@ import { addContext } from "./util";
 type Props<T extends BaseModel> = {
 	entity: ObjectType<T>;
 	qb: SelectQueryBuilder<T>;
-	keys?: string[];
+	keys?: Extract<keyof T, string>[];
 	id: URL;
 	convert: (data: T) => string | AnyAPObject;
 	before?: string;
@@ -21,8 +21,9 @@ export const orderedCollectionHandler = async <T extends BaseModel>(
 
 	const paginator = buildPaginator({
 		entity,
-		//@ts-expect-error
-		paginationKeys: props.keys ? props.keys : ["id"],
+		paginationKeys: props.keys
+			? props.keys
+			: (["id"] as Extract<BaseModel, string>),
 		query: {
 			limit: 50,
 			order: "ASC",
