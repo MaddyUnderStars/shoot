@@ -3,11 +3,6 @@ import { authHandler, rateLimiter } from "../middleware";
 
 const router = Router();
 
-// BEFORE auth handler
-import nodeInfo from "./nodeinfo";
-router.use("/nodeinfo", rateLimiter("nodeinfo"));
-router.use("/nodeinfo/2.0.json", nodeInfo);
-
 router.use(authHandler);
 
 import auth_login from "./auth/login";
