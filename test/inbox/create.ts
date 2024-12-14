@@ -39,10 +39,7 @@ test("Create<Note> at channel", async (t) => {
 	const activity = JSON.parse(
 		JSON.stringify(
 			addContext(buildAPCreateNote(buildAPNote(reference_message))),
-		).replaceAll(
-			"http://localhost/users/remote",
-			"http://remote/users/remote",
-		),
+		).replaceAll("http://localhost", "http://remote"),
 	);
 
 	const signed = signWithHttpSignature(
