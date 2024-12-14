@@ -9,7 +9,6 @@ import {
 } from "../../../entity";
 import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
-import { createXsdDate } from "../../misc";
 import { APError } from "../error";
 import { InstanceActor } from "../instanceActor";
 
@@ -71,7 +70,7 @@ export const buildAPActor = (actor: Actor): APActor => {
 		id: `${instance_url.origin}${id}`,
 		url: `${webapp_url.origin}${id}`,
 
-		published: createXsdDate(actor.created_date),
+		published: actor.created_date.toISOString(),
 
 		inbox,
 		outbox,
