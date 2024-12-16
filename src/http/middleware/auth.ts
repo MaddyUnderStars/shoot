@@ -8,6 +8,9 @@ export const NO_AUTH_ROUTES = [
 	/\.well\-known/,
 	"/nodeinfo/2.0.json",
 
+	// TODO: this might not be a good idea?
+	/channel\/.*?\/attachments\/.+$/,
+
 	// TODO: there are here because lemmy keeps requesting them
 	// and it throws a huge stack trace in my terminal
 	"/api/v3/site",

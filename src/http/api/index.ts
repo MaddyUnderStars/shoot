@@ -51,6 +51,9 @@ router.use("/channel/:channel_id/messages", channels_id_messages);
 import channels_id_call from "./channel/#id/call";
 router.use("/channel/:channel_id/call", channels_id_call);
 
+import channels_id_attachments from "./channel/#id/attachments";
+router.use("/channel/:channel_id/attachments", channels_id_attachments);
+
 import channels_id_messages_id from "./channel/#id/messages/#id";
 router.use(
 	"/channel/:channel_id/messages/:message_id",

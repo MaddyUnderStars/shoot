@@ -195,6 +195,49 @@ const config = Object.freeze({
 				enabled: true,
 			}
 		: { enabled: false },
+
+	storage: {
+		/**
+		 * The local directory to upload user content.
+		 * If storage.s3.* is defined and valid, s3 will be used instead
+		 * @default "./storage"
+		 */
+		directory: ifExistsGet<string>("storage.directory") ?? "./storage",
+
+		/**
+		 * Maximum size of user uploaded content in bytes
+		 * @default 10mb
+		 */
+		max_file_size:
+			ifExistsGet<number>("storage.max_file_size") ?? 1024 * 1024 * 10,
+
+		s3: ifExistsGet<boolean>("storage.s3.enabled")
+			? {
+					enabled: true,
+
+					/**
+					 * The endpoint to use for s3 storage.
+					 * If not provided, uses aws s3
+					 */
+					endpoint: ifExistsGet<string>("storage.s3.endpoint"),
+
+					region: get<string>("storage.s3.region"),
+
+					bucket: get<string>("storage.s3.bucket"),
+
+					accessKey: get<string>("storage.s3.accessKey"),
+
+					secret: get<string>("storage.s3.secret"),
+				}
+			: {
+					enabled: false,
+					endpoint: undefined,
+					region: "",
+					bucket: "",
+					accessKey: "",
+					secret: "",
+				},
+	},
 });
 
 export { config };

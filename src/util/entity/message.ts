@@ -10,13 +10,23 @@ import {
 } from "../activitypub";
 import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
+import { HttpError } from "../httperror";
+import { checkFileExists } from "../storage";
 
 /**
  * Handle a new message by validating it, sending gateway event, and sending an Announce
  * If federate = false then only save and distribute to our clients
  */
 export const handleMessage = async (message: Message, federate = true) => {
-	// TODO: validation
+	// validation
+
+	for (const file of message.files) {
+		if (!(await checkFileExists(message.channel.id, file.hash))) {
+			throw new HttpError(
+				`Hash ${file.hash} (${file.name}) does not exist`,
+			);
+		}
+	}
 
 	if (
 		message.reference_object &&
@@ -26,7 +36,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 	)
 		throw new APError("Already processed", 200);
 
-	await Message.insert(message);
+	await Message.insert({ ...message });
 
 	emitGatewayEvent(message.channel.id, {
 		type: "MESSAGE_CREATE",

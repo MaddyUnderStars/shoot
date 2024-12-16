@@ -13,6 +13,9 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 	let message: string = error.message;
 
 	switch (true) {
+		case error instanceof SyntaxError:
+			// silence
+			break;
 		case error instanceof HttpError:
 			code = error.code;
 			break;

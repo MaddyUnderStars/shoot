@@ -2,20 +2,38 @@
 
 // Stored within the role or channel overwrites
 export enum PERMISSION {
-	NONE = 0, // no permissions
-	OWNER = 1, // all permissions + delete
-	ADMIN = 2, // all permissions
+	/** no permissions */
+	NONE = 0,
 
-	SEND_MESSAGES = 3, // can send messages in this channel
+	/** all permissions + delete */
+	OWNER = 1,
 
-	MANAGE_CHANNELS = 4, // can modify, delete, add channels in this guild
-	VIEW_CHANNEL = 5, // can view this channel.
-	CALL_CHANNEL = 6, // can start or join this channel's voice call
+	/** all permissions */
+	ADMIN = 2,
 
-	MANAGE_GUILD = 7, // can modify this guild
+	/** can send messages in this channel */
+	SEND_MESSAGES = 3, //
 
-	MANAGE_INVITES = 8, // can modify or delete invites
-	CREATE_INVITE = 9, // can invite people to this channel
+	/** can modify, delete, add channels in this guild */
+	MANAGE_CHANNELS = 4,
+
+	/** can view this channel. */
+	VIEW_CHANNEL = 5,
+
+	/** can start or join this channel's voice call */
+	CALL_CHANNEL = 6,
+
+	/** can modify this guild */
+	MANAGE_GUILD = 7,
+
+	/** can modify or delete invites */
+	MANAGE_INVITES = 8,
+
+	/** can invite people to this channel */
+	CREATE_INVITE = 9,
+
+	/** can attach files to this channel */
+	UPLOAD = 10,
 }
 
 export const DefaultPermissions: PERMISSION[] = [

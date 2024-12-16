@@ -11,6 +11,14 @@ import { getOrFetchChannel } from "../../../../../util/entity/channel";
 
 const MessageCreate = z.object({
 	content: z.string(),
+	files: z
+		.array(
+			z.object({
+				name: z.string(),
+				hash: z.string(),
+			}),
+		)
+		.optional(),
 });
 
 const router = Router({ mergeParams: true });
@@ -33,6 +41,9 @@ router.post(
 
 			const message = Message.create({
 				channel,
+
+				// validation is done in handleMessage
+				files: req.body.files ?? [],
 
 				content: req.body.content,
 				author: req.user,

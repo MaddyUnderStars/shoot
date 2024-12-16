@@ -36,6 +36,9 @@ export class Message extends BaseModel {
 	@ManyToOne("channels")
 	channel: Channel;
 
+	@Column({ type: "simple-json", default: "[]" })
+	files: Array<{ name: string; hash: string }>;
+
 	/**
 	 * The reference object this message was created from.
 	 * Messages sent from here don't have this.
@@ -52,6 +55,7 @@ export class Message extends BaseModel {
 			updated: this.updated,
 			author_id: this.author.mention,
 			channel_id: this.channel.mention,
+			files: this.files,
 		} as PublicMessage;
 	}
 
@@ -76,5 +80,6 @@ export const PublicMessage: z.ZodType<PublicMessage> = z
 		updated: z.date(),
 		author_id: z.string(),
 		channel_id: z.string(),
+		files: z.array(z.object({ name: z.string(), hash: z.string() })),
 	})
 	.openapi("PublicMessage");
