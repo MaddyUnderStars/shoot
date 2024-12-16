@@ -16,15 +16,19 @@ import { checkFileExists } from "../storage";
 /**
  * Handle a new message by validating it, sending gateway event, and sending an Announce
  * If federate = false then only save and distribute to our clients
+ *
+ * MUTATES the provided message to add the inserted database ID
  */
 export const handleMessage = async (message: Message, federate = true) => {
 	// validation
 
-	for (const file of message.files) {
-		if (!(await checkFileExists(message.channel.id, file.hash))) {
-			throw new HttpError(
-				`Hash ${file.hash} (${file.name}) does not exist`,
-			);
+	if (message.files) {
+		for (const file of message.files) {
+			if (!(await checkFileExists(message.channel.id, file.hash))) {
+				throw new HttpError(
+					`Hash ${file.hash} (${file.name}) does not exist`,
+				);
+			}
 		}
 	}
 
@@ -36,15 +40,22 @@ export const handleMessage = async (message: Message, federate = true) => {
 	)
 		throw new APError("Already processed", 200);
 
-	await Message.insert({ ...message });
+	const res = await Message.insert({
+		...message,
+		files: message.files ?? [],
+	});
+	const message_id = res.identifiers[0].id;
+	message.id = message_id; // hmm
 
 	emitGatewayEvent(message.channel.id, {
 		type: "MESSAGE_CREATE",
 		message: message.toPublic(),
 	});
 
-	if (!federate) return;
+	if (federate) await federateMessage(message);
+};
 
+const federateMessage = async (message: Message) => {
 	const note =
 		message.reference_object && ObjectIsNote(message.reference_object.raw)
 			? message.reference_object.raw

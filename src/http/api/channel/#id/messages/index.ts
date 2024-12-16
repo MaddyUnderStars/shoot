@@ -43,7 +43,7 @@ router.post(
 				channel,
 
 				// validation is done in handleMessage
-				files: req.body.files ?? [],
+				files: req.body.files,
 
 				content: req.body.content,
 				author: req.user,
