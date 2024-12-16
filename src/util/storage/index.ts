@@ -12,14 +12,16 @@ import { createLogger } from "../log";
 
 const Log = createLogger("storage");
 
-const client = new S3Client({
-	region: config.storage.s3.region,
-	endpoint: config.storage.s3.endpoint,
-	credentials: {
-		accessKeyId: config.storage.s3.accessKey,
-		secretAccessKey: config.storage.s3.secret,
-	},
-});
+const client = config.storage.s3.enabled
+	? new S3Client({
+			region: config.storage.s3.region,
+			endpoint: config.storage.s3.endpoint,
+			credentials: {
+				accessKeyId: config.storage.s3.accessKey,
+				secretAccessKey: config.storage.s3.secret,
+			},
+		})
+	: null;
 
 export const createUploadEndpoint = (
 	channel_id: string,
@@ -38,6 +40,8 @@ const createS3Endpoint = async (
 	filename: string,
 	filesize: number,
 ) => {
+	if (!client) throw new Error("s3 not enabled");
+
 	const hash = crypto
 		.createHash("md5")
 		.update(filename)
@@ -57,6 +61,8 @@ const createS3Endpoint = async (
 };
 
 export const checkFileExists = async (channel_id: string, hash: string) => {
+	if (!client) throw new Error("s3 not enabled");
+
 	const command = new HeadObjectCommand({
 		Bucket: config.storage.s3.bucket,
 		Key: `${channel_id}/${hash}`,
@@ -72,6 +78,8 @@ export const checkFileExists = async (channel_id: string, hash: string) => {
 };
 
 export const getFileStream = async (channel_id: string, hash: string) => {
+	if (!client) throw new Error("s3 not enabled");
+
 	const command = new GetObjectCommand({
 		Bucket: config.storage.s3.bucket,
 		Key: `${channel_id}/${hash}`,
