@@ -40,12 +40,11 @@ export const handleMessage = async (message: Message, federate = true) => {
 	)
 		throw new APError("Already processed", 200);
 
-	const res = await Message.insert({
-		...message,
-		files: message.files ?? [],
-	});
-	const message_id = res.identifiers[0].id;
-	message.id = message_id; // hmm
+	const files = message.files;
+
+	await Message.insert(message);
+
+	message.files = files;
 
 	emitGatewayEvent(message.channel.id, {
 		type: "MESSAGE_CREATE",

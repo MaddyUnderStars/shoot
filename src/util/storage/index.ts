@@ -20,6 +20,7 @@ const client = config.storage.s3.enabled
 				accessKeyId: config.storage.s3.accessKey,
 				secretAccessKey: config.storage.s3.secret,
 			},
+			forcePathStyle: true, // TODO add this to config file
 		})
 	: null;
 
