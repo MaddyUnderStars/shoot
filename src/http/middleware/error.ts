@@ -44,6 +44,15 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 				error?.cause?.message ||
 				error.message;
 			break;
+		case "$metadata" in error: {
+			// aws s3 client error
+			code = 500;
+			message =
+				"$response" in error
+					? error.$response.reason
+					: "Internal server error";
+			break;
+		}
 		default:
 			Log.error(error);
 			break;
