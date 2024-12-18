@@ -29,6 +29,7 @@ router.post(
 				z.object({
 					size: z.number(), // bytes
 					name: z.string(),
+					mime: z.string(), // mime type
 				}),
 			),
 			response: AttachmentsResponse,
@@ -49,6 +50,7 @@ router.post(
 					channel.id,
 					file.name,
 					file.size,
+					file.mime,
 				);
 
 				ret.push({ hash, url: endpoint });

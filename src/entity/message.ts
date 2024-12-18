@@ -37,7 +37,7 @@ export class Message extends BaseModel {
 	channel: Channel;
 
 	@Column({ type: "simple-json", default: "[]" })
-	files: Array<{ name: string; hash: string }>;
+	files: PublicFile[];
 
 	/**
 	 * The reference object this message was created from.
@@ -64,6 +64,16 @@ export class Message extends BaseModel {
 	}
 }
 
+export const PublicFile = z
+	.object({
+		name: z.string(),
+		hash: z.string(),
+		type: z.string(), // mime type
+	})
+	.openapi("PublicFile");
+
+export type PublicFile = z.infer<typeof PublicFile>;
+
 export type PublicMessage = Pick<
 	AttributesOnly<Message>,
 	"id" | "content" | "published" | "updated"
@@ -80,6 +90,6 @@ export const PublicMessage: z.ZodType<PublicMessage> = z
 		updated: z.date(),
 		author_id: z.string(),
 		channel_id: z.string(),
-		files: z.array(z.object({ name: z.string(), hash: z.string() })),
+		files: z.array(PublicFile),
 	})
 	.openapi("PublicMessage");

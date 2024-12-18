@@ -28,9 +28,10 @@ export const createUploadEndpoint = (
 	channel_id: string,
 	filename: string,
 	filesize: number,
+	mime: string,
 ) => {
 	if (config.storage.s3.enabled) {
-		return createS3Endpoint(channel_id, filename, filesize);
+		return createS3Endpoint(channel_id, filename, filesize, mime);
 	}
 
 	throw new Error("unimplemented");
@@ -40,12 +41,14 @@ const createS3Endpoint = async (
 	channel_id: string,
 	filename: string,
 	filesize: number,
+	mime: string,
 ) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const hash = crypto
 		.createHash("md5")
 		.update(filename)
+		.update(mime)
 		.update(Date.now().toString())
 		.digest("hex");
 
@@ -53,6 +56,7 @@ const createS3Endpoint = async (
 		Bucket: config.storage.s3.bucket,
 		Key: `${channel_id}/${hash}`,
 		ContentLength: filesize,
+		ContentType: mime,
 	});
 
 	return {
@@ -70,8 +74,7 @@ export const checkFileExists = async (channel_id: string, hash: string) => {
 	});
 
 	try {
-		const res = await client.send(command);
-		return true;
+		return await client.send(command);
 	} catch (e) {
 		Log.error(e);
 		return false;
