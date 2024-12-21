@@ -13,17 +13,17 @@ test("Using Instance Actor", async (t) => {
 		await import("../../src/util");
 	const { User } = await import("../../src/entity");
 
-	const clock = sinon.useFakeTimers({
-		now: new Date(2024, 1, 1),
-		shouldClearNativeTimers: true,
-	});
-
 	const actor = await User.create({
 		...InstanceActor,
 		name: "remote_user",
 		remote_address: "http://localhost/users/remote_user",
 		id: undefined,
 	}).save();
+
+	const clock = sinon.useFakeTimers({
+		now: new Date(2024, 1, 1),
+		shouldClearNativeTimers: true,
+	});
 
 	const signed = signWithHttpSignature(
 		"https://chat.understars.dev/inbox",
