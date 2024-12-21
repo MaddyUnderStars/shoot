@@ -4,12 +4,14 @@ import {
 	Entity,
 	JoinColumn,
 	ManyToOne,
+	OneToMany,
 	OneToOne,
 	UpdateDateColumn,
 } from "typeorm";
 import { z } from "zod";
 import type { AttributesOnly } from "../util";
 import type { ApCache } from "./apcache";
+import { type Attachment, PublicAttachment } from "./attachment";
 import { BaseModel } from "./basemodel";
 import type { Channel } from "./channel";
 import type { User } from "./user";
@@ -36,8 +38,9 @@ export class Message extends BaseModel {
 	@ManyToOne("channels")
 	channel: Channel;
 
-	@Column({ type: "simple-json", default: "[]" })
-	files: PublicFile[];
+	/** the attached files of this message */
+	@OneToMany("attachments", (attachment: Attachment) => attachment.message)
+	files: Attachment[];
 
 	/**
 	 * The reference object this message was created from.
@@ -55,7 +58,7 @@ export class Message extends BaseModel {
 			updated: this.updated,
 			author_id: this.author.mention,
 			channel_id: this.channel.mention,
-			files: this.files,
+			files: this.files ? this.files.map((x) => x.toPublic()) : [],
 		} as PublicMessage;
 	}
 
@@ -63,16 +66,6 @@ export class Message extends BaseModel {
 		return this.toPublic();
 	}
 }
-
-export const PublicFile = z
-	.object({
-		name: z.string(),
-		hash: z.string(),
-		type: z.string(), // mime type
-	})
-	.openapi("PublicFile");
-
-export type PublicFile = z.infer<typeof PublicFile>;
 
 export type PublicMessage = Pick<
 	AttributesOnly<Message>,
@@ -90,6 +83,20 @@ export const PublicMessage: z.ZodType<PublicMessage> = z
 		updated: z.date(),
 		author_id: z.string(),
 		channel_id: z.string(),
-		files: z.array(PublicFile),
+		files: z.array(PublicAttachment),
 	})
 	.openapi("PublicMessage");
+
+export const MessageCreateRequest = z.object({
+	content: z.string(),
+	files: z
+		.array(
+			z.object({
+				name: z.string(),
+				hash: z.string(),
+			}),
+		)
+		.optional(),
+});
+
+export type MessageCreateRequest = z.infer<typeof MessageCreateRequest>;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../entity";
+import { Attachment } from "../../../../../entity/attachment";
 import {
 	PERMISSION,
 	getDatabase,
@@ -43,7 +44,14 @@ router.post(
 				channel,
 
 				// validation is done in handleMessage
-				files: req.body.files,
+				files: req.body.files?.length
+					? req.body.files?.map((x) =>
+							Attachment.create({
+								name: x.name,
+								hash: x.hash,
+							}),
+						)
+					: [],
 
 				content: req.body.content,
 				author: req.user,

@@ -27,9 +27,18 @@ router.post(
 			}),
 			body: z.array(
 				z.object({
-					size: z.number(), // bytes
 					name: z.string(),
+
+					md5: z.string(), // md5 of the uploaded image
+
 					mime: z.string(), // mime type
+					size: z.number(), // bytes
+
+					// we trust the client here, but only because we require the md5 hash and size
+					// that should be good enough
+					// I'm sure it'll bite me later, though
+					width: z.number().optional(),
+					height: z.number().optional(),
 				}),
 			),
 			response: AttachmentsResponse,
@@ -46,12 +55,20 @@ router.post(
 						`${file.name} exceeds maximum size (${config.storage.max_file_size})`,
 					);
 
-				const { endpoint, hash } = await createUploadEndpoint(
-					channel.id,
-					file.name,
-					file.size,
-					file.mime,
-				);
+				if (
+					(file.mime.toLowerCase().startsWith("image") ||
+						file.mime.toLowerCase().startsWith("video")) &&
+					(!file.width || !file.height)
+				)
+					throw new HttpError(
+						`${file.name} is image or video but does not provide width/height`,
+					);
+
+				const { endpoint, hash } = await createUploadEndpoint({
+					channel_id: channel.id,
+
+					...file,
+				});
 
 				ret.push({ hash, url: endpoint });
 			}

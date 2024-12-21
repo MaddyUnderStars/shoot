@@ -24,39 +24,47 @@ const client = config.storage.s3.enabled
 		})
 	: null;
 
-export const createUploadEndpoint = (
-	channel_id: string,
-	filename: string,
-	filesize: number,
-	mime: string,
-) => {
+export type PutFileRequest = {
+	channel_id: string;
+	name: string;
+	size: number;
+	mime: string;
+	md5: string;
+	width?: number;
+	height?: number;
+};
+
+export const createUploadEndpoint = (file: PutFileRequest) => {
 	if (config.storage.s3.enabled) {
-		return createS3Endpoint(channel_id, filename, filesize, mime);
+		return createS3Endpoint(file);
 	}
 
 	throw new Error("unimplemented");
 };
 
-const createS3Endpoint = async (
-	channel_id: string,
-	filename: string,
-	filesize: number,
-	mime: string,
-) => {
+const createS3Endpoint = async (file: PutFileRequest) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const hash = crypto
 		.createHash("md5")
-		.update(filename)
-		.update(mime)
+		.update(file.name)
+		.update(file.mime)
 		.update(Date.now().toString())
 		.digest("hex");
 
 	const command = new PutObjectCommand({
 		Bucket: config.storage.s3.bucket,
-		Key: `${channel_id}/${hash}`,
-		ContentLength: filesize,
-		ContentType: mime,
+		Key: `${file.channel_id}/${hash}`,
+		ContentLength: file.size,
+		ContentType: file.mime,
+		ContentMD5: file.md5,
+		Metadata:
+			file.width && file.height
+				? {
+						width: file.width.toString(),
+						height: file.height.toString(),
+					}
+				: undefined,
 	});
 
 	return {

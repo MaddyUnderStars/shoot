@@ -32,12 +32,18 @@ export const handleMessage = async (message: Message, federate = true) => {
 				);
 			}
 
-			if (head.ContentType !== file.type) {
-				throw new HttpError(
-					`Mimetype of ${file.hash} does not match uploaded object`,
-					400,
-				);
-			}
+			if (!head.ContentLength) throw new Error("no content length");
+			if (!head.ContentType) throw new Error("no content type");
+
+			file.size = head.ContentLength;
+			file.width = head.Metadata?.width
+				? Number.parseInt(head.Metadata?.width)
+				: null;
+			file.height = head.Metadata?.height
+				? Number.parseInt(head.Metadata?.height)
+				: null;
+
+			file.type = head.ContentType;
 		}
 	}
 
@@ -49,11 +55,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 	)
 		throw new APError("Already processed", 200);
 
-	const files = message.files;
-
 	await Message.insert(message);
-
-	message.files = files;
 
 	emitGatewayEvent(message.channel.id, {
 		type: "MESSAGE_CREATE",
@@ -61,6 +63,8 @@ export const handleMessage = async (message: Message, federate = true) => {
 	});
 
 	if (federate) await federateMessage(message);
+
+	return message;
 };
 
 const federateMessage = async (message: Message) => {
