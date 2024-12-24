@@ -32,10 +32,6 @@ export class Guild extends Actor {
 	@OneToMany("channels", "guild")
 	channels: GuildTextChannel[];
 
-	public get mention() {
-		return `${this.remote_id ?? this.id}@${this.domain}`;
-	}
-
 	public toPublic(): PublicGuild {
 		return {
 			id: this.remote_id ?? this.id,

@@ -7,7 +7,6 @@ import { setupTests } from "../helpers/env";
 setupTests(test);
 
 import { EventEmitter } from "node:stream";
-import Sinon from "sinon";
 import type {
 	GATEWAY_PAYLOAD,
 	MEMBERS_CHUNK,
@@ -30,6 +29,8 @@ class FakeSocket extends EventEmitter {
 
 	public close(code?: number) {
 		this.emit("close", code);
+		Object.values(this.events).map((x) => (x as () => void)());
+		this.removeAllListeners();
 	}
 }
 
@@ -40,7 +41,7 @@ const sendGatewayPayload = async (
 	const { onMessage } = await import("../../src/gateway/socket/message");
 
 	const ret = new Promise<GATEWAY_PAYLOAD>((resolve) => {
-		socket.addListener("message", (msg) => resolve(msg));
+		socket.once("message", (msg) => resolve(msg));
 	});
 
 	//@ts-ignore
@@ -50,11 +51,6 @@ const sendGatewayPayload = async (
 };
 
 test("Identify", async (t) => {
-	const clock = Sinon.useFakeTimers({
-		now: new Date(2024, 1, 1),
-		shouldClearNativeTimers: true,
-	});
-
 	const user1 = await createTestUser("user1");
 	await createTestUser("user2");
 	const dm = await createTestDm("dm", "user1@localhost", ["user2@localhost"]);
@@ -71,6 +67,8 @@ test("Identify", async (t) => {
 	t.is(ready.t, "READY");
 	t.deepEqual(data.channels[0], { ...dm.toPublic() });
 	t.is(data.user.name, "user1");
+
+	socket.close();
 });
 
 test("Request members", async (t) => {
@@ -106,4 +104,6 @@ test("Request members", async (t) => {
 		typeof data.items[2] !== "string" &&
 			data.items[2].name === "members_user2",
 	);
+
+	socket.close();
 });

@@ -1,6 +1,6 @@
 export const createTestUser = async (username: string) => {
 	const { registerUser, generateToken } = await import("../../src/util");
-	const user = await registerUser(username, "password", undefined, true);
+	const user = await registerUser(username, "password");
 	return await generateToken(user.id);
 };
 
@@ -20,7 +20,7 @@ export const createTestRemoteUser = async (name: string, domain: string) => {
 
 	await user.save();
 
-	return await generateSigningKeys(user);
+	return await generateSigningKeys(user, true);
 };
 
 const EXAMPLE_REMOTE_USER = {

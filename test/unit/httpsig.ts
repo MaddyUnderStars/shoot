@@ -6,17 +6,10 @@ import test from "ava";
 import { setupTests } from "../helpers/env";
 setupTests(test);
 
-import sinon from "sinon";
-
 test("Using Instance Actor", async (t) => {
 	const { signWithHttpSignature, validateHttpSignature, InstanceActor } =
 		await import("../../src/util");
 	const { User } = await import("../../src/entity");
-
-	const clock = sinon.useFakeTimers({
-		now: new Date(2024, 1, 1),
-		shouldClearNativeTimers: true,
-	});
 
 	const actor = await User.create({
 		...InstanceActor,
@@ -38,6 +31,5 @@ test("Using Instance Actor", async (t) => {
 		signed.headers,
 	);
 
-	clock.restore();
 	t.pass();
 });

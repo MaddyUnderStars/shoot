@@ -34,7 +34,8 @@
 			"skipFiles": ["<node_internals>/**/*.js"],
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+            "cwd": "${workspaceFolder}"
 		}
 	]
 }

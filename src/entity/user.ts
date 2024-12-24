@@ -13,7 +13,7 @@ export class User extends Actor {
 	name: string;
 
 	/** Tokens generated past this date are valid */
-	@Column({ nullable: true, type: Date })
+	@Column({ nullable: true, type: "timestamptz" })
 	valid_tokens_since: Date | null;
 
 	/** The password hash of this user. If null, this user is not from our domain */
