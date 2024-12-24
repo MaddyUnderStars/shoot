@@ -14,6 +14,8 @@ test("Can create user", async (t) => {
 
 	Object.assign(databaseUtils, { closeDatabase: () => {} });
 
+	process.env.NODE_ENV = "not-test";
+
 	await handleCli([
 		"node",
 		process.cwd(),
@@ -21,6 +23,8 @@ test("Can create user", async (t) => {
 		"testuser",
 		"test@localhost",
 	]);
+
+	process.env.NODE_ENV = "test";
 
 	Object.assign(databaseUtils, { closeDatabase });
 

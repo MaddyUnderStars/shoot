@@ -6,8 +6,6 @@ import test from "ava";
 import { setupTests } from "../helpers/env";
 setupTests(test);
 
-import sinon from "sinon";
-
 test("Using Instance Actor", async (t) => {
 	const { signWithHttpSignature, validateHttpSignature, InstanceActor } =
 		await import("../../src/util");
@@ -19,11 +17,6 @@ test("Using Instance Actor", async (t) => {
 		remote_address: "http://localhost/users/remote_user",
 		id: undefined,
 	}).save();
-
-	const clock = sinon.useFakeTimers({
-		now: new Date(2024, 1, 1),
-		shouldClearNativeTimers: true,
-	});
 
 	const signed = signWithHttpSignature(
 		"https://chat.understars.dev/inbox",
@@ -38,6 +31,5 @@ test("Using Instance Actor", async (t) => {
 		signed.headers,
 	);
 
-	clock.restore();
 	t.pass();
 });

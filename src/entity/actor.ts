@@ -40,6 +40,10 @@ export abstract class Actor extends BaseModel {
 	@Column({ nullable: true, type: String })
 	public_key: string;
 
+	public get mention() {
+		return `${this.remote_id ?? this.id}@${this.domain}`;
+	}
+
 	public toPublic(): unknown {
 		throw new Error("don't");
 	}
@@ -51,5 +55,9 @@ export abstract class Actor extends BaseModel {
 	/** Whether or not this actor is controlled by us */
 	public isRemote() {
 		return !!this.remote_address;
+	}
+
+	public toString() {
+		return `${this.constructor.name}[${this.mention}]`;
 	}
 }
