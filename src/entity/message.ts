@@ -20,7 +20,7 @@ import type { User } from "./user";
 export class Message extends BaseModel {
 	/** The content of this message */
 	@Column({ nullable: true, type: String })
-	content: string;
+	content: string | null;
 
 	/** The publish date of this message */
 	@CreateDateColumn()

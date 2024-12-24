@@ -10,17 +10,21 @@ import {
 } from "../../../../../util";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 
-const MessageCreate = z.object({
-	content: z.string(),
-	files: z
-		.array(
+const MessageCreate = z
+	.object({
+		content: z.string(),
+		files: z.array(
 			z.object({
 				name: z.string(),
 				hash: z.string(),
 			}),
-		)
-		.optional(),
-});
+		),
+	})
+	.partial()
+	.refine(
+		(obj) => Object.values(obj).some((x) => !!x),
+		"Message must not be empty",
+	);
 
 const router = Router({ mergeParams: true });
 

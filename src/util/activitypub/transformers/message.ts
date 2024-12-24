@@ -35,7 +35,7 @@ export const buildAPNote = (message: Message): APNote => {
 		cc: [
 			// "https://www.w3.org/ns/activitystreams#Public"
 		],
-		content: message.content,
+		content: message.content ?? undefined,
 		updated: message.updated ?? undefined,
 		summary: "",
 		url: `${config.federation.webapp_url.origin}/channel/${message.channel.id}/message/${message.id}`,
