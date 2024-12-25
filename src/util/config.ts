@@ -1,4 +1,5 @@
 import nodeConfig from "config";
+import { InstanceBehaviour } from "./activitypub/instances";
 import { tryParseUrl } from "./url";
 
 const LOCALHOST_URL = new URL("http://localhost");
@@ -158,6 +159,26 @@ const config = Object.freeze({
 				 */
 				public_key: get<string>("federation.public_key"),
 				private_key: get<string>("federation.private_key"),
+
+				/**
+				 * Control whether the `federation.instances` property is a denylist or allowlist
+				 *
+				 * @default false
+				 */
+				allowlist:
+					ifExistsGet<boolean>("federation.allowlist") ?? false,
+
+				/**
+				 * Control how Shoot handles requests from different instances
+				 * This is a key-value store where the key is `new URL(instance).origin`
+				 * and the value is the desired behaviour defined by InstanceBehaviour
+				 *
+				 * TODO it would be good if we could provide reasons for these
+				 */
+				instances:
+					ifExistsGet<{
+						[instance: string]: InstanceBehaviour;
+					}>("federation.instances") ?? {},
 			}
 		: {
 				enabled: false,
@@ -170,6 +191,8 @@ const config = Object.freeze({
 					use_inbound: true,
 					use_outbound: true,
 				},
+				allowlist: false,
+				instances: {},
 			},
 
 	webrtc: {

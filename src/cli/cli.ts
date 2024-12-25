@@ -11,7 +11,8 @@ export const handleCli = async (argv: string[]) => {
 		Log.warn(
 			"Syntax: `npm run cli -- [option]. Options:\n" +
 				"generate-keys - Generate signing keys for federation HTTP signatures and user tokens\n" +
-				"add-user [username] [email?] - Register a new user",
+				"add-user [username] [email?] - Register a new user\n" +
+				"instance [url] [action?] - View, block, limit, or allow instances",
 		);
 		return;
 	}
@@ -22,9 +23,14 @@ export const handleCli = async (argv: string[]) => {
 		return;
 	}
 
+	const { closeDatabase } = await import("../util/database");
+
 	try {
 		await exec(...args);
 	} catch (e) {
 		Log.error(e instanceof Error ? e.message : e);
 	}
+
+	// close it here in case we forget in the action
+	closeDatabase();
 };
