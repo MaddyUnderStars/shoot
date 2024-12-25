@@ -1,7 +1,7 @@
 import { ChildEntity, Column, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
-import { checkPermission } from "../util/checkPermission";
 import type { PERMISSION } from "../util/permission";
+import { checkPermission } from "../util/permission";
 import { Channel } from "./channel";
 import type { Guild } from "./guild";
 import type { User } from "./user";

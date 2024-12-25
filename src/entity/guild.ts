@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 import { z } from "zod";
 import { HttpError, type PERMISSION } from "../util";
-import { checkPermission } from "../util/checkPermission";
+import { checkPermission } from "../util/permission";
 import { Actor } from "./actor";
 import { PublicRole, type Role } from "./role";
 import { type GuildTextChannel, PublicGuildTextChannel } from "./textChannel";
@@ -25,7 +25,7 @@ export class Guild extends Actor {
 	@OneToMany("roles", "guild")
 	roles: Role[];
 
-	@ManyToOne("users")
+	@ManyToOne("users", { onDelete: "CASCADE" })
 	@JoinColumn()
 	owner: User;
 

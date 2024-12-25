@@ -31,11 +31,11 @@ export class Message extends BaseModel {
 	updated: Date | null;
 
 	/** The author of this message */
-	@ManyToOne("users")
+	@ManyToOne("users", { onDelete: "CASCADE" })
 	author: User;
 
 	/** The channel this message is associated with */
-	@ManyToOne("channels")
+	@ManyToOne("channels", { onDelete: "CASCADE" })
 	channel: Channel;
 
 	/** the attached files of this message */

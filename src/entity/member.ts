@@ -9,7 +9,7 @@ export class Member extends BaseModel {
 	@Column({ type: String, nullable: true })
 	nickname: string | null;
 
-	@ManyToOne("users")
+	@ManyToOne("users", { onDelete: "CASCADE" })
 	user: User;
 
 	@ManyToMany("roles", "members", { onDelete: "CASCADE" })

@@ -7,7 +7,7 @@ export class Session extends BaseModel {
 	@CreateDateColumn()
 	created_at: Date;
 
-	@ManyToOne("users")
+	@ManyToOne("users", { onDelete: "CASCADE" })
 	user: User;
 
 	/*
