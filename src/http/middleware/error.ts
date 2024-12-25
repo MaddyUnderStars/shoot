@@ -1,6 +1,7 @@
 import type { ErrorRequestHandler } from "express";
 import z from "zod";
 import { HttpError, createLogger } from "../../util";
+import { InstanceBlockedError } from "../../util/activitypub/instances";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
 
@@ -13,6 +14,11 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 	let message: string = error.message;
 
 	switch (true) {
+		case error instanceof InstanceBlockedError:
+			// TODO: I'd prefer to shadowban i.e. send them a response as if it worked normally
+			code = 401;
+			message = "Unauthorized";
+			break;
 		case error instanceof SyntaxError:
 			// silence
 			break;

@@ -20,6 +20,7 @@ import {
 import { APError } from "./error";
 import { signWithHttpSignature } from "./httpsig";
 import { InstanceActor } from "./instanceActor";
+import { throwInstanceBlock } from "./instances";
 import { splitQualifiedMention } from "./util";
 
 const Log = createLogger("ap:resolve");
@@ -43,17 +44,21 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 		if (cache) return cache.raw as T;
 	}
 
-	if (new URL(data).hostname === config.federation.instance_url.hostname)
+	const url = new URL(data);
+
+	throwInstanceBlock(url);
+
+	if (url.hostname === config.federation.instance_url.hostname)
 		throw new APError(
 			"Tried to resolve remote resource, but we are the remote!",
 		);
 
-	Log.verbose(`Fetching from remote ${data}`);
+	Log.verbose(`Fetching from remote ${url}`);
 
 	// sign the request
-	const signed = signWithHttpSignature(data, "get", InstanceActor);
+	const signed = signWithHttpSignature(url.toString(), "get", InstanceActor);
 
-	const res = await fetch(data, signed);
+	const res = await fetch(url, signed);
 
 	if (!res.ok)
 		throw new APError(
@@ -67,14 +72,14 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	const header = res.headers.get("content-type");
 	if (!header || !ACTIVITY_JSON_ACCEPT.find((x) => header.includes(x)))
 		throw new APError(
-			`Fetched resource ${data} did not return an activitypub/jsonld content type`,
+			`Fetched resource ${url} did not return an activitypub/jsonld content type`,
 		);
 
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
 	if (!json.id) throw new APError("Object does not have an ID");
 
-	if (new URL(data).origin !== new URL(json.id).origin)
+	if (url.origin !== new URL(json.id).origin)
 		throw new APError(
 			"Object ID origin does not match origin of requested url",
 		);
@@ -109,6 +114,8 @@ const doWebfingerOrFindTemplate = async (
 	const url = new URL(
 		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
 	);
+
+	throwInstanceBlock(url);
 
 	const opts = {
 		// don't send the default headers because
@@ -145,7 +152,11 @@ const doWebfingerOrFindTemplate = async (
 			"host-meta did not contain root->XRD->Link[template]",
 		);
 
-	res = await fetch(template.replace("{uri}", lookup), opts);
+	const templateUrl = new URL(template.replace("{uri}", lookup));
+
+	throwInstanceBlock(templateUrl);
+
+	res = await fetch(templateUrl, opts);
 
 	if (!res.ok)
 		throw new APError(

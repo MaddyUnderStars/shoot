@@ -8,8 +8,10 @@ import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
 import { createUserForRemotePerson } from "../entity/user";
 import { createLogger } from "../log";
+import { tryParseUrl } from "../url";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
+import { throwInstanceBlock } from "./instances";
 import { resolveAPObject } from "./resolve";
 import { APObjectIsActor } from "./util";
 
@@ -75,7 +77,25 @@ export const validateHttpSignature = async (
 		throw new APError(`Unsupported encryption algorithm ${algorithm}`);
 
 	const url = new URL(keyId);
-	const actorId = `${url.origin}${url.pathname}`; // likely wrong
+	const actorId = `${url.origin}${url.pathname}`; // TODO: possibly wrong
+
+	// check if this instance is blocked before we do anything intensive
+	throwInstanceBlock(url);
+
+	// check the inner object as well
+	if (activity && "object" in activity) {
+		let tryurl: URL | null = null;
+		if (typeof activity.object === "string")
+			tryurl = tryParseUrl(activity.object);
+		else if (
+			activity.object &&
+			"id" in activity.object &&
+			activity.object.id
+		)
+			tryurl = tryParseUrl(activity.object.id);
+
+		if (tryurl) throwInstanceBlock(tryurl);
+	}
 
 	const [user, channel, guild] = await Promise.all([
 		User.findOne({ where: { remote_address: actorId } }),
