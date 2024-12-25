@@ -20,7 +20,7 @@ export const addUser = async (username: string, email?: string) => {
 	}
 
 	const { config } = await import("../../util/config");
-	const { closeDatabase, initDatabase } = await import("../../util/database");
+	const { initDatabase } = await import("../../util/database");
 	const { registerUser } = await import("../../util/entity/user");
 
 	const handle = `${username}@${config.federation.webapp_url.hostname}`;
@@ -33,10 +33,8 @@ export const addUser = async (username: string, email?: string) => {
 			`Could not register user ${handle},`,
 			e instanceof Error ? e.message : e,
 		);
-		closeDatabase();
 		return;
 	}
 
 	Log.msg(`Registered user '${handle}' with password '${password}'`);
-	closeDatabase();
 };
