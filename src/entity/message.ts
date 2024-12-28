@@ -39,7 +39,10 @@ export class Message extends BaseModel {
 	channel: Channel;
 
 	/** the attached files of this message */
-	@OneToMany("attachments", (attachment: Attachment) => attachment.message)
+	@OneToMany("attachments", (attachment: Attachment) => attachment.message, {
+		cascade: true,
+		orphanedRowAction: "delete",
+	})
 	files: Attachment[];
 
 	/**

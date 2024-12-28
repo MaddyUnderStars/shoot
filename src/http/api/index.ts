@@ -3,6 +3,10 @@ import { authHandler, rateLimiter } from "../middleware";
 
 const router = Router();
 
+// BEFORE auth handler as it uses it's own auth method
+import upload from "./upload";
+router.use("/upload", upload);
+
 router.use(authHandler);
 
 import auth_login from "./auth/login";

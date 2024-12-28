@@ -1,5 +1,6 @@
 import { ObjectIsNote } from "activitypub-types";
 import { DMChannel, GuildTextChannel, Member, Message } from "../../entity";
+import { Attachment } from "../../entity/attachment";
 import { sendActivity } from "../../sender";
 import {
 	APError,
@@ -32,18 +33,13 @@ export const handleMessage = async (message: Message, federate = true) => {
 				);
 			}
 
-			if (!head.ContentLength) throw new Error("no content length");
-			if (!head.ContentType) throw new Error("no content type");
+			if (!head.length) throw new Error("no content length");
+			if (!head.type) throw new Error("no content type");
 
-			file.size = head.ContentLength;
-			file.width = head.Metadata?.width
-				? Number.parseInt(head.Metadata?.width)
-				: null;
-			file.height = head.Metadata?.height
-				? Number.parseInt(head.Metadata?.height)
-				: null;
-
-			file.type = head.ContentType;
+			file.size = head.length;
+			file.type = head.type;
+			file.width = head.width ?? null;
+			file.height = head.height ?? null;
 		}
 	}
 
@@ -55,7 +51,14 @@ export const handleMessage = async (message: Message, federate = true) => {
 	)
 		throw new APError("Already processed", 200);
 
+	message = Message.create(message);
+
 	await Message.insert(message);
+
+	// TOOD: these files are already a part of the message
+	// why are they not being inserted
+	for (const file of message.files) file.message = message;
+	await Attachment.insert(message.files);
 
 	emitGatewayEvent(message.channel.id, {
 		type: "MESSAGE_CREATE",

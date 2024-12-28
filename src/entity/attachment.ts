@@ -1,7 +1,11 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { BeforeRemove, Column, Entity, ManyToOne } from "typeorm";
 import { z } from "zod";
+import { createLogger } from "../util/log";
+import { deleteFile } from "../util/storage";
 import { BaseModel } from "./basemodel";
 import type { Message } from "./message";
+
+const Log = createLogger("attachments");
 
 @Entity("attachments")
 export class Attachment extends BaseModel {
@@ -26,7 +30,7 @@ export class Attachment extends BaseModel {
 	@Column({ type: Number, nullable: true })
 	height: number | null;
 
-	@ManyToOne("messages")
+	@ManyToOne("messages", (obj: Message) => obj.files, { onDelete: "CASCADE" })
 	message: Message;
 
 	public toPublic(): PublicAttachment {
@@ -38,6 +42,13 @@ export class Attachment extends BaseModel {
 			width: this.width,
 			height: this.height,
 		};
+	}
+
+	@BeforeRemove()
+	public on_delete() {
+		deleteFile(this.message.channel.id, this.hash).catch((e) =>
+			Log.error("Failed to delete attachment", e),
+		);
 	}
 }
 

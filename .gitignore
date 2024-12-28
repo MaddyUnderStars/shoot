@@ -1,5 +1,6 @@
 node_modules
-config
-dist
-database.db
-coverage
+/config
+/dist
+/database.db
+/coverage
+/storage

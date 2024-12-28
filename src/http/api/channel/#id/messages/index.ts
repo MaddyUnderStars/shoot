@@ -22,7 +22,7 @@ const MessageCreate = z
 	})
 	.partial()
 	.refine(
-		(obj) => Object.values(obj).some((x) => !!x),
+		(obj) => Object.values(obj).some((x) => x.length > 0),
 		"Message must not be empty",
 	);
 
@@ -101,6 +101,7 @@ router.get(
 				.createQueryBuilder("messages")
 				.limit(req.query.limit)
 				.leftJoinAndSelect("messages.author", "author")
+				.leftJoinAndSelect("messages.files", "files")
 				.where("messages.channelId = :channel_id", {
 					channel_id: channel.id,
 				});
