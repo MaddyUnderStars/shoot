@@ -1,8 +1,9 @@
 import { merge } from "ts-deepmerge";
-import { BaseEntity, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, BeforeUpdate, PrimaryColumn } from "typeorm";
+import { v7 as uuidv7 } from "uuid";
 
 export abstract class BaseModel extends BaseEntity {
-	@PrimaryGeneratedColumn("uuid")
+	@PrimaryColumn({ type: "uuid" })
 	id: string;
 
 	/** Get a public representation of this entity, to be sent to clients. */
@@ -22,5 +23,11 @@ export abstract class BaseModel extends BaseEntity {
 	public assign(props: object) {
 		Object.assign(this, merge(this, props));
 		return this;
+	}
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	public generate_id() {
+		if (!this.id) this.id = uuidv7();
 	}
 }

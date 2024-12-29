@@ -73,7 +73,7 @@ router.post(
 
 const MessageFetchOpts = z.object({
 	limit: z.number({ coerce: true }).max(50).min(1).optional().default(50),
-	order: z.literal("ASC").or(z.literal("DESC")).optional(),
+	order: z.literal("ASC").or(z.literal("DESC")).optional().default("DESC"),
 	after: z.string().optional(),
 	before: z.string().optional(),
 	around: z.string().optional(),
@@ -100,13 +100,12 @@ router.get(
 				.getRepository(Message)
 				.createQueryBuilder("messages")
 				.limit(req.query.limit)
+				.orderBy("messages.id", req.query.order)
 				.leftJoinAndSelect("messages.author", "author")
 				.leftJoinAndSelect("messages.files", "files")
 				.where("messages.channelId = :channel_id", {
 					channel_id: channel.id,
 				});
-
-			if (req.query.order) query.orderBy("id", req.query.order);
 
 			if (req.query.query)
 				query.andWhere(
@@ -122,7 +121,15 @@ router.get(
 				query.andWhere("messages.id < :before", {
 					before: req.query.before,
 				});
-			// else if (req.params.around) TODO
+			// else if (req.query.around) { TODO
+			// 	query.andWhere(
+			// 		new Brackets((qb) => {
+			// 			qb.where("messages.id > :after", {
+			// 				after: req.query.after,
+			// 			});
+			// 		}),
+			// 	);
+			// }
 
 			const messages = await query.getMany();
 
