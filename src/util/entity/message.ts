@@ -51,14 +51,14 @@ export const handleMessage = async (message: Message, federate = true) => {
 	)
 		throw new APError("Already processed", 200);
 
-	message = Message.create(message);
-
 	await Message.insert(message);
 
 	// TOOD: these files are already a part of the message
 	// why are they not being inserted
-	for (const file of message.files) file.message = message;
-	await Attachment.insert(message.files);
+	if (message.files) {
+		for (const file of message.files) file.message = message;
+		await Attachment.insert(message.files);
+	}
 
 	emitGatewayEvent(message.channel.id, {
 		type: "MESSAGE_CREATE",
