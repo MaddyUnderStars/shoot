@@ -14,7 +14,7 @@ test("Create<Note> at channel", async (t) => {
 	const { APIServer } = await import("../../src/http/server");
 	const api = new APIServer();
 
-	const local = await createTestUser("local");
+	await createTestUser("local");
 	const remote = await createTestRemoteUser("remote", "http://remote");
 	const channel = await createTestDm("dm", "local@localhost", [
 		"remote@remote",
