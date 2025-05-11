@@ -1,5 +1,5 @@
 import nodeConfig from "config";
-import { InstanceBehaviour } from "./activitypub/instances";
+import type { InstanceBehaviour } from "./activitypub/instances";
 import { tryParseUrl } from "./url";
 
 const LOCALHOST_URL = new URL("http://localhost");
