@@ -31,7 +31,7 @@ const listenRangeEvent = (socket: Websocket, member_id: string) => {
 			case "ROLE_MEMBER_ADD": {
 				// A member had a role added or removed
 				// TODO: Find their new position and if it's outside the range, unsub
-				// I would prefer to not use any async methods here, beacuse this function is in the hot path
+				// I would prefer to not use any async methods here, because this function is in the hot path
 				// It's called (# member updates) * (# subscribed users)
 				// Caching the results might be a solution, but then we have to hit the cache? unless it's a mem cache
 

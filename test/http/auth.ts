@@ -15,7 +15,7 @@ test("Register and login", async (t) => {
 	await request(api.app)
 		.post("/auth/register")
 		.send({
-			username: "registertest",
+			username: "registerTest",
 			password: "test",
 			email: "test@localhost.com",
 		})
@@ -27,7 +27,7 @@ test("Register and login", async (t) => {
 	await request(api.app)
 		.post("/auth/login")
 		.send({
-			username: "registertest",
+			username: "registerTest",
 			password: "test",
 		})
 		.set("Accept", "application/json")

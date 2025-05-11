@@ -62,7 +62,7 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 		 * TODO: we need to store or fetch this metadata from somewhere
 		 * I've thought of:
 		 * - storing it in exif (can't find a good reader/writer on npm)
-		 * - storing it in db as an Attachment (have to rearrage the existing logic)
+		 * - storing it in db as an Attachment (have to rearrange the existing logic)
 		 * - just using mmmagic and ffmpeg directly to find it on the fly (bad option, slow)
 		 */
 		width: undefined,

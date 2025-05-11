@@ -53,7 +53,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	await Message.insert(message);
 
-	// TOOD: these files are already a part of the message
+	// TODO: these files are already a part of the message
 	// why are they not being inserted
 	if (message.files) {
 		for (const file of message.files) file.message = message;

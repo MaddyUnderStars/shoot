@@ -87,7 +87,7 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 
 	const local = await createTestUser("local2");
 	const remote = await createTestRemoteUser("remote2", "http://remote");
-	const notmember = await createTestRemoteUser("notmember", "http://remote");
+	const notMember = await createTestRemoteUser("notMember", "http://remote");
 	const channel = await createTestDm("dm", "local2@localhost", [
 		"remote2@remote",
 	]);
@@ -102,7 +102,7 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 
 	const reference_message = Message.create({
 		content: "test message",
-		author: notmember,
+		author: notMember,
 		published: new Date(),
 		updated: new Date(),
 		channel: channel,
@@ -112,15 +112,15 @@ test("Cannot Create<Note> to channel we are not members of", async (t) => {
 		JSON.stringify(
 			addContext(buildAPCreateNote(buildAPNote(reference_message))),
 		).replaceAll(
-			"http://localhost/users/notmember",
-			"http://remote/users/notmember",
+			"http://localhost/users/notMember",
+			"http://remote/users/notMember",
 		),
 	);
 
 	const signed = signWithHttpSignature(
 		`http://localhost/channel/${channel.id}/inbox`,
 		"POST",
-		notmember,
+		notMember,
 		activity,
 	);
 

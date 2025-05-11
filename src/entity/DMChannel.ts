@@ -11,7 +11,7 @@ import { Channel } from "./channel";
 import type { User } from "./user";
 
 // TODO: DM channels should not exist
-// Clientside, a dm channel should just be a guild channel that gets pinned to the users channel list
+// Client side, a dm channel should just be a guild channel that gets pinned to the users channel list
 // This would allow you to convert a dm channel to a guild and back easily
 // and would simplify code a bit
 @ChildEntity("dm")

@@ -282,7 +282,7 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 
 	const everyone = roles.find((x) => x.remote_id === guild.remote_id);
 	if (!everyone)
-		// TOOD: construct one based on membership of all other roles?
+		// TODO: construct one based on membership of all other roles?
 		throw new APError("Remote guild did not have everyone role");
 
 	// this should be modifying a reference, as roles are not primitives

@@ -27,7 +27,7 @@ export class Channel extends Actor {
 		user: User,
 		permission: PERMISSION | PERMISSION[],
 	) => {
-		// todo: which permision?
+		// todo: which permission?
 		if (!(await this.checkPermission(user, permission)))
 			throw new HttpError("Missing permission", 400);
 		return true;

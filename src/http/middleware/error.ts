@@ -15,9 +15,9 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 
 	switch (true) {
 		case error instanceof InstanceBlockedError:
-			// TODO: I'd prefer to shadowban i.e. send them a response as if it worked normally
+			// TODO: I'd prefer to shadow ban i.e. send them a response as if it worked normally
 			code = 401;
-			message = "Unauthorized";
+			message = "Unauthorised";
 			break;
 		case error instanceof SyntaxError:
 			// silence

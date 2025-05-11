@@ -18,7 +18,7 @@ test("Get local", async (t) => {
 		createTestUser("local1"),
 		createTestUser("local2"),
 	]);
-	const dm = await createTestDm("localdm", "local1@localhost", [
+	const dm = await createTestDm("localDm", "local1@localhost", [
 		"local2@localhost",
 	]);
 
@@ -39,7 +39,7 @@ test("Get local as non-member", async (t) => {
 		createTestUser("local4"),
 		createTestUser("local5"),
 	]);
-	const dm = await createTestDm("localdm", "local3@localhost", [
+	const dm = await createTestDm("localDm", "local3@localhost", [
 		"local4@localhost",
 	]);
 

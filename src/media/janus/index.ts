@@ -30,7 +30,7 @@ export class Janus extends EventEmitter {
 	private token?: string;
 	private sequence = 0;
 	private _adminSession: number;
-	private _adminhandle: number;
+	private _adminHandle: number;
 
 	get session() {
 		return this._adminSession;
@@ -70,7 +70,7 @@ export class Janus extends EventEmitter {
 		this.startHeartbeat();
 
 		this._adminSession = (await this.createSession()).id;
-		this._adminhandle = (await this.attachHandle()).id;
+		this._adminHandle = (await this.attachHandle()).id;
 	};
 
 	public createSession = () =>
@@ -91,7 +91,7 @@ export class Janus extends EventEmitter {
 				audiolevel_event: true,
 			},
 			session_id: this.session,
-			handle_id: this._adminhandle,
+			handle_id: this._adminHandle,
 		});
 
 	public joinRoom = (handle_id: number, room_id: number, display: string) =>

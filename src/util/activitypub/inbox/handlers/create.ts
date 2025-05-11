@@ -64,7 +64,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 
 	if (ObjectIsNote(inner)) {
 		// Create<Note> at User
-		// This activity is probably from Mastodon or other forgein software
+		// This activity is probably from Mastodon or other foreign software
 		// In this case, create a dm channel if it doesn't exist
 		// and then send this message to it
 

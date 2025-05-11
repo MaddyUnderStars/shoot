@@ -43,29 +43,29 @@ export const validateHttpSignature = async (
 	noCache = false,
 ): Promise<Actor> => {
 	const date = requestHeaders.date;
-	const sigheader = requestHeaders.signature?.toString();
+	const sigHeader = requestHeaders.signature?.toString();
 
-	if (!date || !sigheader) throw new APError("Missing signature");
+	if (!date || !sigHeader) throw new APError("Missing signature");
 
 	const ONE_DAY = 24 * 60 * 60 * 1000;
 	const dateParsed = Date.parse(date).valueOf();
 	if (dateParsed > Date.now() + ONE_DAY || dateParsed < Date.now() - ONE_DAY)
 		throw new APError("Signature was created gt/lt 1 day from now");
 
-	const sigopts: { [key: string]: string | undefined } = Object.assign(
+	const sigOpts: { [key: string]: string | undefined } = Object.assign(
 		{},
-		...sigheader
+		...sigHeader
 			.split(",")
 			.flat()
-			.map((keyval) => {
-				const split = keyval.split("=");
+			.map((keyVal) => {
+				const split = keyVal.split("=");
 				return {
 					[split[0]]: split[1].replaceAll('"', ""),
 				};
 			}),
 	);
 
-	const { signature, headers, keyId, algorithm } = sigopts;
+	const { signature, headers, keyId, algorithm } = sigOpts;
 
 	if (!signature || !headers || !keyId)
 		throw new APError("Invalid signature");
@@ -84,17 +84,17 @@ export const validateHttpSignature = async (
 
 	// check the inner object as well
 	if (activity && "object" in activity) {
-		let tryurl: URL | null = null;
+		let tryUrl: URL | null = null;
 		if (typeof activity.object === "string")
-			tryurl = tryParseUrl(activity.object);
+			tryUrl = tryParseUrl(activity.object);
 		else if (
 			activity.object &&
 			"id" in activity.object &&
 			activity.object.id
 		)
-			tryurl = tryParseUrl(activity.object.id);
+			tryUrl = tryParseUrl(activity.object.id);
 
-		if (tryurl) throwInstanceBlock(tryurl);
+		if (tryUrl) throwInstanceBlock(tryUrl);
 	}
 
 	const [user, channel, guild] = await Promise.all([

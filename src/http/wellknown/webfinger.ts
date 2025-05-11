@@ -1,4 +1,4 @@
-import { Router, type Response } from "express";
+import { type Response, Router } from "express";
 import z from "zod";
 import { Invite, User } from "../../entity";
 import { getExternalPathFromActor } from "../../sender";
@@ -16,9 +16,9 @@ const router = Router();
 
 const WebfingerRequest = z.object({ resource: z.string() });
 
-// TODO: this is prettyyy gross.
+// TODO: this is pretty gross.
 // if invites were actors it would be easier, because I could just reuse the all the existing actor functions
-// but then, invites would be actors, and thats stupid!
+// but then, invites would be actors, and that's stupid!
 
 const webfingerLookupAcct = async (lookup: string) => {
 	const actor = await findActorOfAnyType(

@@ -20,7 +20,7 @@ test("Can create user", async (t) => {
 		"node",
 		process.cwd(),
 		"add-user",
-		"testuser",
+		"testUser",
 		"test@localhost",
 	]);
 
@@ -29,7 +29,7 @@ test("Can create user", async (t) => {
 	Object.assign(databaseUtils, { closeDatabase });
 
 	const user = await User.findOneOrFail({
-		where: { name: "testuser", email: "test@localhost" },
+		where: { name: "testUser", email: "test@localhost" },
 	});
 	t.assert(user.private_key);
 	t.assert(user.public_key);
