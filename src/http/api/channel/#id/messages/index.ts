@@ -103,6 +103,7 @@ router.get(
 				.orderBy("messages.id", req.query.order)
 				.leftJoinAndSelect("messages.author", "author")
 				.leftJoinAndSelect("messages.files", "files")
+				.leftJoinAndSelect("messages.embeds", "embeds")
 				.where("messages.channelId = :channel_id", {
 					channel_id: channel.id,
 				});

@@ -34,6 +34,11 @@ export type MESSAGE_CREATE = {
 	message: PublicMessage;
 };
 
+export type MESSAGE_UPDATE = {
+	type: "MESSAGE_UPDATE";
+	message: Partial<PublicMessage>;
+};
+
 export type CHANNEL_CREATE = {
 	type: "CHANNEL_CREATE";
 	channel: PublicDmChannel | PublicGuildTextChannel;
@@ -121,6 +126,7 @@ export type HEARTBEAT_ACK = {
 
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
+	| MESSAGE_UPDATE
 	| CHANNEL_CREATE
 	| CHANNEL_DELETE
 	| MEDIA_TOKEN_RECEIVED

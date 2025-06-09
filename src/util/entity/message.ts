@@ -13,6 +13,13 @@ import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
 import { HttpError } from "../httperror";
 import { checkFileExists } from "../storage";
+import { tryParseUrl } from "../url";
+import { generateUrlPreview } from "../embeds";
+import { Embed } from "../../entity/embed";
+import { createLogger } from "../log";
+import { z } from "zod";
+
+const log = createLogger("handleMessage");
 
 /**
  * Handle a new message by validating it, sending gateway event, and sending an Announce
@@ -65,7 +72,32 @@ export const handleMessage = async (message: Message, federate = true) => {
 		message: message.toPublic(),
 	});
 
-	if (federate) await federateMessage(message);
+	// this could be a long running task
+	// and we don't care about it's result
+	const embedPromise = processEmbeds(message).catch((e) => {
+		log.error(e);
+	});
+
+	if (federate) {
+		// don't await this here
+		// as federation and embed generation doesn't need to block this func
+		setImmediate(async () => {
+			// we want to federate the generated embeds
+			// so as to not DDOS any unsuspecting services
+			// TODO: make sure to have some rules in place to make this safe
+			// i.e. only allow federated embeds to contain content from the same origin as the url
+			// or only render federated embeds behind a warning in the client
+			await embedPromise;
+
+			try {
+				await federateMessage(message);
+			} catch (e) {
+				// we'll likely want to implement some sort of retry
+				// or eventual mark as failed behaviour here
+				log.error("FIXME: message failed to federate");
+			}
+		});
+	}
 
 	return message;
 };
@@ -147,4 +179,57 @@ const federateMessage = async (message: Message) => {
 			}
 		}
 	}
+};
+
+const URL_REGEX =
+	/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+
+const EMBED_TTL = 1000 * 60 * 60 * 24 * 7; // 1 week
+
+const processEmbeds = async (message: Message) => {
+	if (!message.content) return;
+
+	// get all urls in the message
+	// the urls must be separated by whitespace and must not be wrapped in <>
+	const urls = message.content
+		.split(" ")
+		.filter(
+			(x) =>
+				x.match(URL_REGEX) && !(x.startsWith("<") && x.endsWith(">")),
+		)
+		.map((x) => tryParseUrl(x))
+		.filter((x) => !!x);
+
+	const curr_time = Date.now();
+	const embeds: Embed[] = [];
+	for (const url of urls) {
+		// check existing embed
+		const existing = await Embed.findOne({
+			where: { target: url.toString() },
+		});
+
+		if (existing && existing.created_at.valueOf() + EMBED_TTL > curr_time) {
+			embeds.push(existing);
+			continue;
+		}
+
+		const embed = await generateUrlPreview(url);
+
+		embeds.push(embed);
+	}
+
+	await Promise.all(embeds.map((x) => x.save()));
+
+	// TODO: I would prefer if I could just insert into the junction table
+	// but then I have to guess the typeorm name for it
+	// and bleh
+	message.embeds = embeds;
+	await message.save();
+
+	emitGatewayEvent(message.channel.id, {
+		type: "MESSAGE_UPDATE",
+		message: {
+			embeds: embeds.map((x) => x.toPublic()),
+		},
+	});
 };

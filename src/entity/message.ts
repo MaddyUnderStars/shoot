@@ -3,6 +3,8 @@ import {
 	CreateDateColumn,
 	Entity,
 	JoinColumn,
+	JoinTable,
+	ManyToMany,
 	ManyToOne,
 	OneToMany,
 	OneToOne,
@@ -15,6 +17,7 @@ import { type Attachment, PublicAttachment } from "./attachment";
 import { BaseModel } from "./basemodel";
 import type { Channel } from "./channel";
 import type { User } from "./user";
+import { PublicEmbed, type Embed } from "./embed";
 
 @Entity("messages")
 export class Message extends BaseModel {
@@ -45,6 +48,11 @@ export class Message extends BaseModel {
 	})
 	files: Attachment[];
 
+	/** the attached embeds/url previews of this message */
+	@ManyToMany("embeds", { orphanedRowAction: "delete" })
+	@JoinTable()
+	embeds: Embed[];
+
 	/**
 	 * The reference object this message was created from.
 	 * Messages sent from here don't have this.
@@ -62,6 +70,7 @@ export class Message extends BaseModel {
 			author_id: this.author.mention,
 			channel_id: this.channel.mention,
 			files: this.files ? this.files.map((x) => x.toPublic()) : [],
+			embeds: this.embeds ? this.embeds.map((x) => x.toPublic()) : [],
 		} as PublicMessage;
 	}
 
@@ -76,6 +85,7 @@ export type PublicMessage = Pick<
 > & {
 	author_id: string;
 	channel_id: string;
+	embeds: PublicEmbed[];
 };
 
 export const PublicMessage: z.ZodType<PublicMessage> = z
@@ -87,6 +97,7 @@ export const PublicMessage: z.ZodType<PublicMessage> = z
 		author_id: z.string(),
 		channel_id: z.string(),
 		files: z.array(PublicAttachment),
+		embeds: z.array(PublicEmbed),
 	})
 	.openapi("PublicMessage");
 
