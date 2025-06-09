@@ -20,7 +20,7 @@ export class APIServer {
 		this.app.use(cors());
 
 		this.app.set("trust proxy", config.security.trust_proxy);
-
+                this.app.use(express.static("public"));
 		this.app.use(bodyParser.json({ inflate: true }));
 		this.app.use(
 			bodyParser.json({
