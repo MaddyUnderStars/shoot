@@ -23,27 +23,20 @@ server {
 	server_name <example.com>;
 	listen 80;
 
-	location ~ ^/(api|.\well-known)/ {
+	location ~ ^/(api|.\well-known) {
 		# Shoot API hosted on `/api` and `.well-known` pass through
 
 		proxy_pass http://127.0.0.1:3001;
 
-		add_header Access-Control-Allow-Origin *;
-
-		proxy_set_header Host $host;
-		proxy_set_header  X-Forwarded-For $remote_addr;
-		proxy_set_header X-Forwarded-Proto $scheme;
-		
 		proxy_pass_request_headers on;
-		proxy_no_cache 1;
-		proxy_cache_bypass 1;
+		proxy_no_cache $http_authorization;
 
-		# Allow websocket connections through
+		# enable websockets
 		proxy_set_header Upgrade $http_upgrade;
 		proxy_set_header Connection "upgrade";
 
 		# remove the api prefix on the request before sending it to backend
-		rewrite /api/(.*) /$1 break;
+		rewrite /api(/?)(.*) /$2 break;
 	}
 
 	location / {
