@@ -23,7 +23,7 @@ server {
 	server_name <example.com>;
 	listen 80;
 
-	location ~ ^/(api|.\well-known) {
+	location ~ ^/(api|\.well-known) {
 		# Shoot API hosted on `/api` and `.well-known` pass through
 
 		proxy_pass http://127.0.0.1:3001;
