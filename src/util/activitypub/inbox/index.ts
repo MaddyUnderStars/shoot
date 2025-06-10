@@ -7,9 +7,11 @@ import { config } from "../../config";
 import { APError } from "../error";
 import { ActivityHandlers } from "./handlers";
 
-const queue = config.federation.queue.use_inbound
-	? new Queue<APInboundJobData>("inbound")
-	: null;
+const getQueue = () => {
+	return config.federation.queue.use_inbound
+		? new Queue<APInboundJobData>("inbound")
+		: null;
+};
 
 export const AP_ACTIVITY = z
 	.object({
@@ -29,6 +31,7 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 
 	const safeActivity = AP_ACTIVITY.parse(activity);
 
+	const queue = getQueue();
 	if (queue)
 		await queue.add(`${safeActivity.type}-${target.id}-${Date.now()}`, {
 			activity: safeActivity,
