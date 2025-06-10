@@ -135,6 +135,10 @@ const config = Object.freeze({
 						"federation.require_http_signatures",
 					) ?? false,
 
+				/**
+				 * Various settings related to the federation queues implemented using Redis.
+				 * You can configure Redis via the `redis.*` config options.
+				 */
 				queue: {
 					/**
 					 * Whether or not to use the inbound queue. Requires redis.
@@ -142,14 +146,6 @@ const config = Object.freeze({
 					 */
 					use_inbound:
 						ifExistsGet<boolean>("federation.queue.use_inbound") ??
-						false,
-
-					/**
-					 * Whether or not to use the inbound queue. Requires redis.
-					 * @default false
-					 */
-					use_outbound:
-						ifExistsGet<boolean>("federation.queue.use_outbound") ??
 						false,
 				},
 
@@ -189,7 +185,6 @@ const config = Object.freeze({
 				private_key: "",
 				queue: {
 					use_inbound: true,
-					use_outbound: true,
 				},
 				allowlist: false,
 				instances: {},
@@ -260,6 +255,25 @@ const config = Object.freeze({
 					accessKey: "",
 					secret: "",
 				},
+	},
+
+	/**
+	 * Redis is optional. It is currently only used for the inbound federation queue
+	 */
+	redis: {
+		/**
+		 * The IP/hostname of the Redis instance to connect to
+		 *
+		 * @default "localhost"
+		 */
+		host: ifExistsGet<string>("redis.host") ?? "localhost",
+
+		/**
+		 * The port to use when connecting to a Redis host
+		 *
+		 * @default 6379
+		 */
+		port: ifExistsGet<number>("redis.port") ?? 6379,
 	},
 });
 

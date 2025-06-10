@@ -5,7 +5,7 @@ extendZodWithOpenApi(z);
 import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
 import { ApCache, Channel, Guild, User } from "../entity";
-import { APError, AP_ACTIVITY, initDatabase } from "../util";
+import { APError, AP_ACTIVITY, config, initDatabase } from "../util";
 import { ActivityHandlers } from "../util/activitypub/inbox/handlers";
 
 export type APInboundJobData = { activity: APActivity; target_id: string };
@@ -44,8 +44,8 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 
 const worker = new Worker("inbound", jobHandler, {
 	connection: {
-		host: "localhost",
-		port: 6379,
+		host: config.redis.host,
+		port: config.redis.port,
 	},
 	autorun: false,
 });
