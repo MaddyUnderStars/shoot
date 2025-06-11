@@ -29,7 +29,7 @@ server {
 		proxy_pass http://127.0.0.1:3001;
 
 		proxy_pass_request_headers on;
-		proxy_no_cache $http_authorization;
+		proxy_no_cache 1;
 
 		# enable websockets
 		proxy_set_header Upgrade $http_upgrade;
