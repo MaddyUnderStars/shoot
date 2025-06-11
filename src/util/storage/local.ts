@@ -15,6 +15,8 @@ const Log = createLogger("localstorage");
 export type localFileJwt = PutFileRequest & { key: string };
 
 const createEndpoint = async (file: PutFileRequest) => {
+	// TODO: if federation is disabled, this defaults to localhost
+	// which is obviously wrong
 	const endpoint = `${config.federation.instance_url.origin}/upload`;
 
 	const hash = crypto

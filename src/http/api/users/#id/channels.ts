@@ -3,7 +3,13 @@ import { Router } from "express";
 import { z } from "zod";
 import { DMChannel, PublicChannel } from "../../../../entity";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import { addContext, config, getOrFetchUser, route } from "../../../../util";
+import {
+	addContext,
+	config,
+	getOrFetchUser,
+	makeInstanceUrl,
+	route,
+} from "../../../../util";
 import { buildAPActor } from "../../../../util/activitypub/transformers";
 import { createDmChannel } from "../../../../util/entity/channel";
 
@@ -49,8 +55,12 @@ router.post(
 						channel.recipients,
 						addContext({
 							type: "Create",
-							id: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/create`,
-							actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel.owner)}`,
+							id: makeInstanceUrl(
+								`${getExternalPathFromActor(channel)}/create`,
+							),
+							actor: makeInstanceUrl(
+								getExternalPathFromActor(channel.owner),
+							),
 							object: buildAPActor(channel),
 						}) as APCreate,
 						channel.owner,

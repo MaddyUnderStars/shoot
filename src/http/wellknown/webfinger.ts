@@ -7,6 +7,8 @@ import {
 	InstanceActor,
 	config,
 	findActorOfAnyType,
+	makeInstanceUrl,
+	makeWebappUrl,
 	route,
 	splitQualifiedMention,
 } from "../../util";
@@ -94,12 +96,12 @@ router.get(
 
 			return res.json({
 				subject: `${type}:${id}@${config.federation.webapp_url.hostname}`,
-				aliases: [`${webapp_url.origin}${path}`],
+				aliases: [makeWebappUrl(path)],
 				links: [
 					{
 						rel: "self",
 						type: "application/activity+json",
-						href: `${instance_url.origin}${path}`,
+						href: makeInstanceUrl(path),
 					},
 				],
 			});

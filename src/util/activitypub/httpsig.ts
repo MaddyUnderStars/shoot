@@ -8,7 +8,7 @@ import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
 import { createUserForRemotePerson } from "../entity/user";
 import { createLogger } from "../log";
-import { tryParseUrl } from "../url";
+import { makeInstanceUrl, tryParseUrl } from "../url";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { throwInstanceBlock } from "./instances";
@@ -255,7 +255,7 @@ export const signWithHttpSignature = (
 	// 		: `/users/${keys.username}`;
 
 	const header =
-		`keyId="${config.federation.instance_url.origin}${getExternalPathFromActor(keys)}",` +
+		`keyId="${makeInstanceUrl(getExternalPathFromActor(keys))}",` +
 		`headers="(request-target) host date${digest ? " digest" : ""}",` +
 		`signature="${sig_b64}"`;
 

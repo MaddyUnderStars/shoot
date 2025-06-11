@@ -5,6 +5,7 @@ import {
 	addContext,
 	config,
 	getDatabase,
+	makeInstanceUrl,
 	orderedCollectionHandler,
 	route,
 } from "../../../../util";
@@ -62,9 +63,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/users/${req.params.user_id}/followers`,
-				),
+				id: makeInstanceUrl(`/users/${req.params.user_id}/followers`),
 				...req.query,
 				convert: (x) => x.from.remote_address ?? buildAPActor(x.from),
 				entity: Relationship,

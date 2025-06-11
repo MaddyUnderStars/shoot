@@ -8,7 +8,7 @@ type Props<T extends BaseModel> = {
 	entity: ObjectType<T>;
 	qb: SelectQueryBuilder<T>;
 	keys?: Extract<keyof T, string>[];
-	id: URL;
+	id: string;
 	convert: (data: T) => string | AnyAPObject;
 	before?: string;
 	after?: string;

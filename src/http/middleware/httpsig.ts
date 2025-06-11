@@ -1,5 +1,10 @@
 import type { RequestHandler } from "express";
-import { config, createLogger, validateHttpSignature } from "../../util";
+import {
+	config,
+	createLogger,
+	makeInstanceUrl,
+	validateHttpSignature,
+} from "../../util";
 
 const Log = createLogger("httpsignatures");
 
@@ -21,7 +26,7 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 
 	try {
 		req.actor = await validateHttpSignature(
-			req.originalUrl,
+			new URL(makeInstanceUrl(req.originalUrl)).pathname,
 			req.method,
 			req.headers,
 			Object.values(req.body).length > 0 ? req.body : undefined,

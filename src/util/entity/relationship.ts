@@ -6,6 +6,7 @@ import { addContext } from "../activitypub";
 import { config } from "../config";
 import { emitGatewayEvent } from "../events";
 import { HttpError } from "../httperror";
+import { makeInstanceUrl } from "../url";
 
 export const acceptOrCreateRelationship = async (
 	to: User,
@@ -39,8 +40,8 @@ export const acceptOrCreateRelationship = async (
 		) {
 			const follow: APAccept = {
 				type: "Accept",
-				id: `${config.federation.instance_url.origin}/${existing.id}`,
-				actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(from)}`,
+				id: makeInstanceUrl(existing.id),
+				actor: makeInstanceUrl(getExternalPathFromActor(from)),
 				object: existing.reference_object.raw,
 			};
 			await sendActivity(from, addContext(follow), from);
@@ -72,8 +73,8 @@ export const acceptOrCreateRelationship = async (
 	if (to.collections?.inbox && to.remote_address) {
 		const follow: APFollow = {
 			type: "Follow",
-			id: `${config.federation.instance_url.origin}/${relationship.id}`,
-			actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(relationship.from)}`,
+			id: makeInstanceUrl(relationship.id),
+			actor: makeInstanceUrl(getExternalPathFromActor(relationship.from)),
 			object: to.remote_address,
 		};
 		await sendActivity(to, addContext(follow), from);

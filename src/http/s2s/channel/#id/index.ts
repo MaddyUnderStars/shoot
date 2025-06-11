@@ -6,6 +6,7 @@ import {
 	addContext,
 	config,
 	getDatabase,
+	makeInstanceUrl,
 	orderedCollectionHandler,
 	route,
 } from "../../../../util";
@@ -83,9 +84,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/channel/${req.params.channel_id}/outbox`,
-				),
+				id: makeInstanceUrl(`/channel/${req.params.channel_id}/outbox`),
 				keys: ["published"],
 				before: req.query.before,
 				after: req.query.after,
@@ -117,8 +116,8 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/channel/${req.params.channel_id}/followers`,
+				id: makeInstanceUrl(
+					`/channel/${req.params.channel_id}/followers`,
 				),
 				before: req.query.before,
 				after: req.query.after,

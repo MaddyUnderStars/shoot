@@ -8,6 +8,7 @@ import { getOrFetchUser, joinGuild } from "../../../entity";
 import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { APError } from "../../error";
 import { addContext, splitQualifiedMention } from "../../util";
+import { makeInstanceUrl } from "../../../url";
 
 export const FollowActivityHandler: ActivityHandler = async (
 	activity,
@@ -57,7 +58,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 	const accept: APAccept = addContext({
 		id: `${activity.id}/accept`,
 		type: "Accept",
-		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
+		actor: makeInstanceUrl(getExternalPathFromActor(target)),
 		object: activity,
 	});
 
