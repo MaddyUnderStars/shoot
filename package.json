@@ -8,14 +8,13 @@
 		"inbound_queue": "node dist/src/receiver/index.js",
 		"cli": "node dist/src/cli/index.js",
 		"build": "tsc",
-		"prepare": "husky",
+		"prepare": "husky || true",
 		"openapi": "node dist/src/scripts/openapi.js",
 		"test": "c8 --all --src ./src --exclude-after-remap ava"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
-		"@asteasolutions/zod-to-openapi": "^7.3.0",
 		"@ava/typescript": "^5.0.0",
 		"@biomejs/biome": "^1.9.4",
 		"@types/bcrypt": "^5.0.2",
@@ -38,6 +37,7 @@
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {
+		"@asteasolutions/zod-to-openapi": "^7.3.0",
 		"@aws-sdk/client-s3": "^3.717.0",
 		"@aws-sdk/s3-request-presigner": "^3.717.0",
 		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
