@@ -23,14 +23,9 @@ export const handleCli = async (argv: string[]) => {
 		return;
 	}
 
-	const { closeDatabase } = await import("../util/database");
-
 	try {
 		await exec(...args);
 	} catch (e) {
 		Log.error(e instanceof Error ? e.message : e);
 	}
-
-	// close it here in case we forget in the action
-	closeDatabase();
 };
