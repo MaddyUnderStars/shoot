@@ -15,4 +15,5 @@ export const InstanceActor = Object.freeze({
 		inbox: makeInstanceUrl("/actor/inbox"),
 		outbox: makeInstanceUrl("/actor/outbox"),
 	},
+	created_date: new Date(),
 }) as User;

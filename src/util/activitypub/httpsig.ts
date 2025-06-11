@@ -193,7 +193,8 @@ export const validateHttpSignature = async (
 	);
 
 	// If the actor was cached and the result fails, retry without cache
-	if (!result && actorWasCached) {
+	// if we've already tried without cache, ignore
+	if (!result && actorWasCached && !noCache) {
 		Log.warn(
 			`Could not verify http signature with cached actor (${actor.remote_address}) public key. Retrying without cache`,
 		);
@@ -241,7 +242,19 @@ export const signWithHttpSignature = (
 
 	const url = new URL(target);
 	const requestTarget = url.pathname + url.search;
-	const toSign = `(request-target): ${method.toLowerCase()} ${requestTarget}\nhost: ${url.hostname}\ndate: ${now.toUTCString()}${digest ? `\ndigest: SHA-256=${digest}` : ""}`;
+
+	const headers: { [key: string]: string } = {
+		host: url.hostname,
+		date: now.toUTCString(),
+	};
+
+	if (digest) {
+		headers.digest = `digest: SHA-256=${digest}`;
+	}
+
+	const names = [...Object.keys(headers), "(request-target)"];
+
+	const toSign = getSignString(requestTarget, method, headers, names);
 
 	signer.update(toSign);
 	signer.end();
@@ -256,7 +269,7 @@ export const signWithHttpSignature = (
 
 	const header =
 		`keyId="${makeInstanceUrl(getExternalPathFromActor(keys))}",` +
-		`headers="(request-target) host date${digest ? " digest" : ""}",` +
+		`headers="${names.join(" ")},` +
 		`signature="${sig_b64}"`;
 
 	const ret = {
