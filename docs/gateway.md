@@ -8,7 +8,7 @@ This document covers how to login and maintain a connection, and how to use some
 ## Gateway Events
 
 Gateway request payloads have the following structure:
-```json
+```jsonc
 {
 	"t": "event_name",
 	// ...other data
@@ -18,7 +18,7 @@ Gateway request payloads have the following structure:
 You can find all [gateway request payloads here](https://github.com/MaddyUnderStars/shoot/blob/main/src/gateway/util/validation/receive.ts)
 
 Gateway response payloads have the following structure:
-```json
+```jsonc
 {
 	"t": "EVENT_NAME",
 	"s": <integer>,
@@ -47,7 +47,7 @@ The gateway usually is listening on `/`, but consult your instances operator.
 You must identify within 10 seconds of connecting to the server.
 If you do not, the connection will be terminated.
 
-```json
+```jsonc
 {
 	"t": "identify",
 	"token": "your user token, obtained via /auth/login"
@@ -58,7 +58,7 @@ If you do not, the connection will be terminated.
 
 Once you identify, you must start heartbeating. The heartbeat payload is very simple:
 
-```json
+```jsonc
 {
 	"t": "heartbeat",
 	"s": <integer>,
@@ -94,7 +94,7 @@ When you subscribe to a range, you will receive all the events for the users wit
 You may only be subscribed to one range in a channel at a time. Subscribing to a new range unsubscribes you from all other ranges.
 
 Subscribing to a range:
-```json
+```jsonc
 {
 	"t": "members",
 	"channel_id": "<channel handle>",
@@ -105,7 +105,7 @@ Subscribing to a range:
 The `range` prop is two integers such as `0, 100` which corresponds to the range of users between position 0 of the list and position 100.
 
 You will immediately receive a `MEMBERS_CHUNK` event:
-```json
+```jsonc
 {
 	"t": "MEMBERS_CHUNK",
 	"items": [
