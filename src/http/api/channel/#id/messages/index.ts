@@ -24,7 +24,10 @@ const MessageCreate = z
 	.refine(
 		(obj) => Object.values(obj).some((x) => x.length > 0),
 		"Message must not be empty",
-	);
+	)
+	.openapi("MessageCreateRequest", {
+		minProperties: 1,
+	});
 
 const router = Router({ mergeParams: true });
 
