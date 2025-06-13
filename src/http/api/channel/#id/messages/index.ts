@@ -44,7 +44,7 @@ router.post(
 
 			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
-			if (req.body.files)
+			if (req.body.files?.length)
 				await channel.throwPermission(req.user, PERMISSION.UPLOAD);
 
 			const message = Message.create({
