@@ -125,9 +125,11 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 					left join roles r on "r"."id" = "rm"."rolesId"
 					left join channels on "channels"."guildId"  = "r"."guildId"
 				where channels.id = $1
-				order by "r"."position" desc, "users"."name" asc;
+				order by "r"."position" desc, "users"."name" asc
+				offset $2
+				limit $3;
 			`,
-		[channel.id],
+		[channel.id, this.member_range[0], this.member_range[1]],
 	);
 
 	const roles = new Set(members.map((x) => x.role_id));
