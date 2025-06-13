@@ -1,6 +1,7 @@
 import {
 	OpenAPIRegistry,
 	OpenApiGeneratorV3,
+	OpenApiGeneratorV31,
 	extendZodWithOpenApi,
 } from "@asteasolutions/zod-to-openapi";
 import type { Router } from "express";
@@ -163,10 +164,10 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 		});
 	}
 
-	const generator = new OpenApiGeneratorV3(registry.definitions);
+	const generator = new OpenApiGeneratorV31(registry.definitions);
 
 	return generator.generateDocument({
-		openapi: "3.0.0",
+		openapi: "3.1.0",
 		info: {
 			version: "1.0.0",
 			title: "Client to Server API",

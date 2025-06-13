@@ -14,6 +14,12 @@ import {
 } from "../util";
 
 /**
+ * TODO: track users who enter or leave range
+ * unsubscribe when you subscribe to a new range
+ * need an api for fetching full member objects
+ */
+
+/**
  * Listen to this guild member, and if they leave the range, stop listening
  */
 const listenRangeEvent = (socket: Websocket, member_id: string) => {
