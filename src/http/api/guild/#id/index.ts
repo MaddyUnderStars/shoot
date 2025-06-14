@@ -38,8 +38,10 @@ router.delete(
 
 		await guild.throwPermission(req.user, PERMISSION.ADMIN);
 
-		// TODO: MEMBER_LEAVE for all members
-		// TODO: GUILD_DELETE for this user
+		emitGatewayEvent(guild.id, {
+			type: "GUILD_DELETE",
+			guild_id: guild.id,
+		});
 
 		await guild.remove();
 

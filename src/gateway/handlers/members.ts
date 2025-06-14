@@ -2,6 +2,7 @@ import { makeHandler } from ".";
 import { DMChannel, GuildTextChannel, User } from "../../entity";
 import {
 	PERMISSION,
+	channelInGuild,
 	getChannel,
 	getDatabase,
 	listenGatewayEvent,
@@ -104,19 +105,14 @@ export const handleMemberListRoleAdd = async (
 	socket: Websocket,
 	event: ROLE_MEMBER_ADD,
 ) => {
+	if (!socket.member_list.channel_id) return; // hm
+
 	// If this event is for a guild that does not contain our channel, ignore it
 	if (
-		(await GuildTextChannel.count({
-			where: {
-				id: socket.member_list.channel_id,
-				guild: { id: event.guild_id },
-			},
-		})) === 0
+		!(await channelInGuild(socket.member_list.channel_id, event.guild_id))
 	) {
 		return;
 	}
-
-	if (!socket.member_list.channel_id) return; // hm
 
 	// find the new position of the user who got the role
 	const position = await getMemberPosition(

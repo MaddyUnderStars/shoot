@@ -56,6 +56,11 @@ export type GUILD_CREATE = {
 	guild: PublicGuild;
 };
 
+export type GUILD_DELETE = {
+	type: "GUILD_DELETE";
+	guild_id: string;
+};
+
 export type ROLE_CREATE = {
 	type: "ROLE_CREATE";
 	role: PublicRole;
@@ -129,6 +134,7 @@ export type GATEWAY_EVENT =
 	| CHANNEL_DELETE
 	| MEDIA_TOKEN_RECEIVED
 	| GUILD_CREATE
+	| GUILD_DELETE
 	| ROLE_CREATE
 	| ROLE_MEMBER_ADD
 	| ROLE_MEMBER_LEAVE

@@ -127,6 +127,17 @@ export const getOrFetchChannel = async (lookup: string | APGroup) => {
 	return channel;
 };
 
+export const channelInGuild = async (channel_id: string, guild_id: string) => {
+	return (
+		(await GuildTextChannel.count({
+			where: {
+				id: channel_id,
+				guild: { id: guild_id },
+			},
+		})) === 0
+	);
+};
+
 export const createChannelFromRemoteGroup = async (
 	lookup: string | APActor,
 ) => {
