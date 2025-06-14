@@ -4,6 +4,7 @@ import { createLogger } from "../util/log";
 import { deleteFile } from "../util/storage";
 import { BaseModel } from "./basemodel";
 import type { Message } from "./message";
+import { LocalUpload } from "./upload";
 
 const Log = createLogger("attachments");
 
@@ -46,9 +47,16 @@ export class Attachment extends BaseModel {
 
 	@BeforeRemove()
 	public on_delete() {
-		deleteFile(this.message.channel.id, this.hash).catch((e) =>
-			Log.error("Failed to delete attachment", e),
-		);
+		deleteFile(this.message.channel.id, this.hash)
+			.catch((e) => Log.error("Failed to delete attachment", e))
+			.then(() => {
+				LocalUpload.delete({
+					hash: this.hash,
+					channel: { id: this.message.channel.id },
+				}).catch((e) =>
+					Log.error("Failed to delete LocalUpload for attachment"),
+				);
+			});
 	}
 }
 
