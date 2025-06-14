@@ -9,6 +9,7 @@ import { Readable } from "node:stream";
 import type { PutFileRequest } from ".";
 import { config } from "../config";
 import { createLogger } from "../log";
+import { makeInstanceUrl } from "../url";
 
 const Log = createLogger("localstorage");
 
@@ -17,7 +18,8 @@ export type localFileJwt = PutFileRequest & { key: string };
 const createEndpoint = async (file: PutFileRequest) => {
 	// TODO: if federation is disabled, this defaults to localhost
 	// which is obviously wrong
-	const endpoint = `${config.federation.instance_url.origin}/upload`;
+
+	const endpoint = makeInstanceUrl("/upload");
 
 	const hash = crypto
 		.createHash("md5")
