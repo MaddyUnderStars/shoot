@@ -13,6 +13,7 @@ const router = Router({ mergeParams: true });
 
 const AttachmentsResponse = z.array(
 	z.object({
+		id: z.string(),
 		hash: z.string(),
 		url: z.string(),
 	}),
@@ -25,22 +26,33 @@ router.post(
 			params: z.object({
 				channel_id: z.string(),
 			}),
-			body: z.array(
-				z.object({
-					name: z.string(),
+			body: z
+				.array(
+					z.object({
+						id: z
+							.string()
+							.describe(
+								"Client defined ID for cross referencing attachments to output endpoints. Can be any value. Must be unique",
+							),
 
-					md5: z.string(), // md5 of the uploaded image
+						name: z.string().describe("User defined file name"),
 
-					mime: z.string(), // mime type
-					size: z.number(), // bytes
+						md5: z.string(), // md5 of the uploaded image
 
-					// we trust the client here, but only because we require the md5 hash and size
-					// that should be good enough
-					// I'm sure it'll bite me later, though
-					width: z.number().optional(),
-					height: z.number().optional(),
-				}),
-			),
+						mime: z.string(), // mime type
+						size: z.number().describe("Size in bytes"), // bytes
+
+						// we trust the client here, but only because we require the md5 hash and size
+						// that should be good enough
+						// I'm sure it'll bite me later, though
+						width: z.number().optional(),
+						height: z.number().optional(),
+					}),
+				)
+				.refine(
+					(d) => new Set(d.map((x) => x.id)).size === d.length,
+					"Attachment IDs must be unique",
+				),
 			response: AttachmentsResponse,
 		},
 		async (req, res) => {
@@ -70,7 +82,7 @@ router.post(
 					...file,
 				});
 
-				ret.push({ hash, url: endpoint });
+				ret.push({ hash, url: endpoint, id: file.id });
 			}
 
 			res.json(ret);
