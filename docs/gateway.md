@@ -109,6 +109,7 @@ You will immediately receive a `MEMBERS_CHUNK` event:
 {
 	"t": "MEMBERS_CHUNK",
 	"items": [
+		"<role id>",
 		{
 			"member_id": "<member uuid>",
 			"name": "<member display name>"
@@ -117,5 +118,8 @@ You will immediately receive a `MEMBERS_CHUNK` event:
 	]
 }
 ```
+
+The members chunk event contains an `items` array which is a sorted list of member list items.
+String values are role IDs, and objects are user members.
 
 Once you are subscribed to a range, you will receive events from the users within it such as `MEMBER_LEAVE`, `ROLE_MEMBER_LEAVE`, `ROLE_MEMBER_ADD` etc.

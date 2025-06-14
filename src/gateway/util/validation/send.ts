@@ -63,23 +63,27 @@ export type ROLE_CREATE = {
 
 export type ROLE_MEMBER_ADD = {
 	type: "ROLE_MEMBER_ADD";
+	guild_id: string;
 	role_id: string;
 	member: PublicMember;
 };
 
 export type ROLE_MEMBER_LEAVE = {
 	type: "ROLE_MEMBER_LEAVE";
+	guild_id: string;
 	role_id: string;
 	member_id: string;
 };
 
 export type MEMBER_LEAVE = {
 	type: "MEMBER_LEAVE";
+	guild_id: string;
 	member_id: string;
 };
 
 export type MEMBER_JOIN = {
 	type: "MEMBER_JOIN";
+	guild_id: string;
 	member: PublicMember;
 };
 

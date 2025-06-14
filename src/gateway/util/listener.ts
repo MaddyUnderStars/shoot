@@ -1,6 +1,7 @@
-import type { GATEWAY_EVENT } from ".";
 import { createLogger } from "../../util";
 import { listenGatewayEvent } from "../../util/events";
+import { handleMemberListRoleAdd } from "../handlers/members";
+import type { GATEWAY_EVENT } from "./validation";
 import type { Websocket } from "./websocket";
 
 const Log = createLogger("GATEWAY:LISTENER");
@@ -46,6 +47,15 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 			break;
 		case "GUILD_CREATE":
 			listenEvents(socket, [payload.guild.id]);
+			break;
+		// case "GUILD_DELETE":
+		// if we leave a guild that we're subscribed to, remove our subscription
+		case "ROLE_MEMBER_ADD":
+			// don't care about errors and can't slow down this function
+			setImmediate(() =>
+				handleMemberListRoleAdd(socket, payload).catch(() => {}),
+			);
+
 			break;
 		default:
 			break;

@@ -1,5 +1,5 @@
 import { makeHandler } from ".";
-import { CLOSE_CODES } from "../../gateway/util";
+import { CLOSE_CODES } from "../../gateway/util/codes";
 import { HEARTBEAT, type HEARTBEAT_ACK, type MediaSocket } from "../util";
 
 export const onHeartbeat = makeHandler(async function (payload) {

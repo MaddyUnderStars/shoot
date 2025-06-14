@@ -36,7 +36,10 @@ router.delete(
 
 		const guild = await getOrFetchGuild(guild_id);
 
-		guild.throwPermission(req.user, PERMISSION.ADMIN);
+		await guild.throwPermission(req.user, PERMISSION.ADMIN);
+
+		// TODO: MEMBER_LEAVE for all members
+		// TODO: GUILD_DELETE for this user
 
 		await guild.remove();
 

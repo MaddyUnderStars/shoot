@@ -10,6 +10,7 @@ test("CLI does not require config", async (t) => {
 
 	const { handleCli } = await import("../../src/cli/cli");
 
+	global.console.log = () => {};
 	await handleCli(["node", process.cwd()]);
 
 	t.pass();
