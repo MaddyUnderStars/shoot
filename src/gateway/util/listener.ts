@@ -66,8 +66,25 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 				socket.member_list.events[id]();
 				delete socket.member_list.events[id];
 			}
+			socket.member_list.channel_id = undefined;
+			socket.member_list.range = undefined;
 
 			break;
+
+		case "CHANNEL_DELETE":
+			// if we're subscribed to this channel, unsub
+
+			if (socket.member_list.channel_id !== payload.channel_id) break;
+
+			for (const id in socket.member_list.events) {
+				socket.member_list.events[id]();
+				delete socket.member_list.events[id];
+			}
+			socket.member_list.channel_id = undefined;
+			socket.member_list.range = undefined;
+
+			break;
+
 		case "ROLE_MEMBER_ADD":
 			// don't care about errors and can't slow down this function
 			setImmediate(() =>
