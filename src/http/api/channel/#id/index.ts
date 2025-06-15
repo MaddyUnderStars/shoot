@@ -69,8 +69,6 @@ router.delete(
 
 		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
-		await channel.remove();
-
 		emitGatewayEvent(channel.id, {
 			type: "CHANNEL_DELETE",
 			channel_id: channel.mention,
@@ -79,6 +77,8 @@ router.delete(
 					? channel.guild.mention
 					: undefined,
 		});
+
+		await channel.remove();
 
 		res.sendStatus(204);
 	}),
