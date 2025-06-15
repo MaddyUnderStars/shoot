@@ -6,7 +6,7 @@ import {
 } from "typeorm";
 
 export class LocalUpload1749945089530 implements MigrationInterface {
-	name = "LocalUpload";
+	name = "LocalUpload1749945089530";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.createTable(
