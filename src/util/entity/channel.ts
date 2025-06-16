@@ -81,6 +81,16 @@ export const createDmChannel = async (
 	return channel;
 };
 
+export const updateChannelOrdering = async (guild_id: string) => {
+	const sql = `
+update channels as ch
+set position = ch2.rn
+from (select id, row_number() over (order by position) as rn from channels) as ch2
+where ch.id = ch2.id and ch."guildId" = $1`;
+
+	await getDatabase().query(sql, [guild_id]);
+};
+
 export const getChannel = async (lookup: string) => {
 	const mention = splitQualifiedMention(lookup);
 
