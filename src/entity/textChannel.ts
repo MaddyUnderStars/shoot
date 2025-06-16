@@ -7,6 +7,9 @@ import type { Guild } from "./guild";
 import type { User } from "./user";
 
 @ChildEntity("guild_text")
+@Unique("channel_ordering", ["position", "guild"], {
+	deferrable: "INITIALLY DEFERRED",
+})
 export class GuildTextChannel extends Channel {
 	// permission overwrites
 	// category?
@@ -14,10 +17,7 @@ export class GuildTextChannel extends Channel {
 	@ManyToOne("guilds", { onDelete: "CASCADE" })
 	guild: Guild;
 
-	@Column({ unique: true })
-	@Unique("channel_ordering", ["position", "guild"], {
-		deferrable: "INITIALLY DEFERRED",
-	})
+	@Column()
 	position: number;
 
 	public toPublic(): PublicGuildTextChannel {
