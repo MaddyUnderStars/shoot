@@ -115,8 +115,8 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 		remote_id: mention.user,
 		remote_address: obj.id,
 
-		name: obj.name || obj.id,
-		display_name: obj.name || obj.preferredUsername,
+		name: obj.preferredUsername || mention.user,
+		display_name: obj.name || obj.preferredUsername || mention.user,
 		summary: obj.summary,
 
 		public_key: obj.publicKey.publicKeyPem,
