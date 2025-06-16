@@ -29,7 +29,7 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 			new URL(makeInstanceUrl(req.originalUrl)).pathname,
 			req.method,
 			req.headers,
-			Object.values(req.body).length > 0 ? req.body : undefined,
+			Object.values(req.body ?? {}).length > 0 ? req.body : undefined,
 		);
 	} catch (e) {
 		Log.verbose(
