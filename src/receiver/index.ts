@@ -5,7 +5,13 @@ extendZodWithOpenApi(z);
 import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
 import { ApCache, Channel, Guild, User } from "../entity";
-import { APError, AP_ACTIVITY, config, initDatabase } from "../util";
+import {
+	APError,
+	AP_ACTIVITY,
+	config,
+	initDatabase,
+	initRabbitMQ,
+} from "../util";
 import { ActivityHandlers } from "../util/activitypub/inbox/handlers";
 
 export type APInboundJobData = { activity: APActivity; target_id: string };
@@ -57,7 +63,20 @@ worker.on("failed", (job) => {
 });
 
 worker.on("error", (e) => {
+	if ("code" in e && e.code === "ECONNREFUSED")
+		return console.error("Failed to connect to redis", e.message);
+
 	console.error(e);
 });
 
-initDatabase().then(() => worker.run());
+(async () => {
+	await initDatabase();
+	await initRabbitMQ(false);
+
+	if (!config.rabbitmq.enabled)
+		console.error(
+			"rabbitmq isn't configured. this worker won't be able to emit gateway events",
+		);
+
+	await worker.run();
+})();

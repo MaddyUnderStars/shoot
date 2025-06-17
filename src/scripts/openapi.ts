@@ -21,8 +21,8 @@ process.env.NODE_CONFIG = JSON.stringify({
 	},
 });
 
-import { NO_AUTH_ROUTES } from "../http";
 import apiRoutes from "../http/api";
+import { NO_AUTH_ROUTES } from "../http/middleware";
 
 const getRoutes = (router: Router) => {
 	const convertRegexToPath = (regexp: RegExp, keys: { name: string }[]) => {

@@ -12,10 +12,14 @@ const events = new EventEmitter();
 let client: rabbit.Client | null = null;
 let publisher: rabbit.Publisher | null = null;
 
-export const initRabbitMQ = async () => {
+export const initRabbitMQ = async (consume: boolean) => {
+	if (!config.rabbitmq.enabled) return;
+
 	const url = config.rabbitmq.url;
 
 	const STREAM_NAME = "gateway";
+
+	Log.msg(`Connecting to ${url}`);
 
 	client = await rabbit.connect({
 		hostname: url.hostname,
@@ -26,6 +30,8 @@ export const initRabbitMQ = async () => {
 		heartbeat: 0,
 	});
 
+	Log.msg("Connected to RabbitMQ");
+
 	await client.createStream({
 		stream: STREAM_NAME,
 		arguments: {
@@ -33,25 +39,33 @@ export const initRabbitMQ = async () => {
 		},
 	});
 
+	Log.verbose(`Created stream ${STREAM_NAME}`);
+
 	publisher = await client.declarePublisher({
 		stream: STREAM_NAME,
 		publisherRef: "gateway",
 	});
 
-	await client.declareConsumer(
-		{ stream: STREAM_NAME, offset: rabbit.Offset.next() },
-		(message) => {
-			const parsed = JSON.parse(message.content.toString());
+	Log.verbose("Created publisher");
 
-			const target = message.messageProperties?.to;
-			if (!target) {
-				Log.warn("Received rabbitmq message without `to` field");
-				return;
-			}
+	if (consume) {
+		await client.declareConsumer(
+			{ stream: STREAM_NAME, offset: rabbit.Offset.next() },
+			(message) => {
+				const parsed = JSON.parse(message.content.toString());
 
-			events.emit(target, parsed);
-		},
-	);
+				const target = message.messageProperties?.to;
+				if (!target) {
+					Log.warn("Received rabbitmq message without `to` field");
+					return;
+				}
+
+				events.emit(target, parsed);
+			},
+		);
+
+		Log.verbose("Created consumer");
+	}
 };
 
 export const closeRabbitMQ = async () => {
