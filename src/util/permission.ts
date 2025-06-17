@@ -34,6 +34,9 @@ export enum PERMISSION {
 
 	/** can attach files to this channel */
 	UPLOAD = 10,
+
+	/** can delete any message in this channel */
+	MANAGE_MESSAGES = 11,
 }
 
 export const DefaultPermissions: PERMISSION[] = [
