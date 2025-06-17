@@ -290,8 +290,13 @@ const config = Object.freeze({
 	},
 
 	/**
-	 * RabbitMQ is optional. If you use the inbound federation queue, it is required.
+	 * RabbitMQ is optional.
+	 * It is required if you:
+	 * - use the inbound federation queue
+	 * - run api, gateway individually instead of as one process (i.e. via `npm run start:http` etc)
+	 *
 	 * It is used for sending events from the API, among other components, to the gateway
+	 * when they do not share memory
 	 */
 	rabbitmq: ifExistsGet<boolean>("rabbitmq.enabled")
 		? {
