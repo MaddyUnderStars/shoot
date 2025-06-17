@@ -24,8 +24,8 @@ export class GatewayServer {
 			Log.msg(`Listening on port ${port}`);
 		});
 
-		await initRabbitMQ();
 		await initDatabase();
+		await initRabbitMQ(true);
 
 		if (!this.server.listening) this.server.listen(port);
 	}
