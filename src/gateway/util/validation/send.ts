@@ -46,6 +46,11 @@ export type CHANNEL_CREATE = {
 	channel: PublicDmChannel | PublicGuildTextChannel;
 };
 
+export type CHANNEL_UPDATE = {
+	type: "CHANNEL_UPDATE";
+	channel: Partial<PublicDmChannel | PublicGuildTextChannel>;
+};
+
 export type CHANNEL_DELETE = {
 	type: "CHANNEL_DELETE";
 	channel_id: string;
@@ -139,6 +144,7 @@ export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
 	| MESSAGE_DELETE
 	| CHANNEL_CREATE
+	| CHANNEL_UPDATE
 	| CHANNEL_DELETE
 	| MEDIA_TOKEN_RECEIVED
 	| GUILD_CREATE

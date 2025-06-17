@@ -55,6 +55,17 @@ router.patch(
 			// This is a local channel
 
 			await Channel.update({ id: channel.id }, req.body);
+
+			emitGatewayEvent(
+				channel instanceof GuildTextChannel
+					? channel.guild.id
+					: channel.id,
+				{
+					type: "CHANNEL_UPDATE",
+					channel: req.body,
+				},
+			);
+
 			return res.sendStatus(200);
 		}
 
