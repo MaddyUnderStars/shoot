@@ -11,6 +11,7 @@ import type {
 	PublicMessage,
 } from "../../../entity";
 import type { PublicRole } from "../../../entity/role";
+import type { MembersChunkItem } from "../../handlers/members";
 
 export type GATEWAY_PAYLOAD = {
 	/**
@@ -34,9 +35,20 @@ export type MESSAGE_CREATE = {
 	message: PublicMessage;
 };
 
+export type MESSAGE_DELETE = {
+	type: "MESSAGE_DELETE";
+	message_id: string;
+	channel_id: string;
+};
+
 export type CHANNEL_CREATE = {
 	type: "CHANNEL_CREATE";
 	channel: PublicDmChannel | PublicGuildTextChannel;
+};
+
+export type CHANNEL_UPDATE = {
+	type: "CHANNEL_UPDATE";
+	channel: Partial<PublicDmChannel | PublicGuildTextChannel>;
 };
 
 export type CHANNEL_DELETE = {
@@ -56,6 +68,16 @@ export type GUILD_CREATE = {
 	guild: PublicGuild;
 };
 
+export type GUILD_UPDATE = {
+	type: "GUILD_UPDATE";
+	guild: Partial<PublicGuild>;
+};
+
+export type GUILD_DELETE = {
+	type: "GUILD_DELETE";
+	guild_id: string;
+};
+
 export type ROLE_CREATE = {
 	type: "ROLE_CREATE";
 	role: PublicRole;
@@ -63,23 +85,27 @@ export type ROLE_CREATE = {
 
 export type ROLE_MEMBER_ADD = {
 	type: "ROLE_MEMBER_ADD";
+	guild_id: string;
 	role_id: string;
 	member: PublicMember;
 };
 
 export type ROLE_MEMBER_LEAVE = {
 	type: "ROLE_MEMBER_LEAVE";
+	guild_id: string;
 	role_id: string;
 	member_id: string;
 };
 
 export type MEMBER_LEAVE = {
 	type: "MEMBER_LEAVE";
+	guild_id: string;
 	member_id: string;
 };
 
 export type MEMBER_JOIN = {
 	type: "MEMBER_JOIN";
+	guild_id: string;
 	member: PublicMember;
 };
 
@@ -101,7 +127,7 @@ export type INVITE_CREATE = {
 export type MEMBERS_CHUNK = {
 	type: "MEMBERS_CHUNK";
 	/** Role UUID or member */
-	items: Array<string | { member_id: string; name: string }>;
+	items: Array<string | MembersChunkItem>;
 };
 
 /** Sent by gateway after a user has been authenticated with IDENTIFY */
@@ -121,10 +147,14 @@ export type HEARTBEAT_ACK = {
 
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
+	| MESSAGE_DELETE
 	| CHANNEL_CREATE
+	| CHANNEL_UPDATE
 	| CHANNEL_DELETE
 	| MEDIA_TOKEN_RECEIVED
 	| GUILD_CREATE
+	| GUILD_UPDATE
+	| GUILD_DELETE
 	| ROLE_CREATE
 	| ROLE_MEMBER_ADD
 	| ROLE_MEMBER_LEAVE

@@ -17,6 +17,7 @@ export class Member extends BaseModel {
 
 	public toPublic() {
 		return {
+			id: this.id,
 			nickname: this.nickname,
 			user: this.user.toPublic(),
 			roles: this.roles.map((x) => x.remote_id ?? x.id),
@@ -28,12 +29,13 @@ export class Member extends BaseModel {
 	}
 }
 
-export type PublicMember = Pick<Member, "nickname"> & {
+export type PublicMember = Pick<Member, "nickname" | "id"> & {
 	user: PublicUser;
 	roles: string[];
 };
 
 export const PublicMember: z.ZodType<PublicMember> = z.object({
+	id: z.string().uuid(),
 	nickname: z.string(),
 	user: PublicUser,
 	roles: z.string().array(),

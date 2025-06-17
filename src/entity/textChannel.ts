@@ -1,4 +1,4 @@
-import { ChildEntity, Column, Index, ManyToOne } from "typeorm";
+import { ChildEntity, Column, Index, ManyToOne, Unique } from "typeorm";
 import { z } from "zod";
 import { checkPermission } from "../util/checkPermission";
 import type { PERMISSION } from "../util/permission";
@@ -7,7 +7,9 @@ import type { Guild } from "./guild";
 import type { User } from "./user";
 
 @ChildEntity("guild_text")
-@Index(["position", "guild"], { unique: true })
+@Unique("channel_ordering", ["position", "guild"], {
+	deferrable: "INITIALLY DEFERRED",
+})
 export class GuildTextChannel extends Channel {
 	// permission overwrites
 	// category?

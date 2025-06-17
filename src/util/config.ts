@@ -1,5 +1,5 @@
 import nodeConfig from "config";
-import type { InstanceBehaviour } from "./activitypub/instances";
+import type { InstanceBehaviour } from "./activitypub/instanceBehaviour";
 import { tryParseUrl } from "./url";
 
 const LOCALHOST_URL = new URL("http://localhost");
@@ -130,6 +130,11 @@ const config = Object.freeze({
 				 */
 				instance_url: new URL(get<string>("federation.instance_url")),
 
+				/**
+				 * Aka, authorised fetch. Require HTTP signatures from remote servers for all requests
+				 * If disabled, only require when absolutely necessary such as when receiving a new chat message,
+				 * while reading public data will still be allowed.
+				 */
 				require_http_signatures:
 					ifExistsGet<boolean>(
 						"federation.require_http_signatures",

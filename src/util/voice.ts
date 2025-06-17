@@ -7,6 +7,7 @@ import { config } from "./config";
 import { getDatabase } from "./database";
 import { HttpError } from "./httperror";
 import { PERMISSION } from "./permission";
+import { makeInstanceUrl } from "./url";
 
 const algorithm = "HS256";
 
@@ -26,7 +27,7 @@ export const askForMediaToken = async (user: User, channel: Channel) => {
 
 	const join_ap: APJoin = {
 		type: "Join",
-		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(user)}`,
+		actor: makeInstanceUrl(getExternalPathFromActor(user)),
 		object: channel.remote_address,
 	};
 

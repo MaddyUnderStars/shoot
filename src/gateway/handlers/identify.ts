@@ -8,14 +8,10 @@ import {
 	type User,
 } from "../../entity";
 import { getDatabase, getGuilds, getUserFromToken } from "../../util";
-import {
-	CLOSE_CODES,
-	IDENTIFY,
-	type READY,
-	consume,
-	listenEvents,
-} from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
+import { CLOSE_CODES } from "../util/codes";
+import { consume, listenEvents } from "../util/listener";
+import { IDENTIFY, type READY } from "../util/validation";
 
 /**
  * - Authenticate user

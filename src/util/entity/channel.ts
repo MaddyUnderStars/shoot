@@ -34,9 +34,10 @@ export const createGuildTextChannel = async (name: string, guild: Guild) => {
 		name,
 		guild,
 		domain: config.federation.webapp_url.hostname,
-		position: await GuildTextChannel.count({
-			where: { guild: { id: guild.id } },
-		}),
+		position:
+			(await GuildTextChannel.count({
+				where: { guild: { id: guild.id } },
+			})) + 1,
 	});
 
 	await channel.save();
@@ -79,6 +80,16 @@ export const createDmChannel = async (
 	});
 
 	return channel;
+};
+
+export const updateChannelOrdering = async (guild_id: string) => {
+	const sql = `
+update channels as ch
+set position = ch2.rn
+from (select id, row_number() over (order by position) as rn from channels) as ch2
+where ch.id = ch2.id and ch."guildId" = $1`;
+
+	await getDatabase().query(sql, [guild_id]);
 };
 
 export const getChannel = async (lookup: string) => {
@@ -125,6 +136,17 @@ export const getOrFetchChannel = async (lookup: string | APGroup) => {
 	} else if (!channel) throw new APError("Channel could not be found", 404);
 
 	return channel;
+};
+
+export const channelInGuild = async (channel_id: string, guild_id: string) => {
+	return (
+		(await GuildTextChannel.count({
+			where: {
+				id: channel_id,
+				guild: { id: guild_id },
+			},
+		})) === 0
+	);
 };
 
 export const createChannelFromRemoteGroup = async (

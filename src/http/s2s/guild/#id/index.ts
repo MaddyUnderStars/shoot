@@ -5,6 +5,7 @@ import {
 	addContext,
 	config,
 	getDatabase,
+	makeInstanceUrl,
 	orderedCollectionHandler,
 	route,
 } from "../../../../util";
@@ -72,9 +73,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/followers`,
-				),
+				id: makeInstanceUrl(`/guild/${req.params.guild_id}/followers`),
 				before: req.query.before,
 				after: req.query.after,
 				convert: buildAPRole,
@@ -96,9 +95,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/following`,
-				),
+				id: makeInstanceUrl(`/guild/${req.params.guild_id}/following`),
 				...req.query,
 				convert: (x) => x.remote_address ?? buildAPActor(x),
 				entity: Channel,

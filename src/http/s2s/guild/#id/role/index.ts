@@ -6,6 +6,7 @@ import {
 	addContext,
 	config,
 	getDatabase,
+	makeInstanceUrl,
 	orderedCollectionHandler,
 	route,
 } from "../../../../../util";
@@ -53,8 +54,8 @@ router.get(
 		async (req, res) =>
 			res.json(
 				await orderedCollectionHandler({
-					id: new URL(
-						`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/role/${req.params.role_id}`,
+					id: makeInstanceUrl(
+						`/guild/${req.params.guild_id}/role/${req.params.role_id}`,
 					),
 					before: req.query.before,
 					after: req.query.after,

@@ -8,7 +8,7 @@ import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
 import { createUserForRemotePerson } from "../entity/user";
 import { createLogger } from "../log";
-import { tryParseUrl } from "../url";
+import { makeInstanceUrl, tryParseUrl } from "../url";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { throwInstanceBlock } from "./instances";
@@ -193,7 +193,8 @@ export const validateHttpSignature = async (
 	);
 
 	// If the actor was cached and the result fails, retry without cache
-	if (!result && actorWasCached) {
+	// if we've already tried without cache, ignore
+	if (!result && actorWasCached && !noCache) {
 		Log.warn(
 			`Could not verify http signature with cached actor (${actor.remote_address}) public key. Retrying without cache`,
 		);
@@ -241,7 +242,19 @@ export const signWithHttpSignature = (
 
 	const url = new URL(target);
 	const requestTarget = url.pathname + url.search;
-	const toSign = `(request-target): ${method.toLowerCase()} ${requestTarget}\nhost: ${url.hostname}\ndate: ${now.toUTCString()}${digest ? `\ndigest: SHA-256=${digest}` : ""}`;
+
+	const headers: { [key: string]: string } = {
+		host: url.hostname,
+		date: now.toUTCString(),
+	};
+
+	if (digest) {
+		headers.digest = `digest: SHA-256=${digest}`;
+	}
+
+	const names = [...Object.keys(headers), "(request-target)"];
+
+	const toSign = getSignString(requestTarget, method, headers, names);
 
 	signer.update(toSign);
 	signer.end();
@@ -255,8 +268,8 @@ export const signWithHttpSignature = (
 	// 		: `/users/${keys.username}`;
 
 	const header =
-		`keyId="${config.federation.instance_url.origin}${getExternalPathFromActor(keys)}",` +
-		`headers="(request-target) host date${digest ? " digest" : ""}",` +
+		`keyId="${makeInstanceUrl(getExternalPathFromActor(keys))}",` +
+		`headers="${names.join(" ")},` +
 		`signature="${sig_b64}"`;
 
 	const ret = {

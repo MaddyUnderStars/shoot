@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Member, PublicGuild } from "../../../../entity";
+import { Guild, Member, PublicGuild } from "../../../../entity";
 import {
 	emitGatewayEvent,
 	getDatabase,
@@ -72,6 +72,7 @@ router.delete(
 
 			emitGatewayEvent(req.params.guild_id, {
 				type: "MEMBER_LEAVE",
+				guild_id: mention.user,
 				member_id,
 			});
 		}

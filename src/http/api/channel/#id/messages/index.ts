@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message, PublicMessage } from "../../../../../entity";
+import {
+	GuildTextChannel,
+	Message,
+	PublicMessage,
+} from "../../../../../entity";
 import { Attachment } from "../../../../../entity/attachment";
 import {
 	PERMISSION,
+	emitGatewayEvent,
 	getDatabase,
 	handleMessage,
 	route,
@@ -24,7 +29,10 @@ const MessageCreate = z
 	.refine(
 		(obj) => Object.values(obj).some((x) => x.length > 0),
 		"Message must not be empty",
-	);
+	)
+	.openapi("MessageCreateRequest", {
+		minProperties: 1,
+	});
 
 const router = Router({ mergeParams: true });
 
@@ -44,7 +52,7 @@ router.post(
 
 			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
-			if (req.body.files)
+			if (req.body.files?.length)
 				await channel.throwPermission(req.user, PERMISSION.UPLOAD);
 
 			const message = Message.create({

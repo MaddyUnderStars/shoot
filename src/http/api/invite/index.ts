@@ -7,6 +7,7 @@ import {
 	APError,
 	addContext,
 	config,
+	makeInstanceUrl,
 	resolveWebfinger,
 	route,
 	splitQualifiedMention,
@@ -60,9 +61,13 @@ router.post(
 				await sendActivity(
 					guild,
 					addContext({
-						id: `${config.federation.instance_url.origin}${getExternalPathFromActor(req.user)}/invite/${req.params.invite_code}`,
+						id: makeInstanceUrl(
+							`${getExternalPathFromActor(req.user)}/invite/${req.params.invite_code}`,
+						),
 						type: "Follow",
-						actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(req.user)}`,
+						actor: makeInstanceUrl(
+							getExternalPathFromActor(req.user),
+						),
 						object: guild.remote_address,
 						instrument: req.params.invite_code,
 					} as APFollow),

@@ -12,12 +12,12 @@ router.get(
 
 		res.setHeader("Content-Type", "application/xrd+xml");
 
-		const host = config.federation.instance_url;
+		const host = config.federation.instance_url.origin;
 
 		const ret = `<?xml version="1.0" encoding="UTF-8"?>
 		<XRD
 			xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
-			<Link rel="lrdd" type="application/xrd+xml" template="${host.origin}/.well-known/webfinger?resource={uri}"/>
+			<Link rel="lrdd" type="application/xrd+xml" template="${host}/.well-known/webfinger?resource={uri}"/>
 		</XRD>`;
 
 		return res.send(ret);

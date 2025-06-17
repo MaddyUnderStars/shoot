@@ -8,6 +8,7 @@ import { PERMISSION } from "../../../permission";
 import { generateMediaToken } from "../../../voice";
 import { APError } from "../../error";
 import { addContext } from "../../util";
+import { makeInstanceUrl } from "../../../url";
 
 export const JoinActivityHandler: ActivityHandler = async (
 	activity,
@@ -29,10 +30,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 	if (Array.isArray(activity.object))
 		throw new APError("Cannot accept multiple objects");
 
-	if (
-		`${config.federation.instance_url.origin}${getExternalPathFromActor(target)}` !==
-		activity.object
-	)
+	if (makeInstanceUrl(getExternalPathFromActor(target)) !== activity.object)
 		throw new APError("Object and target mismatch?");
 
 	const user = await getOrFetchUser(activity.actor);
@@ -48,7 +46,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 		type: "Accept",
 		result: token,
 		target: config.webrtc.signal_address,
-		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
+		actor: makeInstanceUrl(getExternalPathFromActor(target)),
 		object: activity,
 	});
 

@@ -56,6 +56,8 @@ const parseRequest = <TParams, TResponse, TBody, TQuery>(
 			res.status(400).send(
 				errors.map((x) => ({ type: x.type, errors: x.errors })),
 			);
+
+			return;
 		}
 
 		return next();

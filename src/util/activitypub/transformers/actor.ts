@@ -11,6 +11,7 @@ import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
 import { APError } from "../error";
 import { InstanceActor } from "../instanceActor";
+import { makeInstanceUrl, makeWebappUrl } from "../../url";
 
 const getAPTypeFromActor = (actor: Actor) => {
 	if (actor.id === InstanceActor.id) return "Application";
@@ -29,8 +30,6 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	const id = getExternalPathFromActor(actor);
 
-	const { webapp_url, instance_url } = config.federation;
-
 	const preferredUsername = actor instanceof User ? actor.name : actor.id;
 
 	// preference: display_name, name, id
@@ -43,9 +42,9 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	let attributedTo: string | undefined;
 	if (actor instanceof DMChannel || actor instanceof Guild)
-		attributedTo = `${instance_url.origin}${getExternalPathFromActor(actor.owner)}`;
+		attributedTo = makeInstanceUrl(getExternalPathFromActor(actor.owner));
 	else if (actor instanceof GuildTextChannel)
-		attributedTo = `${instance_url.origin}${getExternalPathFromActor(actor.guild)}`;
+		attributedTo = makeInstanceUrl(getExternalPathFromActor(actor.guild));
 
 	const webfinger =
 		actor instanceof User && !isInstanceActor
@@ -53,12 +52,12 @@ export const buildAPActor = (actor: Actor): APActor => {
 			: undefined;
 
 	const inbox = isInstanceActor
-		? `${instance_url.origin}/inbox`
-		: `${instance_url.origin}${id}/inbox`;
+		? makeInstanceUrl("/inbox")
+		: makeInstanceUrl(`${id}/inbox`);
 
 	const outbox = isInstanceActor
-		? `${instance_url.origin}/outbox`
-		: `${instance_url.origin}${id}/outbox`;
+		? makeInstanceUrl("/outbox")
+		: makeInstanceUrl(`${id}/outbox`);
 
 	return {
 		preferredUsername,
@@ -67,8 +66,8 @@ export const buildAPActor = (actor: Actor): APActor => {
 		webfinger,
 
 		type: getAPTypeFromActor(actor),
-		id: `${instance_url.origin}${id}`,
-		url: `${webapp_url.origin}${id}`,
+		id: makeInstanceUrl(id),
+		url: makeWebappUrl(id),
 
 		published: actor.created_date.toISOString(),
 
@@ -77,18 +76,18 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 		followers: isInstanceActor
 			? undefined
-			: `${instance_url.origin}${id}/followers`,
+			: makeInstanceUrl(`${id}/followers`),
 		following: isInstanceActor
 			? undefined
-			: `${instance_url.origin}${id}/following`,
+			: makeInstanceUrl(`${id}/following`),
 
 		endpoints: {
-			sharedInbox: `${instance_url.origin}/inbox`,
+			sharedInbox: makeInstanceUrl("/inbox"),
 		},
 
 		publicKey: {
-			id: `${instance_url.origin}${id}`,
-			owner: `${webapp_url.origin}${id}`,
+			id: makeInstanceUrl(id),
+			owner: makeWebappUrl(id),
 			publicKeyPem: actor.public_key,
 		},
 	};

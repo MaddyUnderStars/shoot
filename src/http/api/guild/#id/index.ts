@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Invite, PublicGuild } from "../../../../entity";
-import { PERMISSION, emitGatewayEvent, route } from "../../../../util";
+import { Guild, Invite, PublicGuild } from "../../../../entity";
+import { APError, PERMISSION, emitGatewayEvent, route } from "../../../../util";
 import { getOrFetchGuild } from "../../../../util/entity/guild";
 import { generateInviteCode } from "../../../../util/entity/invite";
 import { isMemberOfGuildThrow } from "../../../../util/entity/member";
@@ -29,6 +29,48 @@ router.get(
 	),
 );
 
+const GuildModifySchema: z.ZodType<Partial<Guild>> = z
+	.object({
+		name: z.string(),
+		summary: z.string(),
+	})
+	.partial()
+	.strict();
+
+router.patch(
+	"/",
+	route(
+		{
+			params: z.object({ guild_id: z.string() }),
+			body: GuildModifySchema,
+		},
+		async (req, res) => {
+			const { guild_id } = req.params;
+
+			const guild = await getOrFetchGuild(guild_id);
+
+			await guild.throwPermission(req.user, [PERMISSION.MANAGE_GUILD]);
+
+			if (guild.isRemote()) {
+				// TODO: same with channel and message editing.
+				// do we optimistically edit? or send the event, mark it as edited, and then confirm?
+				// do we do both?
+
+				throw new APError("TODO: federate guild modification");
+			}
+
+			await Guild.update({ id: guild.id }, req.body);
+
+			emitGatewayEvent(guild.id, {
+				type: "GUILD_UPDATE",
+				guild: req.body,
+			});
+
+			return res.sendStatus(204);
+		},
+	),
+);
+
 router.delete(
 	"/",
 	route({ params: z.object({ guild_id: z.string() }) }, async (req, res) => {
@@ -36,7 +78,12 @@ router.delete(
 
 		const guild = await getOrFetchGuild(guild_id);
 
-		guild.throwPermission(req.user, PERMISSION.ADMIN);
+		await guild.throwPermission(req.user, PERMISSION.ADMIN);
+
+		emitGatewayEvent(guild.id, {
+			type: "GUILD_DELETE",
+			guild_id: guild.id,
+		});
 
 		await guild.remove();
 

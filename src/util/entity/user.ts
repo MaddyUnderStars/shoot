@@ -76,10 +76,11 @@ export const batchGetUsers = async (users: ActorMention[]) => {
 };
 
 export const createUserForRemotePerson = async (lookup: string | APActor) => {
-	const domain =
+	const mention =
 		typeof lookup === "string"
-			? splitQualifiedMention(lookup).domain
-			: new URL(lookup.id || "").hostname;
+			? splitQualifiedMention(lookup)
+			: // biome-ignore lint/style/noNonNullAssertion:
+				splitQualifiedMention(lookup.id!);
 
 	// If we were given a URL, this is probably a actor URL
 	// otherwise, treat it as a username@domain handle
@@ -109,12 +110,13 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
 	return User.create({
-		domain,
+		domain: mention.domain,
 
+		remote_id: mention.user,
 		remote_address: obj.id,
 
-		name: obj.name || obj.id,
-		display_name: obj.name || obj.preferredUsername,
+		name: obj.preferredUsername || mention.user,
+		display_name: obj.name || obj.preferredUsername || mention.user,
 		summary: obj.summary,
 
 		public_key: obj.publicKey.publicKeyPem,

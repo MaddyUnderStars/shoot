@@ -1,6 +1,6 @@
 import { makeHandler } from ".";
 import type { Channel, User } from "../../entity";
-import { CLOSE_CODES } from "../../gateway/util";
+import { CLOSE_CODES } from "../../gateway/util/codes";
 import { validateMediaToken } from "../../util/voice";
 import { IDENTIFY } from "../util";
 import { emitMediaEvent, listenMediaEvent } from "../util/events";

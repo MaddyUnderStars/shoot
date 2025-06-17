@@ -6,9 +6,12 @@ import {
 	PERMISSION,
 	config,
 	emitGatewayEvent,
+	getDatabase,
 	getOrFetchChannel,
 	route,
+	updateChannelOrdering,
 } from "../../../../util";
+import { MoreThan } from "typeorm";
 
 const router = Router({ mergeParams: true });
 
@@ -52,6 +55,17 @@ router.patch(
 			// This is a local channel
 
 			await Channel.update({ id: channel.id }, req.body);
+
+			emitGatewayEvent(
+				channel instanceof GuildTextChannel
+					? channel.guild.id
+					: channel.id,
+				{
+					type: "CHANNEL_UPDATE",
+					channel: req.body,
+				},
+			);
+
 			return res.sendStatus(200);
 		}
 
@@ -69,8 +83,7 @@ router.delete(
 
 		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
-		await channel.remove();
-
+		// after a .remove, the id is made undefined but other properties are not
 		emitGatewayEvent(channel.id, {
 			type: "CHANNEL_DELETE",
 			channel_id: channel.mention,
@@ -79,6 +92,11 @@ router.delete(
 					? channel.guild.mention
 					: undefined,
 		});
+
+		await channel.remove();
+
+		if (channel instanceof GuildTextChannel)
+			await updateChannelOrdering(channel.guild.id);
 
 		res.sendStatus(204);
 	}),
