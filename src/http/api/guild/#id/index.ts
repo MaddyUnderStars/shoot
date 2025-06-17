@@ -63,7 +63,7 @@ router.patch(
 
 			emitGatewayEvent(guild.id, {
 				type: "GUILD_UPDATE",
-				guild: req.body,
+				guild: guild.toPublic(),
 			});
 
 			return res.sendStatus(204);

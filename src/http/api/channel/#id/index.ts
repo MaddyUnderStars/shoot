@@ -62,7 +62,7 @@ router.patch(
 					: channel.id,
 				{
 					type: "CHANNEL_UPDATE",
-					channel: req.body,
+					channel: channel.toPublic(),
 				},
 			);
 
