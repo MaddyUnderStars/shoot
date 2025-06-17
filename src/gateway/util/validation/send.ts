@@ -11,6 +11,7 @@ import type {
 	PublicMessage,
 } from "../../../entity";
 import type { PublicRole } from "../../../entity/role";
+import type { MembersChunkItem } from "../../handlers/members";
 
 export type GATEWAY_PAYLOAD = {
 	/**
@@ -110,7 +111,7 @@ export type INVITE_CREATE = {
 export type MEMBERS_CHUNK = {
 	type: "MEMBERS_CHUNK";
 	/** Role UUID or member */
-	items: Array<string | { member_id: string; name: string }>;
+	items: Array<string | MembersChunkItem>;
 };
 
 /** Sent by gateway after a user has been authenticated with IDENTIFY */

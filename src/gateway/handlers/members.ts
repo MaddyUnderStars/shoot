@@ -15,6 +15,12 @@ import {
 } from "../util/validation";
 import type { Websocket } from "../util/websocket";
 
+export type MembersChunkItem = {
+	name: string;
+	member_id?: string;
+	user_id: string;
+};
+
 /**
  * Subscribe to changes in the range
  * I.e., when a member enters or leaves
@@ -37,18 +43,23 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 	if (channel instanceof DMChannel) {
 		const members = [channel.owner, ...channel.recipients];
 
-		const items = members.map((x) => ({
-			member_id: x.mention, // TODO
-			name: x.display_name ?? x.name,
-		}));
+		const items = [];
+
+		for (const member of members) {
+			items.push({
+				user_id: member.id, // TODO
+				name: member.display_name ?? member.name,
+			});
+
+			listenRangeEvent(this, member.id, channel.id);
+		}
 
 		unsubscribeOutOfRange(this, items);
 
-		consume(this, {
+		return consume(this, {
 			type: "MEMBERS_CHUNK",
 			items,
 		});
-		return;
 	}
 
 	// can't type Channel automatically because typeorm table inheritance is weird
@@ -85,6 +96,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 			items.push({
 				member_id: member.member_id,
+				user_id: member.user_id,
 				name: member.display_name ?? member.name,
 			});
 		}
@@ -134,22 +146,25 @@ export const handleMemberListRoleAdd = async (
 };
 
 /**
- * Listen to this guild member, and if they leave the range, stop listening
+ * Listen to this user, and if they leave the range, stop listening
  */
 const listenRangeEvent = async (
 	socket: Websocket,
-	member_id: string,
+	target_id: string,
 	channel_id: string,
 ) => {
-	if (socket.member_list.events[member_id]) return;
+	if (socket.member_list.events[target_id]) return;
+	if (socket.user_id === target_id) return;
 
 	const unsubscribe = () => {
-		socket.member_list.events[member_id]();
-		delete socket.member_list.events[member_id];
+		socket.member_list.events[target_id]();
+		delete socket.member_list.events[target_id];
 	};
 
-	socket.member_list.events[member_id] = listenGatewayEvent(
-		member_id,
+	// TODO: don't we also want to subscribe to the user id?
+
+	socket.member_list.events[target_id] = listenGatewayEvent(
+		target_id,
 		async (payload) => {
 			// Listening to a member id is intended to only send requests about that guild member
 			// And so we just need to track the events that move their position within the list
@@ -162,7 +177,7 @@ const listenRangeEvent = async (
 					const position = await getMemberPosition(
 						channel_id,
 						...(socket.member_list.range ?? [0, 100]),
-						member_id,
+						target_id,
 					);
 
 					if (!position) {
@@ -193,13 +208,20 @@ const unsubscribeOutOfRange = (
 	socket: Websocket,
 	items: MEMBERS_CHUNK["items"],
 ) => {
+	const keep = new Set(
+		items
+			.filter((x) => typeof x !== "string")
+			.map((x) => x.member_id ?? x.user_id),
+	);
+
 	// Remove all subscriptions that are not in the new range
-	const [_, remove] = partition(
-		items.filter((x) => typeof x !== "string").map((x) => x.member_id),
-		(x) => !!socket.member_list.events[x],
+	const [_, remove] = partition(Object.keys(socket.member_list.events), (x) =>
+		keep.has(x),
 	);
 
 	for (const x of remove) {
+		if (!socket.member_list.events[x]) continue;
+
 		socket.member_list.events[x]();
 		delete socket.member_list.events[x];
 	}
