@@ -1,9 +1,9 @@
 import EventEmitter from "node:events";
-import type { GATEWAY_EVENT } from "../gateway/util/validation";
+import type { GATEWAY_EVENT } from "../../gateway/util/validation";
 
 const events = new EventEmitter();
 
-export const emitGatewayEvent = (
+const emitGatewayEvent = (
 	targets: string | string[],
 	payload: GATEWAY_EVENT,
 ) => {
@@ -14,7 +14,7 @@ export const emitGatewayEvent = (
 	}
 };
 
-export const listenGatewayEvent = (
+const listenGatewayEvent = (
 	target: string,
 	callback: (payload: GATEWAY_EVENT) => unknown,
 ) => {
@@ -26,3 +26,10 @@ export const listenGatewayEvent = (
 		events.setMaxListeners(events.getMaxListeners() - 1);
 	};
 };
+
+const internal = {
+	emitGatewayEvent,
+	listenGatewayEvent,
+};
+
+export { internal };
