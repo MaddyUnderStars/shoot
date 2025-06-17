@@ -4,12 +4,12 @@
 	"description": "Activitypub federated instant messaging server",
 	"main": "dist/bootstrap.js",
 	"scripts": {
-		"start": "node dist/src/bootstrap.js",
-		"inbound_queue": "node dist/src/receiver/index.js",
-		"cli": "node dist/src/cli/index.js",
+		"start": "node --enable-source-maps dist/src/bootstrap.js",
+		"inbound_queue": "node --enable-source-maps dist/src/receiver/index.js",
+		"cli": "node --enable-source-maps dist/src/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky || true",
-		"openapi": "node dist/src/scripts/openapi.js",
+		"openapi": "node --enable-source-maps dist/src/scripts/openapi.js",
 		"test": "c8 --all --src ./src --exclude-after-remap ava"
 	},
 	"author": "MaddyUnderStars",

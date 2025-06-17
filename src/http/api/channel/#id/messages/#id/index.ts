@@ -1,11 +1,12 @@
 import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
-import { z } from "zod";
+import { string, z } from "zod";
 import { Message, PublicMessage } from "../../../../../../entity";
 import {
 	APError,
 	PERMISSION,
 	buildMessageFromAPNote,
+	emitGatewayEvent,
 	getOrFetchChannel,
 	resolveAPObject,
 	route,
@@ -13,14 +14,16 @@ import {
 
 const router = Router({ mergeParams: true });
 
+const MessageRequestParams = z.object({
+	channel_id: z.string(),
+	message_id: z.string(),
+});
+
 router.get(
 	"/",
 	route(
 		{
-			params: z.object({
-				channel_id: z.string(),
-				message_id: z.string(),
-			}),
+			params: MessageRequestParams,
 			response: PublicMessage,
 		},
 		async (req, res) => {
@@ -66,6 +69,50 @@ router.get(
 			}
 
 			return res.json(message.toPublic());
+		},
+	),
+);
+
+router.delete(
+	"/",
+	route(
+		{
+			params: MessageRequestParams,
+		},
+		async (req, res) => {
+			const channel = await getOrFetchChannel(req.params.channel_id);
+
+			await channel.throwPermission(req.user, [
+				PERMISSION.MANAGE_MESSAGES,
+			]);
+
+			if (channel.isRemote()) {
+				/*
+					Probably do not want to delete optimistically?
+					I'm thinking flow should be:
+					Delete<Note> -> wait for Ack -> MESSAGE_DELETE event
+					but we should maybe mark it as to be deleted in the UI?
+				*/
+
+				throw new APError("TODO: federation message deletion");
+			}
+
+			const message = await Message.findOneOrFail({
+				where: {
+					channel: { id: channel.id },
+					id: req.params.message_id,
+				},
+			});
+
+			emitGatewayEvent(channel.id, {
+				type: "MESSAGE_DELETE",
+				message_id: message.id,
+				channel_id: channel.id,
+			});
+
+			await message.remove();
+
+			return res.sendStatus(204);
 		},
 	),
 );
