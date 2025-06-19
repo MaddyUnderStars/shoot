@@ -9,14 +9,14 @@ Shoot supports attaching files to messages. The basic flow is described below:
 ```jsonc
 [
 	{
-		"id": <any value unique>,
+		"id": "<any unique value>",
 		"name": "<the user provided file name>",
 		"md5": "<the MD5 hash of the full file content. Base64 encoded>",
 		"mime": "<mime type>",
 		"size": <size in bytes>,
 
 		// if the file is an image or video, you must also provide:
-		"width": <pwidth in pixels>,
+		"width": <width in pixels>,
 		"height": <height in pixels>
 	},
 	
@@ -50,6 +50,10 @@ Finally, you may send your message. When doing so, include the file `hash` retur
 	]
 }
 ```
+
+Messages must not be 'empty', meaning they must have some content of any file.
+You may send a message with only `content` and no `files`, or `files` with no `content`.
+To do so, simply exclude the object keys which do not have any value in your request.
 
 ## Downloading Attachments
 
