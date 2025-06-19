@@ -251,6 +251,14 @@ const config = Object.freeze({
 					accessKey: get<string>("storage.s3.accessKey"),
 
 					secret: get<string>("storage.s3.secret"),
+
+					/**
+					 * Whether to force path style URLs for S3 objects
+					 * (e.g., https://s3.amazonaws.com/{bucket}/ instead of https://{bucket}.s3.amazonaws.com/
+					 */
+					forcePathStyle:
+						ifExistsGet<boolean>("storage.s3.forcePathStyle") ??
+						false,
 				}
 			: {
 					enabled: false,

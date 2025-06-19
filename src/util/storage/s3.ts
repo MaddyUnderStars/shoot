@@ -23,13 +23,14 @@ const client = config.storage.s3.enabled
 				accessKeyId: config.storage.s3.accessKey,
 				secretAccessKey: config.storage.s3.secret,
 			},
-			forcePathStyle: true, // TODO add this to config file
+			forcePathStyle: config.storage.s3.forcePathStyle,
 		})
 	: null;
 
 const createEndpoint = async (file: PutFileRequest) => {
 	if (!client) throw new Error("s3 not enabled");
 
+	// TODO: shouldn't we just use the hash provided by the client?
 	const hash = crypto
 		.createHash("md5")
 		.update(file.name)

@@ -19,6 +19,11 @@ const AttachmentsResponse = z.array(
 	}),
 );
 
+// NOTE: This file DOES NOT require authentication.
+// The POST route will simply fail if you do not have `req.user`, thus it is still protected ish
+// But the GET route is free to use for all.
+// This ended up becoming a problem for Discord, so it may change in the future.
+
 router.post(
 	"/",
 	route(
