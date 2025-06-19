@@ -288,6 +288,25 @@ const config = Object.freeze({
 		 */
 		port: ifExistsGet<number>("redis.port") ?? 6379,
 	},
+
+	/**
+	 * RabbitMQ is optional.
+	 * It is required if you:
+	 * - use the inbound federation queue
+	 * - run api, gateway individually instead of as one process (i.e. via `npm run start:http` etc)
+	 *
+	 * It is used for sending events from the API, among other components, to the gateway
+	 * when they do not share memory
+	 */
+	rabbitmq: ifExistsGet<boolean>("rabbitmq.enabled")
+		? {
+				enabled: true,
+				url: new URL(get<string>("rabbitmq.url")),
+			}
+		: {
+				enabled: false,
+				url: new URL("http://localhost"),
+			},
 });
 
 export { config };

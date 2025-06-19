@@ -4,9 +4,17 @@ import express from "express";
 import morgan from "morgan";
 import http from "node:http";
 
-import { errorHandler, routes } from ".";
-import { config, createLogStream, createLogger, initDatabase } from "../util";
+import {
+	config,
+	createLogStream,
+	createLogger,
+	initDatabase,
+	initRabbitMQ,
+} from "../util";
 import { isFederationRequest } from "./routes";
+
+import routes from "./routes";
+import { errorHandler } from "./middleware";
 
 const Log = createLogger("API");
 
@@ -63,6 +71,7 @@ export class APIServer {
 		});
 
 		await initDatabase();
+		await initRabbitMQ(false);
 
 		if (!this.server.listening) this.server.listen(port);
 	}

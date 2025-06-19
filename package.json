@@ -5,6 +5,9 @@
 	"main": "dist/bootstrap.js",
 	"scripts": {
 		"start": "node --enable-source-maps dist/src/bootstrap.js",
+		"start:http": "node --enable-source-maps dist/src/http/bootstrap.js",
+		"start:gateway": "node --enable-source-maps dist/src/gateway/bootstrap.js",
+		"start:media": "node --enable-source-maps dist/src/media/bootstrap.js",
 		"inbound_queue": "node --enable-source-maps dist/src/receiver/index.js",
 		"cli": "node --enable-source-maps dist/src/cli/index.js",
 		"build": "tsc",
@@ -53,6 +56,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"morgan": "^1.10.0",
 		"pg": "^8.13.1",
+		"rabbitmq-stream-js-client": "^0.6.1",
 		"ts-deepmerge": "^7.0.2",
 		"typeorm": "^0.3.24",
 		"typeorm-cursor-pagination": "^0.10.1",
