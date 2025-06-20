@@ -59,6 +59,7 @@ router.patch(
 				throw new APError("TODO: federate guild modification");
 			}
 
+			guild.assign(req.body);
 			await Guild.update({ id: guild.id }, req.body);
 
 			emitGatewayEvent(guild.id, {
