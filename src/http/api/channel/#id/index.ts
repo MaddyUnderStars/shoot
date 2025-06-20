@@ -67,13 +67,13 @@ router.patch(
 				},
 			);
 
-			return res.sendStatus(200);
+			return res.sendStatus(204);
 		}
 
 		throw new HttpError("Not implemented", 500);
 
 		// TODO: federate Update channel activity to remote server
-		//return res.sendStatus(202);
+		//return res.sendStatus(204);
 	}),
 );
 
