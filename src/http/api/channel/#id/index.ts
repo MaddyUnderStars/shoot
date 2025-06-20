@@ -54,6 +54,7 @@ router.patch(
 		if (channel.domain === config.federation.webapp_url.hostname) {
 			// This is a local channel
 
+			channel.assign(req.body);
 			await Channel.update({ id: channel.id }, req.body);
 
 			emitGatewayEvent(
