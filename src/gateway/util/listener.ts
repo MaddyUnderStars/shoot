@@ -28,6 +28,11 @@ export const listenEvents = (
 };
 
 export const removeEventListener = (socket: Websocket, id: string) => {
+	if (!socket.events[id]) {
+		Log.warn(`No listener for target ${id} on ${socket.user_id} to remove`);
+		return;
+	}
+
 	socket.events[id]();
 	delete socket.events[id];
 };
