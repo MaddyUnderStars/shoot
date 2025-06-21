@@ -17,10 +17,6 @@ export const findActorOfAnyType = async (id: string, domain: string) => {
 							name: id,
 							domain: domain,
 						},
-						{
-							remote_id: id,
-							domain,
-						},
 					],
 				}),
 		uuid.test(id)
