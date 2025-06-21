@@ -21,14 +21,6 @@ export class APIServer {
 
 		this.app.set("trust proxy", config.security.trust_proxy);
 
-		this.app.use(bodyParser.json({ inflate: true }));
-		this.app.use(
-			bodyParser.json({
-				type: "application/activity+json",
-			}),
-		);
-		this.app.use(bodyParser.urlencoded({ inflate: true, extended: true }));
-
 		morgan.token("mode", (req) =>
 			isFederationRequest(req.headers) ? "fed" : "api",
 		);

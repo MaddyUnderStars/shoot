@@ -1,10 +1,12 @@
 import type { RequestHandler } from "express";
 import {
+	ACTIVITY_JSON_ACCEPT,
 	config,
 	createLogger,
 	makeInstanceUrl,
 	validateHttpSignature,
 } from "../../util";
+import bodyParser from "body-parser";
 
 const Log = createLogger("httpsignatures");
 
@@ -24,12 +26,35 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 		return next();
 	}
 
+	// we want to only run bodyParser.raw if the request actually needs to be verified
+	// otherwise, it'll get bodyParser.json further down
+
+	const parser = bodyParser.raw({
+		type: ACTIVITY_JSON_ACCEPT,
+		inflate: true,
+	});
+
+	await new Promise<void>((resolve, reject) => {
+		parser(req, res, (err) => {
+			if (err) {
+				return reject(err);
+			}
+
+			resolve();
+		});
+	});
+
+	// we have req.body now.
+	// later in the request stack, JSON.parse or the normal bodyParser.json will be run
+	// depending on if req.body exists
+
 	try {
 		req.actor = await validateHttpSignature(
 			new URL(makeInstanceUrl(req.originalUrl)).pathname,
 			req.method,
 			req.headers,
-			Object.values(req.body ?? {}).length > 0 ? req.body : undefined,
+			req.body,
+			// Object.values(req.body ?? {}).length > 0 ? req.body : undefined,
 		);
 	} catch (e) {
 		Log.verbose(

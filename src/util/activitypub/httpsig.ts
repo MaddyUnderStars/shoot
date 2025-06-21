@@ -39,9 +39,12 @@ export const validateHttpSignature = async (
 	target: string,
 	method: string,
 	requestHeaders: IncomingHttpHeaders,
-	activity?: APActivity,
+	rawActivity?: Buffer,
 	noCache = false,
 ): Promise<Actor> => {
+	// TODO: it would be good to supply a custom error here
+	const activity = rawActivity ? JSON.parse(rawActivity.toString()) : null;
+
 	const date = requestHeaders.date;
 	const sigHeader = requestHeaders.signature?.toString();
 
@@ -157,18 +160,35 @@ export const validateHttpSignature = async (
 	}
 
 	if (requestHeaders.digest || activity) {
-		if (!activity || !requestHeaders.digest)
+		if (!rawActivity || !requestHeaders.digest)
 			throw new APError(
 				"If message provided, digest must be too and vice versa",
 			);
 
-		const digest = crypto
-			.createHash("sha256")
-			.update(JSON.stringify(activity))
-			.digest("base64");
+		const request = requestHeaders.digest;
+		if (typeof request !== "string")
+			throw new APError("Digest header is not string?");
+		const [algo, inDigest] = request.split("=");
 
 		// TODO: support different digest algos
-		if (requestHeaders.digest !== `SHA-256=${digest}`)
+		if (algo.toLowerCase() !== "sha-256")
+			throw new APError("Only sha-256 supported for message digests");
+
+		const digest = crypto
+			.createHash("sha256")
+			.update(rawActivity)
+			.digest("base64");
+
+		// TODO: verify.funfedi.dev sends digests without b64 padding???
+		// but I don't know if other software does this
+		// so I have to test both...
+
+		const withoutPadding =
+			digest.charAt(digest.length - 1) === "=" // if it has padding
+				? digest.slice(0, digest.lastIndexOf("=")) // remove it
+				: digest; // otherwise we're good
+
+		if (inDigest !== digest && inDigest !== withoutPadding)
 			throw new APError(
 				"b64 sha256 digest of message does not match provided digest header",
 			);
@@ -203,7 +223,7 @@ export const validateHttpSignature = async (
 			target,
 			method,
 			requestHeaders,
-			activity,
+			rawActivity,
 			true,
 		);
 	}
@@ -226,16 +246,13 @@ export const signWithHttpSignature = (
 	target: string,
 	method: string,
 	keys: Actor,
-	message?: APActivity,
+	message?: string,
 ) => {
 	if (!keys.private_key)
 		throw new APError("Cannot sign activity without private key");
 
 	const digest = message
-		? crypto
-				.createHash("sha256")
-				.update(JSON.stringify(message))
-				.digest("base64")
+		? crypto.createHash("sha256").update(message).digest("base64")
 		: undefined;
 	const signer = crypto.createSign("sha256");
 	const now = new Date();

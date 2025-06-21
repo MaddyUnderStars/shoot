@@ -32,7 +32,12 @@ export const sendActivity = async (
 	}, new Set());
 
 	for (const inbox of inboxes) {
-		const signed = signWithHttpSignature(inbox, "POST", sender, activity);
+		const signed = signWithHttpSignature(
+			inbox,
+			"POST",
+			sender,
+			JSON.stringify(activity),
+		);
 
 		const res = await fetch(inbox, signed);
 		if (!res.ok) {

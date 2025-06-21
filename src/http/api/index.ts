@@ -1,7 +1,13 @@
 import { Router } from "express";
+import bodyParser from "body-parser";
 import { authHandler, rateLimiter } from "../middleware";
 
 const router = Router();
+
+// These are here instead of in ApiServer because otherwise we end up
+// preventing bodyParser.raw from executing for http signature verification (#35 and #50)
+router.use(bodyParser.json({ inflate: true }));
+router.use(bodyParser.urlencoded({ inflate: true, extended: true }));
 
 // BEFORE auth handler as it uses it's own auth method
 import upload from "./upload";
