@@ -3,9 +3,11 @@ import type { ActivityHandler } from ".";
 import { Channel, Guild, Invite, User } from "../../../../entity";
 import { RelationshipType } from "../../../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import { config } from "../../../config";
-import { getOrFetchUser, joinGuild } from "../../../entity";
-import { acceptOrCreateRelationship } from "../../../entity/relationship";
+import {
+	acceptOrCreateRelationship,
+	getOrFetchUser,
+	joinGuild,
+} from "../../../entity";
 import { APError } from "../../error";
 import { addContext, splitQualifiedMention } from "../../util";
 import { makeInstanceUrl } from "../../../url";
@@ -25,12 +27,14 @@ export const FollowActivityHandler: ActivityHandler = async (
 		throw new APError("Received follow from actor without inbox");
 
 	if (target instanceof User) {
-		const relationship = await acceptOrCreateRelationship(
-			target,
+		const rel = await acceptOrCreateRelationship(
 			actor,
+			target,
+			false,
 			activity,
 		);
-		if (relationship.to_state !== RelationshipType.accepted) return;
+
+		if (rel.to_state !== RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
 		throw new APError("not implemented");

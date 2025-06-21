@@ -114,6 +114,11 @@ export type RELATIONSHIP_CREATE = {
 	relationship: PrivateRelationship; // TODO: public relationship type
 };
 
+export type RELATIONSHIP_UPDATE = {
+	type: "RELATIONSHIP_UPDATE";
+	relationship: PrivateRelationship;
+};
+
 export type RELATIONSHIP_DELETE = {
 	type: "RELATIONSHIP_DELETE";
 	user_id: string;
@@ -161,6 +166,7 @@ export type GATEWAY_EVENT =
 	| MEMBER_JOIN
 	| MEMBER_LEAVE
 	| RELATIONSHIP_CREATE
+	| RELATIONSHIP_UPDATE
 	| RELATIONSHIP_DELETE
 	| INVITE_CREATE
 	| MEMBERS_CHUNK

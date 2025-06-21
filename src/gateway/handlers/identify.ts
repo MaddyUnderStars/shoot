@@ -1,13 +1,11 @@
-import { Not } from "typeorm";
 import { makeHandler } from ".";
+import { DMChannel, Session, type User } from "../../entity";
 import {
-	DMChannel,
-	Relationship,
-	RelationshipType,
-	Session,
-	type User,
-} from "../../entity";
-import { getDatabase, getGuilds, getUserFromToken } from "../../util";
+	fetchRelationships,
+	getDatabase,
+	getGuilds,
+	getUserFromToken,
+} from "../../util";
 import { startHeartbeatTimeout } from "./heartbeat";
 import { CLOSE_CODES } from "../util/codes";
 import { consume, listenEvents } from "../util/listener";
@@ -35,14 +33,6 @@ export const onIdentify = makeHandler(async function (payload) {
 			user,
 		}).save(),
 
-		// DMChannel.find({
-		// 	where: [
-		// 		{ owner: { id: this.user_id } },
-		// 		{ recipients: { id: this.user_id } },
-		// 	],
-		// 	relations: { recipients: true, owner: true },
-		// }),
-
 		getDatabase()
 			.getRepository(DMChannel)
 			.createQueryBuilder("dm")
@@ -54,29 +44,14 @@ export const onIdentify = makeHandler(async function (payload) {
 
 		getGuilds(this.user_id),
 
-		Relationship.find({
-			where: [
-				// We created this relationship
-				{ to: { id: this.user_id } },
-				//Or we are the target, and are not blocked
-				{
-					from: { id: this.user_id },
-					from_state: Not(RelationshipType.blocked),
-				},
-			],
-			relations: { to: true, from: true },
-		}),
+		fetchRelationships(this.user_id),
 	]);
 
 	this.session = session;
 
-	const relationshipUsers = relationships.map((x) =>
-		x.to.id === this.user_id ? x.from : x.to,
-	);
-
 	listenEvents(this, [
 		this.user_id,
-		...relationshipUsers.map((x) => x.id),
+		// TODO: for relationships, see #54
 		...dmChannels.map((x) => x.id),
 		...guilds.map((x) => x.id),
 		...guilds.flatMap((x) => x.channels.map((y) => y.id)),

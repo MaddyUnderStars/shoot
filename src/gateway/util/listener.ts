@@ -39,14 +39,8 @@ export const removeEventListener = (socket: Websocket, id: string) => {
 
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
-		case "RELATIONSHIP_CREATE": {
-			listenEvents(socket, [payload.relationship.user.id]);
-			break;
-		}
-		case "RELATIONSHIP_DELETE": {
-			removeEventListener(socket, payload.user_id);
-			break;
-		}
+		// TODO: for relationships, see #54
+
 		case "CHANNEL_CREATE":
 			listenEvents(socket, [payload.channel.id]);
 			break;

@@ -1,8 +1,12 @@
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
 import type { ActivityHandler } from ".";
 import { Guild, User } from "../../../../entity";
-import { findActorOfAnyType, getOrFetchUser, joinGuild } from "../../../entity";
-import { acceptOrCreateRelationship } from "../../../entity/relationship";
+import {
+	acceptRelationship,
+	findActorOfAnyType,
+	getOrFetchUser,
+	joinGuild,
+} from "../../../entity";
 import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";
@@ -57,7 +61,7 @@ const AcceptFollow: ActivityHandler = async (activity, target) => {
 
 	if (from instanceof User) {
 		// A friend request was accepted
-		const relationship = await acceptOrCreateRelationship(target, from);
+		const relationship = await acceptRelationship(target, from);
 	} else if (from instanceof Guild) {
 		// A guild join request was accepted
 		await joinGuild(target.id, from.id);

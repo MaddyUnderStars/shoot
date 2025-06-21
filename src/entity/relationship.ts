@@ -45,6 +45,13 @@ export class Relationship extends BaseModel {
 	@JoinColumn()
 	reference_object: ApCache | null;
 
+	public isBlock() {
+		return (
+			this.to_state === RelationshipType.blocked ||
+			this.from_state === RelationshipType.blocked
+		);
+	}
+
 	public toPublic() {
 		throw new Error("Use .toClient");
 	}
@@ -53,6 +60,10 @@ export class Relationship extends BaseModel {
 		throw new Error("Use .toClient");
 	}
 
+	/**
+	 * TODO: Bad function whom I hate
+	 * It returns the representation of this relationship for the specified user
+	 */
 	public toClient(our_id: string): PrivateRelationship {
 		const dir = this.to?.id === our_id;
 
