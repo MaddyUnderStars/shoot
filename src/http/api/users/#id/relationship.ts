@@ -97,9 +97,16 @@ router.delete(
 				from: { id: to.id },
 			});
 
-			emitGatewayEvent([to.id, req.user.id], {
+			// tell both parties that we've deleted the relationship
+			// can't do it in one call, unfortunately. without some hackery of course
+			emitGatewayEvent(req.user.id, {
 				type: "RELATIONSHIP_DELETE",
 				user_id: to.id,
+			});
+
+			emitGatewayEvent(to.id, {
+				type: "RELATIONSHIP_DELETE",
+				user_id: req.user.id,
 			});
 
 			// todo federate
