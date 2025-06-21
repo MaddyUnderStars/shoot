@@ -87,7 +87,7 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 		publicKey: {
 			id: makeInstanceUrl(id),
-			owner: makeWebappUrl(id),
+			owner: makeInstanceUrl(id),
 			publicKeyPem: actor.public_key,
 		},
 	};
