@@ -1,13 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Member, PublicGuild } from "../../../../entity";
-import {
-	emitGatewayEvent,
-	getDatabase,
-	getGuilds,
-	route,
-	splitQualifiedMention,
-} from "../../../../util";
+import { PublicGuild } from "../../../../entity/guild";
+import { Member } from "../../../../entity/member";
+import { splitQualifiedMention } from "../../../../util/activitypub/util";
+import { getDatabase } from "../../../../util/database";
+import { getGuilds } from "../../../../util/entity/guild";
+import { emitGatewayEvent } from "../../../../util/events";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

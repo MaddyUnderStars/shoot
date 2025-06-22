@@ -1,6 +1,9 @@
 import type { RequestHandler } from "express";
-import type { Actor, User } from "../../entity";
-import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
+import type { Actor } from "../../entity/actor";
+import type { User } from "../../entity/user";
+import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants";
+import { HttpError } from "../../util/httperror";
+import { getUserFromToken } from "../../util/token";
 
 export const NO_AUTH_ROUTES = [
 	"/auth/login",

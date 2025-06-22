@@ -1,13 +1,14 @@
 import { type APAccept, ActivityIsFollow } from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { Channel, Guild, Invite, User } from "../../../../entity";
+import { Channel } from "../../../../entity/channel";
+import { Guild } from "../../../../entity/guild";
+import { Invite } from "../../../../entity/invite";
 import { RelationshipType } from "../../../../entity/relationship";
+import { User } from "../../../../entity/user";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import {
-	acceptOrCreateRelationship,
-	getOrFetchUser,
-	joinGuild,
-} from "../../../entity";
+import { joinGuild } from "../../../entity/guild";
+import { acceptOrCreateRelationship } from "../../../entity/relationship";
+import { getOrFetchUser } from "../../../entity/user";
 import { makeInstanceUrl } from "../../../url";
 import { APError } from "../../error";
 import { addContext, splitQualifiedMention } from "../../util";

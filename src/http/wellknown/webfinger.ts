@@ -1,18 +1,16 @@
 import { type Response, Router } from "express";
 import z from "zod";
-import { Invite, User } from "../../entity";
+import { Invite } from "../../entity/invite";
+import { User } from "../../entity/user";
 import { getExternalPathFromActor } from "../../sender";
-import {
-	HttpError,
-	InstanceActor,
-	config,
-	findActorOfAnyType,
-	makeInstanceUrl,
-	makeWebappUrl,
-	route,
-	splitQualifiedMention,
-} from "../../util";
 import type { WebfingerResponse } from "../../util/activitypub/constants";
+import { InstanceActor } from "../../util/activitypub/instanceActor";
+import { splitQualifiedMention } from "../../util/activitypub/util";
+import { config } from "../../util/config";
+import { findActorOfAnyType } from "../../util/entity/resolve";
+import { HttpError } from "../../util/httperror";
+import { route } from "../../util/route";
+import { makeInstanceUrl, makeWebappUrl } from "../../util/url";
 
 const router = Router();
 

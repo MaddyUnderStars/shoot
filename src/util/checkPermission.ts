@@ -1,6 +1,7 @@
-import type { Guild, User } from "../entity";
+import type { Guild } from "../entity/guild";
 import { Member } from "../entity/member";
 import { Role } from "../entity/role";
+import type { User } from "../entity/user";
 import { getDatabase } from "./database";
 import { PERMISSION } from "./permission";
 

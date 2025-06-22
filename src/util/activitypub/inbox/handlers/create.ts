@@ -4,18 +4,20 @@ import {
 	ObjectIsNote,
 } from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { Channel, DMChannel, User } from "../../../../entity";
+import { DMChannel } from "../../../../entity/DMChannel";
+import { Channel } from "../../../../entity/channel";
+import { User } from "../../../../entity/user";
 import {
 	createChannelFromRemoteGroup,
 	createDmChannel,
-	getOrFetchUser,
-	handleMessage,
-} from "../../../entity";
+} from "../../../entity/channel";
+import { handleMessage } from "../../../entity/message";
+import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
 import { PERMISSION } from "../../../permission";
 import { APError } from "../../error";
 import { resolveAPObject, resolveId } from "../../resolve";
-import { buildMessageFromAPNote } from "../../transformers";
+import { buildMessageFromAPNote } from "../../transformers/message";
 
 /**
  * External users Create<Note> at a channel

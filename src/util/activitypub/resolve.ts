@@ -8,7 +8,7 @@ import type {
 	AnyAPObject,
 } from "activitypub-types";
 import { XMLParser } from "fast-xml-parser";
-import { ApCache } from "../../entity";
+import { ApCache } from "../../entity/apcache";
 import { config } from "../config";
 import { createLogger } from "../log";
 import { tryParseUrl } from "../url";

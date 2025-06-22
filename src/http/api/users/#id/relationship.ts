@@ -1,17 +1,17 @@
 import { Router } from "express";
 import { z } from "zod";
-import type { User } from "../../../../entity";
 import {
 	PrivateRelationship,
 	Relationship,
 } from "../../../../entity/relationship";
+import type { User } from "../../../../entity/user";
 import {
 	acceptOrCreateRelationship,
-	emitGatewayEvent,
 	fetchRelationship,
-	getOrFetchUser,
-	route,
-} from "../../../../util";
+} from "../../../../util/entity/relationship";
+import { getOrFetchUser } from "../../../../util/entity/user";
+import { emitGatewayEvent } from "../../../../util/events";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

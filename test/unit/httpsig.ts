@@ -7,9 +7,13 @@ import { setupTests } from "../helpers/env";
 setupTests(test);
 
 test("Using Instance Actor", async (t) => {
-	const { signWithHttpSignature, validateHttpSignature, InstanceActor } =
-		await import("../../src/util");
-	const { User } = await import("../../src/entity");
+	const { signWithHttpSignature, validateHttpSignature } = await import(
+		"../../src/util/activitypub/httpsig"
+	);
+	const { User } = await import("../../src/entity/user");
+	const { InstanceActor } = await import(
+		"../../src/util/activitypub/instanceActor"
+	);
 
 	const actor = await User.create({
 		...InstanceActor,

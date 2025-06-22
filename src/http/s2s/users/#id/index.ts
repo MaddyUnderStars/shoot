@@ -1,16 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Relationship, User } from "../../../../entity";
-import {
-	addContext,
-	config,
-	getDatabase,
-	makeInstanceUrl,
-	orderedCollectionHandler,
-	route,
-} from "../../../../util";
+import { Relationship } from "../../../../entity/relationship";
+import { User } from "../../../../entity/user";
 import { handleInbox } from "../../../../util/activitypub/inbox";
-import { buildAPActor } from "../../../../util/activitypub/transformers";
+import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
+import { addContext } from "../../../../util/activitypub/util";
+import { config } from "../../../../util/config";
+import { getDatabase } from "../../../../util/database";
+import { route } from "../../../../util/route";
+import { makeInstanceUrl } from "../../../../util/url";
 
 const router = Router({ mergeParams: true });
 

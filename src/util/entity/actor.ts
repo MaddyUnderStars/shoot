@@ -1,4 +1,4 @@
-import type { Actor } from "../../entity";
+import type { Actor } from "../../entity/actor";
 import { createLogger } from "../log";
 import { KEY_OPTIONS } from "../rsa";
 

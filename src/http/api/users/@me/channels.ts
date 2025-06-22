@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { Channel, PublicChannel } from "../../../../entity";
-import { getDatabase, route } from "../../../../util";
+import { Channel, PublicChannel } from "../../../../entity/channel";
+import { getDatabase } from "../../../../util/database";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

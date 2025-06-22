@@ -1,14 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message, PublicMessage } from "../../../../../entity";
 import { Attachment } from "../../../../../entity/attachment";
-import {
-	PERMISSION,
-	getDatabase,
-	handleMessage,
-	route,
-} from "../../../../../util";
+import { Message, PublicMessage } from "../../../../../entity/message";
+import { getDatabase } from "../../../../../util/database";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
+import { handleMessage } from "../../../../../util/entity/message";
+import { PERMISSION } from "../../../../../util/permission";
+import { route } from "../../../../../util/route";
 
 const MessageCreate = z
 	.object({

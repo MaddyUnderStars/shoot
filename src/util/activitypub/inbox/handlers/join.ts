@@ -1,9 +1,9 @@
 import type { APAccept } from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { Channel } from "../../../../entity";
+import { Channel } from "../../../../entity/channel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
-import { getOrFetchUser } from "../../../entity";
+import { getOrFetchUser } from "../../../entity/user";
 import { PERMISSION } from "../../../permission";
 import { makeInstanceUrl } from "../../../url";
 import { generateMediaToken } from "../../../voice";

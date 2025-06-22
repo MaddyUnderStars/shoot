@@ -3,16 +3,13 @@ import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 
-import {
-	config,
-	createLogStream,
-	createLogger,
-	initDatabase,
-	initRabbitMQ,
-} from "../util";
+import { config } from "../util/config";
+import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
+import { createLogStream, createLogger } from "../util/log";
 import { isFederationRequest } from "./routes";
 
-import { errorHandler } from "./middleware";
+import { errorHandler } from "./middleware/error";
 import routes from "./routes";
 
 const Log = createLogger("API");

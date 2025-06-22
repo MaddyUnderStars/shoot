@@ -1,14 +1,17 @@
 import { ObjectIsNote } from "activitypub-types";
-import { DMChannel, GuildTextChannel, Member, Message } from "../../entity";
+import { DMChannel } from "../../entity/DMChannel";
 import { Attachment } from "../../entity/attachment";
+import { Member } from "../../entity/member";
+import { Message } from "../../entity/message";
+import { GuildTextChannel } from "../../entity/textChannel";
 import { sendActivity } from "../../sender";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	addContext,
 	buildAPAnnounceNote,
 	buildAPCreateNote,
 	buildAPNote,
-} from "../activitypub";
+} from "../activitypub/transformers/message";
+import { addContext } from "../activitypub/util";
 import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
 import { HttpError } from "../httperror";

@@ -9,7 +9,7 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 import { z } from "zod";
-import type { AttributesOnly } from "../util";
+import type { AttributesOnly } from "../util/types";
 import type { ApCache } from "./apcache";
 import { type Attachment, PublicAttachment } from "./attachment";
 import { BaseModel } from "./basemodel";

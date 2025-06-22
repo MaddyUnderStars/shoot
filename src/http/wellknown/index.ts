@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { rateLimiter } from "../middleware";
+import { rateLimiter } from "../middleware/rate";
 import hostMeta from "./host-meta";
 import nodeInfo from "./nodeinfo";
 import webfinger from "./webfinger";

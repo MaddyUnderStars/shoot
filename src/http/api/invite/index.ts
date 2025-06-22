@@ -1,17 +1,17 @@
 import { type APFollow, ObjectIsOrganization } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Invite } from "../../../entity";
+import { Invite } from "../../../entity/invite";
 import { getExternalPathFromActor, sendActivity } from "../../../sender";
+import { APError } from "../../../util/activitypub/error";
+import { resolveWebfinger } from "../../../util/activitypub/resolve";
 import {
-	APError,
 	addContext,
-	makeInstanceUrl,
-	resolveWebfinger,
-	route,
 	splitQualifiedMention,
-} from "../../../util";
+} from "../../../util/activitypub/util";
 import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
+import { route } from "../../../util/route";
+import { makeInstanceUrl } from "../../../util/url";
 
 const router = Router({ mergeParams: true });
 

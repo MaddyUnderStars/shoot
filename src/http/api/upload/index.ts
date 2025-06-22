@@ -9,7 +9,8 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { LocalUpload } from "../../../entity/upload";
-import { config, route } from "../../../util";
+import { config } from "../../../util/config";
+import { route } from "../../../util/route";
 import type { localFileJwt } from "../../../util/storage/local";
 
 const router = Router({ mergeParams: true });

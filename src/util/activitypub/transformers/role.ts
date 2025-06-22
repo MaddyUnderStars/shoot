@@ -1,5 +1,5 @@
 import type { APObject } from "activitypub-types";
-import type { Role } from "../../../entity";
+import type { Role } from "../../../entity/role";
 import { getExternalPathFromActor } from "../../../sender";
 import type { PERMISSION } from "../../permission";
 import { makeInstanceUrl } from "../../url";

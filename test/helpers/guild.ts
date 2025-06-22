@@ -4,9 +4,10 @@ export const createTestGuild = async (
 	owner: string,
 	members: string[],
 ) => {
-	const { createGuild, getOrFetchUser, joinGuild } = await import(
-		"../../src/util"
+	const { createGuild, joinGuild } = await import(
+		"../../src/util/entity/guild"
 	);
+	const { getOrFetchUser } = await import("../../src/util/entity/user");
 
 	const o = await getOrFetchUser(owner);
 	const guild = await createGuild(name, o);

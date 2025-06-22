@@ -1,5 +1,5 @@
 import EventEmitter from "node:events";
-import type { GATEWAY_EVENT } from "../gateway/util/validation";
+import type { GATEWAY_EVENT } from "../gateway/util/validation/send";
 import { config } from "./config";
 
 import * as rabbit from "rabbitmq-stream-js-client";

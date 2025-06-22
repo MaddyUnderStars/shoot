@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { HttpError, config } from "../../util";
+import { config } from "../../util/config";
+import { HttpError } from "../../util/httperror";
 import { route } from "../../util/route";
 
 const router = Router();

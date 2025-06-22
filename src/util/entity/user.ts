@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { User } from "../../entity";
+import { User } from "../../entity/user";
 import { config } from "../config";
 
 import {
@@ -8,14 +8,10 @@ import {
 	type APPerson,
 	ObjectIsGroup,
 } from "activitypub-types";
-import {
-	APError,
-	APObjectIsActor,
-	type ActorMention,
-	resolveAPObject,
-	resolveWebfinger,
-	splitQualifiedMention,
-} from "../activitypub";
+import type { ActorMention } from "../activitypub/constants";
+import { APError } from "../activitypub/error";
+import { resolveAPObject, resolveWebfinger } from "../activitypub/resolve";
+import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
 import { createLogger } from "../log";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";

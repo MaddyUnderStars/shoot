@@ -4,22 +4,20 @@ import {
 	ObjectIsGroup,
 	ObjectIsOrganization,
 } from "activitypub-types";
-import {
-	Channel,
-	Guild,
-	type GuildTextChannel,
-	Member,
-	User,
-} from "../../entity";
+import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
+import { Member } from "../../entity/member";
 import { Role } from "../../entity/role";
+import type { GuildTextChannel } from "../../entity/textChannel";
+import { User } from "../../entity/user";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	ObjectIsRole,
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveWebfinger,
-	splitQualifiedMention,
-} from "../activitypub";
+} from "../activitypub/resolve";
+import { ObjectIsRole } from "../activitypub/transformers/role";
+import { splitQualifiedMention } from "../activitypub/util";
 import { config } from "../config";
 import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";

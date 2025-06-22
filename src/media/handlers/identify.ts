@@ -1,11 +1,12 @@
 import { makeHandler } from ".";
-import type { Channel, User } from "../../entity";
+import type { Channel } from "../../entity/channel";
+import type { User } from "../../entity/user";
 import { CLOSE_CODES } from "../../gateway/util/codes";
 import { validateMediaToken } from "../../util/voice";
-import { IDENTIFY } from "../util";
 import { emitMediaEvent, listenMediaEvent } from "../util/events";
 import { getJanus } from "../util/janus";
 import { getRoomId, setRoomId } from "../util/rooms";
+import { IDENTIFY } from "../util/validation/receive";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 export const onIdentify = makeHandler(async function (payload) {

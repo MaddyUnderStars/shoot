@@ -1,18 +1,14 @@
 import { makeHandler } from ".";
-import { DMChannel, GuildTextChannel, User } from "../../entity";
-import {
-	PERMISSION,
-	channelInGuild,
-	getChannel,
-	getDatabase,
-	listenGatewayEvent,
-} from "../../util";
+import { DMChannel } from "../../entity/DMChannel";
+import { GuildTextChannel } from "../../entity/textChannel";
+import { User } from "../../entity/user";
+import { getDatabase } from "../../util/database";
+import { channelInGuild, getChannel } from "../../util/entity/channel";
+import { listenGatewayEvent } from "../../util/events";
+import { PERMISSION } from "../../util/permission";
 import { consume } from "../util/listener";
-import {
-	type MEMBERS_CHUNK,
-	type ROLE_MEMBER_ADD,
-	SUBSCRIBE_MEMBERS,
-} from "../util/validation";
+import { SUBSCRIBE_MEMBERS } from "../util/validation/receive";
+import type { MEMBERS_CHUNK, ROLE_MEMBER_ADD } from "../util/validation/send";
 import type { Websocket } from "../util/websocket";
 
 export type MembersChunkItem = {

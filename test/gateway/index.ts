@@ -7,14 +7,14 @@ import { setupTests } from "../helpers/env";
 setupTests(test);
 
 import { EventEmitter } from "node:stream";
-import { createTestDm } from "../helpers/channel";
-import { createTestGuild } from "../helpers/guild";
-import { createTestUser } from "../helpers/users";
 import type {
 	GATEWAY_PAYLOAD,
 	MEMBERS_CHUNK,
 	READY,
-} from "../../src/gateway/util/validation";
+} from "../../src/gateway/util/validation/send";
+import { createTestDm } from "../helpers/channel";
+import { createTestGuild } from "../helpers/guild";
+import { createTestUser } from "../helpers/users";
 
 class FakeSocket extends EventEmitter {
 	sequence = 0;
@@ -74,7 +74,7 @@ test("Identify", async (t) => {
 	socket.close();
 });
 
-test.only("Request members", async (t) => {
+test("Request members", async (t) => {
 	const user1 = await createTestUser("members_user1");
 	await createTestUser("members_user2");
 	const guild = await createTestGuild(

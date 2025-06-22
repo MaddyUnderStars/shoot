@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import { Router } from "express";
-import { rateLimiter, verifyHttpSig } from "../middleware";
+import { verifyHttpSig } from "../middleware/httpsig";
+import { rateLimiter } from "../middleware/rate";
 
 const router = Router();
 
@@ -50,7 +51,7 @@ router.use("/invite/:invite_id", invite_id);
 import channel_id_message_id from "./channel/#id/message/#id";
 router.use("/channel/:channel_id/message/:message_id", channel_id_message_id);
 
-import { ACTIVITY_JSON_ACCEPT } from "../../util";
+import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants";
 import actor from "./actor";
 router.use("/actor", actor);
 

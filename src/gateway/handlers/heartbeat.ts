@@ -1,7 +1,8 @@
 import { makeHandler } from ".";
 import { CLOSE_CODES } from "../util/codes";
 import { consume } from "../util/listener";
-import { HEARTBEAT, type HEARTBEAT_ACK } from "../util/validation";
+import { HEARTBEAT } from "../util/validation/receive";
+import type { HEARTBEAT_ACK } from "../util/validation/send";
 import type { Websocket } from "../util/websocket";
 export const onHeartbeat = makeHandler(async function (payload) {
 	if (payload.s !== this.sequence)

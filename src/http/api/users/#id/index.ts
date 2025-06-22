@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PublicUser } from "../../../../entity";
-import { getOrFetchUser, route } from "../../../../util";
+import { PublicUser } from "../../../../entity/user";
+import { getOrFetchUser } from "../../../../util/entity/user";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

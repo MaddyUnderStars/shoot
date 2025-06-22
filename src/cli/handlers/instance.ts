@@ -16,8 +16,13 @@ export const instance = async (url: string, action: string) => {
 			: url,
 	);
 
-	const { User, Guild, DMChannel, GuildTextChannel, Channel, ApCache } =
-		await import("../../entity");
+	const { User } = await import("../../entity/user");
+	const { Guild } = await import("../../entity/guild");
+	const { DMChannel } = await import("../../entity/DMChannel");
+	const { GuildTextChannel } = await import("../../entity/textChannel");
+	const { Channel } = await import("../../entity/channel");
+	const { ApCache } = await import("../../entity/apcache");
+
 	const { initDatabase, closeDatabase } = await import("../../util/database");
 
 	await initDatabase();

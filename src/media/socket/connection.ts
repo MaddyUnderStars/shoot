@@ -1,8 +1,8 @@
 import type { IncomingMessage } from "node:http";
 import type ws from "ws";
 import { CLOSE_CODES } from "../../gateway/util/codes";
-import { createLogger } from "../../util";
-import { type MediaSocket, send } from "../util";
+import { createLogger } from "../../util/log";
+import { type MediaSocket, send } from "../util/websocket";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 

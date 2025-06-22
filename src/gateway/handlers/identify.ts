@@ -1,14 +1,15 @@
 import { makeHandler } from ".";
-import { DMChannel, Session, type User } from "../../entity";
-import {
-	fetchRelationships,
-	getDatabase,
-	getGuilds,
-	getUserFromToken,
-} from "../../util";
+import { DMChannel } from "../../entity/DMChannel";
+import { Session } from "../../entity/session";
+import type { User } from "../../entity/user";
+import { getDatabase } from "../../util/database";
+import { getGuilds } from "../../util/entity/guild";
+import { fetchRelationships } from "../../util/entity/relationship";
+import { getUserFromToken } from "../../util/token";
 import { CLOSE_CODES } from "../util/codes";
 import { consume, listenEvents } from "../util/listener";
-import { IDENTIFY, type READY } from "../util/validation";
+import { IDENTIFY } from "../util/validation/receive";
+import type { READY } from "../util/validation/send";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 /**

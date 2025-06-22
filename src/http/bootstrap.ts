@@ -3,7 +3,7 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import "dotenv/config";
-import { createLogger } from "../util";
+import { createLogger } from "../util/log";
 import { APIServer } from "./server";
 
 const Log = createLogger("bootstrap");

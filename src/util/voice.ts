@@ -1,8 +1,10 @@
 import type { APJoin } from "activitypub-types";
 import jwt from "jsonwebtoken";
-import { Channel, User } from "../entity";
+import { Channel } from "../entity/channel";
+import { User } from "../entity/user";
 import { getExternalPathFromActor, sendActivity } from "../sender";
-import { APError, addContext, splitQualifiedMention } from "./activitypub";
+import { APError } from "./activitypub/error";
+import { addContext, splitQualifiedMention } from "./activitypub/util";
 import { config } from "./config";
 import { getDatabase } from "./database";
 import { HttpError } from "./httperror";

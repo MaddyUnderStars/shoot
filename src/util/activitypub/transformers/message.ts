@@ -1,8 +1,10 @@
 import type { APAnnounce, APCreate, APNote } from "activitypub-types";
-import { ApCache, type Channel, Message } from "../../../entity";
+import { ApCache } from "../../../entity/apcache";
+import type { Channel } from "../../../entity/channel";
+import { Message } from "../../../entity/message";
 import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
-import { getOrFetchAttributedUser } from "../../entity";
+import { getOrFetchAttributedUser } from "../../entity/user";
 import { makeInstanceUrl } from "../../url";
 
 export const buildMessageFromAPNote = async (

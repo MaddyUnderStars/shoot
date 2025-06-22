@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PrivateUser, User } from "../../../../entity";
-import { route } from "../../../../util";
+import { PrivateUser, User } from "../../../../entity/user";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

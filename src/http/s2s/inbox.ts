@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { z } from "zod";
-import {
-	APError,
-	config,
-	findActorOfAnyType,
-	hasAPContext,
-	route,
-	splitQualifiedMention,
-} from "../../util";
+import { APError } from "../../util/activitypub/error";
 import { handleInbox } from "../../util/activitypub/inbox";
+import {
+	hasAPContext,
+	splitQualifiedMention,
+} from "../../util/activitypub/util";
+import { config } from "../../util/config";
+import { findActorOfAnyType } from "../../util/entity/resolve";
+import { route } from "../../util/route";
 
 const router = Router();
 

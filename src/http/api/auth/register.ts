@@ -1,12 +1,10 @@
 import { Router } from "express";
 import z from "zod";
-import {
-	HttpError,
-	config,
-	generateToken,
-	registerUser,
-	route,
-} from "../../../util";
+import { config } from "../../../util/config";
+import { registerUser } from "../../../util/entity/user";
+import { HttpError } from "../../../util/httperror";
+import { route } from "../../../util/route";
+import { generateToken } from "../../../util/token";
 
 const router = Router();
 

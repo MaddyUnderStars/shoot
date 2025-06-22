@@ -4,15 +4,16 @@ extendZodWithOpenApi(z);
 
 import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
-import { ApCache, Channel, Guild, User } from "../entity";
-import {
-	APError,
-	AP_ACTIVITY,
-	config,
-	initDatabase,
-	initRabbitMQ,
-} from "../util";
+import { ApCache } from "../entity/apcache";
+import { Channel } from "../entity/channel";
+import { Guild } from "../entity/guild";
+import { User } from "../entity/user";
+import { APError } from "../util/activitypub/error";
+import { AP_ACTIVITY } from "../util/activitypub/inbox";
 import { ActivityHandlers } from "../util/activitypub/inbox/handlers";
+import { config } from "../util/config";
+import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
 
 export type APInboundJobData = { activity: APActivity; target_id: string };
 

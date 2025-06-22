@@ -3,7 +3,8 @@ export const createTestDm = async (
 	owner: string,
 	recipients: string[],
 ) => {
-	const { createDmChannel, getOrFetchUser } = await import("../../src/util");
+	const { createDmChannel } = await import("../../src/util/entity/channel");
+	const { getOrFetchUser } = await import("../../src/util/entity/user");
 	const o = await getOrFetchUser(owner);
 	const r = await Promise.all(recipients.map((x) => getOrFetchUser(x)));
 

@@ -1,19 +1,17 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel, Guild, Role } from "../../../../entity";
-import {
-	addContext,
-	config,
-	getDatabase,
-	makeInstanceUrl,
-	orderedCollectionHandler,
-	route,
-} from "../../../../util";
+import { Channel } from "../../../../entity/channel";
+import { Guild } from "../../../../entity/guild";
+import { Role } from "../../../../entity/role";
 import { handleInbox } from "../../../../util/activitypub/inbox";
-import {
-	buildAPActor,
-	buildAPRole,
-} from "../../../../util/activitypub/transformers";
+import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
+import { buildAPRole } from "../../../../util/activitypub/transformers/role";
+import { addContext } from "../../../../util/activitypub/util";
+import { config } from "../../../../util/config";
+import { getDatabase } from "../../../../util/database";
+import { route } from "../../../../util/route";
+import { makeInstanceUrl } from "../../../../util/url";
 
 const router = Router({ mergeParams: true });
 

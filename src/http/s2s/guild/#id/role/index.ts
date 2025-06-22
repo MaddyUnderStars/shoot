@@ -1,18 +1,14 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Member } from "../../../../../entity";
+import { Member } from "../../../../../entity/member";
 import { Role } from "../../../../../entity/role";
-import {
-	addContext,
-	getDatabase,
-	makeInstanceUrl,
-	orderedCollectionHandler,
-	route,
-} from "../../../../../util";
-import {
-	buildAPActor,
-	buildAPRole,
-} from "../../../../../util/activitypub/transformers";
+import { orderedCollectionHandler } from "../../../../../util/activitypub/orderedCollection";
+import { buildAPActor } from "../../../../../util/activitypub/transformers/actor";
+import { buildAPRole } from "../../../../../util/activitypub/transformers/role";
+import { addContext } from "../../../../../util/activitypub/util";
+import { getDatabase } from "../../../../../util/database";
+import { route } from "../../../../../util/route";
+import { makeInstanceUrl } from "../../../../../util/url";
 
 const router = Router({ mergeParams: true });
 

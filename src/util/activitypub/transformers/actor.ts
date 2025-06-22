@@ -1,12 +1,10 @@
 import type { APActor } from "activitypub-types";
-import {
-	type Actor,
-	Channel,
-	DMChannel,
-	Guild,
-	GuildTextChannel,
-	User,
-} from "../../../entity";
+import { DMChannel } from "../../../entity/DMChannel";
+import type { Actor } from "../../../entity/actor";
+import { Channel } from "../../../entity/channel";
+import { Guild } from "../../../entity/guild";
+import { GuildTextChannel } from "../../../entity/textChannel";
+import { User } from "../../../entity/user";
 import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
 import { makeInstanceUrl, makeWebappUrl } from "../../url";

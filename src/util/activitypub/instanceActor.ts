@@ -1,4 +1,4 @@
-import type { User } from "../../entity";
+import type { User } from "../../entity/user";
 import { config } from "../config";
 import { makeInstanceUrl } from "../url";
 

@@ -1,9 +1,12 @@
 import crypto from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
-import { type Actor, Channel, Guild, User } from "../../entity";
+import type { Actor } from "../../entity/actor";
+import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
+import { User } from "../../entity/user";
 import { getExternalPathFromActor } from "../../sender";
-import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
+import { createGuildFromRemoteOrg } from "../entity/guild";
 import { createUserForRemotePerson } from "../entity/user";
 import { createLogger } from "../log";
 import { makeInstanceUrl, tryParseUrl } from "../url";

@@ -1,16 +1,14 @@
 import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Message, PublicMessage } from "../../../../../../entity";
-import {
-	APError,
-	PERMISSION,
-	buildMessageFromAPNote,
-	emitGatewayEvent,
-	getOrFetchChannel,
-	resolveAPObject,
-	route,
-} from "../../../../../../util";
+import { Message, PublicMessage } from "../../../../../../entity/message";
+import { APError } from "../../../../../../util/activitypub/error";
+import { resolveAPObject } from "../../../../../../util/activitypub/resolve";
+import { buildMessageFromAPNote } from "../../../../../../util/activitypub/transformers/message";
+import { getOrFetchChannel } from "../../../../../../util/entity/channel";
+import { emitGatewayEvent } from "../../../../../../util/events";
+import { PERMISSION } from "../../../../../../util/permission";
+import { route } from "../../../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

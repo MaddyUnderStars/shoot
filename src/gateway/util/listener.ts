@@ -1,7 +1,8 @@
-import { channelInGuild, createLogger } from "../../util";
+import { channelInGuild } from "../../util/entity/channel";
 import { listenGatewayEvent } from "../../util/events";
+import { createLogger } from "../../util/log";
 import { handleMemberListRoleAdd } from "../handlers/members";
-import type { GATEWAY_EVENT } from "./validation";
+import type { GATEWAY_EVENT } from "./validation/send";
 import type { Websocket } from "./websocket";
 
 const Log = createLogger("GATEWAY:LISTENER");

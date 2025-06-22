@@ -2,8 +2,11 @@ import bcrypt from "bcrypt";
 import { Router } from "express";
 import z from "zod";
 
-import { PublicUser, User } from "../../../entity";
-import { HttpError, config, generateToken, route } from "../../../util";
+import { PublicUser, User } from "../../../entity/user";
+import { config } from "../../../util/config";
+import { HttpError } from "../../../util/httperror";
+import { route } from "../../../util/route";
+import { generateToken } from "../../../util/token";
 
 const router = Router();
 

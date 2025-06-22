@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel, GuildTextChannel, PublicChannel } from "../../../../entity";
+import { Channel, PublicChannel } from "../../../../entity/channel";
+import { GuildTextChannel } from "../../../../entity/textChannel";
+import { config } from "../../../../util/config";
 import {
-	HttpError,
-	PERMISSION,
-	config,
-	emitGatewayEvent,
 	getOrFetchChannel,
-	route,
 	updateChannelOrdering,
-} from "../../../../util";
+} from "../../../../util/entity/channel";
+import { emitGatewayEvent } from "../../../../util/events";
+import { HttpError } from "../../../../util/httperror";
+import { PERMISSION } from "../../../../util/permission";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 

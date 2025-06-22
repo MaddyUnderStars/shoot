@@ -1,16 +1,15 @@
 import type { APCreate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { DMChannel, PublicChannel } from "../../../../entity";
+import { DMChannel } from "../../../../entity/DMChannel";
+import { PublicChannel } from "../../../../entity/channel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import {
-	addContext,
-	getOrFetchUser,
-	makeInstanceUrl,
-	route,
-} from "../../../../util";
-import { buildAPActor } from "../../../../util/activitypub/transformers";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
+import { addContext } from "../../../../util/activitypub/util";
 import { createDmChannel } from "../../../../util/entity/channel";
+import { getOrFetchUser } from "../../../../util/entity/user";
+import { route } from "../../../../util/route";
+import { makeInstanceUrl } from "../../../../util/url";
 
 const router = Router({ mergeParams: true });
 

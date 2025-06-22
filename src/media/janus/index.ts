@@ -1,6 +1,6 @@
 import EventEmitter from "node:events";
 import WebSocket, { type RawData } from "ws";
-import { createLogger } from "../../util";
+import { createLogger } from "../../util/log";
 import type {
 	JANUS_REQUEST,
 	JANUS_RESPONSE,

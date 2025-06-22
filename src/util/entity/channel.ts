@@ -10,16 +10,18 @@ import {
 	ObjectIsPerson,
 } from "activitypub-types";
 import { Brackets } from "typeorm";
-import { Guild, GuildTextChannel, User } from "../../entity";
 import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
+import { GuildTextChannel } from "../../entity/textChannel";
+import { User } from "../../entity/user";
+import { APError } from "../activitypub/error";
 import {
-	APError,
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveWebfinger,
-	splitQualifiedMention,
-} from "../activitypub";
+} from "../activitypub/resolve";
+import { splitQualifiedMention } from "../activitypub/util";
 import { config } from "../config";
 import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";

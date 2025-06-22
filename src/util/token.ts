@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { User } from "../entity";
+import { User } from "../entity/user";
 import { config } from "./config";
 import { HttpError } from "./httperror";
 

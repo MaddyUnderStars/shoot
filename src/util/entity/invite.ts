@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { Invite } from "../../entity";
+import { Invite } from "../../entity/invite";
 
 const CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let INVITE_LENGTH = 5;

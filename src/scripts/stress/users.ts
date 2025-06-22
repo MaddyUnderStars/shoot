@@ -6,8 +6,11 @@ import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 extendZodWithOpenApi(z);
 
-import { Guild, User } from "../../entity";
-import { closeDatabase, config, initDatabase, joinGuild } from "../../util";
+import { Guild } from "../../entity/guild";
+import { User } from "../../entity/user";
+import { config } from "../../util/config";
+import { closeDatabase, initDatabase } from "../../util/database";
+import { joinGuild } from "../../util/entity/guild";
 
 const GUILD_ID = "01977599-db47-7058-a177-97e6f3e1ea7c";
 (async () => {

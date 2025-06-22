@@ -1,6 +1,8 @@
 import type { APPerson } from "activitypub-types";
-import { Member, type User } from "../../entity";
-import { APError, splitQualifiedMention } from "../activitypub";
+import { Member } from "../../entity/member";
+import type { User } from "../../entity/user";
+import { APError } from "../activitypub/error";
+import { splitQualifiedMention } from "../activitypub/util";
 import { HttpError } from "../httperror";
 import { getOrFetchUser } from "./user";
 

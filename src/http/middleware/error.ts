@@ -1,7 +1,8 @@
 import type { ErrorRequestHandler } from "express";
 import z from "zod";
-import { HttpError, createLogger } from "../../util";
 import { InstanceBlockedError } from "../../util/activitypub/instances";
+import { HttpError } from "../../util/httperror";
+import { createLogger } from "../../util/log";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
 

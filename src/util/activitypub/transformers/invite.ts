@@ -1,5 +1,5 @@
 import type { APObject } from "activitypub-types";
-import type { Invite } from "../../../entity";
+import type { Invite } from "../../../entity/invite";
 import { makeInstanceUrl } from "../../url";
 import { buildAPActor } from "./actor";
 

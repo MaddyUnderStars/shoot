@@ -1,4 +1,4 @@
-import { createLogger } from "../../util";
+import { createLogger } from "../../util/log";
 import { emitMediaEvent } from "../util/events";
 import { getJanus } from "../util/janus";
 import type { MediaSocket } from "../util/websocket";

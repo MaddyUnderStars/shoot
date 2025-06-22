@@ -1,6 +1,8 @@
 import http from "node:http";
 import ws from "ws";
-import { createLogger, initDatabase, initRabbitMQ } from "../util";
+import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
+import { createLogger } from "../util/log";
 import { onConnection } from "./socket/connection";
 
 const Log = createLogger("GATEWAY");

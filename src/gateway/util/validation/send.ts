@@ -1,16 +1,14 @@
-import type {
-	PrivateRelationship,
-	PrivateSession,
-	PrivateUser,
-	PublicChannel,
-	PublicDmChannel,
-	PublicGuild,
-	PublicGuildTextChannel,
-	PublicInvite,
-	PublicMember,
-	PublicMessage,
-} from "../../../entity";
+import type { PublicDmChannel } from "../../../entity/DMChannel";
+import type { PublicChannel } from "../../../entity/channel";
+import type { PublicGuild } from "../../../entity/guild";
+import type { PublicInvite } from "../../../entity/invite";
+import type { PublicMember } from "../../../entity/member";
+import type { PublicMessage } from "../../../entity/message";
+import type { PrivateRelationship } from "../../../entity/relationship";
 import type { PublicRole } from "../../../entity/role";
+import type { PrivateSession } from "../../../entity/session";
+import type { PublicGuildTextChannel } from "../../../entity/textChannel";
+import type { PrivateUser } from "../../../entity/user";
 import type { MembersChunkItem } from "../../handlers/members";
 
 export type GATEWAY_PAYLOAD = {

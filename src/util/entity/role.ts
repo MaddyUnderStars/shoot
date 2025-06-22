@@ -1,13 +1,13 @@
 import { ObjectIsPerson } from "activitypub-types";
-import type { Member } from "../../entity";
+import type { Member } from "../../entity/member";
 import { Role } from "../../entity/role";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	type APRole,
 	resolveAPObject,
 	resolveCollectionEntries,
-	splitQualifiedMention,
-} from "../activitypub";
+} from "../activitypub/resolve";
+import type { APRole } from "../activitypub/transformers/role";
+import { splitQualifiedMention } from "../activitypub/util";
 import { getOrFetchGuild } from "./guild";
 import { getOrFetchMember } from "./member";
 

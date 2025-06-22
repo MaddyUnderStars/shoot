@@ -1,5 +1,7 @@
-import { Channel, Guild, User } from "../../entity";
-import { InstanceActor } from "../activitypub";
+import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
+import { User } from "../../entity/user";
+import { InstanceActor } from "../activitypub/instanceActor";
 
 const uuid =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;

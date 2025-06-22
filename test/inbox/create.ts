@@ -23,13 +23,14 @@ test.skip("Create<Note> at channel", async (t) => {
 		"remote@remote",
 	]);
 
-	const {
-		signWithHttpSignature,
-		buildAPNote,
-		buildAPCreateNote,
-		addContext,
-	} = await import("../../src/util");
-	const { Message } = await import("../../src/entity");
+	const { signWithHttpSignature } = await import(
+		"../../src/util/activitypub/httpsig"
+	);
+	const { addContext } = await import("../../src/util/activitypub/util");
+	const { buildAPNote, buildAPCreateNote } = await import(
+		"../../src/util/activitypub/transformers/message"
+	);
+	const { Message } = await import("../../src/entity/message");
 
 	const reference_message = Message.create({
 		content: "test message",
@@ -95,13 +96,14 @@ test.skip("Cannot Create<Note> to channel we are not members of", async (t) => {
 		"remote2@remote",
 	]);
 
-	const {
-		signWithHttpSignature,
-		buildAPNote,
-		buildAPCreateNote,
-		addContext,
-	} = await import("../../src/util");
-	const { Message } = await import("../../src/entity");
+	const { signWithHttpSignature } = await import(
+		"../../src/util/activitypub/httpsig"
+	);
+	const { addContext } = await import("../../src/util/activitypub/util");
+	const { buildAPNote, buildAPCreateNote } = await import(
+		"../../src/util/activitypub/transformers/message"
+	);
+	const { Message } = await import("../../src/entity/message");
 
 	const reference_message = Message.create({
 		content: "test message",

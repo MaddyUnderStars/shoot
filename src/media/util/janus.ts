@@ -1,4 +1,5 @@
-import { config, createLogger } from "../../util";
+import { config } from "../../util/config";
+import { createLogger } from "../../util/log";
 import { Janus } from "../janus";
 
 const Log = createLogger("media");

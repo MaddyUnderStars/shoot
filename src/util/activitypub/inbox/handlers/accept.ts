@@ -1,12 +1,11 @@
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
 import type { ActivityHandler } from ".";
-import { Guild, User } from "../../../../entity";
-import {
-	acceptRelationship,
-	findActorOfAnyType,
-	getOrFetchUser,
-	joinGuild,
-} from "../../../entity";
+import { Guild } from "../../../../entity/guild";
+import { User } from "../../../../entity/user";
+import { joinGuild } from "../../../entity/guild";
+import { acceptRelationship } from "../../../entity/relationship";
+import { findActorOfAnyType } from "../../../entity/resolve";
+import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
 import { resolveAPObject } from "../../resolve";

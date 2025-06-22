@@ -1,12 +1,10 @@
 import { Router } from "express";
 import { z } from "zod";
-import {
-	HttpError,
-	PERMISSION,
-	config,
-	getOrFetchChannel,
-	route,
-} from "../../../../util";
+import { config } from "../../../../util/config";
+import { getOrFetchChannel } from "../../../../util/entity/channel";
+import { HttpError } from "../../../../util/httperror";
+import { PERMISSION } from "../../../../util/permission";
+import { route } from "../../../../util/route";
 import { createUploadEndpoint, getFileStream } from "../../../../util/storage";
 
 const router = Router({ mergeParams: true });
