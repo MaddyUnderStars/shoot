@@ -69,6 +69,14 @@ export const buildAPActor = (actor: Actor): APActor => {
 		id: makeInstanceUrl(id),
 		url: makeWebappUrl(id),
 
+		// All Shoot actors manually approve followers:
+		// - Guilds/channels require invite codes (`instrument`)
+		// - Users receive friend requests like other chat apps
+		// Perhaps this could be a user setting in the future
+		// for if for example, Shoot allowed short-form posting as well to a user profile
+		// But for now, this is out of scope
+		manuallyApprovesFollowers: true,
+
 		published: actor.created_date.toISOString(),
 
 		inbox,

@@ -53,11 +53,18 @@ export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
 export const addContext = <T extends AnyAPObject | APActivity>(
 	obj: T,
 ): T & { "@context": ContextField[] } => {
+	// For some reason if I move this into the return, it causes a type error
+	// even though ContextField is string | Record<string, string> ???
+	const context: ContextField[] = [
+		"https://www.w3.org/ns/activitystreams",
+		"https://w3id.org/security/v1",
+		{
+			manuallyApprovesFollowers: "as:manuallyApprovesFollowers",
+		},
+	];
+
 	return {
-		"@context": [
-			"https://www.w3.org/ns/activitystreams",
-			"https://w3id.org/security/v1",
-		],
+		"@context": context,
 		...obj,
 	};
 };
