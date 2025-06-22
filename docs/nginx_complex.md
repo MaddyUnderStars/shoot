@@ -15,7 +15,7 @@ Make sure to change any placeholders, wrapped in `<>`
 ```nginx
 upstream api {
 	server <127.0.0.1:3001>;	# first API server
-	server <127.0.0.1:4001>;	#n second API server
+	server <127.0.0.1:4001>;	# second API server
 	# ... additional API servers.
 
 	# See https://docs.nginx.com/nginx/admin-guide/load-balancer/http-load-balancer/
