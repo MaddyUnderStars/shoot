@@ -6,10 +6,10 @@ import {
 	getGuilds,
 	getUserFromToken,
 } from "../../util";
-import { startHeartbeatTimeout } from "./heartbeat";
 import { CLOSE_CODES } from "../util/codes";
 import { consume, listenEvents } from "../util/listener";
 import { IDENTIFY, type READY } from "../util/validation";
+import { startHeartbeatTimeout } from "./heartbeat";
 
 /**
  * - Authenticate user

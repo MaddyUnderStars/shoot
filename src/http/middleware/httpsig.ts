@@ -1,3 +1,4 @@
+import bodyParser from "body-parser";
 import type { RequestHandler } from "express";
 import {
 	ACTIVITY_JSON_ACCEPT,
@@ -6,7 +7,6 @@ import {
 	makeInstanceUrl,
 	validateHttpSignature,
 } from "../../util";
-import bodyParser from "body-parser";
 
 const Log = createLogger("httpsignatures");
 

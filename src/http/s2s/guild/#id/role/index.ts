@@ -4,7 +4,6 @@ import { Member } from "../../../../../entity";
 import { Role } from "../../../../../entity/role";
 import {
 	addContext,
-	config,
 	getDatabase,
 	makeInstanceUrl,
 	orderedCollectionHandler,

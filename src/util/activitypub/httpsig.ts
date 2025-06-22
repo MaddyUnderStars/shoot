@@ -1,9 +1,7 @@
-import type { APActivity } from "activitypub-types";
 import crypto from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
 import { type Actor, Channel, Guild, User } from "../../entity";
 import { getExternalPathFromActor } from "../../sender";
-import { config } from "../config";
 import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
 import { createUserForRemotePerson } from "../entity/user";

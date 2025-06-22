@@ -1,5 +1,5 @@
-import { Router } from "express";
 import bodyParser from "body-parser";
+import { Router } from "express";
 import { authHandler, rateLimiter } from "../middleware";
 
 const router = Router();

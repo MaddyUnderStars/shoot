@@ -1,11 +1,11 @@
 import type { APAccept, APFollow } from "activitypub-types";
+import { EntityNotFoundError, Not } from "typeorm";
 import type { User } from "../../entity";
 import { Relationship, RelationshipType } from "../../entity/relationship";
 import { getExternalPathFromActor, sendActivity } from "../../sender";
 import { addContext } from "../activitypub";
 import { emitGatewayEvent } from "../events";
 import { makeInstanceUrl } from "../url";
-import { EntityNotFoundError, Not } from "typeorm";
 
 /**
  * Create a relationship.

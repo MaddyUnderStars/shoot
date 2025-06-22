@@ -1,6 +1,6 @@
 import { Like } from "typeorm";
-import { createLogger } from "../../util/log";
 import { InstanceBehaviour } from "../../util/activitypub/instanceBehaviour";
+import { createLogger } from "../../util/log";
 import { appendToConfig } from "../util";
 
 const Log = createLogger("cli");

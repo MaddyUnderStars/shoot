@@ -1,14 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
-import {
-	GuildTextChannel,
-	Message,
-	PublicMessage,
-} from "../../../../../entity";
+import { Message, PublicMessage } from "../../../../../entity";
 import { Attachment } from "../../../../../entity/attachment";
 import {
 	PERMISSION,
-	emitGatewayEvent,
 	getDatabase,
 	handleMessage,
 	route,

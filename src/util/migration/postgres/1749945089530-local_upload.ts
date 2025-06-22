@@ -1,8 +1,8 @@
 import {
-	Table,
-	TableForeignKey,
 	type MigrationInterface,
 	type QueryRunner,
+	Table,
+	TableForeignKey,
 } from "typeorm";
 
 export class LocalUpload1749945089530 implements MigrationInterface {

@@ -6,12 +6,10 @@ import {
 	PERMISSION,
 	config,
 	emitGatewayEvent,
-	getDatabase,
 	getOrFetchChannel,
 	route,
 	updateChannelOrdering,
 } from "../../../../util";
-import { MoreThan } from "typeorm";
 
 const router = Router({ mergeParams: true });
 

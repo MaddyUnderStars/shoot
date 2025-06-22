@@ -13,7 +13,8 @@
 		"build": "tsc",
 		"prepare": "husky || true",
 		"openapi": "node --enable-source-maps dist/src/scripts/openapi.js",
-		"test": "c8 --all --src ./src --exclude-after-remap ava"
+		"test": "c8 --all --src ./src --exclude-after-remap ava",
+		"lint": "npx @biomejs/biome check --write src"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
@@ -65,7 +66,7 @@
 		"zod": "^3.24.1"
 	},
 	"lint-staged": {
-		"*.{ts,js,md}": "npx @biomejs/biome format --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}"
+		"*.{ts,js,md}": "npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}"
 	},
 	"optionalDependencies": {
 		"bufferutil": "^4.0.8"

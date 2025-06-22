@@ -2,8 +2,8 @@
  * makes a whole bunch of users in a guild
  */
 
-import { z } from "zod";
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
+import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import { Guild, User } from "../../entity";

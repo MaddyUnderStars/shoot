@@ -1,5 +1,5 @@
-import { Router } from "express";
 import type { IncomingHttpHeaders } from "node:http";
+import { Router } from "express";
 import { ACTIVITY_JSON_ACCEPT } from "../util";
 import api from "./api";
 import s2s from "./s2s";

@@ -10,9 +10,9 @@
 }
  */
 
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import type { Channel } from "./channel";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { BaseModel } from "./basemodel";
+import type { Channel } from "./channel";
 
 /**
  * TODO: this class duplicates data in the Attachment entity unfortunately

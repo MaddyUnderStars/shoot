@@ -1,8 +1,7 @@
-import bodyParser from "body-parser";
+import http from "node:http";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import http from "node:http";
 
 import {
 	config,
@@ -13,8 +12,8 @@ import {
 } from "../util";
 import { isFederationRequest } from "./routes";
 
-import routes from "./routes";
 import { errorHandler } from "./middleware";
+import routes from "./routes";
 
 const Log = createLogger("API");
 

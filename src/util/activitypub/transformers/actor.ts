@@ -9,9 +9,9 @@ import {
 } from "../../../entity";
 import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
+import { makeInstanceUrl, makeWebappUrl } from "../../url";
 import { APError } from "../error";
 import { InstanceActor } from "../instanceActor";
-import { makeInstanceUrl, makeWebappUrl } from "../../url";
 
 const getAPTypeFromActor = (actor: Actor) => {
 	if (actor.id === InstanceActor.id) return "Application";

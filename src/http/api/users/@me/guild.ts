@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Guild, Member, PublicGuild } from "../../../../entity";
+import { Member, PublicGuild } from "../../../../entity";
 import {
 	emitGatewayEvent,
 	getDatabase,

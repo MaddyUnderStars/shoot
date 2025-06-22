@@ -8,9 +8,9 @@ import {
 	getOrFetchUser,
 	joinGuild,
 } from "../../../entity";
+import { makeInstanceUrl } from "../../../url";
 import { APError } from "../../error";
 import { addContext, splitQualifiedMention } from "../../util";
-import { makeInstanceUrl } from "../../../url";
 
 export const FollowActivityHandler: ActivityHandler = async (
 	activity,

@@ -1,4 +1,4 @@
-import { ChildEntity, Column, Index, ManyToOne, Unique } from "typeorm";
+import { ChildEntity, Column, ManyToOne, Unique } from "typeorm";
 import { z } from "zod";
 import { checkPermission } from "../util/checkPermission";
 import type { PERMISSION } from "../util/permission";

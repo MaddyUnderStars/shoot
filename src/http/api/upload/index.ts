@@ -1,16 +1,16 @@
 // TODO: might want to move this into it's own http server so that it can
 // be moved onto a different process by admins more easily
 
-import { Router } from "express";
-import jwt from "jsonwebtoken";
 import crypto from "node:crypto";
 import { createWriteStream } from "node:fs";
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
+import { Router } from "express";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
+import { LocalUpload } from "../../../entity/upload";
 import { config, route } from "../../../util";
 import type { localFileJwt } from "../../../util/storage/local";
-import { LocalUpload } from "../../../entity/upload";
 
 const router = Router({ mergeParams: true });
 

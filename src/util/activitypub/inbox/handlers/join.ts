@@ -5,10 +5,10 @@ import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
 import { getOrFetchUser } from "../../../entity";
 import { PERMISSION } from "../../../permission";
+import { makeInstanceUrl } from "../../../url";
 import { generateMediaToken } from "../../../voice";
 import { APError } from "../../error";
 import { addContext } from "../../util";
-import { makeInstanceUrl } from "../../../url";
 
 export const JoinActivityHandler: ActivityHandler = async (
 	activity,

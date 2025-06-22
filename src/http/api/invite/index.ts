@@ -6,7 +6,6 @@ import { getExternalPathFromActor, sendActivity } from "../../../sender";
 import {
 	APError,
 	addContext,
-	config,
 	makeInstanceUrl,
 	resolveWebfinger,
 	route,

@@ -1,5 +1,5 @@
-import { Router } from "express";
 import bodyParser from "body-parser";
+import { Router } from "express";
 import { rateLimiter, verifyHttpSig } from "../middleware";
 
 const router = Router();
@@ -50,8 +50,8 @@ router.use("/invite/:invite_id", invite_id);
 import channel_id_message_id from "./channel/#id/message/#id";
 router.use("/channel/:channel_id/message/:message_id", channel_id_message_id);
 
-import actor from "./actor";
 import { ACTIVITY_JSON_ACCEPT } from "../../util";
+import actor from "./actor";
 router.use("/actor", actor);
 
 export default router;

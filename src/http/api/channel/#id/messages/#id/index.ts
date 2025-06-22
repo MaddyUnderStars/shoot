@@ -1,6 +1,6 @@
 import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
-import { string, z } from "zod";
+import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../../entity";
 import {
 	APError,

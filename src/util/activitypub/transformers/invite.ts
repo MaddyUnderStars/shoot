@@ -1,8 +1,7 @@
 import type { APObject } from "activitypub-types";
 import type { Invite } from "../../../entity";
-import { config } from "../../config";
-import { buildAPActor } from "./actor";
 import { makeInstanceUrl } from "../../url";
+import { buildAPActor } from "./actor";
 
 export type APGuildInvite = APObject & { type: "GuildInvite" };
 

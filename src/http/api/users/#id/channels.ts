@@ -5,7 +5,6 @@ import { DMChannel, PublicChannel } from "../../../../entity";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import {
 	addContext,
-	config,
 	getOrFetchUser,
 	makeInstanceUrl,
 	route,
