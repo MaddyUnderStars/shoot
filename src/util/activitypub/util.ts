@@ -58,6 +58,7 @@ export const addContext = <T extends AnyAPObject | APActivity>(
 	const context: ContextField[] = [
 		"https://www.w3.org/ns/activitystreams",
 		"https://w3id.org/security/v1",
+		"https://purl.archive.org/socialweb/webfinger",
 		{
 			manuallyApprovesFollowers: "as:manuallyApprovesFollowers",
 		},
