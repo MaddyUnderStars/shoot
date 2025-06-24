@@ -160,7 +160,7 @@ export const validateHttpSignature = async (
 			throw new APError("Key ID does not match activity ID");
 	}
 
-	if (requestHeaders.digest || activity) {
+	if (rawActivity || requestHeaders.digest) {
 		if (!rawActivity || !requestHeaders.digest)
 			throw new APError(
 				"If message provided, digest must be too and vice versa",
