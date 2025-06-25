@@ -133,7 +133,7 @@ export const acceptRelationship = async (from: User, to: User) => {
 			type: "Accept",
 			id: makeInstanceUrl(`accept/${rel.id}`), // TODO: proper URL for these?
 			actor: makeInstanceUrl(getExternalPathFromActor(to)),
-			object: rel.reference_object.raw,
+			object: rel.reference_object.id,
 		};
 
 		await sendActivity(from, addContext(accept), to);
