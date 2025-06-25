@@ -101,6 +101,7 @@ export const acceptRelationship = async (from: User, to: User) => {
 		relations: {
 			from: true,
 			to: true,
+			reference_object: true,
 		},
 	});
 
