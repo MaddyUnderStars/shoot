@@ -280,11 +280,6 @@ export const signWithHttpSignature = (
 	const signature = signer.sign(keys.private_key);
 	const sig_b64 = signature.toString("base64");
 
-	// const id =
-	// 	keys.id == InstanceActor.id
-	// 		? `/actor`
-	// 		: `/users/${keys.username}`;
-
 	const header =
 		`keyId="${makeInstanceUrl(getExternalPathFromActor(keys))}",` +
 		`headers="${names.join(" ")},` +
@@ -299,7 +294,7 @@ export const signWithHttpSignature = (
 			digest: digest ? `SHA-256=${digest}` : undefined,
 			signature: header,
 		},
-		body: message ? JSON.stringify(message) : undefined,
+		body: message,
 	};
 
 	// biome-ignore lint/performance/noDelete: <explanation>
