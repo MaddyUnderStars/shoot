@@ -50,14 +50,14 @@ test("Using Instance Actor with Activity", async (t) => {
 
 	const actor = await User.create({
 		...InstanceActor,
-		name: "remote_user",
-		remote_address: "http://localhost/users/remote_user",
+		name: "remote_user2",
+		remote_address: "http://localhost/users/remote_user2",
 		id: undefined,
 	}).save();
 
 	const activity: APActivity = {
 		id: "http://localhost/test_activity",
-		attributedTo: "http://localhost/users/remote_user",
+		attributedTo: "http://localhost/users/remote_user2",
 		type: "Test",
 	};
 
