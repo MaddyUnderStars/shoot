@@ -267,7 +267,7 @@ export const signWithHttpSignature = (
 	};
 
 	if (digest) {
-		headers.digest = `digest: SHA-256=${digest}`;
+		headers.digest = `SHA-256=${digest}`;
 	}
 
 	const names = [...Object.keys(headers), "(request-target)"];
@@ -289,16 +289,11 @@ export const signWithHttpSignature = (
 		method,
 		headers: {
 			...ACTIVITYPUB_FETCH_OPTS.headers,
-			host: url.hostname,
-			date: now.toUTCString(),
-			digest: digest ? `SHA-256=${digest}` : undefined,
+			...headers,
 			signature: header,
 		},
 		body: message,
 	};
-
-	// biome-ignore lint/performance/noDelete: <explanation>
-	if (!ret.headers.digest) delete ret.headers.digest;
 
 	return ret as RequestInit;
 };
