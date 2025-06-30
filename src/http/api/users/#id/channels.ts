@@ -31,10 +31,12 @@ router.post(
 		async (req, res) => {
 			const { user_id } = req.params;
 
+			const user = await getOrFetchUser(user_id);
+
 			const existing = await DMChannel.findOne({
 				where: [
-					{ owner: { id: req.user.id } },
-					{ recipients: { id: req.user.id } },
+					{ owner: { id: req.user.id }, recipients: { id: user.id } },
+					{ owner: { id: user.id }, recipients: { id: req.user.id } },
 				],
 				relations: { recipients: true, owner: true },
 			});
