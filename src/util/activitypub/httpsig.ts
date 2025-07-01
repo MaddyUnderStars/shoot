@@ -282,7 +282,7 @@ export const signWithHttpSignature = (
 
 	const header =
 		`keyId="${makeInstanceUrl(getExternalPathFromActor(keys))}",` +
-		`headers="${names.join(" ")},` +
+		`headers="${names.join(" ")}",` +
 		`signature="${sig_b64}"`;
 
 	const ret = {
