@@ -88,6 +88,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 					recipients: { id: sender.id },
 				},
 			],
+			relations: { recipients: true, owner: true },
 		});
 
 		if (!channel) {
