@@ -11,8 +11,9 @@ export const handleCli = async (argv: string[]) => {
 		Log.warn(
 			"Syntax: `npm run cli -- [option]. Options:\n" +
 				"generate-keys - Generate signing keys for federation HTTP signatures and user tokens\n" +
+				"generate-reg-invite [code?] [maxUses?] [expiry?] - Generate a registration invite. Provide -1 for no restriction for field\n" +
 				"add-user [username] [email?] - Register a new user\n" +
-				"instance [url] [action?] - View, block, limit, or allow instances",
+				"instance [url] [action?] - View, block, limit, or allow instances\n",
 		);
 		return;
 	}

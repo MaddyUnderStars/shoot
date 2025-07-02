@@ -8,6 +8,7 @@ import {
 	type APPerson,
 	ObjectIsGroup,
 } from "activitypub-types";
+import type { InstanceInvite } from "../../entity/instanceInvite";
 import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
 import { resolveAPObject, resolveWebfinger } from "../activitypub/resolve";
@@ -23,12 +24,14 @@ export const registerUser = async (
 	password: string,
 	email?: string,
 	awaitKeyGeneration = false,
+	instanceInvite?: InstanceInvite,
 ) => {
 	const user = await User.create({
 		name: username,
 		email,
 		password_hash: await bcrypt.hash(password, 12),
 		public_key: "", // The key has yet to be generated.
+		invite: instanceInvite,
 
 		display_name: username,
 		valid_tokens_since: new Date(),

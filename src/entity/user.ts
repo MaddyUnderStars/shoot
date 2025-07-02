@@ -1,6 +1,7 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
 import { Actor } from "./actor";
+import { InstanceInvite } from "./instanceInvite";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
@@ -23,6 +24,13 @@ export class User extends Actor {
 	/** The email address of this user */
 	@Column({ type: String, nullable: true })
 	email: string | null;
+
+	/** the invite code used to register to this instance */
+	@ManyToOne(() => InstanceInvite, {
+		nullable: true,
+		onDelete: "CASCADE",
+	})
+	invite: InstanceInvite | null;
 
 	/** User customisation fields start here */
 
