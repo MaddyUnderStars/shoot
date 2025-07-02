@@ -31,20 +31,26 @@ router.post(
 
 			const { username, email, password } = req.body;
 
-			const invite = await InstanceInvite.createQueryBuilder("invite")
-				.where("invite.code = :code", { code: req.body.invite })
-				.andWhere("(invite.expires < now() or invite.expires is null)")
-				.andWhere((qb) => {
-					const inner = qb
-						.createQueryBuilder()
-						.from(User, "users")
-						.where("users.invite = invite.code")
-						.select("count(*)")
-						.getSql();
+			let invite: InstanceInvite | null;
 
-					return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
-				})
-				.getOneOrFail();
+			if (req.body.invite) {
+				invite = await InstanceInvite.createQueryBuilder("invite")
+					.where("invite.code = :code", { code: req.body.invite })
+					.andWhere(
+						"(invite.expires < now() or invite.expires is null)",
+					)
+					.andWhere((qb) => {
+						const inner = qb
+							.createQueryBuilder()
+							.from(User, "users")
+							.where("users.invite = invite.code")
+							.select("count(*)")
+							.getSql();
+
+						return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
+					})
+					.getOneOrFail();
+			}
 
 			const user = await registerUser(
 				username.toLowerCase(),
