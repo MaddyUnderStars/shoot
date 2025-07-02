@@ -1,4 +1,3 @@
-import { generateInviteCode } from "../../util/entity/invite";
 import { createLogger } from "../../util/log";
 
 const Log = createLogger("cli");
@@ -13,6 +12,7 @@ export const generateRegInvite = async (
 	await initDatabase();
 
 	const { InstanceInvite } = await import("../../entity/instanceInvite");
+	const { generateInviteCode } = await import("../../util/entity/invite");
 
 	if (!code || code === "-1") {
 		code = await generateInviteCode(
