@@ -1,4 +1,5 @@
 import { type APAccept, ActivityIsFollow } from "activitypub-types";
+import { v7 as uuidv7 } from "uuid";
 import type { ActivityHandler } from ".";
 import { Channel } from "../../../../entity/channel";
 import { Guild } from "../../../../entity/guild";
@@ -61,7 +62,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 	} else throw new APError("Cannot accept follows for this target");
 
 	const accept: APAccept = addContext({
-		id: `${activity.id}/accept`,
+		id: makeInstanceUrl(`${uuidv7()}/accept`),
 		type: "Accept",
 		actor: makeInstanceUrl(getExternalPathFromActor(target)),
 		object: activity,
