@@ -1,17 +1,17 @@
+import { validate as uuidValidate } from "uuid";
 import { Channel } from "../../entity/channel";
 import { Guild } from "../../entity/guild";
 import { User } from "../../entity/user";
 import { InstanceActor } from "../activitypub/instanceActor";
 
-const uuid =
-	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
 export const findActorOfAnyType = async (id: string, domain: string) => {
 	if (id === InstanceActor.id && domain === InstanceActor.domain)
 		return InstanceActor;
 
+	const isUuid = uuidValidate(id);
+
 	const [user, channel, guild] = await Promise.all([
-		uuid.test(id)
+		isUuid
 			? null
 			: User.findOne({
 					where: [
@@ -21,7 +21,7 @@ export const findActorOfAnyType = async (id: string, domain: string) => {
 						},
 					],
 				}),
-		uuid.test(id)
+		isUuid
 			? Channel.findOne({
 					where: [
 						{
@@ -36,7 +36,7 @@ export const findActorOfAnyType = async (id: string, domain: string) => {
 				})
 			: null,
 
-		uuid.test(id)
+		isUuid
 			? Guild.findOne({
 					where: [
 						{
