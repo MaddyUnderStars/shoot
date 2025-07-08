@@ -80,10 +80,6 @@ router.delete(
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
-			await channel.throwPermission(req.user, [
-				PERMISSION.MANAGE_MESSAGES,
-			]);
-
 			if (channel.isRemote()) {
 				/*
 					Probably do not want to delete optimistically?
@@ -101,6 +97,12 @@ router.delete(
 					id: req.params.message_id,
 				},
 			});
+
+			// we can always delete our own messages
+			if (message.author.id !== req.user.id)
+				await channel.throwPermission(req.user, [
+					PERMISSION.MANAGE_MESSAGES,
+				]);
 
 			emitGatewayEvent(channel.id, {
 				type: "MESSAGE_DELETE",
