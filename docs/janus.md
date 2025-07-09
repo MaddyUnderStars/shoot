@@ -8,6 +8,13 @@ You must build Janus with the following optional dependencies:
 
 You will also need an address to host Shoot's signalling server (preferably a (sub?)domain).
 
+## Janus Configuration
+
+Consult the Janus documentation.
+
+For my case running an instance in Oracle Cloud, I had to provide the interface (`-i`) and public IP `--nat-1-1`.
+Whether or not this is *correct* is unknown to me.
+
 ## Shoot Configuration
 
 Shoot has a number of [configuration options](https://github.com/MaddyUnderStars/shoot/blob/main/src/util/config.ts) under the `webrtc` key for configuring webrtc.
