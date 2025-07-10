@@ -39,8 +39,8 @@ User content uploaded to Shoot (i.e. when not using s3) is also persisted to a v
 
 ## CLI
 
-The CLI experience in Docker is slightly unfortunate. Improvement tracked on #76
+Set Shoot's `database.url` config to `postgres://postgres:postgres@localhost` as defined by `docker-compose.yml`.
 
-If your operation only edits config files, you may use the CLI as normal (`npm run cli -- [option]`).
+You may now use the Shoot CLI as normal. If you wish to do database operations, the postgres container must up.
 
-If your operation makes a database connection, you must set your `database.url` to `postgres://postgres:postgres@localhost` (as defined by `docker-compose.yml`) and then run the CLI. Remember to REMOVE this when you wish to restart Shoot, as that address is not correct within the container.
+You do not need to make any changes to config when you restart the Shoot container, as the docker compose file overwrites the `database.url`.
