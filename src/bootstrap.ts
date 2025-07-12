@@ -8,8 +8,10 @@ import { GatewayServer } from "./gateway/server";
 import { APIServer } from "./http/server";
 import { MediaGatewayServer } from "./media/server";
 
-import { createLogger } from "./util/log";
+import { config } from "./util/config";
+import { createLogger, setLogOptions } from "./util/log";
 
+setLogOptions(config.log);
 const Log = createLogger("bootstrap");
 Log.msg("Starting");
 

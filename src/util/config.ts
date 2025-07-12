@@ -1,5 +1,6 @@
 import nodeConfig from "config";
 import type { InstanceBehaviour } from "./activitypub/instanceBehaviour";
+import { LogLevel } from "./log";
 import { tryParseUrl } from "./url";
 
 const LOCALHOST_URL = new URL("http://localhost");
@@ -28,6 +29,35 @@ const getArray = <T>(key: string): T[] => {
 };
 
 const config = Object.freeze({
+	/**
+	 * options relating to Shoot's own logging
+	 */
+	log: {
+		/**
+		 * Maximum level of logs to print
+		 * see LogLevel enum for values
+		 * @default "verbose"
+		 */
+		level: (() => {
+			const val =
+				ifExistsGet<string | number>("log.level") ?? LogLevel.verbose;
+
+			if (val !== undefined && val in LogLevel) {
+				if (typeof val === "number") return val;
+				//@ts-ignore don't care about types right now
+				return LogLevel[val];
+			}
+
+			console.error("log.level is invalid");
+			process.exit(1);
+		})(),
+
+		/**
+		 * Whether or not to include dates in log messages
+		 */
+		include_date: ifExistsGet<boolean>("log.include_date") ?? true,
+	},
+
 	http: {
 		/**
 		 * Whether to enable morgan logging of http requests.
