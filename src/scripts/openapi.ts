@@ -22,6 +22,7 @@ process.env.NODE_CONFIG = JSON.stringify({
 
 import apiRoutes from "../http/api";
 import { NO_AUTH_ROUTES } from "../http/middleware/auth";
+import { ZodHttpError } from "../util/route";
 
 const getRoutes = (router: Router) => {
 	const convertRegexToPath = (regexp: RegExp, keys: { name: string }[]) => {
@@ -112,6 +113,45 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 		},
 	);
 
+	const innerErrorResponse = {
+		content: {
+			"application/json": {
+				schema: {
+					$ref: "#/components/schemas/HttpError",
+				},
+			},
+		},
+	};
+
+	registry.registerComponent("responses", "BadRequest", {
+		description: "Bad request",
+		...innerErrorResponse,
+	});
+
+	registry.registerComponent("responses", "NotFound", {
+		description: "The requested resource was not found",
+		...innerErrorResponse,
+	});
+
+	registry.registerComponent("responses", "Unauthorised", {
+		description: "Unauthorised",
+		...innerErrorResponse,
+	});
+
+	registry.registerComponent("responses", "InternalServerError", {
+		description: "Internal server error",
+		...innerErrorResponse,
+	});
+
+	registry.register("HttpError", ZodHttpError);
+
+	const errorMap = {
+		"400": "BadRequest",
+		"404": "NotFound",
+		"401": "Unauthorised",
+		"500": "InternalServerError",
+	} as const;
+
 	for (const route of routes) {
 		registry.registerPath({
 			method: route.method,
@@ -146,17 +186,36 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 				},
 				...Object.fromEntries(
 					Object.entries(route.options?.errors ?? {}).map(
-						([code, schema]) => [
-							code,
-							{
-								description: schema?.description ?? "",
-								content: {
-									"application/json": {
-										schema: schema ?? z.object({}),
+						([code, schema]) => {
+							// christ
+							// why can't `x in errorMap` do this automatically?
+							if (
+								((x): x is keyof typeof errorMap =>
+									x in errorMap)(code)
+							) {
+								// if we have a common response for this
+								// just reference it instead
+
+								return [
+									code,
+									{
+										$ref: `#/components/responses/${errorMap[code]}`,
+									},
+								];
+							}
+
+							return [
+								code,
+								{
+									description: schema?.description ?? "",
+									content: {
+										"application/json": {
+											schema: schema ?? z.object({}),
+										},
 									},
 								},
-							},
-						],
+							];
+						},
 					),
 				),
 			},
