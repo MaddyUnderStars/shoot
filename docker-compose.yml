@@ -1,0 +1,43 @@
+services:
+  postgresdb:
+    image: postgres
+    ports:
+      - 5432:5432
+    networks:
+      - default
+    volumes:
+      - shoot-postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=shoot
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 60s
+      start_period: 5s
+      retries: 5
+
+  backend:
+    networks:
+      - default
+    build:
+      context: .
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config:/app/config
+      - shoot-storage:/app/storage
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    environment:
+      - 'NODE_CONFIG={"database":{"url":"postgres://postgres:postgres@postgresdb/shoot"}}'
+    command: ./dist/src/bootstrap.js
+    restart: always
+
+networks:
+  default:
+volumes:
+  shoot-postgres:
+  shoot-storage:
