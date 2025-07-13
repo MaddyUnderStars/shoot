@@ -69,8 +69,8 @@ router.delete(
 		if (deleted.affected) {
 			emitGatewayEvent(req.params.guild_id, {
 				type: "MEMBER_LEAVE",
-				guild_id: `${mention.user}@${mention.domain}`,
-				user_id: req.user.mention,
+				guild: `${mention.user}@${mention.domain}`,
+				user: req.user.mention,
 			});
 		}
 

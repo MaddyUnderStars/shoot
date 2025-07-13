@@ -37,7 +37,7 @@ export type MESSAGE_CREATE = {
 export type MESSAGE_DELETE = {
 	type: "MESSAGE_DELETE";
 	message_id: string;
-	channel_id: ActorMention;
+	channel: ActorMention;
 };
 
 export type CHANNEL_CREATE = {
@@ -52,8 +52,8 @@ export type CHANNEL_UPDATE = {
 
 export type CHANNEL_DELETE = {
 	type: "CHANNEL_DELETE";
-	channel_id: ActorMention;
-	guild_id?: ActorMention;
+	channel: ActorMention;
+	guild?: ActorMention;
 };
 
 export type MEDIA_TOKEN_RECEIVED = {
@@ -74,7 +74,7 @@ export type GUILD_UPDATE = {
 
 export type GUILD_DELETE = {
 	type: "GUILD_DELETE";
-	guild_id: ActorMention;
+	guild: ActorMention;
 };
 
 export type ROLE_CREATE = {
@@ -84,27 +84,27 @@ export type ROLE_CREATE = {
 
 export type ROLE_MEMBER_ADD = {
 	type: "ROLE_MEMBER_ADD";
-	guild_id: ActorMention;
+	guild: ActorMention;
 	role_id: string;
 	member: PublicMember;
 };
 
 export type ROLE_MEMBER_LEAVE = {
 	type: "ROLE_MEMBER_LEAVE";
-	guild_id: ActorMention;
+	guild: ActorMention;
 	role_id: string;
-	member_id: ActorMention;
+	member: ActorMention;
 };
 
 export type MEMBER_LEAVE = {
 	type: "MEMBER_LEAVE";
-	guild_id: ActorMention;
-	user_id: ActorMention;
+	guild: ActorMention;
+	user: ActorMention;
 };
 
 export type MEMBER_JOIN = {
 	type: "MEMBER_JOIN";
-	guild_id: ActorMention;
+	guild: ActorMention;
 	member: PublicMember;
 };
 
@@ -120,7 +120,7 @@ export type RELATIONSHIP_UPDATE = {
 
 export type RELATIONSHIP_DELETE = {
 	type: "RELATIONSHIP_DELETE";
-	user_id: ActorMention;
+	user: ActorMention;
 };
 
 export type INVITE_CREATE = {

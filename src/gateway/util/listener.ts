@@ -59,7 +59,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 				!socket.member_list.channel_id ||
 				!(await channelInGuild(
 					socket.member_list.channel_id,
-					payload.guild_id,
+					payload.guild,
 				))
 			)
 				break;
@@ -79,7 +79,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 		case "CHANNEL_DELETE":
 			// if we're subscribed to this channel, unsub
 
-			if (socket.member_list.channel_id !== payload.channel_id) break;
+			if (socket.member_list.channel_id !== payload.channel) break;
 
 			for (const id in socket.member_list.events) {
 				socket.member_list.events[id]();

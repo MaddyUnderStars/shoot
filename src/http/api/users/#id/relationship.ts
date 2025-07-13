@@ -99,12 +99,12 @@ router.delete(
 			// can't do it in one call, unfortunately. without some hackery of course
 			emitGatewayEvent(req.user.id, {
 				type: "RELATIONSHIP_DELETE",
-				user_id: to.mention,
+				user: to.mention,
 			});
 
 			emitGatewayEvent(to.id, {
 				type: "RELATIONSHIP_DELETE",
-				user_id: req.user.mention,
+				user: req.user.mention,
 			});
 
 			// todo federate

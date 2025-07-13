@@ -97,7 +97,7 @@ export const joinGuild = async (
 
 	emitGatewayEvent(guild_id, {
 		type: "MEMBER_JOIN",
-		guild_id,
+		guild: guild_id,
 		member: member.toPublic(),
 	});
 
@@ -189,7 +189,7 @@ export const createGuild = async (name: string, owner: User) => {
 	emitGatewayEvent(guild.id, {
 		type: "ROLE_MEMBER_ADD",
 		role_id: everyone.id,
-		guild_id: guild.mention,
+		guild: guild.mention,
 		member: member.toPublic(),
 	});
 

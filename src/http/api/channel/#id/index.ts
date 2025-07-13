@@ -87,8 +87,8 @@ router.delete(
 		// after a .remove, the id is made undefined but other properties are not
 		emitGatewayEvent(channel.id, {
 			type: "CHANNEL_DELETE",
-			channel_id: channel.mention,
-			guild_id:
+			channel: channel.mention,
+			guild:
 				channel instanceof GuildTextChannel
 					? channel.guild.mention
 					: undefined,

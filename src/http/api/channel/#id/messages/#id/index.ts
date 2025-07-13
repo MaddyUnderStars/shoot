@@ -113,7 +113,7 @@ router.delete(
 			emitGatewayEvent(channel.id, {
 				type: "MESSAGE_DELETE",
 				message_id: message.id,
-				channel_id: channel.mention,
+				channel: channel.mention,
 			});
 
 			await message.remove();

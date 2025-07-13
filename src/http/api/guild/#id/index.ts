@@ -90,7 +90,7 @@ router.delete(
 
 			emitGatewayEvent(guild.id, {
 				type: "GUILD_DELETE",
-				guild_id: guild.mention,
+				guild: guild.mention,
 			});
 
 			await guild.remove();

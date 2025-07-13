@@ -117,9 +117,7 @@ export const handleMemberListRoleAdd = async (
 	if (!socket.member_list.channel_id) return; // hm
 
 	// If this event is for a guild that does not contain our channel, ignore it
-	if (
-		!(await channelInGuild(socket.member_list.channel_id, event.guild_id))
-	) {
+	if (!(await channelInGuild(socket.member_list.channel_id, event.guild))) {
 		return;
 	}
 
