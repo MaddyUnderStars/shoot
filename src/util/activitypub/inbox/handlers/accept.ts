@@ -8,7 +8,7 @@ import { findActorOfAnyType } from "../../../entity/resolve";
 import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
-import { resolveAPObject } from "../../resolve";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
 import { splitQualifiedMention } from "../../util";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {
@@ -31,7 +31,7 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (typeof activity.target !== "string")
 		throw new APError("unknown signal server ip format");
 
-	const from = await getOrFetchUser(activity.actor);
+	const from = await getOrFetchUser(resolveId(activity.actor));
 
 	emitGatewayEvent(from.id, {
 		type: "MEDIA_TOKEN_RECEIVED",
@@ -63,7 +63,7 @@ const AcceptFollow: ActivityHandler = async (activity, target) => {
 		const relationship = await acceptRelationship(target, from);
 	} else if (from instanceof Guild) {
 		// A guild join request was accepted
-		await joinGuild(target.id, from.id);
+		await joinGuild(target.mention, from.mention);
 	} else {
 		throw new APError("Don't know how to accept that");
 	}
@@ -78,7 +78,7 @@ export const AcceptActivityHandler: ActivityHandler = async (
 
 	if (Array.isArray(activity.object)) throw new APError("object is array");
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	activity.object = inner;
 

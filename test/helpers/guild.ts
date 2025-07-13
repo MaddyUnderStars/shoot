@@ -9,12 +9,17 @@ export const createTestGuild = async (
 	);
 	const { getOrFetchUser } = await import("../../src/util/entity/user");
 
-	const o = await getOrFetchUser(owner);
+	const { resolveId } = await import("../../src/util/activitypub/resolve");
+
+	const o = await getOrFetchUser(resolveId(owner));
 	const guild = await createGuild(name, o);
 
 	await Promise.all(
 		members.map(async (x) =>
-			joinGuild((await getOrFetchUser(x)).id, guild.id),
+			joinGuild(
+				(await getOrFetchUser(resolveId(x))).mention,
+				guild.mention,
+			),
 		),
 	);
 

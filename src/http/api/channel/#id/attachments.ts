@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import { config } from "../../../../util/config";
 import { getOrFetchChannel } from "../../../../util/entity/channel";
 import { HttpError } from "../../../../util/httperror";
@@ -17,7 +18,7 @@ const AttachmentsResponse = z.array(
 	}),
 );
 
-// NOTE: This file DOES NOT require authentication.
+// NOTE: This route DOES NOT require authentication.
 // The POST route will simply fail if you do not have `req.user`, thus it is still protected ish
 // But the GET route is free to use for all.
 // This ended up becoming a problem for Discord, so it may change in the future.
@@ -27,7 +28,7 @@ router.post(
 	route(
 		{
 			params: z.object({
-				channel_id: z.string(),
+				channel_id: ActorMention,
 			}),
 			body: z
 				.array(
@@ -59,6 +60,8 @@ router.post(
 			response: AttachmentsResponse,
 		},
 		async (req, res) => {
+			if (!req.user) throw new HttpError("Unauthorised", 401);
+
 			const channel = await getOrFetchChannel(req.params.channel_id);
 
 			await channel.throwPermission(req.user, PERMISSION.UPLOAD);
@@ -99,7 +102,7 @@ router.get(
 		{
 			params: z.object({
 				hash: z.string(),
-				channel_id: z.string(),
+				channel_id: ActorMention,
 			}),
 		},
 		async (req, res) => {

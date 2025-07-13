@@ -1,7 +1,7 @@
 import { ActivityIsFollow } from "activitypub-types";
 import type { ActivityHandler } from ".";
 import { APError } from "../../error";
-import { resolveAPObject } from "../../resolve";
+import { resolveAPObject, resolveUrlOrObject } from "../../resolve";
 
 export const UndoActivityHandler: ActivityHandler = async (
 	activity,
@@ -11,7 +11,7 @@ export const UndoActivityHandler: ActivityHandler = async (
 	if (Array.isArray(activity.object))
 		throw new APError("Don't know how to undo multiple objects");
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	if (!ActivityIsFollow(inner))
 		throw new APError("only know how to undo follow");

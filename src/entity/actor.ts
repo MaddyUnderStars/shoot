@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Index } from "typeorm";
+import type { ActorMention } from "../util/activitypub/constants";
 import { BaseModel } from "./basemodel";
 
 export abstract class Actor extends BaseModel {
@@ -40,7 +41,7 @@ export abstract class Actor extends BaseModel {
 	@Column({ nullable: true, type: String })
 	public_key: string;
 
-	public get mention() {
+	public get mention(): ActorMention {
 		return `${this.remote_id ?? this.id}@${this.domain}`;
 	}
 
@@ -52,6 +53,7 @@ export abstract class Actor extends BaseModel {
 		return this.toPublic();
 	}
 
+	// TODO: how do I narrow this class so that it does contain remote_address
 	/** Whether or not this actor is controlled by us */
 	public isRemote() {
 		return !!this.remote_address;

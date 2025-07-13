@@ -13,7 +13,7 @@ import { makeInstanceUrl, tryParseUrl } from "../url";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { throwInstanceBlock } from "./instances";
-import { resolveAPObject } from "./resolve";
+import { resolveAPObject, resolveUrlOrObject } from "./resolve";
 import { APObjectIsActor } from "./util";
 
 const Log = createLogger("HTTPSIG");
@@ -112,7 +112,7 @@ export const validateHttpSignature = async (
 
 	// If we don't have a cache, or we should ignore cache
 	if (!actor || noCache) {
-		const remoteActor = await resolveAPObject(actorId);
+		const remoteActor = await resolveAPObject(resolveUrlOrObject(actorId));
 
 		if (!APObjectIsActor(remoteActor))
 			throw new APError("Request was signed by a non-actor object?");

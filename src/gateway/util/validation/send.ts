@@ -9,6 +9,7 @@ import type { PublicRole } from "../../../entity/role";
 import type { PrivateSession } from "../../../entity/session";
 import type { PublicGuildTextChannel } from "../../../entity/textChannel";
 import type { PrivateUser } from "../../../entity/user";
+import type { ActorMention } from "../../../util/activitypub/constants";
 import type { MembersChunkItem } from "../../handlers/members";
 
 export type GATEWAY_PAYLOAD = {
@@ -36,7 +37,7 @@ export type MESSAGE_CREATE = {
 export type MESSAGE_DELETE = {
 	type: "MESSAGE_DELETE";
 	message_id: string;
-	channel_id: string;
+	channel_id: ActorMention;
 };
 
 export type CHANNEL_CREATE = {
@@ -51,8 +52,8 @@ export type CHANNEL_UPDATE = {
 
 export type CHANNEL_DELETE = {
 	type: "CHANNEL_DELETE";
-	channel_id: string;
-	guild_id?: string;
+	channel_id: ActorMention;
+	guild_id?: ActorMention;
 };
 
 export type MEDIA_TOKEN_RECEIVED = {
@@ -73,7 +74,7 @@ export type GUILD_UPDATE = {
 
 export type GUILD_DELETE = {
 	type: "GUILD_DELETE";
-	guild_id: string;
+	guild_id: ActorMention;
 };
 
 export type ROLE_CREATE = {
@@ -83,27 +84,27 @@ export type ROLE_CREATE = {
 
 export type ROLE_MEMBER_ADD = {
 	type: "ROLE_MEMBER_ADD";
-	guild_id: string;
+	guild_id: ActorMention;
 	role_id: string;
 	member: PublicMember;
 };
 
 export type ROLE_MEMBER_LEAVE = {
 	type: "ROLE_MEMBER_LEAVE";
-	guild_id: string;
+	guild_id: ActorMention;
 	role_id: string;
-	member_id: string;
+	member_id: ActorMention;
 };
 
 export type MEMBER_LEAVE = {
 	type: "MEMBER_LEAVE";
-	guild_id: string;
-	member_id: string;
+	guild_id: ActorMention;
+	user_id: ActorMention;
 };
 
 export type MEMBER_JOIN = {
 	type: "MEMBER_JOIN";
-	guild_id: string;
+	guild_id: ActorMention;
 	member: PublicMember;
 };
 
@@ -119,7 +120,7 @@ export type RELATIONSHIP_UPDATE = {
 
 export type RELATIONSHIP_DELETE = {
 	type: "RELATIONSHIP_DELETE";
-	user_id: string;
+	user_id: ActorMention;
 };
 
 export type INVITE_CREATE = {

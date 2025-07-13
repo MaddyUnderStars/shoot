@@ -34,7 +34,7 @@ const GUILD_ID = "01977599-db47-7058-a177-97e6f3e1ea7c";
 			domain: config.federation.webapp_url.hostname,
 		}).save();
 
-		await joinGuild(user.id, guild.id);
+		await joinGuild(user.mention, guild.mention);
 	}
 
 	closeDatabase();

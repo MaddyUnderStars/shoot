@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { Attachment } from "../../../../../entity/attachment";
 import { Message, PublicMessage } from "../../../../../entity/message";
+import { ActorMention } from "../../../../../util/activitypub/constants";
 import { getDatabase } from "../../../../../util/database";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 import { handleMessage } from "../../../../../util/entity/message";
@@ -35,7 +36,7 @@ router.post(
 	route(
 		{
 			body: MessageCreate,
-			params: z.object({ channel_id: z.string() }),
+			params: z.object({ channel_id: ActorMention }),
 			response: PublicMessage,
 		},
 		async (req, res) => {
@@ -87,7 +88,7 @@ router.get(
 	route(
 		{
 			params: z.object({
-				channel_id: z.string(),
+				channel_id: ActorMention,
 			}),
 			query: MessageFetchOpts,
 			response: z.array(PublicMessage),

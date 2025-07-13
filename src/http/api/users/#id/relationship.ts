@@ -5,6 +5,7 @@ import {
 	Relationship,
 } from "../../../../entity/relationship";
 import type { User } from "../../../../entity/user";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import {
 	acceptOrCreateRelationship,
 	fetchRelationship,
@@ -19,7 +20,7 @@ router.get(
 	"/",
 	route(
 		{
-			params: z.object({ user_id: z.string() }),
+			params: z.object({ user_id: ActorMention }),
 			response: PrivateRelationship,
 		},
 		async (req, res) => {
@@ -38,7 +39,7 @@ router.post(
 	"/",
 	route(
 		{
-			params: z.object({ user_id: z.string() }),
+			params: z.object({ user_id: ActorMention }),
 			body: z
 				.object({
 					type: z
@@ -75,7 +76,7 @@ router.delete(
 	"/",
 	route(
 		{
-			params: z.object({ user_id: z.string() }),
+			params: z.object({ user_id: ActorMention }),
 		},
 		async (req, res) => {
 			const { user_id } = req.params;
@@ -98,12 +99,12 @@ router.delete(
 			// can't do it in one call, unfortunately. without some hackery of course
 			emitGatewayEvent(req.user.id, {
 				type: "RELATIONSHIP_DELETE",
-				user_id: to.id,
+				user_id: to.mention,
 			});
 
 			emitGatewayEvent(to.id, {
 				type: "RELATIONSHIP_DELETE",
-				user_id: req.user.id,
+				user_id: req.user.mention,
 			});
 
 			// todo federate

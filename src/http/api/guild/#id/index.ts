@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { Guild, PublicGuild } from "../../../../entity/guild";
 import { Invite } from "../../../../entity/invite";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import { APError } from "../../../../util/activitypub/error";
 import { getOrFetchGuild } from "../../../../util/entity/guild";
 import { generateInviteCode } from "../../../../util/entity/invite";
@@ -17,7 +18,7 @@ router.get(
 	route(
 		{
 			params: z.object({
-				guild_id: z.string(),
+				guild_id: ActorMention,
 			}),
 			response: PublicGuild,
 		},
@@ -45,7 +46,7 @@ router.patch(
 	"/",
 	route(
 		{
-			params: z.object({ guild_id: z.string() }),
+			params: z.object({ guild_id: ActorMention }),
 			body: GuildModifySchema,
 		},
 		async (req, res) => {
@@ -78,29 +79,32 @@ router.patch(
 
 router.delete(
 	"/",
-	route({ params: z.object({ guild_id: z.string() }) }, async (req, res) => {
-		const { guild_id } = req.params;
+	route(
+		{ params: z.object({ guild_id: ActorMention }) },
+		async (req, res) => {
+			const { guild_id } = req.params;
 
-		const guild = await getOrFetchGuild(guild_id);
+			const guild = await getOrFetchGuild(guild_id);
 
-		await guild.throwPermission(req.user, PERMISSION.ADMIN);
+			await guild.throwPermission(req.user, PERMISSION.ADMIN);
 
-		emitGatewayEvent(guild.id, {
-			type: "GUILD_DELETE",
-			guild_id: guild.id,
-		});
+			emitGatewayEvent(guild.id, {
+				type: "GUILD_DELETE",
+				guild_id: guild.mention,
+			});
 
-		await guild.remove();
+			await guild.remove();
 
-		return res.sendStatus(204);
-	}),
+			return res.sendStatus(204);
+		},
+	),
 );
 
 router.post(
 	"/invite",
 	route(
 		{
-			params: z.object({ guild_id: z.string() }),
+			params: z.object({ guild_id: ActorMention }),
 			body: z.object({ expiry: z.string().datetime().optional() }),
 		},
 		async (req, res) => {

@@ -29,7 +29,7 @@ export class DMChannel extends Channel {
 		return {
 			...super.toPublic(),
 
-			owner_id: this.owner.mention,
+			owner: this.owner.mention,
 			recipients: this.recipients.map((x) => x.mention),
 		};
 	}
@@ -51,6 +51,6 @@ export class DMChannel extends Channel {
 }
 
 export type PublicDmChannel = PublicChannel & {
-	owner_id: string;
+	owner: string;
 	recipients: string[];
 };

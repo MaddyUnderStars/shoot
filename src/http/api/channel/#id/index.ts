@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { Channel, PublicChannel } from "../../../../entity/channel";
 import { GuildTextChannel } from "../../../../entity/textChannel";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import { config } from "../../../../util/config";
 import {
 	getOrFetchChannel,
@@ -15,7 +16,7 @@ import { route } from "../../../../util/route";
 const router = Router({ mergeParams: true });
 
 const params = z.object({
-	channel_id: z.string(),
+	channel_id: ActorMention,
 });
 
 router.get(

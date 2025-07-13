@@ -11,10 +11,13 @@ import {
 import type { InstanceInvite } from "../../entity/instanceInvite";
 import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
-import { resolveAPObject, resolveWebfinger } from "../activitypub/resolve";
+import {
+	resolveAPObject,
+	resolveId,
+	resolveWebfinger,
+} from "../activitypub/resolve";
 import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
 import { createLogger } from "../log";
-import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 
 const Log = createLogger("users");
@@ -45,8 +48,8 @@ export const registerUser = async (
 	return user;
 };
 
-export const getOrFetchUser = async (lookup: string | APPerson) => {
-	const id = typeof lookup === "string" ? lookup : lookup.id;
+export const getOrFetchUser = async (lookup: ActorMention | URL | APPerson) => {
+	const id = resolveId(lookup);
 
 	if (!id) throw new APError("Cannot fetch user with undefined ID");
 
@@ -74,21 +77,19 @@ export const batchGetUsers = async (users: ActorMention[]) => {
 	return Promise.all(users.map((user) => getOrFetchUser(user)));
 };
 
-export const createUserForRemotePerson = async (lookup: string | APActor) => {
-	const mention =
-		typeof lookup === "string"
-			? splitQualifiedMention(lookup)
-			: // biome-ignore lint/style/noNonNullAssertion:
-				splitQualifiedMention(lookup.id!);
+export const createUserForRemotePerson = async (
+	lookup: string | URL | APActor,
+) => {
+	const id = resolveId(lookup);
 
-	// If we were given a URL, this is probably a actor URL
-	// otherwise, treat it as a username@domain handle
+	const mention = splitQualifiedMention(id);
+
 	const obj =
-		typeof lookup === "string"
-			? tryParseUrl(lookup)
-				? await resolveAPObject(lookup)
-				: await resolveWebfinger(lookup)
-			: lookup;
+		typeof lookup === "object"
+			? await resolveAPObject(lookup)
+			: id instanceof URL
+				? await resolveAPObject(id)
+				: await resolveWebfinger(id);
 
 	if (!APObjectIsActor(obj))
 		throw new APError("Resolved object is not Person");
@@ -139,7 +140,8 @@ export const getOrFetchAttributedUser = async (
 			"Cannot assign single author to this note with multiple attributedTo",
 		);
 
-	if (typeof attributed === "string") return await getOrFetchUser(attributed);
+	if (typeof attributed === "string")
+		return await getOrFetchUser(resolveId(attributed));
 
 	if (!APObjectIsActor(attributed))
 		throw new APError("note.attributedTo must be actor");
