@@ -200,7 +200,7 @@
 					}
 				]
 			},
-			"PublicGuildTextChannel": {
+			"PublicChannel": {
 				"type": "object",
 				"properties": {
 					"mention": {
@@ -208,14 +208,26 @@
 					},
 					"name": {
 						"type": "string"
-					},
-					"guild": {
-						"$ref": "#/components/schemas/ActorMention"
 					}
 				},
 				"required": [
 					"mention",
 					"name"
+				]
+			},
+			"PublicGuildTextChannel": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PublicChannel"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"guild": {
+								"$ref": "#/components/schemas/ActorMention"
+							}
+						}
+					}
 				]
 			},
 			"PublicRole": {
@@ -279,21 +291,6 @@
 					"name"
 				]
 			},
-			"PublicChannel": {
-				"type": "object",
-				"properties": {
-					"mention": {
-						"$ref": "#/components/schemas/ActorMention"
-					},
-					"name": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"mention",
-					"name"
-				]
-			},
 			"PrivateRelationship": {
 				"type": "object",
 				"properties": {
@@ -316,6 +313,31 @@
 					"created",
 					"user",
 					"type"
+				]
+			},
+			"PublicDmChannel": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PublicChannel"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"owner": {
+								"$ref": "#/components/schemas/ActorMention"
+							},
+							"recipients": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/ActorMention"
+								}
+							}
+						},
+						"required": [
+							"owner",
+							"recipients"
+						]
+					}
 				]
 			},
 			"PublicAttachment": {
@@ -1547,7 +1569,14 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PublicChannel"
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/PublicGuildTextChannel"
+										},
+										{
+											"$ref": "#/components/schemas/PublicDmChannel"
+										}
+									]
 								}
 							}
 						}

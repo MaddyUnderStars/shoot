@@ -3,7 +3,7 @@ import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { checkPermission } from "../util/checkPermission";
 import type { PERMISSION } from "../util/permission";
-import { Channel } from "./channel";
+import { Channel, PublicChannel } from "./channel";
 import type { Guild } from "./guild";
 import type { User } from "./user";
 
@@ -38,17 +38,13 @@ export class GuildTextChannel extends Channel {
 	) => checkPermission(user, this.guild, permission);
 }
 
-export type PublicGuildTextChannel = Pick<GuildTextChannel, "name"> & {
+export type PublicGuildTextChannel = PublicChannel & {
 	guild?: ActorMention;
-	mention: ActorMention;
 };
 
-export const PublicGuildTextChannel: z.ZodType<
-	Omit<PublicGuildTextChannel, "guild">
-> = z
-	.object({
-		mention: ActorMention,
-		name: z.string(),
-		guild: ActorMention.optional(),
-	})
-	.openapi("PublicGuildTextChannel");
+export const PublicGuildTextChannel: z.ZodType<PublicGuildTextChannel> =
+	PublicChannel.and(
+		z.object({
+			guild: ActorMention.optional(),
+		}),
+	).openapi("PublicGuildTextChannel");

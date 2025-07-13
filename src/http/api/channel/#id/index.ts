@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel, PublicChannel } from "../../../../entity/channel";
-import { GuildTextChannel } from "../../../../entity/textChannel";
+import { PublicDmChannel } from "../../../../entity/DMChannel";
+import { Channel } from "../../../../entity/channel";
+import {
+	GuildTextChannel,
+	PublicGuildTextChannel,
+} from "../../../../entity/textChannel";
 import { ActorMention } from "../../../../util/activitypub/constants";
 import { config } from "../../../../util/config";
 import {
@@ -24,7 +28,7 @@ router.get(
 	route(
 		{
 			params,
-			response: PublicChannel,
+			response: z.union([PublicGuildTextChannel, PublicDmChannel]),
 		},
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
