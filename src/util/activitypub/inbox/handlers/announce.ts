@@ -4,7 +4,7 @@ import { User } from "../../../../entity/user";
 import { getOrFetchChannel } from "../../../entity/channel";
 import { handleMessage } from "../../../entity/message";
 import { APError } from "../../error";
-import { resolveAPObject } from "../../resolve";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
 import { buildMessageFromAPNote } from "../../transformers/message";
 
 /**
@@ -26,7 +26,7 @@ export const AnnounceActivityHandler: ActivityHandler = async (
 	if (Array.isArray(activity.object))
 		throw new APError("Cannot accept Announce with multiple `object`s");
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	if (!ObjectIsNote(inner))
 		throw new APError(`Cannot accept Announce<${inner.type}>`);
@@ -40,7 +40,7 @@ export const AnnounceActivityHandler: ActivityHandler = async (
 	if (typeof activity.actor !== "string")
 		throw new APError("Cannot accept Announce with non-string actor");
 
-	const channel = await getOrFetchChannel(activity.actor);
+	const channel = await getOrFetchChannel(resolveId(activity.actor));
 
 	const message = await buildMessageFromAPNote(inner, channel);
 

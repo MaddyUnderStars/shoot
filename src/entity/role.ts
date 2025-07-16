@@ -7,6 +7,7 @@ import {
 	ManyToOne,
 } from "typeorm";
 import { z } from "zod";
+import { ActorMention } from "../util/activitypub/constants";
 import { DefaultPermissions, PERMISSION } from "../util/permission";
 import { BaseModel } from "./basemodel";
 import type { Guild } from "./guild";
@@ -56,7 +57,7 @@ export class Role extends BaseModel {
 		return {
 			id: this.remote_id ?? this.id,
 			name: this.name,
-			guild_id: this.guild?.id,
+			guild: this.guild?.mention,
 			allow: this.allow,
 			deny: this.deny,
 		};
@@ -68,13 +69,15 @@ export class Role extends BaseModel {
 }
 
 export type PublicRole = Pick<Role, "id" | "name" | "allow" | "deny"> & {
-	guild_id?: string;
+	guild?: ActorMention;
 };
 
-export const PublicRole: z.ZodType<PublicRole> = z.object({
-	id: z.string(),
-	name: z.string(),
-	allow: z.number().array(),
-	deny: z.number().array(),
-	guild_id: z.string().optional(),
-});
+export const PublicRole: z.ZodType<Omit<PublicRole, "guild">> = z
+	.object({
+		id: z.string().uuid(),
+		name: z.string(),
+		allow: z.number().array(),
+		deny: z.number().array(),
+		guild: ActorMention,
+	})
+	.openapi("PublicRole");

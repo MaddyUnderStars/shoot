@@ -1,3 +1,4 @@
+import { splitQualifiedMention } from "../../util/activitypub/util";
 import { channelInGuild } from "../../util/entity/channel";
 import { listenGatewayEvent } from "../../util/events";
 import { createLogger } from "../../util/log";
@@ -42,19 +43,23 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
 		// TODO: for relationships, see #54
 
-		case "CHANNEL_CREATE":
-			listenEvents(socket, [payload.channel.id]);
+		case "CHANNEL_CREATE": {
+			const { user } = splitQualifiedMention(payload.channel.mention);
+			listenEvents(socket, [user]);
 			break;
-		case "GUILD_CREATE":
-			listenEvents(socket, [payload.guild.id]);
+		}
+		case "GUILD_CREATE": {
+			const { user } = splitQualifiedMention(payload.guild.mention);
+			listenEvents(socket, [user]);
 			break;
+		}
 		case "GUILD_DELETE":
 			// if we leave a guild that we're subscribed to, remove our subscription
 			if (
 				!socket.member_list.channel_id ||
 				!(await channelInGuild(
 					socket.member_list.channel_id,
-					payload.guild_id,
+					payload.guild,
 				))
 			)
 				break;
@@ -74,7 +79,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 		case "CHANNEL_DELETE":
 			// if we're subscribed to this channel, unsub
 
-			if (socket.member_list.channel_id !== payload.channel_id) break;
+			if (socket.member_list.channel_id !== payload.channel) break;
 
 			for (const id in socket.member_list.events) {
 				socket.member_list.events[id]();

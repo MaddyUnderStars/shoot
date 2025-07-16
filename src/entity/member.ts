@@ -35,7 +35,7 @@ export type PublicMember = Pick<Member, "nickname" | "id"> & {
 };
 
 export const PublicMember: z.ZodType<PublicMember> = z.object({
-	id: z.string().uuid(),
+	id: z.string().uuid(), // TODO: See #79 and #78
 	nickname: z.string(),
 	user: PublicUser,
 	roles: z.string().array(),

@@ -1,16 +1,16 @@
 import type { APPerson } from "activitypub-types";
 import { Member } from "../../entity/member";
 import type { User } from "../../entity/user";
-import { APError } from "../activitypub/error";
+import type { ActorMention } from "../activitypub/constants";
+import { resolveId } from "../activitypub/resolve";
 import { splitQualifiedMention } from "../activitypub/util";
 import { HttpError } from "../httperror";
 import { getOrFetchUser } from "./user";
 
-export const getOrFetchMember = async (lookup: string | APPerson) => {
-	const id = typeof lookup === "string" ? lookup : lookup.id;
-	if (!id) throw new APError("Member id is undefined");
-
-	const mention = splitQualifiedMention(id);
+export const getOrFetchMember = async (
+	lookup: ActorMention | URL | APPerson,
+) => {
+	const mention = splitQualifiedMention(resolveId(lookup));
 
 	const member = await Member.findOne({
 		where: {

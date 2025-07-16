@@ -2,6 +2,7 @@ import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../../entity/message";
+import { ActorMention } from "../../../../../../util/activitypub/constants";
 import { APError } from "../../../../../../util/activitypub/error";
 import { resolveAPObject } from "../../../../../../util/activitypub/resolve";
 import { buildMessageFromAPNote } from "../../../../../../util/activitypub/transformers/message";
@@ -9,12 +10,13 @@ import { getOrFetchChannel } from "../../../../../../util/entity/channel";
 import { emitGatewayEvent } from "../../../../../../util/events";
 import { PERMISSION } from "../../../../../../util/permission";
 import { route } from "../../../../../../util/route";
+import { makeUrl, tryParseUrl } from "../../../../../../util/url";
 
 const router = Router({ mergeParams: true });
 
 const MessageRequestParams = z.object({
-	channel_id: z.string(),
-	message_id: z.string(),
+	channel_id: ActorMention,
+	message_id: z.string().uuid(),
 });
 
 router.get(
@@ -40,7 +42,7 @@ router.get(
 				},
 			});
 
-			if (!message && channel.isRemote()) {
+			if (!message && channel.isRemote() && channel.remote_address) {
 				// If this is a remote channel, fetch the message from them
 				// The remote message may be cached
 
@@ -51,8 +53,12 @@ router.get(
 				// through GET /channel/:id/messages and so the message is already in cache and would've
 				// been hit above. so probably fine?
 				// If you could filter a channels outbox somehow, that would be maybe more portable
-				const messageUrl = `${channel.remote_address}/message/${req.params.message_id}`;
-				const obj = await resolveAPObject(messageUrl);
+				const obj = await resolveAPObject(
+					makeUrl(
+						`/message/${req.params.message_id}`,
+						tryParseUrl(channel.remote_address) as URL,
+					),
+				);
 
 				if (!ObjectIsNote(obj)) {
 					throw new APError("Remote did not return a Note object");
@@ -107,7 +113,7 @@ router.delete(
 			emitGatewayEvent(channel.id, {
 				type: "MESSAGE_DELETE",
 				message_id: message.id,
-				channel_id: channel.id,
+				channel: channel.mention,
 			});
 
 			await message.remove();

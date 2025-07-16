@@ -2,6 +2,7 @@ import { makeHandler } from ".";
 import { DMChannel } from "../../entity/DMChannel";
 import { GuildTextChannel } from "../../entity/textChannel";
 import { User } from "../../entity/user";
+import type { ActorMention } from "../../util/activitypub/constants";
 import { getDatabase } from "../../util/database";
 import { channelInGuild, getChannel } from "../../util/entity/channel";
 import { listenGatewayEvent } from "../../util/events";
@@ -14,7 +15,7 @@ import type { Websocket } from "../util/websocket";
 export type MembersChunkItem = {
 	name: string;
 	member_id?: string;
-	user_id: string;
+	user_id: ActorMention;
 };
 
 /**
@@ -43,7 +44,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 		for (const member of members) {
 			items.push({
-				user_id: member.id, // TODO
+				user_id: member.mention, // TODO
 				name: member.display_name ?? member.name,
 			});
 
@@ -92,7 +93,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 			items.push({
 				member_id: member.member_id,
-				user_id: member.user_id,
+				user_id: `${member.name}@${member.user_domain}`,
 				name: member.display_name ?? member.name,
 			});
 		}
@@ -116,9 +117,7 @@ export const handleMemberListRoleAdd = async (
 	if (!socket.member_list.channel_id) return; // hm
 
 	// If this event is for a guild that does not contain our channel, ignore it
-	if (
-		!(await channelInGuild(socket.member_list.channel_id, event.guild_id))
-	) {
+	if (!(await channelInGuild(socket.member_list.channel_id, event.guild))) {
 		return;
 	}
 
@@ -239,6 +238,7 @@ const MEMBERS_QUERY = `
 					"gm"."id" member_id,
 					"r"."id" role_id,
 					"users"."id" user_id,
+					"users"."domain" user_domain,
 					"users"."display_name" display_name,
 					"users"."name" name
 				from guild_members gm
@@ -275,6 +275,7 @@ const getMembers = async (
 		member_id: string;
 		role_id: string;
 		user_id: string;
+		user_domain?: string;
 		display_name: string;
 		name: string;
 	}>

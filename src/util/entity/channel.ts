@@ -1,7 +1,3 @@
-import crypto from "node:crypto";
-import { promisify } from "node:util";
-const generateKeyPair = promisify(crypto.generateKeyPair);
-
 import {
 	type APActor,
 	type APGroup,
@@ -15,10 +11,12 @@ import { Channel } from "../../entity/channel";
 import { Guild } from "../../entity/guild";
 import { GuildTextChannel } from "../../entity/textChannel";
 import { User } from "../../entity/user";
+import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
 import {
 	resolveAPObject,
 	resolveCollectionEntries,
+	resolveId,
 	resolveWebfinger,
 } from "../activitypub/resolve";
 import { splitQualifiedMention } from "../activitypub/util";
@@ -94,8 +92,8 @@ where ch.id = ch2.id and ch."guildId" = $1`;
 	await getDatabase().query(sql, [guild_id]);
 };
 
-export const getChannel = async (lookup: string) => {
-	const mention = splitQualifiedMention(lookup);
+export const getChannel = async (lookup: ActorMention | URL) => {
+	const mention = splitQualifiedMention(resolveId(lookup));
 
 	// TODO: this may break when we have other channel types
 	return await getDatabase()
@@ -125,9 +123,10 @@ export const getChannel = async (lookup: string) => {
 		.getOne();
 };
 
-export const getOrFetchChannel = async (lookup: string | APGroup) => {
-	const id = typeof lookup === "string" ? lookup : lookup.id;
-	if (!id) throw new APError("Cannot fetch channel without ID");
+export const getOrFetchChannel = async (
+	lookup: URL | ActorMention | APGroup,
+) => {
+	const id = resolveId(lookup);
 
 	let channel = await getChannel(id);
 
@@ -152,20 +151,16 @@ export const channelInGuild = async (channel_id: string, guild_id: string) => {
 };
 
 export const createChannelFromRemoteGroup = async (
-	lookup: string | APActor,
+	lookup: ActorMention | URL | APActor,
 ) => {
-	const mention =
-		typeof lookup === "string"
-			? splitQualifiedMention(lookup)
-			: // biome-ignore lint/style/noNonNullAssertion: TODO
-				splitQualifiedMention(lookup.id!);
+	const mention = splitQualifiedMention(resolveId(lookup));
 
 	const obj =
 		typeof lookup === "string"
-			? tryParseUrl(lookup)
+			? await resolveWebfinger(lookup)
+			: lookup instanceof URL
 				? await resolveAPObject(lookup)
-				: await resolveWebfinger(lookup)
-			: lookup;
+				: lookup;
 
 	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
 
@@ -230,11 +225,13 @@ export const createChannelFromRemoteGroup = async (
 					(prev, curr) => {
 						const id = typeof curr === "string" ? curr : curr.id;
 						if (id !== obj.attributedTo) {
-							if (
-								typeof curr === "string" ||
-								ObjectIsPerson(curr)
-							)
+							if (typeof curr === "string") {
+								const url = tryParseUrl(curr);
+								if (!url) return prev;
+								prev.push(getOrFetchUser(url));
+							} else if (ObjectIsPerson(curr)) {
 								prev.push(getOrFetchUser(curr));
+							}
 						}
 
 						return prev;
@@ -257,14 +254,19 @@ export const createChannelFromRemoteGroup = async (
 const resolveChannelOwner = async (lookup: string) => {
 	// is lookup on our domain?
 
-	const mention = splitQualifiedMention(lookup);
+	const id = resolveId(lookup);
+
+	const mention = splitQualifiedMention(id);
 
 	const actor = await findActorOfAnyType(mention.user, mention.domain);
 	if (actor) return actor;
 
 	// otherwise, do a remote lookup
 
-	const obj = await resolveAPObject(lookup);
+	const obj =
+		id instanceof URL
+			? await resolveAPObject(id)
+			: await resolveWebfinger(id);
 
 	if (ObjectIsPerson(obj)) return await createUserForRemotePerson(obj);
 

@@ -21,7 +21,18 @@ export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
 	redirect: "follow",
 };
 
-export type ActorMention = `${string}@${string}`;
+export const ActorMentionRegex = /^.*@.*$/;
+
+export const ActorMention = z
+	.custom<`${string}@${string}`>(
+		(val) => typeof val === "string" && val.match(ActorMentionRegex),
+		{
+			message: "Invalid mention",
+		},
+	)
+	.openapi("ActorMention", { type: "string", pattern: "^.*@.*$" });
+
+export type ActorMention = z.infer<typeof ActorMention>;
 
 interface WebfingerLink {
 	rel: string;

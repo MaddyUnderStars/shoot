@@ -12,6 +12,7 @@ import { acceptOrCreateRelationship } from "../../../entity/relationship";
 import { getOrFetchUser } from "../../../entity/user";
 import { makeInstanceUrl } from "../../../url";
 import { APError } from "../../error";
+import { resolveId } from "../../resolve";
 import { addContext, splitQualifiedMention } from "../../util";
 
 export const FollowActivityHandler: ActivityHandler = async (
@@ -24,7 +25,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 	if (typeof from !== "string")
 		throw new APError("Follow activity must have single actor");
 
-	const actor = await getOrFetchUser(from);
+	const actor = await getOrFetchUser(resolveId(from));
 	if (!actor.collections?.inbox)
 		throw new APError("Received follow from actor without inbox");
 
@@ -58,7 +59,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 			relations: { guild: true },
 		});
 
-		await joinGuild(actor.id, invite.guild.id);
+		await joinGuild(actor.mention, invite.guild.mention);
 	} else throw new APError("Cannot accept follows for this target");
 
 	const accept: APAccept = addContext({

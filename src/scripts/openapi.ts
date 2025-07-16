@@ -159,6 +159,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 			security: route.requires_auth
 				? [{ [bearerAuth.name]: [] }]
 				: undefined,
+			tags: [route.path.split("/")[1]],
 			request: {
 				params: route.options?.params,
 				// headers: z.object({

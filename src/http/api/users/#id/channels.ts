@@ -4,6 +4,7 @@ import { z } from "zod";
 import { DMChannel } from "../../../../entity/DMChannel";
 import { PublicChannel } from "../../../../entity/channel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
 import { addContext } from "../../../../util/activitypub/util";
 import { createDmChannel } from "../../../../util/entity/channel";
@@ -24,7 +25,7 @@ router.post(
 		{
 			body: DMChannelCreate,
 			params: z.object({
-				user_id: z.string(),
+				user_id: ActorMention,
 			}),
 			response: PublicChannel,
 		},

@@ -80,7 +80,7 @@ export type PublicMessage = Pick<
 
 export const PublicMessage: z.ZodType<PublicMessage> = z
 	.object({
-		id: z.string(),
+		id: z.string().uuid(),
 		content: z.string(),
 		published: z.date(),
 		updated: z.date(),

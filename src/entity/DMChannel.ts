@@ -5,8 +5,10 @@ import {
 	ManyToMany,
 	ManyToOne,
 } from "typeorm";
+import z from "zod";
+import { ActorMention } from "../util/activitypub/constants";
 import { DefaultPermissions, type PERMISSION } from "../util/permission";
-import type { PublicChannel } from "./channel";
+import { PublicChannel } from "./channel";
 import { Channel } from "./channel";
 import type { User } from "./user";
 
@@ -29,7 +31,7 @@ export class DMChannel extends Channel {
 		return {
 			...super.toPublic(),
 
-			owner_id: this.owner.mention,
+			owner: this.owner.mention,
 			recipients: this.recipients.map((x) => x.mention),
 		};
 	}
@@ -51,6 +53,13 @@ export class DMChannel extends Channel {
 }
 
 export type PublicDmChannel = PublicChannel & {
-	owner_id: string;
-	recipients: string[];
+	owner: ActorMention;
+	recipients: ActorMention[];
 };
+
+export const PublicDmChannel: z.ZodType<PublicDmChannel> = PublicChannel.and(
+	z.object({
+		owner: ActorMention,
+		recipients: ActorMention.array(),
+	}),
+).openapi("PublicDmChannel");

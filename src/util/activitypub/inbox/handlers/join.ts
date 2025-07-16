@@ -8,6 +8,7 @@ import { PERMISSION } from "../../../permission";
 import { makeInstanceUrl } from "../../../url";
 import { generateMediaToken } from "../../../voice";
 import { APError } from "../../error";
+import { resolveId } from "../../resolve";
 import { addContext } from "../../util";
 
 export const JoinActivityHandler: ActivityHandler = async (
@@ -33,7 +34,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 	if (makeInstanceUrl(getExternalPathFromActor(target)) !== activity.object)
 		throw new APError("Object and target mismatch?");
 
-	const user = await getOrFetchUser(activity.actor);
+	const user = await getOrFetchUser(resolveId(activity.actor));
 
 	await target.throwPermission(user, [
 		PERMISSION.VIEW_CHANNEL,

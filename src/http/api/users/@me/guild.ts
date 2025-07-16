@@ -67,12 +67,10 @@ router.delete(
 			.execute();
 
 		if (deleted.affected) {
-			const member_id: string = deleted.raw[0].id;
-
 			emitGatewayEvent(req.params.guild_id, {
 				type: "MEMBER_LEAVE",
-				guild_id: mention.user,
-				member_id,
+				guild: `${mention.user}@${mention.domain}`,
+				user: req.user.mention,
 			});
 		}
 

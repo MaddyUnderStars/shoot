@@ -16,7 +16,7 @@ import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
 import { PERMISSION } from "../../../permission";
 import { APError } from "../../error";
-import { resolveAPObject, resolveId } from "../../resolve";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
 import { buildMessageFromAPNote } from "../../transformers/message";
 
 /**
@@ -47,7 +47,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 			"Cannot accept Create activity with multiple `object`s",
 		);
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	if (ObjectIsGroup(inner)) {
 		// Create<Group> at User
@@ -94,7 +94,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 		if (!channel) {
 			// make it since it doesn't exist
 			channel = await createDmChannel(
-				sender.display_name, // TODO
+				`${sender.name} and ${target.name}`,
 				sender,
 				[target],
 			);
@@ -124,7 +124,7 @@ const CreateAtChannel = async (activity: APActivity, target: Channel) => {
 			"Cannot accept Create activity with multiple `object`s",
 		);
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	if (!ObjectIsNote(inner))
 		throw new APError(`Cannot accept Create<${inner.type}>`);

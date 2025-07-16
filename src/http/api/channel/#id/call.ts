@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import { config } from "../../../../util/config";
 import { getOrFetchChannel } from "../../../../util/entity/channel";
 import { PERMISSION } from "../../../../util/permission";
@@ -18,7 +19,7 @@ router.post(
 	route(
 		{
 			params: z.object({
-				channel_id: z.string(),
+				channel_id: ActorMention,
 			}),
 			response: MediaTokenResponse,
 			errors: { 202: z.literal("Accepted") },

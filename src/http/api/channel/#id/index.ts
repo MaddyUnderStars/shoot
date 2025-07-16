@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel, PublicChannel } from "../../../../entity/channel";
-import { GuildTextChannel } from "../../../../entity/textChannel";
+import { PublicDmChannel } from "../../../../entity/DMChannel";
+import { Channel } from "../../../../entity/channel";
+import {
+	GuildTextChannel,
+	PublicGuildTextChannel,
+} from "../../../../entity/textChannel";
+import { ActorMention } from "../../../../util/activitypub/constants";
 import { config } from "../../../../util/config";
 import {
 	getOrFetchChannel,
@@ -15,7 +20,7 @@ import { route } from "../../../../util/route";
 const router = Router({ mergeParams: true });
 
 const params = z.object({
-	channel_id: z.string(),
+	channel_id: ActorMention,
 });
 
 router.get(
@@ -23,7 +28,7 @@ router.get(
 	route(
 		{
 			params,
-			response: PublicChannel,
+			response: z.union([PublicGuildTextChannel, PublicDmChannel]),
 		},
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
@@ -86,8 +91,8 @@ router.delete(
 		// after a .remove, the id is made undefined but other properties are not
 		emitGatewayEvent(channel.id, {
 			type: "CHANNEL_DELETE",
-			channel_id: channel.mention,
-			guild_id:
+			channel: channel.mention,
+			guild:
 				channel instanceof GuildTextChannel
 					? channel.guild.mention
 					: undefined,
