@@ -392,10 +392,10 @@
 						"type": "string"
 					},
 					"author_id": {
-						"type": "string"
+						"$ref": "#/components/schemas/ActorMention"
 					},
 					"channel_id": {
-						"type": "string"
+						"$ref": "#/components/schemas/ActorMention"
 					},
 					"files": {
 						"type": "array",
