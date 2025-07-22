@@ -118,12 +118,16 @@ router.post(
 
 			const expires = expiry ? new Date(expiry) : undefined;
 
-			const invite = await Invite.create({
+			await Invite.create();
+
+			const invite = Invite.create({
+				guild,
 				expires,
 
 				code: await generateInviteCode(),
-				guild: { id: guild.id },
-			}).save();
+			});
+
+			await Invite.insert(invite);
 
 			emitGatewayEvent(guild_id, {
 				type: "INVITE_CREATE",
