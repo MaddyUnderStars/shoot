@@ -1460,7 +1460,22 @@
 							"application/json": {
 								"schema": {
 									"type": "object",
-									"properties": {}
+									"properties": {
+										"code": {
+											"type": "string"
+										},
+										"guild": {
+											"$ref": "#/components/schemas/PublicGuild"
+										},
+										"expires": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"code",
+										"guild",
+										"expires"
+									]
 								}
 							}
 						}

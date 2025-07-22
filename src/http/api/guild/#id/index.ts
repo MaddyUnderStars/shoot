@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { Guild, PublicGuild } from "../../../../entity/guild";
-import { Invite } from "../../../../entity/invite";
+import { Invite, PublicInvite } from "../../../../entity/invite";
 import { ActorMention } from "../../../../util/activitypub/constants";
 import { APError } from "../../../../util/activitypub/error";
 import { getOrFetchGuild } from "../../../../util/entity/guild";
@@ -106,6 +106,7 @@ router.post(
 		{
 			params: z.object({ guild_id: ActorMention }),
 			body: z.object({ expiry: z.string().datetime().optional() }),
+			response: PublicInvite,
 		},
 		async (req, res) => {
 			const { guild_id } = req.params;
