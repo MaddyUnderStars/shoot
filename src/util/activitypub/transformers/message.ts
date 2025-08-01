@@ -3,9 +3,8 @@ import { ApCache } from "../../../entity/apcache";
 import type { Channel } from "../../../entity/channel";
 import { Message } from "../../../entity/message";
 import { getExternalPathFromActor } from "../../../sender";
-import { config } from "../../config";
 import { getOrFetchAttributedUser } from "../../entity/user";
-import { makeInstanceUrl } from "../../url";
+import { makeInstanceUrl, makeWebappUrl } from "../../url";
 
 export const buildMessageFromAPNote = async (
 	note: APNote,
@@ -44,7 +43,10 @@ export const buildAPNote = (message: Message): APNote => {
 		content: message.content ?? undefined,
 		updated: message.updated ?? undefined,
 		summary: "",
-		url: `${config.federation.webapp_url.origin}/channel/${message.channel.id}/message/${message.id}`,
+		url: makeWebappUrl(
+			`/channel/${message.channel.id}/message/${message.id}`,
+		),
+		audience: makeInstanceUrl(getExternalPathFromActor(message.channel)),
 	};
 };
 
