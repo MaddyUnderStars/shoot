@@ -110,7 +110,7 @@ router.delete(
 					PERMISSION.MANAGE_MESSAGES,
 				]);
 
-			emitGatewayEvent(channel.id, {
+			emitGatewayEvent(channel, {
 				type: "MESSAGE_DELETE",
 				message_id: message.id,
 				channel: channel.mention,

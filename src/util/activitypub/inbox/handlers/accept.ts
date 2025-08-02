@@ -33,7 +33,7 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 
 	const from = await getOrFetchUser(resolveId(activity.actor));
 
-	emitGatewayEvent(from.id, {
+	emitGatewayEvent(from, {
 		type: "MEDIA_TOKEN_RECEIVED",
 		token: activity.result,
 		endpoint: activity.target,

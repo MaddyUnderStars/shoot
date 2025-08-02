@@ -1,5 +1,6 @@
 import { makeHandler } from ".";
 import { DMChannel } from "../../entity/DMChannel";
+import { Member } from "../../entity/member";
 import { GuildTextChannel } from "../../entity/textChannel";
 import { User } from "../../entity/user";
 import type { ActorMention } from "../../util/activitypub/constants";
@@ -145,21 +146,21 @@ export const handleMemberListRoleAdd = async (
  */
 const listenRangeEvent = async (
 	socket: Websocket,
-	target_id: string,
+	member_id: string,
 	channel_id: string,
 ) => {
-	if (socket.member_list.events[target_id]) return;
-	if (socket.user_id === target_id) return;
+	if (socket.member_list.events[member_id]) return;
+	if (socket.user_id === member_id) return;
 
 	const unsubscribe = () => {
-		socket.member_list.events[target_id]();
-		delete socket.member_list.events[target_id];
+		socket.member_list.events[member_id]();
+		delete socket.member_list.events[member_id];
 	};
 
 	// TODO: don't we also want to subscribe to the user id?
 
-	socket.member_list.events[target_id] = listenGatewayEvent(
-		target_id,
+	socket.member_list.events[member_id] = listenGatewayEvent(
+		Member.create({ id: member_id }),
 		async (payload) => {
 			// Listening to a member id is intended to only send requests about that guild member
 			// And so we just need to track the events that move their position within the list
@@ -172,7 +173,7 @@ const listenRangeEvent = async (
 					const position = await getMemberPosition(
 						channel_id,
 						...(socket.member_list.range ?? [0, 100]),
-						target_id,
+						member_id,
 					);
 
 					if (!position) {

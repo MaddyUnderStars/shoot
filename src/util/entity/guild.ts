@@ -95,13 +95,13 @@ export const joinGuild = async (
 		roles: [Role.create({ id: guild.id })],
 	}).save();
 
-	emitGatewayEvent(guild_id, {
+	emitGatewayEvent(guild, {
 		type: "MEMBER_JOIN",
 		guild: guild_id,
 		member: member.toPublic(),
 	});
 
-	emitGatewayEvent(user_id, {
+	emitGatewayEvent(user, {
 		type: "GUILD_CREATE",
 		guild: guild.toPublic(),
 	});
@@ -154,7 +154,7 @@ export const createGuild = async (name: string, owner: User) => {
 
 	setImmediate(() => generateSigningKeys(guild));
 
-	emitGatewayEvent(owner.id, {
+	emitGatewayEvent(owner, {
 		type: "GUILD_CREATE",
 		guild: guild.toPublic(),
 	});
@@ -176,7 +176,7 @@ export const createGuild = async (name: string, owner: User) => {
 
 	guild.roles = [everyone];
 
-	emitGatewayEvent(guild.id, {
+	emitGatewayEvent(guild, {
 		type: "ROLE_CREATE",
 		role: everyone.toPublic(),
 	});
@@ -186,7 +186,7 @@ export const createGuild = async (name: string, owner: User) => {
 		roles: [everyone],
 	}).save();
 
-	emitGatewayEvent(guild.id, {
+	emitGatewayEvent(guild, {
 		type: "ROLE_MEMBER_ADD",
 		role_id: everyone.id,
 		guild: guild.mention,

@@ -56,12 +56,12 @@ export const createRelationship = async (
 	await rel.save();
 
 	// have to emit two events here as they contain different info
-	emitGatewayEvent(to.id, {
+	emitGatewayEvent(to, {
 		type: "RELATIONSHIP_CREATE",
 		relationship: rel.toClient(to.id),
 	});
 
-	emitGatewayEvent(from.id, {
+	emitGatewayEvent(from, {
 		type: "RELATIONSHIP_CREATE",
 		relationship: rel.toClient(from.id),
 	});
@@ -115,12 +115,12 @@ export const acceptRelationship = async (from: User, to: User) => {
 	);
 
 	// have to emit two events here as they contain different info
-	emitGatewayEvent(to.id, {
+	emitGatewayEvent(to, {
 		type: "RELATIONSHIP_UPDATE",
 		relationship: rel.toClient(to.id),
 	});
 
-	emitGatewayEvent(from.id, {
+	emitGatewayEvent(from, {
 		type: "RELATIONSHIP_UPDATE",
 		relationship: rel.toClient(from.id),
 	});

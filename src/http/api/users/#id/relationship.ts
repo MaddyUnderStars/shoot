@@ -97,12 +97,12 @@ router.delete(
 
 			// tell both parties that we've deleted the relationship
 			// can't do it in one call, unfortunately. without some hackery of course
-			emitGatewayEvent(req.user.id, {
+			emitGatewayEvent(req.user, {
 				type: "RELATIONSHIP_DELETE",
 				user: to.mention,
 			});
 
-			emitGatewayEvent(to.id, {
+			emitGatewayEvent(to, {
 				type: "RELATIONSHIP_DELETE",
 				user: req.user.mention,
 			});

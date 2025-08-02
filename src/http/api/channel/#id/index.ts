@@ -62,9 +62,7 @@ router.patch(
 			await Channel.update({ id: channel.id }, req.body);
 
 			emitGatewayEvent(
-				channel instanceof GuildTextChannel
-					? channel.guild.id
-					: channel.id,
+				channel instanceof GuildTextChannel ? channel.guild : channel,
 				{
 					type: "CHANNEL_UPDATE",
 					channel: channel.toPublic(),
@@ -89,7 +87,7 @@ router.delete(
 		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
 		// after a .remove, the id is made undefined but other properties are not
-		emitGatewayEvent(channel.id, {
+		emitGatewayEvent(channel, {
 			type: "CHANNEL_DELETE",
 			channel: channel.mention,
 			guild:

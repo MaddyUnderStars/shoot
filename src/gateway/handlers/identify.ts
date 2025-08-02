@@ -51,11 +51,11 @@ export const onIdentify = makeHandler(async function (payload) {
 	this.session = session;
 
 	listenEvents(this, [
-		this.user_id,
+		user,
 		// TODO: for relationships, see #54
-		...dmChannels.map((x) => x.id),
-		...guilds.map((x) => x.id),
-		...guilds.flatMap((x) => x.channels.map((y) => y.id)),
+		...dmChannels,
+		...guilds,
+		...guilds.flatMap((x) => x.channels),
 	]);
 
 	const ret: READY = {

@@ -3,6 +3,9 @@ import type { GATEWAY_EVENT } from "../gateway/util/validation/send";
 import { config } from "./config";
 
 import * as rabbit from "rabbitmq-stream-js-client";
+import { getMetadataArgsStorage } from "typeorm";
+import type { BaseModel } from "../entity/basemodel";
+import { Channel } from "../entity/channel";
 import { createLogger } from "./log";
 
 const Log = createLogger("events");
@@ -78,14 +81,16 @@ export const closeRabbitMQ = async () => {
 };
 
 export const emitGatewayEvent = (
-	targets: string | string[],
+	targets: BaseModel | BaseModel[],
 	payload: GATEWAY_EVENT,
 ) => {
 	if (!Array.isArray(targets)) targets = [targets];
 
+	const targetIds = targets.map(makeGatewayTarget);
+
 	if (publisher) {
 		// rabbitmq emit
-		for (const target of targets) {
+		for (const target of targetIds) {
 			publisher
 				.send(Buffer.from(JSON.stringify(payload)), {
 					messageProperties: { to: target },
@@ -96,28 +101,40 @@ export const emitGatewayEvent = (
 		}
 	} else {
 		// normal event emit
-		for (const target of targets) {
+		for (const target of targetIds) {
 			events.emit(target, payload);
 		}
 	}
 };
 
+export const makeGatewayTarget = (target: BaseModel) => {
+	let constr = target.constructor;
+	if (target instanceof Channel) {
+		constr = Channel;
+	}
+
+	const name = getMetadataArgsStorage().tables.find(
+		(x) => x.target === constr,
+	)?.name;
+
+	if (!name) {
+		throw new Error("Failed to find database table for that target");
+	}
+
+	return `${name}:${target.id}`;
+};
+
 export const listenGatewayEvent = (
-	target: string,
+	target: BaseModel,
 	callback: (payload: GATEWAY_EVENT) => unknown,
 ) => {
+	const id = makeGatewayTarget(target);
+
 	events.setMaxListeners(events.getMaxListeners() + 1);
-	events.addListener(target, callback);
+	events.addListener(id, callback);
 
 	return () => {
-		events.removeListener(target, callback);
+		events.removeListener(id, callback);
 		events.setMaxListeners(events.getMaxListeners() - 1);
 	};
 };
-
-const internal = {
-	emitGatewayEvent,
-	listenGatewayEvent,
-};
-
-export { internal };

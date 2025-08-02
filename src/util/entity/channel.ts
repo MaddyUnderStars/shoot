@@ -46,7 +46,7 @@ export const createGuildTextChannel = async (name: string, guild: Guild) => {
 
 	// TODO: when a channel with permission overwrites is created
 	// this should only emit to the role or users given permission
-	emitGatewayEvent(guild.id, {
+	emitGatewayEvent(guild, {
 		type: "CHANNEL_CREATE",
 		channel: channel.toPublic(),
 	});
@@ -74,7 +74,7 @@ export const createDmChannel = async (
 		if (onKeyGen) await onKeyGen(channel);
 	});
 
-	emitGatewayEvent([...recipients.map((x) => x.id), owner.id], {
+	emitGatewayEvent([...recipients, owner], {
 		type: "CHANNEL_CREATE",
 		channel: channel.toPublic(),
 	});

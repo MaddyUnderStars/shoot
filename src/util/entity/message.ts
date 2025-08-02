@@ -63,7 +63,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 		await Attachment.insert(message.files);
 	}
 
-	emitGatewayEvent(message.channel.id, {
+	emitGatewayEvent(message.channel, {
 		type: "MESSAGE_CREATE",
 		message: message.toPublic(),
 	});

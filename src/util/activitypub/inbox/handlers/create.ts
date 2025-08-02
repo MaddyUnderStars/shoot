@@ -56,7 +56,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 
 		await channel.save();
 
-		emitGatewayEvent([target.id], {
+		emitGatewayEvent(target, {
 			type: "CHANNEL_CREATE",
 			channel: channel.toPublic(),
 		});
@@ -101,7 +101,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 
 			await channel.save();
 
-			emitGatewayEvent([target.id], {
+			emitGatewayEvent(target, {
 				type: "CHANNEL_CREATE",
 				channel: channel.toPublic(),
 			});

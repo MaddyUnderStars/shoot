@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PublicGuild } from "../../../../entity/guild";
+import { Guild, PublicGuild } from "../../../../entity/guild";
 import { Member } from "../../../../entity/member";
 import { splitQualifiedMention } from "../../../../util/activitypub/util";
 import { getDatabase } from "../../../../util/database";
@@ -67,7 +67,7 @@ router.delete(
 			.execute();
 
 		if (deleted.affected) {
-			emitGatewayEvent(req.params.guild_id, {
+			emitGatewayEvent(Guild.create({ id: req.params.guild_id }), {
 				type: "MEMBER_LEAVE",
 				guild: `${mention.user}@${mention.domain}`,
 				user: req.user.mention,

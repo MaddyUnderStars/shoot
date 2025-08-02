@@ -67,7 +67,7 @@ router.patch(
 			guild.assign(req.body);
 			await Guild.update({ id: guild.id }, req.body);
 
-			emitGatewayEvent(guild.id, {
+			emitGatewayEvent(guild, {
 				type: "GUILD_UPDATE",
 				guild: guild.toPublic(),
 			});
@@ -88,7 +88,7 @@ router.delete(
 
 			await guild.throwPermission(req.user, PERMISSION.ADMIN);
 
-			emitGatewayEvent(guild.id, {
+			emitGatewayEvent(guild, {
 				type: "GUILD_DELETE",
 				guild: guild.mention,
 			});
@@ -129,7 +129,7 @@ router.post(
 
 			await Invite.insert(invite);
 
-			emitGatewayEvent(guild_id, {
+			emitGatewayEvent(guild, {
 				type: "INVITE_CREATE",
 				invite: invite.toPublic(),
 			});

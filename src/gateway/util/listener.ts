@@ -1,6 +1,8 @@
+import type { BaseModel } from "../../entity/basemodel";
+import { User } from "../../entity/user";
 import { splitQualifiedMention } from "../../util/activitypub/util";
 import { channelInGuild } from "../../util/entity/channel";
-import { listenGatewayEvent } from "../../util/events";
+import { listenGatewayEvent, makeGatewayTarget } from "../../util/events";
 import { createLogger } from "../../util/log";
 import { handleMemberListRoleAdd } from "../handlers/members";
 import type { GATEWAY_EVENT } from "./validation/send";
@@ -16,14 +18,16 @@ const Log = createLogger("GATEWAY:LISTENER");
  */
 export const listenEvents = (
 	socket: Websocket,
-	emitters: string[],
+	emitters: BaseModel[],
 	callback = consume,
 ) => {
 	for (const emitter of emitters) {
-		if (socket.events[emitter])
+		const id = makeGatewayTarget(emitter);
+
+		if (socket.events[id])
 			Log.warn(`${socket.user_id} is already listening to ${emitter}`);
 
-		socket.events[emitter] = listenGatewayEvent(emitter, (payload) =>
+		socket.events[id] = listenGatewayEvent(emitter, (payload) =>
 			callback(socket, payload),
 		);
 	}
@@ -45,12 +49,12 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 
 		case "CHANNEL_CREATE": {
 			const { user } = splitQualifiedMention(payload.channel.mention);
-			listenEvents(socket, [user]);
+			listenEvents(socket, [User.create({ id: user })]);
 			break;
 		}
 		case "GUILD_CREATE": {
 			const { user } = splitQualifiedMention(payload.guild.mention);
-			listenEvents(socket, [user]);
+			listenEvents(socket, [User.create({ id: user })]);
 			break;
 		}
 		case "GUILD_DELETE":
