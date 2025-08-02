@@ -5,7 +5,7 @@ import { makeInstanceUrl } from "../url";
 export const InstanceActor = Object.freeze({
 	id: "actor",
 	display_name: config.federation.webapp_url.hostname,
-	name: "actor",
+	name: config.federation.webapp_url.hostname,
 	domain: config.federation.webapp_url.hostname,
 	public_key: config.federation.public_key,
 	private_key: config.federation.private_key,
