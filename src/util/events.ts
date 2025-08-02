@@ -1,11 +1,10 @@
 import EventEmitter from "node:events";
-import type { GATEWAY_EVENT } from "../gateway/util/validation/send";
-import { config } from "./config";
-
 import * as rabbit from "rabbitmq-stream-js-client";
 import { getMetadataArgsStorage } from "typeorm";
 import type { BaseModel } from "../entity/basemodel";
 import { Channel } from "../entity/channel";
+import type { GATEWAY_EVENT } from "../gateway/util/validation/send";
+import { config } from "./config";
 import { createLogger } from "./log";
 
 const Log = createLogger("events");

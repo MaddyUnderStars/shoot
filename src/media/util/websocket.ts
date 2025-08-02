@@ -43,7 +43,7 @@ export function send(this: MediaSocket, data: MEDIA_EVENT) {
 
 	const { type, ...rest } = data;
 
-	const ret = { t: data.type, d: rest, s: this.sequence++ };
+	const ret = { t: type, d: rest, s: this.sequence++ };
 
 	return this.raw_send(JSON.stringify(ret));
 }

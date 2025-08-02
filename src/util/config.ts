@@ -18,16 +18,6 @@ const get = <T>(key: string): T => {
 	}
 };
 
-const getArray = <T>(key: string): T[] => {
-	let i = 0;
-	const ret: T[] = [];
-	while (nodeConfig.has(`${key}[${i}]`)) {
-		ret.push(nodeConfig.get(`${key}[${i}]`));
-		i++;
-	}
-	return ret;
-};
-
 const config = Object.freeze({
 	/**
 	 * options relating to Shoot's own logging

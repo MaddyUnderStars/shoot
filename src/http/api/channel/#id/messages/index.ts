@@ -112,7 +112,9 @@ router.get(
 			if (req.query.query)
 				query.andWhere(
 					"to_tsvector(messages.content) @@ to_tsquery(:query)",
-					{ query: req.query.query },
+					{
+						query: req.query.query,
+					},
 				);
 
 			if (req.query.after)

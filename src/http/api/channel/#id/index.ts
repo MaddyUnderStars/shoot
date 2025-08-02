@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PublicDmChannel } from "../../../../entity/DMChannel";
 import { Channel } from "../../../../entity/channel";
+import { PublicDmChannel } from "../../../../entity/DMChannel";
 import {
 	GuildTextChannel,
 	PublicGuildTextChannel,

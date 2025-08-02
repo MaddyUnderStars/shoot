@@ -1,12 +1,12 @@
 import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
 import { config } from "../../util/config";
 
-const NONE: RateLimitRequestHandler = (req, res, next) => {
+const NONE: RateLimitRequestHandler = (_req, _res, next) => {
 	return next();
 };
 
 NONE.resetKey = () => undefined;
-NONE.getKey = (key: string) => undefined;
+NONE.getKey = (_key: string) => undefined;
 
 export const rateLimiter = (
 	type: "s2s" | "auth" | "nodeinfo" | "wellknown" | "global",

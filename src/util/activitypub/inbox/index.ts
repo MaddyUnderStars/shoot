@@ -49,7 +49,7 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 				id: safeActivity.id,
 				raw: safeActivity,
 			});
-		} catch (e) {
+		} catch (_) {
 			throw new APError(
 				`Activity with id ${safeActivity.id} already processed`,
 			);

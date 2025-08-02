@@ -31,7 +31,7 @@ router.post(
 
 			const { username, email, password } = req.body;
 
-			let invite: InstanceInvite | undefined = undefined;
+			let invite: InstanceInvite | undefined;
 
 			if (req.body.invite) {
 				invite = await InstanceInvite.createQueryBuilder("invite")

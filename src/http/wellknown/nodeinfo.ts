@@ -72,7 +72,7 @@ router.get(
 		{
 			response: NodeInfoResponse,
 		},
-		(req, res) => {
+		(_req, res) => {
 			res.json({
 				version: "2.0",
 				software: {

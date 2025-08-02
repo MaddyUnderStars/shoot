@@ -6,11 +6,9 @@ import morgan from "morgan";
 import { config } from "../util/config";
 import { initDatabase } from "../util/database";
 import { initRabbitMQ } from "../util/events";
-import { createLogStream, createLogger } from "../util/log";
-import { isFederationRequest } from "./routes";
-
+import { createLogger, createLogStream } from "../util/log";
 import { errorHandler } from "./middleware/error";
-import routes from "./routes";
+import routes, { isFederationRequest } from "./routes";
 
 const Log = createLogger("API");
 
@@ -36,7 +34,7 @@ export class APIServer {
 			this.app.use(
 				morgan(config.http.log_format, {
 					stream: createLogStream("HTTP"),
-					skip(req, res) {
+					skip(_req, res) {
 						const log = config.http.log;
 						const skip =
 							log?.includes(res.statusCode.toString()) ?? false;

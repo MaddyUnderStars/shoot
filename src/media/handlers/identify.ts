@@ -1,4 +1,3 @@
-import { makeHandler } from ".";
 import type { Channel } from "../../entity/channel";
 import type { User } from "../../entity/user";
 import { CLOSE_CODES } from "../../gateway/util/codes";
@@ -7,6 +6,7 @@ import { emitMediaEvent, listenMediaEvent } from "../util/events";
 import { getJanus } from "../util/janus";
 import { getRoomId, setRoomId } from "../util/rooms";
 import { IDENTIFY } from "../util/validation/receive";
+import { makeHandler } from ".";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 export const onIdentify = makeHandler(async function (payload) {
@@ -16,7 +16,7 @@ export const onIdentify = makeHandler(async function (payload) {
 		const ret = await validateMediaToken(payload.token);
 		user = ret.user;
 		channel = ret.channel;
-	} catch (e) {
+	} catch (_) {
 		this.close(CLOSE_CODES.BAD_TOKEN);
 		return;
 	}

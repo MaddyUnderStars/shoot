@@ -1,5 +1,4 @@
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
-import type { ActivityHandler } from ".";
 import { Guild } from "../../../../entity/guild";
 import { User } from "../../../../entity/user";
 import { joinGuild } from "../../../entity/guild";
@@ -10,6 +9,7 @@ import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
 import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
 import { splitQualifiedMention } from "../../util";
+import type { ActivityHandler } from ".";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
@@ -60,7 +60,7 @@ const AcceptFollow: ActivityHandler = async (activity, target) => {
 
 	if (from instanceof User) {
 		// A friend request was accepted
-		const relationship = await acceptRelationship(target, from);
+		await acceptRelationship(target, from);
 	} else if (from instanceof Guild) {
 		// A guild join request was accepted
 		await joinGuild(target.mention, from.mention);

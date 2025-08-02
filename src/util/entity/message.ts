@@ -1,6 +1,6 @@
 import { ObjectIsNote } from "activitypub-types";
-import { DMChannel } from "../../entity/DMChannel";
 import { Attachment } from "../../entity/attachment";
+import { DMChannel } from "../../entity/DMChannel";
 import { Member } from "../../entity/member";
 import { Message } from "../../entity/message";
 import { GuildTextChannel } from "../../entity/textChannel";

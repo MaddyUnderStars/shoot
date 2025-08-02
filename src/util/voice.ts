@@ -80,7 +80,7 @@ export const validateMediaToken = (
 
 				// Tokens have a limited lifespan (10 minutes here)
 				// If you want to rejoin a call, just POSt /call again and get a new token
-				if (decoded.iat * 1000 < new Date().valueOf() - 10 * 1000)
+				if (decoded.iat * 1000 < Date.now() - 10 * 1000)
 					return reject(INVALID_TOKEN);
 
 				return resolve({ user, channel });

@@ -31,7 +31,7 @@ class LogStream extends Writable {
 
 	_write(
 		chunk: unknown,
-		encoding: BufferEncoding,
+		_encoding: BufferEncoding,
 		callback: (error?: Error | null) => void,
 	): void {
 		this.logger.msg(String(chunk).trimEnd());

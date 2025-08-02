@@ -1,11 +1,9 @@
-import { hasAPContext } from "./util";
-
 import type {
+	AnyAPObject,
 	APCollectionPage,
 	APLink,
 	APObject,
 	APOrderedCollectionPage,
-	AnyAPObject,
 } from "activitypub-types";
 import { XMLParser } from "fast-xml-parser";
 import { ApCache } from "../../entity/apcache";
@@ -23,7 +21,7 @@ import { APError } from "./error";
 import { signWithHttpSignature } from "./httpsig";
 import { InstanceActor } from "./instanceActor";
 import { throwInstanceBlock } from "./instances";
-import { splitQualifiedMention } from "./util";
+import { hasAPContext, splitQualifiedMention } from "./util";
 
 const Log = createLogger("ap:resolve");
 

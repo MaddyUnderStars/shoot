@@ -1,4 +1,3 @@
-import { makeHandler } from ".";
 import { DMChannel } from "../../entity/DMChannel";
 import { Session } from "../../entity/session";
 import type { User } from "../../entity/user";
@@ -10,6 +9,7 @@ import { CLOSE_CODES } from "../util/codes";
 import { consume, listenEvents } from "../util/listener";
 import { IDENTIFY } from "../util/validation/receive";
 import type { READY } from "../util/validation/send";
+import { makeHandler } from ".";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 /**
@@ -22,7 +22,7 @@ export const onIdentify = makeHandler(async function (payload) {
 	let user: User;
 	try {
 		user = await getUserFromToken(payload.token);
-	} catch (e) {
+	} catch (_) {
 		this.close(CLOSE_CODES.BAD_TOKEN);
 		return;
 	}

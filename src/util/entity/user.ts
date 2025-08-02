@@ -1,14 +1,12 @@
-import bcrypt from "bcrypt";
-import { User } from "../../entity/user";
-import { config } from "../config";
-
 import {
 	type APActor,
 	type APNote,
 	type APPerson,
 	ObjectIsGroup,
 } from "activitypub-types";
+import bcrypt from "bcrypt";
 import type { InstanceInvite } from "../../entity/instanceInvite";
+import { User } from "../../entity/user";
 import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
 import {
@@ -17,6 +15,7 @@ import {
 	resolveWebfinger,
 } from "../activitypub/resolve";
 import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
+import { config } from "../config";
 import { createLogger } from "../log";
 import { generateSigningKeys } from "./actor";
 

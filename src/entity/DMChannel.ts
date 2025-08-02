@@ -8,8 +8,7 @@ import {
 import z from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { DefaultPermissions, type PERMISSION } from "../util/permission";
-import { PublicChannel } from "./channel";
-import { Channel } from "./channel";
+import { Channel, PublicChannel } from "./channel";
 import type { User } from "./user";
 
 // TODO: DM channels should not exist

@@ -1,5 +1,6 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import type { APActivity } from "activitypub-types";
@@ -39,7 +40,7 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 			id: safe.id,
 			raw: safe,
 		});
-	} catch (e) {
+	} catch (_) {
 		throw new APError(`Activity with id ${safe.id} already processed`);
 	}
 

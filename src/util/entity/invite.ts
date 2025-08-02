@@ -11,7 +11,7 @@ const DEFAULT_INVITE_EXISTS_CHECK = async (code: string) => {
 export const generateInviteCode = async (
 	exists = DEFAULT_INVITE_EXISTS_CHECK,
 ) => {
-	let code: string | undefined = undefined;
+	let code: string | undefined;
 
 	while (!code) {
 		const tryCode = Array.from(

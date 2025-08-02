@@ -69,7 +69,7 @@ const dbExists = async () => {
 	try {
 		await Migration.count();
 		return true;
-	} catch (e) {
+	} catch (_) {
 		return false;
 	}
 };

@@ -8,7 +8,7 @@ const router = Router();
 
 router.get(
 	"/",
-	route({}, (req, res) => {
+	route({}, (_req, res) => {
 		return res.json(
 			addContext({
 				...buildAPActor(InstanceActor),

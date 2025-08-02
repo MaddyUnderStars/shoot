@@ -1,12 +1,11 @@
-import {
-	OpenAPIRegistry,
-	OpenApiGeneratorV31,
-	extendZodWithOpenApi,
-} from "@asteasolutions/zod-to-openapi";
-import type { Router } from "express";
-
 import { writeFile } from "node:fs";
 import path from "node:path";
+import {
+	extendZodWithOpenApi,
+	OpenAPIRegistry,
+	OpenApiGeneratorV31,
+} from "@asteasolutions/zod-to-openapi";
+import type { Router } from "express";
 import { type AnyZodObject, z } from "zod";
 
 extendZodWithOpenApi(z);
@@ -70,7 +69,7 @@ const getRoutes = (router: Router) => {
 
 			layer.route.path = layer.route.path.replaceAll(
 				/:(\w*)($|\/)/gm,
-				(sub, a) => {
+				(_, a) => {
 					return `{${a}}`;
 				},
 			);

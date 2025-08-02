@@ -64,7 +64,9 @@ router.get(
 							"member.roles",
 							"role",
 							"role.id = :role_id",
-							{ role_id: req.params.role_id },
+							{
+								role_id: req.params.role_id,
+							},
 						)
 						.leftJoinAndSelect("member.user", "user"),
 				}),

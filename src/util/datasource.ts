@@ -1,6 +1,7 @@
 // have to call this here for typeorm cli
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import path from "node:path";

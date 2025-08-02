@@ -8,7 +8,7 @@ const parseRequest = <TParams, TResponse, TBody, TQuery>(
 ) => {
 	return (
 		req: Request<TParams, TResponse, TBody, TQuery>,
-		res: Response,
+		_res: Response,
 		next: NextFunction,
 	) => {
 		const errors: ValidationErrors = {};

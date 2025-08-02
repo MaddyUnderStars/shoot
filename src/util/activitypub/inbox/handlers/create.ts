@@ -3,9 +3,8 @@ import {
 	ObjectIsGroup,
 	ObjectIsNote,
 } from "activitypub-types";
-import type { ActivityHandler } from ".";
-import { DMChannel } from "../../../../entity/DMChannel";
 import { Channel } from "../../../../entity/channel";
+import { DMChannel } from "../../../../entity/DMChannel";
 import { User } from "../../../../entity/user";
 import {
 	createChannelFromRemoteGroup,
@@ -18,6 +17,7 @@ import { PERMISSION } from "../../../permission";
 import { APError } from "../../error";
 import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
 import { buildMessageFromAPNote } from "../../transformers/message";
+import type { ActivityHandler } from ".";
 
 /**
  * External users Create<Note> at a channel

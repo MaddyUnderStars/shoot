@@ -1,4 +1,4 @@
-import type { APOrderedCollectionPage, AnyAPObject } from "activitypub-types";
+import type { AnyAPObject, APOrderedCollectionPage } from "activitypub-types";
 import type { ObjectType, SelectQueryBuilder } from "typeorm";
 import { buildPaginator } from "typeorm-cursor-pagination";
 import type { BaseModel } from "../../entity/basemodel";

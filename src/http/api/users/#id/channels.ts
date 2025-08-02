@@ -1,8 +1,8 @@
 import type { APCreate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { DMChannel } from "../../../../entity/DMChannel";
 import { PublicChannel } from "../../../../entity/channel";
+import { DMChannel } from "../../../../entity/DMChannel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { ActorMention } from "../../../../util/activitypub/constants";
 import { buildAPActor } from "../../../../util/activitypub/transformers/actor";

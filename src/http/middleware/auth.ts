@@ -8,7 +8,7 @@ import { getUserFromToken } from "../../util/token";
 export const NO_AUTH_ROUTES = [
 	"/auth/login",
 	"/auth/register",
-	/\.well\-known/,
+	/\.well-known/,
 	"/nodeinfo/2.0.json",
 
 	// TODO: this might not be a good idea?
@@ -20,7 +20,7 @@ export const NO_AUTH_ROUTES = [
 	"/api/v3/federated_instances",
 ];
 
-export const authHandler: RequestHandler = async (req, res, next) => {
+export const authHandler: RequestHandler = async (req, _res, next) => {
 	const url = req.url;
 
 	if (

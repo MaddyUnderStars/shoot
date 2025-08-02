@@ -20,7 +20,12 @@
 			"smartStep": true,
 			"runtimeArgs": [
 				"--enable-source-maps"
-			]
+			],
+			"env": {
+				"PORT": "4001",
+				"MEDIA_PORT": "4003",
+				"NODE_ENV": "production"
+			}
 		},
 		{
 			"type": "node",

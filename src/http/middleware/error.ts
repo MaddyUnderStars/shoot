@@ -9,7 +9,7 @@ const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
 
 const Log = createLogger("HTTP");
 
-export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 	if (res.headersSent) return next(error);
 
 	let code = 400;

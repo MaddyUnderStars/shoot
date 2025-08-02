@@ -1,16 +1,15 @@
-import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
-
 import {
+	type AnyAPObject,
 	type APActivity,
 	type APActor,
 	type APObject,
-	type AnyAPObject,
 	type ContextField,
 	ObjectIsApplication,
 	ObjectIsGroup,
 	ObjectIsPerson,
 } from "activitypub-types";
 import { tryParseUrl } from "../url";
+import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
 import { APError } from "./error";
 
 /**

@@ -1,5 +1,5 @@
-import type { PublicDmChannel } from "../../../entity/DMChannel";
 import type { PublicChannel } from "../../../entity/channel";
+import type { PublicDmChannel } from "../../../entity/DMChannel";
 import type { PublicGuild } from "../../../entity/guild";
 import type { PublicInvite } from "../../../entity/invite";
 import type { PublicMember } from "../../../entity/member";

@@ -57,7 +57,7 @@ router.post(
 			let to: User;
 			try {
 				to = await getOrFetchUser(user_id);
-			} catch (e) {
+			} catch (_) {
 				throw new Error("Could not find that user");
 			}
 

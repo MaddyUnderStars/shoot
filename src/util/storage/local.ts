@@ -5,13 +5,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 import jwt from "jsonwebtoken";
-import type { PutFileRequest } from ".";
 import { LocalUpload } from "../../entity/upload";
 import { config } from "../config";
-import { createLogger } from "../log";
 import { makeInstanceUrl } from "../url";
-
-const Log = createLogger("localstorage");
+import type { PutFileRequest } from ".";
 
 export type localFileJwt = PutFileRequest & { key: string };
 
@@ -54,7 +51,7 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 	let file: Stats;
 	try {
 		file = await fs.stat(p);
-	} catch (e) {
+	} catch (_) {
 		return false;
 	}
 
@@ -83,7 +80,7 @@ const getFileStream = async (channel_id: string, hash: string) => {
 	const p = path.join(config.storage.directory, channel_id, hash);
 	try {
 		return Readable.from(createReadStream(p));
-	} catch (e) {
+	} catch (_) {
 		return false;
 	}
 };

@@ -1,4 +1,3 @@
-import { makeHandler } from ".";
 import { DMChannel } from "../../entity/DMChannel";
 import { Member } from "../../entity/member";
 import { GuildTextChannel } from "../../entity/textChannel";
@@ -12,6 +11,7 @@ import { consume } from "../util/listener";
 import { SUBSCRIBE_MEMBERS } from "../util/validation/receive";
 import type { MEMBERS_CHUNK, ROLE_MEMBER_ADD } from "../util/validation/send";
 import type { Websocket } from "../util/websocket";
+import { makeHandler } from ".";
 
 export type MembersChunkItem = {
 	name: string;

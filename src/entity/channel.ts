@@ -34,8 +34,8 @@ export class Channel extends Actor {
 	};
 
 	public checkPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
+		_user: User,
+		_permission: PERMISSION | PERMISSION[],
 	): Promise<boolean> => false;
 }
 

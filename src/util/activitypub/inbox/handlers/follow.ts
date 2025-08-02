@@ -1,6 +1,5 @@
-import { type APAccept, ActivityIsFollow } from "activitypub-types";
+import { ActivityIsFollow, type APAccept } from "activitypub-types";
 import { v7 as uuidv7 } from "uuid";
-import type { ActivityHandler } from ".";
 import { Channel } from "../../../../entity/channel";
 import { Guild } from "../../../../entity/guild";
 import { Invite } from "../../../../entity/invite";
@@ -14,6 +13,7 @@ import { makeInstanceUrl } from "../../../url";
 import { APError } from "../../error";
 import { resolveId } from "../../resolve";
 import { addContext, splitQualifiedMention } from "../../util";
+import type { ActivityHandler } from ".";
 
 export const FollowActivityHandler: ActivityHandler = async (
 	activity,

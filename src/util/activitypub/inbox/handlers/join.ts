@@ -1,5 +1,4 @@
 import type { APAccept } from "activitypub-types";
-import type { ActivityHandler } from ".";
 import { Channel } from "../../../../entity/channel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
@@ -10,6 +9,7 @@ import { generateMediaToken } from "../../../voice";
 import { APError } from "../../error";
 import { resolveId } from "../../resolve";
 import { addContext } from "../../util";
+import type { ActivityHandler } from ".";
 
 export const JoinActivityHandler: ActivityHandler = async (
 	activity,

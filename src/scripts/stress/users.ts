@@ -4,6 +4,7 @@
 
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import { Guild } from "../../entity/guild";

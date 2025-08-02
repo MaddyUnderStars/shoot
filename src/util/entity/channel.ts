@@ -6,8 +6,8 @@ import {
 	ObjectIsPerson,
 } from "activitypub-types";
 import { Brackets } from "typeorm";
-import { DMChannel } from "../../entity/DMChannel";
 import { Channel } from "../../entity/channel";
+import { DMChannel } from "../../entity/DMChannel";
 import { Guild } from "../../entity/guild";
 import { GuildTextChannel } from "../../entity/textChannel";
 import { User } from "../../entity/user";

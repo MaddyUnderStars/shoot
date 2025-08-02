@@ -7,7 +7,7 @@ const router = Router();
 
 router.get(
 	"/host-meta",
-	route({}, async (req, res) => {
+	route({}, async (_req, res) => {
 		if (!config.federation.enabled)
 			throw new HttpError("Federation is disabled", 400);
 

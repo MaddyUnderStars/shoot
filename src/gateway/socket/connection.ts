@@ -2,7 +2,7 @@ import type { IncomingMessage } from "node:http";
 import type ws from "ws";
 import { createLogger } from "../../util/log";
 import { CLOSE_CODES } from "../util/codes";
-import { type Websocket, send } from "../util/websocket";
+import { send, type Websocket } from "../util/websocket";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 

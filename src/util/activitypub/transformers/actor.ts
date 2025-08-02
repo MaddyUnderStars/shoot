@@ -1,7 +1,7 @@
 import type { APActor } from "activitypub-types";
-import { DMChannel } from "../../../entity/DMChannel";
 import type { Actor } from "../../../entity/actor";
 import { Channel } from "../../../entity/channel";
+import { DMChannel } from "../../../entity/DMChannel";
 import { Guild } from "../../../entity/guild";
 import { GuildTextChannel } from "../../../entity/textChannel";
 import { User } from "../../../entity/user";

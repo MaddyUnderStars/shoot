@@ -8,10 +8,10 @@ export const appendToConfig = async <T extends DeepPartial<typeof config>>(
 	obj: T,
 	file = "./config/default.json",
 ) => {
-	let existing: string | undefined = undefined;
+	let existing: string | undefined;
 	try {
 		existing = (await readFile(file)).toString();
-	} catch (e) {}
+	} catch (_) {}
 
 	const existingConfig = existing ? JSON.parse(existing) : {};
 

@@ -1,11 +1,11 @@
 import { ActivityIsFollow } from "activitypub-types";
-import type { ActivityHandler } from ".";
 import { APError } from "../../error";
 import { resolveAPObject, resolveUrlOrObject } from "../../resolve";
+import type { ActivityHandler } from ".";
 
 export const UndoActivityHandler: ActivityHandler = async (
 	activity,
-	target,
+	_target,
 ) => {
 	if (!activity.object) throw new APError("What are you undoing?");
 	if (Array.isArray(activity.object))
