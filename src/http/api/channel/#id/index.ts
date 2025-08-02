@@ -1,19 +1,26 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel, GuildTextChannel, PublicChannel } from "../../../../entity";
+import { Channel } from "../../../../entity/channel";
+import { PublicDmChannel } from "../../../../entity/DMChannel";
 import {
-	HttpError,
-	PERMISSION,
-	config,
-	emitGatewayEvent,
+	GuildTextChannel,
+	PublicGuildTextChannel,
+} from "../../../../entity/textChannel";
+import { ActorMention } from "../../../../util/activitypub/constants";
+import { config } from "../../../../util/config";
+import {
 	getOrFetchChannel,
-	route,
-} from "../../../../util";
+	updateChannelOrdering,
+} from "../../../../util/entity/channel";
+import { emitGatewayEvent } from "../../../../util/events";
+import { HttpError } from "../../../../util/httperror";
+import { PERMISSION } from "../../../../util/permission";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 
 const params = z.object({
-	channel_id: z.string(),
+	channel_id: ActorMention,
 });
 
 router.get(
@@ -21,7 +28,7 @@ router.get(
 	route(
 		{
 			params,
-			response: PublicChannel,
+			response: z.union([PublicGuildTextChannel, PublicDmChannel]),
 		},
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
@@ -51,14 +58,24 @@ router.patch(
 		if (channel.domain === config.federation.webapp_url.hostname) {
 			// This is a local channel
 
+			channel.assign(req.body);
 			await Channel.update({ id: channel.id }, req.body);
-			return res.sendStatus(200);
+
+			emitGatewayEvent(
+				channel instanceof GuildTextChannel ? channel.guild : channel,
+				{
+					type: "CHANNEL_UPDATE",
+					channel: channel.toPublic(),
+				},
+			);
+
+			return res.sendStatus(204);
 		}
 
 		throw new HttpError("Not implemented", 500);
 
 		// TODO: federate Update channel activity to remote server
-		//return res.sendStatus(202);
+		//return res.sendStatus(204);
 	}),
 );
 
@@ -69,16 +86,20 @@ router.delete(
 
 		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
-		await channel.remove();
-
-		emitGatewayEvent(channel.id, {
+		// after a .remove, the id is made undefined but other properties are not
+		emitGatewayEvent(channel, {
 			type: "CHANNEL_DELETE",
-			channel_id: channel.mention,
-			guild_id:
+			channel: channel.mention,
+			guild:
 				channel instanceof GuildTextChannel
 					? channel.guild.mention
 					: undefined,
 		});
+
+		await channel.remove();
+
+		if (channel instanceof GuildTextChannel)
+			await updateChannelOrdering(channel.guild.id);
 
 		res.sendStatus(204);
 	}),

@@ -1,14 +1,16 @@
 // TODO: might want to move this into it's own http server so that it can
 // be moved onto a different process by admins more easily
 
-import { Router } from "express";
-import jwt from "jsonwebtoken";
 import crypto from "node:crypto";
 import { createWriteStream } from "node:fs";
 import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
+import { Router } from "express";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
-import { config, route } from "../../../util";
+import { LocalUpload } from "../../../entity/upload";
+import { config } from "../../../util/config";
+import { route } from "../../../util/route";
 import type { localFileJwt } from "../../../util/storage/local";
 
 const router = Router({ mergeParams: true });
@@ -21,6 +23,16 @@ router.put(
 				if (err || !d || typeof d === "string") return reject(err);
 				resolve(d as localFileJwt);
 			});
+		});
+
+		const upload = LocalUpload.create({
+			hash: token.key.split("/").slice(-1)[0],
+			channel: { id: token.channel_id },
+			width: token.width,
+			height: token.height,
+			mime: token.mime,
+			md5: token.md5,
+			size: token.size,
 		});
 
 		const p = path.join(config.storage.directory, token.key);
@@ -38,6 +50,8 @@ router.put(
 				await rm(p);
 				res.sendStatus(400);
 			}
+
+			await upload.save();
 
 			res.sendStatus(200);
 		});

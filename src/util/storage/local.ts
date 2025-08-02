@@ -1,21 +1,22 @@
-import filetype from "file-type";
-import jwt from "jsonwebtoken";
 import crypto from "node:crypto";
 import type { Stats } from "node:fs";
 import { createReadStream } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
-import type { PutFileRequest } from ".";
+import jwt from "jsonwebtoken";
+import { LocalUpload } from "../../entity/upload";
 import { config } from "../config";
-import { createLogger } from "../log";
-
-const Log = createLogger("localstorage");
+import { makeInstanceUrl } from "../url";
+import type { PutFileRequest } from ".";
 
 export type localFileJwt = PutFileRequest & { key: string };
 
 const createEndpoint = async (file: PutFileRequest) => {
-	const endpoint = `${config.federation.instance_url.origin}/upload`;
+	// TODO: if federation is disabled, this defaults to localhost
+	// which is obviously wrong
+
+	const endpoint = makeInstanceUrl("/upload");
 
 	const hash = crypto
 		.createHash("md5")
@@ -50,23 +51,28 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 	let file: Stats;
 	try {
 		file = await fs.stat(p);
-	} catch (e) {
+	} catch (_) {
+		return false;
+	}
+
+	const upload = await LocalUpload.findOne({
+		where: {
+			hash: hash,
+			channel: { id: channel_id },
+		},
+	});
+
+	if (!upload) {
+		// TODO: do some cleanup?
+		// or perhaps, we can just package a cleanup script
 		return false;
 	}
 
 	return {
 		length: file.size,
-		type: (await filetype.fromFile(p))?.mime,
-
-		/**
-		 * TODO: we need to store or fetch this metadata from somewhere
-		 * I've thought of:
-		 * - storing it in exif (can't find a good reader/writer on npm)
-		 * - storing it in db as an Attachment (have to rearrange the existing logic)
-		 * - just using mmmagic and ffmpeg directly to find it on the fly (bad option, slow)
-		 */
-		width: undefined,
-		height: undefined,
+		type: upload.mime,
+		width: upload.width,
+		height: upload.height,
 	};
 };
 
@@ -74,7 +80,7 @@ const getFileStream = async (channel_id: string, hash: string) => {
 	const p = path.join(config.storage.directory, channel_id, hash);
 	try {
 		return Readable.from(createReadStream(p));
-	} catch (e) {
+	} catch (_) {
 		return false;
 	}
 };

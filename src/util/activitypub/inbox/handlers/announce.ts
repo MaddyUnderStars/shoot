@@ -1,10 +1,11 @@
 import { ObjectIsNote } from "activitypub-types";
-import type { ActivityHandler } from ".";
-import { User } from "../../../../entity";
-import { getOrFetchChannel, handleMessage } from "../../../entity";
+import { User } from "../../../../entity/user";
+import { getOrFetchChannel } from "../../../entity/channel";
+import { handleMessage } from "../../../entity/message";
 import { APError } from "../../error";
-import { resolveAPObject } from "../../resolve";
-import { buildMessageFromAPNote } from "../../transformers";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
+import { buildMessageFromAPNote } from "../../transformers/message";
+import type { ActivityHandler } from ".";
 
 /**
  * Channels Announce to Users to send notification of new messages
@@ -25,7 +26,7 @@ export const AnnounceActivityHandler: ActivityHandler = async (
 	if (Array.isArray(activity.object))
 		throw new APError("Cannot accept Announce with multiple `object`s");
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	if (!ObjectIsNote(inner))
 		throw new APError(`Cannot accept Announce<${inner.type}>`);
@@ -39,7 +40,7 @@ export const AnnounceActivityHandler: ActivityHandler = async (
 	if (typeof activity.actor !== "string")
 		throw new APError("Cannot accept Announce with non-string actor");
 
-	const channel = await getOrFetchChannel(activity.actor);
+	const channel = await getOrFetchChannel(resolveId(activity.actor));
 
 	const message = await buildMessageFromAPNote(inner, channel);
 

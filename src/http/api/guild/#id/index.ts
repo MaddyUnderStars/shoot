@@ -1,10 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Invite, PublicGuild } from "../../../../entity";
-import { PERMISSION, emitGatewayEvent, route } from "../../../../util";
+import { Guild, PublicGuild } from "../../../../entity/guild";
+import { Invite, PublicInvite } from "../../../../entity/invite";
+import { ActorMention } from "../../../../util/activitypub/constants";
+import { APError } from "../../../../util/activitypub/error";
 import { getOrFetchGuild } from "../../../../util/entity/guild";
 import { generateInviteCode } from "../../../../util/entity/invite";
 import { isMemberOfGuildThrow } from "../../../../util/entity/member";
+import { emitGatewayEvent } from "../../../../util/events";
+import { PERMISSION } from "../../../../util/permission";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 
@@ -13,7 +18,7 @@ router.get(
 	route(
 		{
 			params: z.object({
-				guild_id: z.string(),
+				guild_id: ActorMention,
 			}),
 			response: PublicGuild,
 		},
@@ -29,27 +34,79 @@ router.get(
 	),
 );
 
+const GuildModifySchema: z.ZodType<Partial<Guild>> = z
+	.object({
+		name: z.string(),
+		summary: z.string(),
+	})
+	.partial()
+	.strict();
+
+router.patch(
+	"/",
+	route(
+		{
+			params: z.object({ guild_id: ActorMention }),
+			body: GuildModifySchema,
+		},
+		async (req, res) => {
+			const { guild_id } = req.params;
+
+			const guild = await getOrFetchGuild(guild_id);
+
+			await guild.throwPermission(req.user, [PERMISSION.MANAGE_GUILD]);
+
+			if (guild.isRemote()) {
+				// TODO: same with channel and message editing.
+				// do we optimistically edit? or send the event, mark it as edited, and then confirm?
+				// do we do both?
+
+				throw new APError("TODO: federate guild modification");
+			}
+
+			guild.assign(req.body);
+			await Guild.update({ id: guild.id }, req.body);
+
+			emitGatewayEvent(guild, {
+				type: "GUILD_UPDATE",
+				guild: guild.toPublic(),
+			});
+
+			return res.sendStatus(204);
+		},
+	),
+);
+
 router.delete(
 	"/",
-	route({ params: z.object({ guild_id: z.string() }) }, async (req, res) => {
-		const { guild_id } = req.params;
+	route(
+		{ params: z.object({ guild_id: ActorMention }) },
+		async (req, res) => {
+			const { guild_id } = req.params;
 
-		const guild = await getOrFetchGuild(guild_id);
+			const guild = await getOrFetchGuild(guild_id);
 
-		guild.throwPermission(req.user, PERMISSION.ADMIN);
+			await guild.throwPermission(req.user, PERMISSION.ADMIN);
 
-		await guild.remove();
+			emitGatewayEvent(guild, {
+				type: "GUILD_DELETE",
+				guild: guild.mention,
+			});
 
-		return res.sendStatus(204);
-	}),
+			await guild.remove();
+
+			return res.sendStatus(204);
+		},
+	),
 );
 
 router.post(
 	"/invite",
 	route(
 		{
-			params: z.object({ guild_id: z.string() }),
+			params: z.object({ guild_id: ActorMention }),
 			body: z.object({ expiry: z.string().datetime().optional() }),
+			response: PublicInvite,
 		},
 		async (req, res) => {
 			const { guild_id } = req.params;
@@ -61,14 +118,18 @@ router.post(
 
 			const expires = expiry ? new Date(expiry) : undefined;
 
-			const invite = await Invite.create({
+			await Invite.create();
+
+			const invite = Invite.create({
+				guild,
 				expires,
 
 				code: await generateInviteCode(),
-				guild: { id: guild.id },
-			}).save();
+			});
 
-			emitGatewayEvent(guild_id, {
+			await Invite.insert(invite);
+
+			emitGatewayEvent(guild, {
 				type: "INVITE_CREATE",
 				invite: invite.toPublic(),
 			});

@@ -1,33 +1,39 @@
-import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
-
 import {
+	type AnyAPObject,
 	type APActivity,
 	type APActor,
 	type APObject,
-	type AnyAPObject,
 	type ContextField,
 	ObjectIsApplication,
 	ObjectIsGroup,
 	ObjectIsPerson,
 } from "activitypub-types";
+import { tryParseUrl } from "../url";
+import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
 import { APError } from "./error";
 
-export const splitQualifiedMention = (lookup: string) => {
+/**
+ * Split a string or URL into the domain and user parts. For URLs, this is NOT the username auth part
+ * @param lookup Either an ActorMention or URL string
+ * @returns Domain and user parts of input
+ */
+export const splitQualifiedMention = (lookup: string | URL) => {
 	let domain: string;
 	let user: string;
-	if (lookup.includes("@")) {
+	if (typeof lookup === "string" && lookup.includes("@")) {
 		// lookup a @handle@domain
 		if (lookup[0] === "@") lookup = lookup.slice(1);
 		[user, domain] = lookup.split("@");
 	} else {
 		// lookup was a URL ( hopefully )
-		try {
-			const url = new URL(lookup);
-			domain = url.hostname;
-			user = url.pathname.split("/").reverse()[0];
-		} catch (e) {
+
+		const url = tryParseUrl(lookup);
+		if (!url) {
 			throw new APError("Lookup is not valid handle or URL");
 		}
+
+		domain = url.hostname;
+		user = url.pathname.split("/").reverse()[0]; // not great
 	}
 
 	return {
@@ -53,11 +59,19 @@ export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
 export const addContext = <T extends AnyAPObject | APActivity>(
 	obj: T,
 ): T & { "@context": ContextField[] } => {
+	// For some reason if I move this into the return, it causes a type error
+	// even though ContextField is string | Record<string, string> ???
+	const context: ContextField[] = [
+		"https://www.w3.org/ns/activitystreams",
+		"https://w3id.org/security/v1",
+		"https://purl.archive.org/socialweb/webfinger",
+		{
+			manuallyApprovesFollowers: "as:manuallyApprovesFollowers",
+		},
+	];
+
 	return {
-		"@context": [
-			"https://www.w3.org/ns/activitystreams",
-			"https://w3id.org/security/v1",
-		],
+		"@context": context,
 		...obj,
 	};
 };

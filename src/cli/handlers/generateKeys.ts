@@ -1,9 +1,9 @@
-import { createLogger } from "../../util/log";
-import { KEY_OPTIONS } from "../../util/rsa";
-
 import crypto from "node:crypto";
 import { promisify } from "node:util";
+import { createLogger } from "../../util/log";
+import { KEY_OPTIONS } from "../../util/rsa";
 import { appendToConfig } from "../util";
+
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 const Log = createLogger("cli");

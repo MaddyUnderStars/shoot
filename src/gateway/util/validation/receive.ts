@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ActorMention } from "../../../util/activitypub/constants";
 
 export const IDENTIFY = z.object({
 	/** User token to use to login */
@@ -11,7 +12,7 @@ export const HEARTBEAT = z.object({
 
 export const SUBSCRIBE_MEMBERS = z.object({
 	/** Channel mention to subscribe to */
-	channel_id: z.string(),
+	channel_id: ActorMention,
 	/** The range to subscribe to
 	 * @example [0, 100]
 	 */

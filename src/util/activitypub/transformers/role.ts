@@ -1,8 +1,8 @@
 import type { APObject } from "activitypub-types";
-import type { Role } from "../../../entity";
+import type { Role } from "../../../entity/role";
 import { getExternalPathFromActor } from "../../../sender";
-import { config } from "../../config";
 import type { PERMISSION } from "../../permission";
+import { makeInstanceUrl } from "../../url";
 
 export const ObjectIsRole = (role: APObject): role is APRole =>
 	role.type === "Role";
@@ -17,7 +17,9 @@ export type APRole = APObject & {
 };
 
 export const buildAPRole = (role: Role): APRole => {
-	const id = `${config.federation.instance_url.origin}${getExternalPathFromActor(role.guild)}/role/${role.id}`;
+	const id = makeInstanceUrl(
+		`${getExternalPathFromActor(role.guild)}/role/${role.id}`,
+	);
 
 	return {
 		type: "Role",
@@ -30,7 +32,7 @@ export const buildAPRole = (role: Role): APRole => {
 
 		position: role.position,
 
-		attributedTo: `${config.federation.instance_url.origin}${getExternalPathFromActor(role.guild)}`,
+		attributedTo: makeInstanceUrl(getExternalPathFromActor(role.guild)),
 		members: `${id}/members`,
 	};
 };

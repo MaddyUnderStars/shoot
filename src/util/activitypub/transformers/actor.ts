@@ -1,14 +1,13 @@
 import type { APActor } from "activitypub-types";
-import {
-	type Actor,
-	Channel,
-	DMChannel,
-	Guild,
-	GuildTextChannel,
-	User,
-} from "../../../entity";
+import type { Actor } from "../../../entity/actor";
+import { Channel } from "../../../entity/channel";
+import { DMChannel } from "../../../entity/DMChannel";
+import { Guild } from "../../../entity/guild";
+import { GuildTextChannel } from "../../../entity/textChannel";
+import { User } from "../../../entity/user";
 import { getExternalPathFromActor } from "../../../sender";
 import { config } from "../../config";
+import { makeInstanceUrl, makeWebappUrl } from "../../url";
 import { APError } from "../error";
 import { InstanceActor } from "../instanceActor";
 
@@ -29,8 +28,6 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	const id = getExternalPathFromActor(actor);
 
-	const { webapp_url, instance_url } = config.federation;
-
 	const preferredUsername = actor instanceof User ? actor.name : actor.id;
 
 	// preference: display_name, name, id
@@ -43,9 +40,9 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	let attributedTo: string | undefined;
 	if (actor instanceof DMChannel || actor instanceof Guild)
-		attributedTo = `${instance_url.origin}${getExternalPathFromActor(actor.owner)}`;
+		attributedTo = makeInstanceUrl(getExternalPathFromActor(actor.owner));
 	else if (actor instanceof GuildTextChannel)
-		attributedTo = `${instance_url.origin}${getExternalPathFromActor(actor.guild)}`;
+		attributedTo = makeInstanceUrl(getExternalPathFromActor(actor.guild));
 
 	const webfinger =
 		actor instanceof User && !isInstanceActor
@@ -53,12 +50,12 @@ export const buildAPActor = (actor: Actor): APActor => {
 			: undefined;
 
 	const inbox = isInstanceActor
-		? `${instance_url.origin}/inbox`
-		: `${instance_url.origin}${id}/inbox`;
+		? makeInstanceUrl("/inbox")
+		: makeInstanceUrl(`${id}/inbox`);
 
 	const outbox = isInstanceActor
-		? `${instance_url.origin}/outbox`
-		: `${instance_url.origin}${id}/outbox`;
+		? makeInstanceUrl("/outbox")
+		: makeInstanceUrl(`${id}/outbox`);
 
 	return {
 		preferredUsername,
@@ -67,8 +64,16 @@ export const buildAPActor = (actor: Actor): APActor => {
 		webfinger,
 
 		type: getAPTypeFromActor(actor),
-		id: `${instance_url.origin}${id}`,
-		url: `${webapp_url.origin}${id}`,
+		id: makeInstanceUrl(id),
+		url: makeWebappUrl(id),
+
+		// All Shoot actors manually approve followers:
+		// - Guilds/channels require invite codes (`instrument`)
+		// - Users receive friend requests like other chat apps
+		// Perhaps this could be a user setting in the future
+		// for if for example, Shoot allowed short-form posting as well to a user profile
+		// But for now, this is out of scope
+		manuallyApprovesFollowers: true,
 
 		published: actor.created_date.toISOString(),
 
@@ -77,18 +82,18 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 		followers: isInstanceActor
 			? undefined
-			: `${instance_url.origin}${id}/followers`,
+			: makeInstanceUrl(`${id}/followers`),
 		following: isInstanceActor
 			? undefined
-			: `${instance_url.origin}${id}/following`,
+			: makeInstanceUrl(`${id}/following`),
 
 		endpoints: {
-			sharedInbox: `${instance_url.origin}/inbox`,
+			sharedInbox: makeInstanceUrl("/inbox"),
 		},
 
 		publicKey: {
-			id: `${instance_url.origin}${id}`,
-			owner: `${webapp_url.origin}${id}`,
+			id: makeInstanceUrl(id),
+			owner: makeInstanceUrl(id),
 			publicKeyPem: actor.public_key,
 		},
 	};

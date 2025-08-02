@@ -7,6 +7,7 @@ import {
 	OneToMany,
 } from "typeorm";
 import { z } from "zod";
+import { ActorMention } from "../util/activitypub/constants";
 import { checkPermission } from "../util/checkPermission";
 import { HttpError } from "../util/httperror";
 import type { PERMISSION } from "../util/permission";
@@ -35,9 +36,8 @@ export class Guild extends Actor {
 
 	public toPublic(): PublicGuild {
 		return {
-			id: this.remote_id ?? this.id,
+			mention: this.mention,
 			name: this.name,
-			domain: this.domain,
 
 			channels: this.channels
 				? this.channels.map((x) => x.toPublic())
@@ -74,16 +74,16 @@ export class Guild extends Actor {
 	};
 }
 
-export type PublicGuild = Pick<Guild, "id" | "name" | "domain"> & {
+export type PublicGuild = Pick<Guild, "name"> & {
 	channels?: PublicGuildTextChannel[];
 	roles?: PublicRole[];
+	mention: ActorMention;
 };
 
 export const PublicGuild: z.ZodType<PublicGuild> = z
 	.object({
-		id: z.string(),
+		mention: ActorMention,
 		name: z.string(),
-		domain: z.string(),
 		channels: PublicGuildTextChannel.array().optional(),
 		roles: PublicRole.array().optional(),
 	})

@@ -1,26 +1,29 @@
 import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Message, PublicMessage } from "../../../../../../entity";
-import {
-	APError,
-	PERMISSION,
-	buildMessageFromAPNote,
-	getOrFetchChannel,
-	resolveAPObject,
-	route,
-} from "../../../../../../util";
+import { Message, PublicMessage } from "../../../../../../entity/message";
+import { ActorMention } from "../../../../../../util/activitypub/constants";
+import { APError } from "../../../../../../util/activitypub/error";
+import { resolveAPObject } from "../../../../../../util/activitypub/resolve";
+import { buildMessageFromAPNote } from "../../../../../../util/activitypub/transformers/message";
+import { getOrFetchChannel } from "../../../../../../util/entity/channel";
+import { emitGatewayEvent } from "../../../../../../util/events";
+import { PERMISSION } from "../../../../../../util/permission";
+import { route } from "../../../../../../util/route";
+import { makeUrl, tryParseUrl } from "../../../../../../util/url";
 
 const router = Router({ mergeParams: true });
+
+const MessageRequestParams = z.object({
+	channel_id: ActorMention,
+	message_id: z.string().uuid(),
+});
 
 router.get(
 	"/",
 	route(
 		{
-			params: z.object({
-				channel_id: z.string(),
-				message_id: z.string(),
-			}),
+			params: MessageRequestParams,
 			response: PublicMessage,
 		},
 		async (req, res) => {
@@ -42,7 +45,7 @@ router.get(
 				},
 			});
 
-			if (!message && channel.isRemote()) {
+			if (!message && channel.isRemote() && channel.remote_address) {
 				// If this is a remote channel, fetch the message from them
 				// The remote message may be cached
 
@@ -53,8 +56,12 @@ router.get(
 				// through GET /channel/:id/messages and so the message is already in cache and would've
 				// been hit above. so probably fine?
 				// If you could filter a channels outbox somehow, that would be maybe more portable
-				const messageUrl = `${channel.remote_address}/message/${req.params.message_id}`;
-				const obj = await resolveAPObject(messageUrl);
+				const obj = await resolveAPObject(
+					makeUrl(
+						`/message/${req.params.message_id}`,
+						tryParseUrl(channel.remote_address) as URL,
+					),
+				);
 
 				if (!ObjectIsNote(obj)) {
 					throw new APError("Remote did not return a Note object");
@@ -69,6 +76,52 @@ router.get(
 			}
 
 			return res.json(message.toPublic());
+		},
+	),
+);
+
+router.delete(
+	"/",
+	route(
+		{
+			params: MessageRequestParams,
+		},
+		async (req, res) => {
+			const channel = await getOrFetchChannel(req.params.channel_id);
+
+			if (channel.isRemote()) {
+				/*
+					Probably do not want to delete optimistically?
+					I'm thinking flow should be:
+					Delete<Note> -> wait for Ack -> MESSAGE_DELETE event
+					but we should maybe mark it as to be deleted in the UI?
+				*/
+
+				throw new APError("TODO: federation message deletion");
+			}
+
+			const message = await Message.findOneOrFail({
+				where: {
+					channel: { id: channel.id },
+					id: req.params.message_id,
+				},
+			});
+
+			// we can always delete our own messages
+			if (message.author.id !== req.user.id)
+				await channel.throwPermission(req.user, [
+					PERMISSION.MANAGE_MESSAGES,
+				]);
+
+			emitGatewayEvent(channel, {
+				type: "MESSAGE_DELETE",
+				message_id: message.id,
+				channel: channel.mention,
+			});
+
+			await message.remove();
+
+			return res.sendStatus(204);
 		},
 	),
 );

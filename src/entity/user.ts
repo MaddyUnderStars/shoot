@@ -1,6 +1,8 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
+import { ActorMention } from "../util/activitypub/constants";
 import { Actor } from "./actor";
+import { InstanceInvite } from "./instanceInvite";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
@@ -24,6 +26,13 @@ export class User extends Actor {
 	@Column({ type: String, nullable: true })
 	email: string | null;
 
+	/** the invite code used to register to this instance */
+	@ManyToOne(() => InstanceInvite, {
+		nullable: true,
+		onDelete: "CASCADE",
+	})
+	invite: InstanceInvite | null;
+
 	/** User customisation fields start here */
 
 	/** The preferred/display name of this user */
@@ -34,16 +43,15 @@ export class User extends Actor {
 	@Column({ nullable: true, type: String })
 	summary: string | null;
 
-	public get mention() {
+	public get mention(): ActorMention {
 		return `${this.name}@${this.domain}`;
 	}
 
 	public toPublic = (): PublicUser => {
 		return {
-			id: this.id,
+			mention: this.mention,
 			name: this.name,
 			display_name: this.display_name,
-			domain: this.domain,
 			summary: this.summary,
 		};
 	};
@@ -57,19 +65,17 @@ export class User extends Actor {
 	};
 }
 
-export type PublicUser = Pick<
-	User,
-	"name" | "summary" | "display_name" | "domain" | "id"
->;
+export type PublicUser = Pick<User, "name" | "summary" | "display_name"> & {
+	mention: ActorMention;
+};
 export type PrivateUser = PublicUser & Pick<User, "email">;
 
 export const PublicUser: z.ZodType<PublicUser> = z
 	.object({
-		id: z.string(),
+		mention: ActorMention,
 		name: z.string(),
 		summary: z.string(),
 		display_name: z.string(),
-		domain: z.string(),
 	})
 	.openapi("PublicUser");
 

@@ -23,6 +23,7 @@ Requires:
 - Git
 - Optional: [Janus media server](https://janus.conf.meetecho.com/) for voice chat support
 - Optional: [Redis](https://redis.io/) can be used for the inbound federation queue.
+- Optional: [RabbitMQ](https://www.rabbitmq.com/) can be used to horizontally scale Shoot.
 
 Once you have all the prerequisites set up, download and build the server:
 

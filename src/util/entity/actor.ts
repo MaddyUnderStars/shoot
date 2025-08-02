@@ -1,9 +1,9 @@
-import type { Actor } from "../../entity";
+import crypto from "node:crypto";
+import { promisify } from "node:util";
+import type { Actor } from "../../entity/actor";
 import { createLogger } from "../log";
 import { KEY_OPTIONS } from "../rsa";
 
-import crypto from "node:crypto";
-import { promisify } from "node:util";
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 const Log = createLogger("RSA");

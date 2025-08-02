@@ -1,12 +1,14 @@
-import bodyParser from "body-parser";
+import http from "node:http";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import http from "node:http";
 
-import { errorHandler, routes } from ".";
-import { config, createLogStream, createLogger, initDatabase } from "../util";
-import { isFederationRequest } from "./routes";
+import { config } from "../util/config";
+import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
+import { createLogger, createLogStream } from "../util/log";
+import { errorHandler } from "./middleware/error";
+import routes, { isFederationRequest } from "./routes";
 
 const Log = createLogger("API");
 
@@ -21,14 +23,6 @@ export class APIServer {
 
 		this.app.set("trust proxy", config.security.trust_proxy);
 
-		this.app.use(bodyParser.json({ inflate: true }));
-		this.app.use(
-			bodyParser.json({
-				type: "application/activity+json",
-			}),
-		);
-		this.app.use(bodyParser.urlencoded({ inflate: true, extended: true }));
-
 		morgan.token("mode", (req) =>
 			isFederationRequest(req.headers) ? "fed" : "api",
 		);
@@ -40,7 +34,7 @@ export class APIServer {
 			this.app.use(
 				morgan(config.http.log_format, {
 					stream: createLogStream("HTTP"),
-					skip(req, res) {
+					skip(_req, res) {
 						const log = config.http.log;
 						const skip =
 							log?.includes(res.statusCode.toString()) ?? false;
@@ -63,6 +57,7 @@ export class APIServer {
 		});
 
 		await initDatabase();
+		await initRabbitMQ(false);
 
 		if (!this.server.listening) this.server.listen(port);
 	}

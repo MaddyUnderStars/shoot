@@ -1,15 +1,23 @@
 import type { APActivity } from "activitypub-types";
 import { Queue } from "bullmq";
 import { z } from "zod";
-import { type Actor, ApCache } from "../../../entity";
+import type { Actor } from "../../../entity/actor";
+import { ApCache } from "../../../entity/apcache";
 import type { APInboundJobData } from "../../../receiver";
 import { config } from "../../config";
 import { APError } from "../error";
 import { ActivityHandlers } from "./handlers";
 
-const queue = config.federation.queue.use_inbound
-	? new Queue<APInboundJobData>("inbound")
-	: null;
+const getQueue = () => {
+	return config.federation.queue.use_inbound
+		? new Queue<APInboundJobData>("inbound", {
+				connection: {
+					host: config.redis.host,
+					port: config.redis.port,
+				},
+			})
+		: null;
+};
 
 export const AP_ACTIVITY = z
 	.object({
@@ -29,6 +37,7 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 
 	const safeActivity = AP_ACTIVITY.parse(activity);
 
+	const queue = getQueue();
 	if (queue)
 		await queue.add(`${safeActivity.type}-${target.id}-${Date.now()}`, {
 			activity: safeActivity,
@@ -40,7 +49,7 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 				id: safeActivity.id,
 				raw: safeActivity,
 			});
-		} catch (e) {
+		} catch (_) {
 			throw new APError(
 				`Activity with id ${safeActivity.id} already processed`,
 			);

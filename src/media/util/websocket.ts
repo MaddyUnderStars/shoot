@@ -1,11 +1,11 @@
-import type { MEDIA_EVENT } from "./validation";
+import type { MEDIA_EVENT } from "./validation/send";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
 	media_handle_id?: number;
 
 	room_id?: number;
 
-	/** Before is copied from gateway src */
+	/** Below is copied from gateway src */
 
 	/** The source IP address of this socket */
 	ip_address: string;
@@ -43,7 +43,7 @@ export function send(this: MediaSocket, data: MEDIA_EVENT) {
 
 	const { type, ...rest } = data;
 
-	const ret = { t: data.type, d: rest, s: this.sequence++ };
+	const ret = { t: type, d: rest, s: this.sequence++ };
 
 	return this.raw_send(JSON.stringify(ret));
 }

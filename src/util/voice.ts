@@ -1,12 +1,15 @@
 import type { APJoin } from "activitypub-types";
 import jwt from "jsonwebtoken";
-import { Channel, User } from "../entity";
+import { Channel } from "../entity/channel";
+import { User } from "../entity/user";
 import { getExternalPathFromActor, sendActivity } from "../sender";
-import { APError, addContext, splitQualifiedMention } from "./activitypub";
+import { APError } from "./activitypub/error";
+import { addContext, splitQualifiedMention } from "./activitypub/util";
 import { config } from "./config";
 import { getDatabase } from "./database";
 import { HttpError } from "./httperror";
 import { PERMISSION } from "./permission";
+import { makeInstanceUrl } from "./url";
 
 const algorithm = "HS256";
 
@@ -26,7 +29,7 @@ export const askForMediaToken = async (user: User, channel: Channel) => {
 
 	const join_ap: APJoin = {
 		type: "Join",
-		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(user)}`,
+		actor: makeInstanceUrl(getExternalPathFromActor(user)),
 		object: channel.remote_address,
 	};
 
@@ -77,7 +80,7 @@ export const validateMediaToken = (
 
 				// Tokens have a limited lifespan (10 minutes here)
 				// If you want to rejoin a call, just POSt /call again and get a new token
-				if (decoded.iat * 1000 < new Date().valueOf() - 10 * 1000)
+				if (decoded.iat * 1000 < Date.now() - 10 * 1000)
 					return reject(INVALID_TOKEN);
 
 				return resolve({ user, channel });

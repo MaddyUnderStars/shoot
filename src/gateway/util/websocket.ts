@@ -1,5 +1,5 @@
-import type { Session } from "../../entity";
-import type { GATEWAY_PAYLOAD } from "./validation";
+import type { Session } from "../../entity/session";
+import type { GATEWAY_PAYLOAD } from "./validation/send";
 
 export interface Websocket extends Omit<WebSocket, "send"> {
 	/** The source IP address of this socket */
@@ -23,8 +23,19 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	/** Event emitter UUID -> listener cancel function */
 	events: Record<string, () => unknown>;
 
-	/** The subscribed channel ranges */
-	member_range: [number, number];
+	member_list: {
+		/**
+		 * Event ID -> listener cancel function
+		 * member_events are specifically for events related to member list subscriptions
+		 */
+		events: Record<string, () => unknown>;
+
+		/** The subscribed channel ranges */
+		range?: [number, number];
+
+		/** The ID of the subscribed channel */
+		channel_id?: string;
+	};
 
 	/** The original socket.send function */
 	raw_send: (

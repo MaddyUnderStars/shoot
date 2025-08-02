@@ -1,19 +1,36 @@
 import type { ErrorRequestHandler } from "express";
 import z from "zod";
-import { HttpError, createLogger } from "../../util";
 import { InstanceBlockedError } from "../../util/activitypub/instances";
+import { HttpError } from "../../util/httperror";
+import { createLogger } from "../../util/log";
+import { ValidationError } from "../../util/route";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
 
 const Log = createLogger("HTTP");
 
-export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 	if (res.headersSent) return next(error);
 
 	let code = 400;
 	let message: string = error.message;
 
 	switch (true) {
+		case error instanceof ValidationError:
+			res.status(code).json({
+				code: 400,
+				message: "Invalid request",
+				detail: Object.fromEntries(
+					Object.entries(error.issues).map(([key, value]) => [
+						key,
+						value.issues,
+					]),
+				),
+			});
+			return;
+		case error instanceof z.ZodError:
+			message = error.errors[0].message;
+			break;
 		case error instanceof InstanceBlockedError:
 			// TODO: I'd prefer to shadow ban i.e. send them a response as if it worked normally
 			code = 401;
@@ -24,9 +41,6 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 			break;
 		case error instanceof HttpError:
 			code = error.code;
-			break;
-		case error instanceof z.ZodError:
-			message = error.errors[0].message;
 			break;
 		case error.name === "EntityNotFoundError": {
 			code = 404;

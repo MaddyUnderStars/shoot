@@ -1,7 +1,5 @@
-import { config, createLogger } from "../../util";
+import { config } from "../../util/config";
 import { Janus } from "../janus";
-
-const Log = createLogger("media");
 
 let janus: Janus;
 

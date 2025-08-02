@@ -1,12 +1,20 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
-import { ApCache, Channel, Guild, User } from "../entity";
-import { APError, AP_ACTIVITY, initDatabase } from "../util";
+import { ApCache } from "../entity/apcache";
+import { Channel } from "../entity/channel";
+import { Guild } from "../entity/guild";
+import { User } from "../entity/user";
+import { APError } from "../util/activitypub/error";
+import { AP_ACTIVITY } from "../util/activitypub/inbox";
 import { ActivityHandlers } from "../util/activitypub/inbox/handlers";
+import { config } from "../util/config";
+import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
 
 export type APInboundJobData = { activity: APActivity; target_id: string };
 
@@ -32,7 +40,7 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 			id: safe.id,
 			raw: safe,
 		});
-	} catch (e) {
+	} catch (_) {
 		throw new APError(`Activity with id ${safe.id} already processed`);
 	}
 
@@ -44,8 +52,8 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 
 const worker = new Worker("inbound", jobHandler, {
 	connection: {
-		host: "localhost",
-		port: 6379,
+		host: config.redis.host,
+		port: config.redis.port,
 	},
 	autorun: false,
 });
@@ -57,7 +65,20 @@ worker.on("failed", (job) => {
 });
 
 worker.on("error", (e) => {
+	if ("code" in e && e.code === "ECONNREFUSED")
+		return console.error("Failed to connect to redis", e.message);
+
 	console.error(e);
 });
 
-initDatabase().then(() => worker.run());
+(async () => {
+	await initDatabase();
+	await initRabbitMQ(false);
+
+	if (!config.rabbitmq.enabled)
+		console.error(
+			"rabbitmq isn't configured. this worker won't be able to emit gateway events",
+		);
+
+	await worker.run();
+})();

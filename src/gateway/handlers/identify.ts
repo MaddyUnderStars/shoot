@@ -1,20 +1,15 @@
-import { Not } from "typeorm";
+import { DMChannel } from "../../entity/DMChannel";
+import { Session } from "../../entity/session";
+import type { User } from "../../entity/user";
+import { getDatabase } from "../../util/database";
+import { getGuilds } from "../../util/entity/guild";
+import { fetchRelationships } from "../../util/entity/relationship";
+import { getUserFromToken } from "../../util/token";
+import { CLOSE_CODES } from "../util/codes";
+import { consume, listenEvents } from "../util/listener";
+import { IDENTIFY } from "../util/validation/receive";
+import type { READY } from "../util/validation/send";
 import { makeHandler } from ".";
-import {
-	DMChannel,
-	Relationship,
-	RelationshipType,
-	Session,
-	type User,
-} from "../../entity";
-import { getDatabase, getGuilds, getUserFromToken } from "../../util";
-import {
-	CLOSE_CODES,
-	IDENTIFY,
-	type READY,
-	consume,
-	listenEvents,
-} from "../util";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 /**
@@ -27,7 +22,7 @@ export const onIdentify = makeHandler(async function (payload) {
 	let user: User;
 	try {
 		user = await getUserFromToken(payload.token);
-	} catch (e) {
+	} catch (_) {
 		this.close(CLOSE_CODES.BAD_TOKEN);
 		return;
 	}
@@ -38,14 +33,6 @@ export const onIdentify = makeHandler(async function (payload) {
 		Session.create({
 			user,
 		}).save(),
-
-		// DMChannel.find({
-		// 	where: [
-		// 		{ owner: { id: this.user_id } },
-		// 		{ recipients: { id: this.user_id } },
-		// 	],
-		// 	relations: { recipients: true, owner: true },
-		// }),
 
 		getDatabase()
 			.getRepository(DMChannel)
@@ -58,32 +45,17 @@ export const onIdentify = makeHandler(async function (payload) {
 
 		getGuilds(this.user_id),
 
-		Relationship.find({
-			where: [
-				// We created this relationship
-				{ to: { id: this.user_id } },
-				//Or we are the target, and are not blocked
-				{
-					from: { id: this.user_id },
-					from_state: Not(RelationshipType.blocked),
-				},
-			],
-			relations: { to: true, from: true },
-		}),
+		fetchRelationships(this.user_id),
 	]);
 
 	this.session = session;
 
-	const relationshipUsers = relationships.map((x) =>
-		x.to.id === this.user_id ? x.from : x.to,
-	);
-
 	listenEvents(this, [
-		this.user_id,
-		...relationshipUsers.map((x) => x.id),
-		...dmChannels.map((x) => x.id),
-		...guilds.map((x) => x.id),
-		...guilds.flatMap((x) => x.channels.map((y) => y.id)),
+		user,
+		// TODO: for relationships, see #54
+		...dmChannels,
+		...guilds,
+		...guilds.flatMap((x) => x.channels),
 	]);
 
 	const ret: READY = {

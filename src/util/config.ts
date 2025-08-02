@@ -1,5 +1,6 @@
 import nodeConfig from "config";
-import type { InstanceBehaviour } from "./activitypub/instances";
+import type { InstanceBehaviour } from "./activitypub/instanceBehaviour";
+import { LogLevel } from "./log";
 import { tryParseUrl } from "./url";
 
 const LOCALHOST_URL = new URL("http://localhost");
@@ -17,17 +18,36 @@ const get = <T>(key: string): T => {
 	}
 };
 
-const getArray = <T>(key: string): T[] => {
-	let i = 0;
-	const ret: T[] = [];
-	while (nodeConfig.has(`${key}[${i}]`)) {
-		ret.push(nodeConfig.get(`${key}[${i}]`));
-		i++;
-	}
-	return ret;
-};
-
 const config = Object.freeze({
+	/**
+	 * options relating to Shoot's own logging
+	 */
+	log: {
+		/**
+		 * Maximum level of logs to print
+		 * see LogLevel enum for values
+		 * @default "verbose"
+		 */
+		level: (() => {
+			const val =
+				ifExistsGet<string | number>("log.level") ?? LogLevel.verbose;
+
+			if (val !== undefined && val in LogLevel) {
+				if (typeof val === "number") return val;
+				//@ts-ignore don't care about types right now
+				return LogLevel[val];
+			}
+
+			console.error("log.level is invalid");
+			process.exit(1);
+		})(),
+
+		/**
+		 * Whether or not to include dates in log messages
+		 */
+		include_date: ifExistsGet<boolean>("log.include_date") ?? true,
+	},
+
 	http: {
 		/**
 		 * Whether to enable morgan logging of http requests.
@@ -130,11 +150,20 @@ const config = Object.freeze({
 				 */
 				instance_url: new URL(get<string>("federation.instance_url")),
 
+				/**
+				 * Aka, authorised fetch. Require HTTP signatures from remote servers for all requests
+				 * If disabled, only require when absolutely necessary such as when receiving a new chat message,
+				 * while reading public data will still be allowed.
+				 */
 				require_http_signatures:
 					ifExistsGet<boolean>(
 						"federation.require_http_signatures",
 					) ?? false,
 
+				/**
+				 * Various settings related to the federation queues implemented using Redis.
+				 * You can configure Redis via the `redis.*` config options.
+				 */
 				queue: {
 					/**
 					 * Whether or not to use the inbound queue. Requires redis.
@@ -142,14 +171,6 @@ const config = Object.freeze({
 					 */
 					use_inbound:
 						ifExistsGet<boolean>("federation.queue.use_inbound") ??
-						false,
-
-					/**
-					 * Whether or not to use the inbound queue. Requires redis.
-					 * @default false
-					 */
-					use_outbound:
-						ifExistsGet<boolean>("federation.queue.use_outbound") ??
 						false,
 				},
 
@@ -189,7 +210,6 @@ const config = Object.freeze({
 				private_key: "",
 				queue: {
 					use_inbound: true,
-					use_outbound: true,
 				},
 				allowlist: false,
 				instances: {},
@@ -251,6 +271,14 @@ const config = Object.freeze({
 					accessKey: get<string>("storage.s3.accessKey"),
 
 					secret: get<string>("storage.s3.secret"),
+
+					/**
+					 * Whether to force path style URLs for S3 objects
+					 * (e.g., https://s3.amazonaws.com/{bucket}/ instead of https://{bucket}.s3.amazonaws.com/
+					 */
+					forcePathStyle:
+						ifExistsGet<boolean>("storage.s3.forcePathStyle") ??
+						false,
 				}
 			: {
 					enabled: false,
@@ -261,6 +289,44 @@ const config = Object.freeze({
 					secret: "",
 				},
 	},
+
+	/**
+	 * Redis is optional. It is currently only used for the inbound federation queue
+	 */
+	redis: {
+		/**
+		 * The IP/hostname of the Redis instance to connect to
+		 *
+		 * @default "localhost"
+		 */
+		host: ifExistsGet<string>("redis.host") ?? "localhost",
+
+		/**
+		 * The port to use when connecting to a Redis host
+		 *
+		 * @default 6379
+		 */
+		port: ifExistsGet<number>("redis.port") ?? 6379,
+	},
+
+	/**
+	 * RabbitMQ is optional.
+	 * It is required if you:
+	 * - use the inbound federation queue
+	 * - run api, gateway individually instead of as one process (i.e. via `npm run start:http` etc)
+	 *
+	 * It is used for sending events from the API, among other components, to the gateway
+	 * when they do not share memory
+	 */
+	rabbitmq: ifExistsGet<boolean>("rabbitmq.enabled")
+		? {
+				enabled: true,
+				url: new URL(get<string>("rabbitmq.url")),
+			}
+		: {
+				enabled: false,
+				url: new URL("http://localhost"),
+			},
 });
 
 export { config };

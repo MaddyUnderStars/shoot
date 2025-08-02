@@ -1,19 +1,17 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message, User } from "../../../../entity";
 import { Channel } from "../../../../entity/channel";
-import {
-	addContext,
-	config,
-	getDatabase,
-	orderedCollectionHandler,
-	route,
-} from "../../../../util";
+import { Message } from "../../../../entity/message";
+import { User } from "../../../../entity/user";
 import { handleInbox } from "../../../../util/activitypub/inbox";
-import {
-	buildAPActor,
-	buildAPNote,
-} from "../../../../util/activitypub/transformers";
+import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
+import { buildAPNote } from "../../../../util/activitypub/transformers/message";
+import { addContext } from "../../../../util/activitypub/util";
+import { config } from "../../../../util/config";
+import { getDatabase } from "../../../../util/database";
+import { route } from "../../../../util/route";
+import { makeInstanceUrl } from "../../../../util/url";
 
 const router = Router({ mergeParams: true });
 
@@ -83,9 +81,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/channel/${req.params.channel_id}/outbox`,
-				),
+				id: makeInstanceUrl(`/channel/${req.params.channel_id}/outbox`),
 				keys: ["published"],
 				before: req.query.before,
 				after: req.query.after,
@@ -117,8 +113,8 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/channel/${req.params.channel_id}/followers`,
+				id: makeInstanceUrl(
+					`/channel/${req.params.channel_id}/followers`,
 				),
 				before: req.query.before,
 				after: req.query.after,

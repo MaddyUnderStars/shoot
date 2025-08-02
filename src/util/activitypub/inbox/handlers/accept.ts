@@ -1,12 +1,15 @@
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
-import type { ActivityHandler } from ".";
-import { Guild, User } from "../../../../entity";
-import { findActorOfAnyType, getOrFetchUser, joinGuild } from "../../../entity";
-import { acceptOrCreateRelationship } from "../../../entity/relationship";
+import { Guild } from "../../../../entity/guild";
+import { User } from "../../../../entity/user";
+import { joinGuild } from "../../../entity/guild";
+import { acceptRelationship } from "../../../entity/relationship";
+import { findActorOfAnyType } from "../../../entity/resolve";
+import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
-import { resolveAPObject } from "../../resolve";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
 import { splitQualifiedMention } from "../../util";
+import type { ActivityHandler } from ".";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
@@ -28,9 +31,9 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (typeof activity.target !== "string")
 		throw new APError("unknown signal server ip format");
 
-	const from = await getOrFetchUser(activity.actor);
+	const from = await getOrFetchUser(resolveId(activity.actor));
 
-	emitGatewayEvent(from.id, {
+	emitGatewayEvent(from, {
 		type: "MEDIA_TOKEN_RECEIVED",
 		token: activity.result,
 		endpoint: activity.target,
@@ -57,10 +60,10 @@ const AcceptFollow: ActivityHandler = async (activity, target) => {
 
 	if (from instanceof User) {
 		// A friend request was accepted
-		const relationship = await acceptOrCreateRelationship(target, from);
+		await acceptRelationship(target, from);
 	} else if (from instanceof Guild) {
 		// A guild join request was accepted
-		await joinGuild(target.id, from.id);
+		await joinGuild(target.mention, from.mention);
 	} else {
 		throw new APError("Don't know how to accept that");
 	}
@@ -75,7 +78,7 @@ export const AcceptActivityHandler: ActivityHandler = async (
 
 	if (Array.isArray(activity.object)) throw new APError("object is array");
 
-	const inner = await resolveAPObject(activity.object);
+	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
 	activity.object = inner;
 

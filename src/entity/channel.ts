@@ -1,7 +1,8 @@
 import { Column, Entity, TableInheritance } from "typeorm";
 import { z } from "zod";
-import type { PERMISSION } from "../util";
+import { ActorMention } from "../util/activitypub/constants";
 import { HttpError } from "../util/httperror";
+import type { PERMISSION } from "../util/permission";
 import { Actor } from "./actor";
 import type { User } from "./user";
 
@@ -13,9 +14,8 @@ export class Channel extends Actor {
 
 	public toPublic(): PublicChannel {
 		return {
-			id: this.remote_id ?? this.id,
+			mention: this.mention,
 			name: this.name,
-			domain: this.domain,
 		};
 	}
 
@@ -34,17 +34,16 @@ export class Channel extends Actor {
 	};
 
 	public checkPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
+		_user: User,
+		_permission: PERMISSION | PERMISSION[],
 	): Promise<boolean> => false;
 }
 
-export type PublicChannel = Pick<Channel, "id" | "name" | "domain">;
+export type PublicChannel = Pick<Channel, "name" | "mention">;
 
 export const PublicChannel: z.ZodType<PublicChannel> = z
 	.object({
-		id: z.string(),
+		mention: ActorMention,
 		name: z.string(),
-		domain: z.string(),
 	})
 	.openapi("PublicChannel");

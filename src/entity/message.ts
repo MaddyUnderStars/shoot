@@ -11,13 +11,14 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 import { z } from "zod";
-import type { AttributesOnly } from "../util";
+import { ActorMention } from "../util/activitypub/constants";
+import type { AttributesOnly } from "../util/types";
 import type { ApCache } from "./apcache";
 import { type Attachment, PublicAttachment } from "./attachment";
 import { BaseModel } from "./basemodel";
 import type { Channel } from "./channel";
+import { type Embed, PublicEmbed } from "./embed";
 import type { User } from "./user";
-import { PublicEmbed, type Embed } from "./embed";
 
 @Entity("messages")
 export class Message extends BaseModel {
@@ -83,19 +84,19 @@ export type PublicMessage = Pick<
 	AttributesOnly<Message>,
 	"id" | "content" | "published" | "updated"
 > & {
-	author_id: string;
-	channel_id: string;
+	author_id: ActorMention;
+	channel_id: ActorMention;
 	embeds: PublicEmbed[];
 };
 
 export const PublicMessage: z.ZodType<PublicMessage> = z
 	.object({
-		id: z.string(),
+		id: z.string().uuid(),
 		content: z.string(),
 		published: z.date(),
 		updated: z.date(),
-		author_id: z.string(),
-		channel_id: z.string(),
+		author_id: ActorMention,
+		channel_id: ActorMention,
 		files: z.array(PublicAttachment),
 		embeds: z.array(PublicEmbed),
 	})

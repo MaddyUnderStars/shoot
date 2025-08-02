@@ -1,6 +1,11 @@
 import type { APActivity } from "activitypub-types";
-import { type Actor, Channel, Guild, User } from "../entity";
-import { APError, InstanceActor, signWithHttpSignature } from "../util";
+import type { Actor } from "../entity/actor";
+import { Channel } from "../entity/channel";
+import { Guild } from "../entity/guild";
+import { User } from "../entity/user";
+import { APError } from "../util/activitypub/error";
+import { signWithHttpSignature } from "../util/activitypub/httpsig";
+import { InstanceActor } from "../util/activitypub/instanceActor";
 import { createLogger } from "../util/log";
 
 const Log = createLogger("ap:distribute");
@@ -32,7 +37,12 @@ export const sendActivity = async (
 	}, new Set());
 
 	for (const inbox of inboxes) {
-		const signed = signWithHttpSignature(inbox, "POST", sender, activity);
+		const signed = signWithHttpSignature(
+			inbox,
+			"POST",
+			sender,
+			JSON.stringify(activity),
+		);
 
 		const res = await fetch(inbox, signed);
 		if (!res.ok) {

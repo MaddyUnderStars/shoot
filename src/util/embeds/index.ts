@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { tryParseUrl } from "../url";
-import { Embed, EmbedTypes } from "../../entity/embed";
-import providers from "oembed-providers/providers.json";
-import { DomHandler, Parser } from "htmlparser2";
 import { findAll } from "domutils";
+import { DomHandler, Parser } from "htmlparser2";
+import providers from "oembed-providers/providers.json";
+import { z } from "zod";
+import { Embed, EmbedTypes } from "../../entity/embed";
+import { tryParseUrl } from "../url";
 
 /**
  * Generates an Embed object. Does not save or check for duplicates.

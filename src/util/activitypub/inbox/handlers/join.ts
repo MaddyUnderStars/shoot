@@ -1,13 +1,15 @@
 import type { APAccept } from "activitypub-types";
-import type { ActivityHandler } from ".";
-import { Channel } from "../../../../entity";
+import { Channel } from "../../../../entity/channel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
 import { config } from "../../../config";
-import { getOrFetchUser } from "../../../entity";
+import { getOrFetchUser } from "../../../entity/user";
 import { PERMISSION } from "../../../permission";
+import { makeInstanceUrl } from "../../../url";
 import { generateMediaToken } from "../../../voice";
 import { APError } from "../../error";
+import { resolveId } from "../../resolve";
 import { addContext } from "../../util";
+import type { ActivityHandler } from ".";
 
 export const JoinActivityHandler: ActivityHandler = async (
 	activity,
@@ -29,13 +31,10 @@ export const JoinActivityHandler: ActivityHandler = async (
 	if (Array.isArray(activity.object))
 		throw new APError("Cannot accept multiple objects");
 
-	if (
-		`${config.federation.instance_url.origin}${getExternalPathFromActor(target)}` !==
-		activity.object
-	)
+	if (makeInstanceUrl(getExternalPathFromActor(target)) !== activity.object)
 		throw new APError("Object and target mismatch?");
 
-	const user = await getOrFetchUser(activity.actor);
+	const user = await getOrFetchUser(resolveId(activity.actor));
 
 	await target.throwPermission(user, [
 		PERMISSION.VIEW_CHANNEL,
@@ -48,7 +47,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 		type: "Accept",
 		result: token,
 		target: config.webrtc.signal_address,
-		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
+		actor: makeInstanceUrl(getExternalPathFromActor(target)),
 		object: activity,
 	});
 

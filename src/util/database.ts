@@ -1,29 +1,12 @@
-import path from "node:path";
-import { DataSource } from "typeorm";
+import type { DataSource } from "typeorm";
 import { Migration } from "../entity/migrations";
 import { config } from "./config";
+import DATASOURCE_OPTIONS from "./datasource";
 import { createLogger } from "./log";
 
 const Log = createLogger("database");
 
 const CONNECTION_STRING = config.database.url;
-const CONNECTION_TYPE = CONNECTION_STRING.split("://")?.[0]?.replace(
-	"+src",
-	"",
-);
-const IS_SQLITE = CONNECTION_TYPE === "sqlite";
-
-const DATASOURCE_OPTIONS = new DataSource({
-	//@ts-ignore
-	type: CONNECTION_TYPE,
-	url: IS_SQLITE ? undefined : CONNECTION_STRING,
-	database: IS_SQLITE ? CONNECTION_STRING.split("://")[1] : undefined,
-	entities: [path.join(__dirname, "..", "entity", "*.js")],
-	supportBigNumbers: true,
-	bigNumberStrings: false,
-	synchronize: true, // TODO
-	logging: config.database.log,
-});
 
 let connection: DataSource | null = null;
 let initCalled: Promise<DataSource> | null = null;
@@ -86,7 +69,7 @@ const dbExists = async () => {
 	try {
 		await Migration.count();
 		return true;
-	} catch (e) {
+	} catch (_) {
 		return false;
 	}
 };

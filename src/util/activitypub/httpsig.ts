@@ -1,18 +1,19 @@
-import type { APActivity } from "activitypub-types";
 import crypto from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
-import { type Actor, Channel, Guild, User } from "../../entity";
+import type { Actor } from "../../entity/actor";
+import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
+import { User } from "../../entity/user";
 import { getExternalPathFromActor } from "../../sender";
-import { config } from "../config";
-import { createGuildFromRemoteOrg } from "../entity";
 import { createChannelFromRemoteGroup } from "../entity/channel";
+import { createGuildFromRemoteOrg } from "../entity/guild";
 import { createUserForRemotePerson } from "../entity/user";
 import { createLogger } from "../log";
-import { tryParseUrl } from "../url";
+import { makeInstanceUrl, tryParseUrl } from "../url";
 import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { throwInstanceBlock } from "./instances";
-import { resolveAPObject } from "./resolve";
+import { resolveAPObject, resolveUrlOrObject } from "./resolve";
 import { APObjectIsActor } from "./util";
 
 const Log = createLogger("HTTPSIG");
@@ -39,9 +40,12 @@ export const validateHttpSignature = async (
 	target: string,
 	method: string,
 	requestHeaders: IncomingHttpHeaders,
-	activity?: APActivity,
+	rawActivity?: Buffer,
 	noCache = false,
 ): Promise<Actor> => {
+	// TODO: it would be good to supply a custom error here
+	const activity = rawActivity ? JSON.parse(rawActivity.toString()) : null;
+
 	const date = requestHeaders.date;
 	const sigHeader = requestHeaders.signature?.toString();
 
@@ -108,7 +112,7 @@ export const validateHttpSignature = async (
 
 	// If we don't have a cache, or we should ignore cache
 	if (!actor || noCache) {
-		const remoteActor = await resolveAPObject(actorId);
+		const remoteActor = await resolveAPObject(resolveUrlOrObject(actorId));
 
 		if (!APObjectIsActor(remoteActor))
 			throw new APError("Request was signed by a non-actor object?");
@@ -156,19 +160,36 @@ export const validateHttpSignature = async (
 			throw new APError("Key ID does not match activity ID");
 	}
 
-	if (requestHeaders.digest || activity) {
-		if (!activity || !requestHeaders.digest)
+	if (rawActivity || requestHeaders.digest) {
+		if (!rawActivity || !requestHeaders.digest)
 			throw new APError(
 				"If message provided, digest must be too and vice versa",
 			);
 
-		const digest = crypto
-			.createHash("sha256")
-			.update(JSON.stringify(activity))
-			.digest("base64");
+		const request = requestHeaders.digest;
+		if (typeof request !== "string")
+			throw new APError("Digest header is not string?");
+		const [algo, inDigest] = request.split("=");
 
 		// TODO: support different digest algos
-		if (requestHeaders.digest !== `SHA-256=${digest}`)
+		if (algo.toLowerCase() !== "sha-256")
+			throw new APError("Only sha-256 supported for message digests");
+
+		const digest = crypto
+			.createHash("sha256")
+			.update(rawActivity)
+			.digest("base64");
+
+		// TODO: verify.funfedi.dev sends digests without b64 padding???
+		// but I don't know if other software does this
+		// so I have to test both...
+
+		const withoutPadding =
+			digest.charAt(digest.length - 1) === "=" // if it has padding
+				? digest.slice(0, digest.lastIndexOf("=")) // remove it
+				: digest; // otherwise we're good
+
+		if (inDigest !== digest && inDigest !== withoutPadding)
 			throw new APError(
 				"b64 sha256 digest of message does not match provided digest header",
 			);
@@ -193,7 +214,8 @@ export const validateHttpSignature = async (
 	);
 
 	// If the actor was cached and the result fails, retry without cache
-	if (!result && actorWasCached) {
+	// if we've already tried without cache, ignore
+	if (!result && actorWasCached && !noCache) {
 		Log.warn(
 			`Could not verify http signature with cached actor (${actor.remote_address}) public key. Retrying without cache`,
 		);
@@ -202,7 +224,7 @@ export const validateHttpSignature = async (
 			target,
 			method,
 			requestHeaders,
-			activity,
+			rawActivity,
 			true,
 		);
 	}
@@ -225,23 +247,32 @@ export const signWithHttpSignature = (
 	target: string,
 	method: string,
 	keys: Actor,
-	message?: APActivity,
+	message?: string,
 ) => {
 	if (!keys.private_key)
 		throw new APError("Cannot sign activity without private key");
 
 	const digest = message
-		? crypto
-				.createHash("sha256")
-				.update(JSON.stringify(message))
-				.digest("base64")
+		? crypto.createHash("sha256").update(message).digest("base64")
 		: undefined;
 	const signer = crypto.createSign("sha256");
 	const now = new Date();
 
 	const url = new URL(target);
 	const requestTarget = url.pathname + url.search;
-	const toSign = `(request-target): ${method.toLowerCase()} ${requestTarget}\nhost: ${url.hostname}\ndate: ${now.toUTCString()}${digest ? `\ndigest: SHA-256=${digest}` : ""}`;
+
+	const headers: { [key: string]: string } = {
+		host: url.hostname,
+		date: now.toUTCString(),
+	};
+
+	if (digest) {
+		headers.digest = `SHA-256=${digest}`;
+	}
+
+	const names = [...Object.keys(headers), "(request-target)"];
+
+	const toSign = getSignString(requestTarget, method, headers, names);
 
 	signer.update(toSign);
 	signer.end();
@@ -249,30 +280,20 @@ export const signWithHttpSignature = (
 	const signature = signer.sign(keys.private_key);
 	const sig_b64 = signature.toString("base64");
 
-	// const id =
-	// 	keys.id == InstanceActor.id
-	// 		? `/actor`
-	// 		: `/users/${keys.username}`;
-
 	const header =
-		`keyId="${config.federation.instance_url.origin}${getExternalPathFromActor(keys)}",` +
-		`headers="(request-target) host date${digest ? " digest" : ""}",` +
+		`keyId="${makeInstanceUrl(getExternalPathFromActor(keys))}",` +
+		`headers="${names.join(" ")}",` +
 		`signature="${sig_b64}"`;
 
 	const ret = {
 		method,
 		headers: {
 			...ACTIVITYPUB_FETCH_OPTS.headers,
-			host: url.hostname,
-			date: now.toUTCString(),
-			digest: digest ? `SHA-256=${digest}` : undefined,
+			...headers,
 			signature: header,
 		},
-		body: message ? JSON.stringify(message) : undefined,
+		body: message,
 	};
-
-	// biome-ignore lint/performance/noDelete: <explanation>
-	if (!ret.headers.digest) delete ret.headers.digest;
 
 	return ret as RequestInit;
 };

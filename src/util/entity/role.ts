@@ -1,26 +1,29 @@
 import { ObjectIsPerson } from "activitypub-types";
-import type { Member } from "../../entity";
+import type { Member } from "../../entity/member";
 import { Role } from "../../entity/role";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	type APRole,
 	resolveAPObject,
 	resolveCollectionEntries,
-	splitQualifiedMention,
-} from "../activitypub";
+	resolveId,
+	resolveWebfinger,
+} from "../activitypub/resolve";
+import { type APRole, ObjectIsRole } from "../activitypub/transformers/role";
+import { splitQualifiedMention } from "../activitypub/util";
+import { tryParseUrl } from "../url";
 import { getOrFetchGuild } from "./guild";
 import { getOrFetchMember } from "./member";
 
 export const createRoleFromRemote = async (lookup: string | APRole) => {
-	const mention =
-		typeof lookup === "string"
-			? splitQualifiedMention(lookup)
-			: // biome-ignore lint/style/noNonNullAssertion: <explanation>
-				splitQualifiedMention(lookup.id!);
+	const id = resolveId(lookup);
+	const mention = splitQualifiedMention(id);
 
-	const obj = await resolveAPObject(lookup);
+	const obj =
+		id instanceof URL
+			? await resolveAPObject(id)
+			: await resolveWebfinger(id);
 
-	if (obj.type !== "Role")
+	if (!ObjectIsRole(obj))
 		throw new APError(`Expected role but found ${obj.type}`);
 
 	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
@@ -32,14 +35,18 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 		allow: obj.allow,
 		deny: obj.deny,
 		position: obj.position,
-		guild: await getOrFetchGuild(obj.attributedTo),
+		guild: await getOrFetchGuild(resolveId(obj.attributedTo)),
 		members: [], // to be fetched later
 	});
 
 	const members = await Promise.all([
 		...(await resolveCollectionEntries(new URL(obj.members))).reduce(
 			(prev, curr) => {
-				if (typeof curr === "string" || ObjectIsPerson(curr)) {
+				if (typeof curr === "string") {
+					const url = tryParseUrl(curr);
+					if (!url) return prev;
+					prev.push(getOrFetchMember(url));
+				} else if (ObjectIsPerson(curr)) {
 					prev.push(getOrFetchMember(curr));
 				}
 				return prev;

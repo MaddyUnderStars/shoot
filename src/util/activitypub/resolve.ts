@@ -1,18 +1,20 @@
-import { hasAPContext } from "./util";
-
 import type {
+	AnyAPObject,
 	APCollectionPage,
 	APLink,
 	APObject,
 	APOrderedCollectionPage,
-	AnyAPObject,
 } from "activitypub-types";
-import { ApCache } from "../../entity";
+import { findAll } from "domutils";
+import { DomHandler, Parser } from "htmlparser2";
+import { ApCache } from "../../entity/apcache";
 import { config } from "../config";
 import { createLogger } from "../log";
 import { tryParseUrl } from "../url";
 import {
 	ACTIVITY_JSON_ACCEPT,
+	type ActorMention,
+	ActorMentionRegex,
 	USER_AGENT,
 	WebfingerResponse,
 } from "./constants";
@@ -20,18 +22,16 @@ import { APError } from "./error";
 import { signWithHttpSignature } from "./httpsig";
 import { InstanceActor } from "./instanceActor";
 import { throwInstanceBlock } from "./instances";
-import { splitQualifiedMention } from "./util";
-import { DomHandler, Parser } from "htmlparser2";
-import { findAll } from "domutils";
+import { hasAPContext, splitQualifiedMention } from "./util";
 
 const Log = createLogger("ap:resolve");
 
 export const resolveAPObject = async <T extends AnyAPObject>(
-	data: string | T,
+	data: URL | T,
 	noCache = false,
 ): Promise<T> => {
 	// we were already given an object
-	if (typeof data !== "string") {
+	if (!(data instanceof URL)) {
 		if (!noCache)
 			await ApCache.create({
 				id: data.id,
@@ -41,25 +41,23 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	}
 
 	if (!noCache) {
-		const cache = await ApCache.findOne({ where: { id: data } });
+		const cache = await ApCache.findOne({ where: { id: data.toString() } });
 		if (cache) return cache.raw as T;
 	}
 
-	const url = new URL(data);
+	throwInstanceBlock(data);
 
-	throwInstanceBlock(url);
-
-	if (url.hostname === config.federation.instance_url.hostname)
+	if (data.hostname === config.federation.instance_url.hostname)
 		throw new APError(
 			"Tried to resolve remote resource, but we are the remote!",
 		);
 
-	Log.verbose(`Fetching from remote ${url}`);
+	Log.verbose(`Fetching from remote ${data}`);
 
 	// sign the request
-	const signed = signWithHttpSignature(url.toString(), "get", InstanceActor);
+	const signed = signWithHttpSignature(data.toString(), "get", InstanceActor);
 
-	const res = await fetch(url, signed);
+	const res = await fetch(data, signed);
 
 	if (!res.ok)
 		throw new APError(
@@ -73,14 +71,14 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	const header = res.headers.get("content-type");
 	if (!header || !ACTIVITY_JSON_ACCEPT.find((x) => header.includes(x)))
 		throw new APError(
-			`Fetched resource ${url} did not return an activitypub/jsonld content type`,
+			`Fetched resource ${data} did not return an activitypub/jsonld content type`,
 		);
 
 	if (!hasAPContext(json)) throw new APError("Object is not APObject");
 
 	if (!json.id) throw new APError("Object does not have an ID");
 
-	if (url.origin !== new URL(json.id).origin)
+	if (data.origin !== new URL(json.id).origin)
 		throw new APError(
 			"Object ID origin does not match origin of requested url",
 		);
@@ -94,16 +92,55 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	return json as T;
 };
 
+/**
+ * Get an ID from a string or AP object
+ * @param prop A mention or URL string, or an AP object
+ * @returns ActorMention or URL
+ * @throws APError if could not resolve to an ID
+ */
 export const resolveId = (prop: string | AnyAPObject | APLink) => {
-	if (typeof prop === "string" && !!tryParseUrl(prop)) return prop;
-	if (typeof prop === "string")
-		throw new APError(`Cannot resolve ${prop} to a URL ID`);
-	if ("id" in prop && prop.id) return prop.id;
-	throw new APError(`Cannot resolve ${prop} to a URL ID`);
+	if (typeof prop === "string") {
+		// this may be a url or actor mention
+		const url = tryParseUrl(prop);
+
+		// it was a url
+		if (url) return url;
+
+		// it was a mention
+		if (prop.match(ActorMentionRegex)) return prop as ActorMention;
+	}
+
+	// we were given an object
+
+	if (typeof prop !== "string" && "id" in prop && prop.id) {
+		// the object has an ID, is it a valid URL?
+		const url = tryParseUrl(prop.id);
+		if (url) return url;
+	}
+
+	// we couldn't find an URL ID or mention
+	throw new APError(`Cannot resolve ${prop} to a URL or mention`);
+};
+
+/**
+ * Returns either a URL or Object
+ * @param prop A mention or URL string, or an AP object
+ */
+export const resolveUrlOrObject = <T extends AnyAPObject | APLink>(
+	prop: string | AnyAPObject | APLink,
+) => {
+	if (typeof prop === "string") {
+		const url = tryParseUrl(prop);
+		if (url) return url;
+	} else {
+		return prop as T;
+	}
+
+	throw new APError(`Could not resolve ${prop} to an URL or object`);
 };
 
 const doWebfingerOrFindTemplate = async (
-	lookup: string,
+	lookup: string | URL,
 ): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
@@ -159,7 +196,7 @@ const doWebfingerOrFindTemplate = async (
 	if (!template) throw new APError("host-meta did not contain template link");
 
 	const templateUrl = new URL(
-		template.attribs.template.replace("{uri}", lookup),
+		template.attribs.template.replace("{uri}", lookup.toString()),
 	);
 
 	throwInstanceBlock(templateUrl);
@@ -174,8 +211,11 @@ const doWebfingerOrFindTemplate = async (
 	return WebfingerResponse.parse(await res.json());
 };
 
+export type AcctURI = `acct:${ActorMention}`;
+export type InviteURI = `invite:${ActorMention}`;
+
 export const resolveWebfinger = async (
-	lookup: string,
+	lookup: ActorMention | AcctURI | InviteURI | URL,
 ): Promise<AnyAPObject> => {
 	Log.verbose(`Performing webfinger lookup ${lookup}`);
 
@@ -190,7 +230,7 @@ export const resolveWebfinger = async (
 	if (!link || !link.href)
 		throw new APError(".well-known did not contain rel=self href");
 
-	return await resolveAPObject<AnyAPObject>(link.href);
+	return await resolveAPObject<AnyAPObject>(link);
 };
 
 /**
@@ -208,7 +248,7 @@ export const resolveCollectionEntries = async (
 
 	const ret: Array<string | AnyAPObject> = [];
 
-	const parent = await resolveAPObject(collection.toString());
+	const parent = await resolveAPObject(collection);
 
 	if (!ObjectIsCollection(parent))
 		throw new APError(`${collection} is not a collection`);

@@ -1,6 +1,8 @@
+import { CLOSE_CODES } from "../../gateway/util/codes";
+import { HEARTBEAT } from "../util/validation/receive";
+import type { HEARTBEAT_ACK } from "../util/validation/send";
+import type { MediaSocket } from "../util/websocket";
 import { makeHandler } from ".";
-import { CLOSE_CODES } from "../../gateway/util";
-import { HEARTBEAT, type HEARTBEAT_ACK, type MediaSocket } from "../util";
 
 export const onHeartbeat = makeHandler(async function (payload) {
 	if (payload.s !== this.sequence)

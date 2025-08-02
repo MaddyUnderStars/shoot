@@ -1,6 +1,11 @@
-import type { GATEWAY_EVENT } from ".";
-import { createLogger } from "../../util";
-import { listenGatewayEvent } from "../../util/events";
+import type { BaseModel } from "../../entity/basemodel";
+import { User } from "../../entity/user";
+import { splitQualifiedMention } from "../../util/activitypub/util";
+import { channelInGuild } from "../../util/entity/channel";
+import { listenGatewayEvent, makeGatewayTarget } from "../../util/events";
+import { createLogger } from "../../util/log";
+import { handleMemberListRoleAdd } from "../handlers/members";
+import type { GATEWAY_EVENT } from "./validation/send";
 import type { Websocket } from "./websocket";
 
 const Log = createLogger("GATEWAY:LISTENER");
@@ -13,39 +18,88 @@ const Log = createLogger("GATEWAY:LISTENER");
  */
 export const listenEvents = (
 	socket: Websocket,
-	emitters: string[],
+	emitters: BaseModel[],
 	callback = consume,
 ) => {
 	for (const emitter of emitters) {
-		if (socket.events[emitter])
+		const id = makeGatewayTarget(emitter);
+
+		if (socket.events[id])
 			Log.warn(`${socket.user_id} is already listening to ${emitter}`);
 
-		socket.events[emitter] = listenGatewayEvent(emitter, (payload) =>
+		socket.events[id] = listenGatewayEvent(emitter, (payload) =>
 			callback(socket, payload),
 		);
 	}
 };
 
 export const removeEventListener = (socket: Websocket, id: string) => {
+	if (!socket.events[id]) {
+		Log.warn(`No listener for target ${id} on ${socket.user_id} to remove`);
+		return;
+	}
+
 	socket.events[id]();
 	delete socket.events[id];
 };
 
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
-		case "RELATIONSHIP_CREATE": {
-			listenEvents(socket, [payload.relationship.user.id]);
+		// TODO: for relationships, see #54
+
+		case "CHANNEL_CREATE": {
+			const { user } = splitQualifiedMention(payload.channel.mention);
+			listenEvents(socket, [User.create({ id: user })]);
 			break;
 		}
-		case "RELATIONSHIP_DELETE": {
-			removeEventListener(socket, payload.user_id);
+		case "GUILD_CREATE": {
+			const { user } = splitQualifiedMention(payload.guild.mention);
+			listenEvents(socket, [User.create({ id: user })]);
 			break;
 		}
-		case "CHANNEL_CREATE":
-			listenEvents(socket, [payload.channel.id]);
+		case "GUILD_DELETE":
+			// if we leave a guild that we're subscribed to, remove our subscription
+			if (
+				!socket.member_list.channel_id ||
+				!(await channelInGuild(
+					socket.member_list.channel_id,
+					payload.guild,
+				))
+			)
+				break;
+
+			// remove all our subscriptions to this channel,
+			// as it's guild was just deleted
+
+			for (const id in socket.member_list.events) {
+				socket.member_list.events[id]();
+				delete socket.member_list.events[id];
+			}
+			socket.member_list.channel_id = undefined;
+			socket.member_list.range = undefined;
+
 			break;
-		case "GUILD_CREATE":
-			listenEvents(socket, [payload.guild.id]);
+
+		case "CHANNEL_DELETE":
+			// if we're subscribed to this channel, unsub
+
+			if (socket.member_list.channel_id !== payload.channel) break;
+
+			for (const id in socket.member_list.events) {
+				socket.member_list.events[id]();
+				delete socket.member_list.events[id];
+			}
+			socket.member_list.channel_id = undefined;
+			socket.member_list.range = undefined;
+
+			break;
+
+		case "ROLE_MEMBER_ADD":
+			// don't care about errors and can't slow down this function
+			setImmediate(() =>
+				handleMemberListRoleAdd(socket, payload).catch(() => {}),
+			);
+
 			break;
 		default:
 			break;

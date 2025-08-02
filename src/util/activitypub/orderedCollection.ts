@@ -1,4 +1,4 @@
-import type { APOrderedCollectionPage, AnyAPObject } from "activitypub-types";
+import type { AnyAPObject, APOrderedCollectionPage } from "activitypub-types";
 import type { ObjectType, SelectQueryBuilder } from "typeorm";
 import { buildPaginator } from "typeorm-cursor-pagination";
 import type { BaseModel } from "../../entity/basemodel";
@@ -8,7 +8,7 @@ type Props<T extends BaseModel> = {
 	entity: ObjectType<T>;
 	qb: SelectQueryBuilder<T>;
 	keys?: Extract<keyof T, string>[];
-	id: URL;
+	id: string;
 	convert: (data: T) => string | AnyAPObject;
 	before?: string;
 	after?: string;

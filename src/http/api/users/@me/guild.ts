@@ -1,13 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Member, PublicGuild } from "../../../../entity";
-import {
-	emitGatewayEvent,
-	getDatabase,
-	getGuilds,
-	route,
-	splitQualifiedMention,
-} from "../../../../util";
+import { Guild, PublicGuild } from "../../../../entity/guild";
+import { Member } from "../../../../entity/member";
+import { splitQualifiedMention } from "../../../../util/activitypub/util";
+import { getDatabase } from "../../../../util/database";
+import { getGuilds } from "../../../../util/entity/guild";
+import { emitGatewayEvent } from "../../../../util/events";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 
@@ -68,11 +67,10 @@ router.delete(
 			.execute();
 
 		if (deleted.affected) {
-			const member_id: string = deleted.raw[0].id;
-
-			emitGatewayEvent(req.params.guild_id, {
+			emitGatewayEvent(Guild.create({ id: req.params.guild_id }), {
 				type: "MEMBER_LEAVE",
-				member_id,
+				guild: `${mention.user}@${mention.domain}`,
+				user: req.user.mention,
 			});
 		}
 

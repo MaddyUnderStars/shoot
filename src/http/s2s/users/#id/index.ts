@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Relationship, User } from "../../../../entity";
-import {
-	addContext,
-	config,
-	getDatabase,
-	orderedCollectionHandler,
-	route,
-} from "../../../../util";
+import { Relationship } from "../../../../entity/relationship";
+import { User } from "../../../../entity/user";
 import { handleInbox } from "../../../../util/activitypub/inbox";
-import { buildAPActor } from "../../../../util/activitypub/transformers";
+import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
+import { addContext } from "../../../../util/activitypub/util";
+import { config } from "../../../../util/config";
+import { getDatabase } from "../../../../util/database";
+import { route } from "../../../../util/route";
+import { makeInstanceUrl } from "../../../../util/url";
 
 const router = Router({ mergeParams: true });
 
@@ -62,9 +62,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: new URL(
-					`${config.federation.instance_url.origin}/users/${req.params.user_id}/followers`,
-				),
+				id: makeInstanceUrl(`/users/${req.params.user_id}/followers`),
 				...req.query,
 				convert: (x) => x.from.remote_address ?? buildAPActor(x.from),
 				entity: Relationship,

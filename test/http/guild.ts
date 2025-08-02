@@ -1,10 +1,12 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import test from "ava";
 import { setupTests } from "../helpers/env";
 import { createTestUser } from "../helpers/users";
+
 setupTests(test);
 
 import request from "supertest";
@@ -39,10 +41,14 @@ test("Get as member", async (t) => {
 		"user2@localhost",
 	]);
 	const expected = guild.toPublic();
-	// biome-ignore lint/performance/noDelete:
-	for (const ch of expected.channels || []) delete ch.guild_id;
-	// biome-ignore lint/performance/noDelete:
-	for (const r of expected.roles || []) delete r.guild_id;
+
+	// @ts-ignore
+	// biome-ignore lint/performance/noDelete: remove this field because it's redundant in GET /guild/:id
+	for (const ch of expected.channels || []) delete ch.guild;
+
+	// @ts-ignore
+	// biome-ignore lint/performance/noDelete: remove this field because it's redundant in GET /guild/:id
+	for (const r of expected.roles || []) delete r.guild;
 
 	const res = await request(api.app)
 		.get(`/guild/${guild.mention}`)
@@ -69,11 +75,15 @@ test("Get as non-member", async (t) => {
 	]);
 
 	const guild = await createTestGuild("test guild", "user3@localhost", []);
-	const expected = guild.toPublic();
-	// biome-ignore lint/performance/noDelete:
-	for (const ch of expected.channels || []) delete ch.guild_id;
-	// biome-ignore lint/performance/noDelete:
-	for (const r of expected.roles || []) delete r.guild_id;
+	const expected = { ...guild.toPublic() };
+
+	// @ts-ignore
+	// biome-ignore lint/performance/noDelete: remove this field because it's redundant in GET /guild/:id
+	for (const ch of expected.channels || []) delete ch.guild;
+
+	// @ts-ignore
+	// biome-ignore lint/performance/noDelete: remove this field because it's redundant in GET /guild/:id
+	for (const r of expected.roles || []) delete r.guild;
 
 	const res = await request(api.app)
 		.get(`/guild/${guild.mention}`)

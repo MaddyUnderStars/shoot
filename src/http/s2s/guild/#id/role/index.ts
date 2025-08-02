@@ -1,18 +1,14 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Member } from "../../../../../entity";
+import { Member } from "../../../../../entity/member";
 import { Role } from "../../../../../entity/role";
-import {
-	addContext,
-	config,
-	getDatabase,
-	orderedCollectionHandler,
-	route,
-} from "../../../../../util";
-import {
-	buildAPActor,
-	buildAPRole,
-} from "../../../../../util/activitypub/transformers";
+import { orderedCollectionHandler } from "../../../../../util/activitypub/orderedCollection";
+import { buildAPActor } from "../../../../../util/activitypub/transformers/actor";
+import { buildAPRole } from "../../../../../util/activitypub/transformers/role";
+import { addContext } from "../../../../../util/activitypub/util";
+import { getDatabase } from "../../../../../util/database";
+import { route } from "../../../../../util/route";
+import { makeInstanceUrl } from "../../../../../util/url";
 
 const router = Router({ mergeParams: true });
 
@@ -53,8 +49,8 @@ router.get(
 		async (req, res) =>
 			res.json(
 				await orderedCollectionHandler({
-					id: new URL(
-						`${config.federation.instance_url.origin}/guild/${req.params.guild_id}/role/${req.params.role_id}`,
+					id: makeInstanceUrl(
+						`/guild/${req.params.guild_id}/role/${req.params.role_id}`,
 					),
 					before: req.query.before,
 					after: req.query.after,
@@ -68,7 +64,9 @@ router.get(
 							"member.roles",
 							"role",
 							"role.id = :role_id",
-							{ role_id: req.params.role_id },
+							{
+								role_id: req.params.role_id,
+							},
 						)
 						.leftJoinAndSelect("member.user", "user"),
 				}),

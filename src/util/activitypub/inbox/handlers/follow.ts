@@ -1,13 +1,19 @@
-import { type APAccept, ActivityIsFollow } from "activitypub-types";
-import type { ActivityHandler } from ".";
-import { Channel, Guild, Invite, User } from "../../../../entity";
+import { ActivityIsFollow, type APAccept } from "activitypub-types";
+import { v7 as uuidv7 } from "uuid";
+import { Channel } from "../../../../entity/channel";
+import { Guild } from "../../../../entity/guild";
+import { Invite } from "../../../../entity/invite";
 import { RelationshipType } from "../../../../entity/relationship";
+import { User } from "../../../../entity/user";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import { config } from "../../../config";
-import { getOrFetchUser, joinGuild } from "../../../entity";
+import { joinGuild } from "../../../entity/guild";
 import { acceptOrCreateRelationship } from "../../../entity/relationship";
+import { getOrFetchUser } from "../../../entity/user";
+import { makeInstanceUrl } from "../../../url";
 import { APError } from "../../error";
+import { resolveId } from "../../resolve";
 import { addContext, splitQualifiedMention } from "../../util";
+import type { ActivityHandler } from ".";
 
 export const FollowActivityHandler: ActivityHandler = async (
 	activity,
@@ -19,17 +25,19 @@ export const FollowActivityHandler: ActivityHandler = async (
 	if (typeof from !== "string")
 		throw new APError("Follow activity must have single actor");
 
-	const actor = await getOrFetchUser(from);
+	const actor = await getOrFetchUser(resolveId(from));
 	if (!actor.collections?.inbox)
 		throw new APError("Received follow from actor without inbox");
 
 	if (target instanceof User) {
-		const relationship = await acceptOrCreateRelationship(
-			target,
+		const rel = await acceptOrCreateRelationship(
 			actor,
+			target,
+			false,
 			activity,
 		);
-		if (relationship.to_state !== RelationshipType.accepted) return;
+
+		if (rel.to_state !== RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
 		// TODO: check for an invite to this channel
 		throw new APError("not implemented");
@@ -51,13 +59,13 @@ export const FollowActivityHandler: ActivityHandler = async (
 			relations: { guild: true },
 		});
 
-		await joinGuild(actor.id, invite.guild.id);
+		await joinGuild(actor.mention, invite.guild.mention);
 	} else throw new APError("Cannot accept follows for this target");
 
 	const accept: APAccept = addContext({
-		id: `${activity.id}/accept`,
+		id: makeInstanceUrl(`${uuidv7()}/accept`),
 		type: "Accept",
-		actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(target)}`,
+		actor: makeInstanceUrl(getExternalPathFromActor(target)),
 		object: activity,
 	});
 

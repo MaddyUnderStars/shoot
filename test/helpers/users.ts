@@ -1,5 +1,6 @@
 export const createTestUser = async (username: string) => {
-	const { registerUser, generateToken } = await import("../../src/util");
+	const { registerUser } = await import("../../src/util/entity/user");
+	const { generateToken } = await import("../../src/util/token");
 	const user = await registerUser(username, "password");
 	return await generateToken(user.id);
 };
@@ -12,8 +13,9 @@ export const createTestRemoteUser = async (name: string, domain: string) => {
 			.replaceAll("REPLACED_NAME", name),
 	);
 
-	const { createUserForRemotePerson, generateSigningKeys } = await import(
-		"../../src/util"
+	const { generateSigningKeys } = await import("../../src/util/entity/actor");
+	const { createUserForRemotePerson } = await import(
+		"../../src/util/entity/user"
 	);
 
 	const user = await createUserForRemotePerson(ap);

@@ -1,6 +1,8 @@
 import http from "node:http";
 import ws from "ws";
-import { createLogger, initDatabase } from "../util";
+import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
+import { createLogger } from "../util/log";
 import { onConnection } from "./socket/connection";
 
 const Log = createLogger("GATEWAY");
@@ -25,6 +27,7 @@ export class GatewayServer {
 		});
 
 		await initDatabase();
+		await initRabbitMQ(true);
 
 		if (!this.server.listening) this.server.listen(port);
 	}

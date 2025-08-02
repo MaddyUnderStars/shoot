@@ -1,17 +1,18 @@
 import { type APFollow, ObjectIsOrganization } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Invite } from "../../../entity";
+import { Invite } from "../../../entity/invite";
 import { getExternalPathFromActor, sendActivity } from "../../../sender";
+import { APError } from "../../../util/activitypub/error";
+import { resolveWebfinger } from "../../../util/activitypub/resolve";
 import {
-	APError,
 	addContext,
-	config,
-	resolveWebfinger,
-	route,
 	splitQualifiedMention,
-} from "../../../util";
+} from "../../../util/activitypub/util";
+import { config } from "../../../util/config";
 import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
+import { route } from "../../../util/route";
+import { makeInstanceUrl } from "../../../util/url";
 
 const router = Router({ mergeParams: true });
 
@@ -24,11 +25,21 @@ router.post(
 		async (req, res) => {
 			// accept an invite code
 
-			const mention = splitQualifiedMention(req.params.invite_code);
+			let inviteCode: string;
+			let domain: string;
+
+			if (req.params.invite_code.includes("@")) {
+				const split = splitQualifiedMention(req.params.invite_code);
+				inviteCode = split.user;
+				domain = split.domain;
+			} else {
+				inviteCode = req.params.invite_code;
+				domain = config.federation.instance_url.origin;
+			}
 
 			const invite = await Invite.findOne({
 				where: {
-					code: mention.user,
+					code: inviteCode,
 				},
 				loadRelationIds: {
 					relations: ["guild"],
@@ -38,7 +49,7 @@ router.post(
 
 			if (!invite) {
 				const obj = await resolveWebfinger(
-					`invite:${req.params.invite_code}`,
+					`invite:${inviteCode}@${domain}`,
 				);
 				if (obj.type !== "GuildInvite")
 					throw new APError(
@@ -60,9 +71,13 @@ router.post(
 				await sendActivity(
 					guild,
 					addContext({
-						id: `${config.federation.instance_url.origin}${getExternalPathFromActor(req.user)}/invite/${req.params.invite_code}`,
+						id: makeInstanceUrl(
+							`${getExternalPathFromActor(req.user)}/invite/${req.params.invite_code}`,
+						),
 						type: "Follow",
-						actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(req.user)}`,
+						actor: makeInstanceUrl(
+							getExternalPathFromActor(req.user),
+						),
 						object: guild.remote_address,
 						instrument: req.params.invite_code,
 					} as APFollow),
@@ -72,7 +87,7 @@ router.post(
 				return res.sendStatus(202);
 			}
 
-			await joinGuild(req.user.id, invite.guild.id);
+			await joinGuild(req.user.mention, invite.guild.mention);
 
 			return res.sendStatus(204);
 		},

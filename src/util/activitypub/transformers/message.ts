@@ -1,8 +1,10 @@
 import type { APAnnounce, APCreate, APNote } from "activitypub-types";
-import { ApCache, type Channel, Message } from "../../../entity";
+import { ApCache } from "../../../entity/apcache";
+import type { Channel } from "../../../entity/channel";
+import { Message } from "../../../entity/message";
 import { getExternalPathFromActor } from "../../../sender";
-import { config } from "../../config";
-import { getOrFetchAttributedUser } from "../../entity";
+import { getOrFetchAttributedUser } from "../../entity/user";
+import { makeInstanceUrl, makeWebappUrl } from "../../url";
 
 export const buildMessageFromAPNote = async (
 	note: APNote,
@@ -21,10 +23,13 @@ export const buildMessageFromAPNote = async (
 };
 
 export const buildAPNote = (message: Message): APNote => {
-	const instance_url = config.federation.instance_url.origin;
-	const id = `${instance_url}/channel/${message.channel.id}/message/${message.id}`;
-	const attributedTo = `${instance_url}${getExternalPathFromActor(message.author)}`;
-	const to = `${instance_url}${getExternalPathFromActor(message.channel)}`;
+	const id = makeInstanceUrl(
+		`/channel/${message.channel.id}/message/${message.id}`,
+	);
+	const attributedTo = makeInstanceUrl(
+		`${getExternalPathFromActor(message.author)}`,
+	);
+	const to = makeInstanceUrl(`${getExternalPathFromActor(message.channel)}`);
 
 	return {
 		type: "Note",
@@ -38,7 +43,10 @@ export const buildAPNote = (message: Message): APNote => {
 		content: message.content ?? undefined,
 		updated: message.updated ?? undefined,
 		summary: "",
-		url: `${config.federation.webapp_url.origin}/channel/${message.channel.id}/message/${message.id}`,
+		url: makeWebappUrl(
+			`/channel/${message.channel.id}/message/${message.id}`,
+		),
+		audience: makeInstanceUrl(getExternalPathFromActor(message.channel)),
 	};
 };
 
@@ -57,11 +65,14 @@ export const buildAPAnnounceNote = (
 	inner: APNote,
 	channel_id: string,
 ): APAnnounce => {
-	const actor = `${config.federation.instance_url.origin}/channel/${channel_id}`;
+	const actor = makeInstanceUrl(`/channel/${channel_id}`);
 	// TODO: this should be channel_id followers
 
 	return {
-		id: `${actor}/message/${inner.id?.split("/").reverse()[0]}/announce`, // TODO
+		id: new URL(
+			`/message/${inner.id?.split("/").reverse()[0]}/announce`,
+			actor,
+		).toString(), // TODO
 		type: "Announce",
 		actor,
 		published: inner.published,

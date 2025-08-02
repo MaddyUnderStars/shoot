@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { HttpError, config } from "../../util";
+import { config } from "../../util/config";
+import { HttpError } from "../../util/httperror";
 import { route } from "../../util/route";
 
 const router = Router();
@@ -71,7 +72,7 @@ router.get(
 		{
 			response: NodeInfoResponse,
 		},
-		(req, res) => {
+		(_req, res) => {
 			res.json({
 				version: "2.0",
 				software: {

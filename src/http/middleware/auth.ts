@@ -1,11 +1,14 @@
 import type { RequestHandler } from "express";
-import type { Actor, User } from "../../entity";
-import { ACTIVITY_JSON_ACCEPT, HttpError, getUserFromToken } from "../../util";
+import type { Actor } from "../../entity/actor";
+import type { User } from "../../entity/user";
+import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants";
+import { HttpError } from "../../util/httperror";
+import { getUserFromToken } from "../../util/token";
 
 export const NO_AUTH_ROUTES = [
 	"/auth/login",
 	"/auth/register",
-	/\.well\-known/,
+	/\.well-known/,
 	"/nodeinfo/2.0.json",
 
 	// TODO: this might not be a good idea?
@@ -17,7 +20,7 @@ export const NO_AUTH_ROUTES = [
 	"/api/v3/federated_instances",
 ];
 
-export const authHandler: RequestHandler = async (req, res, next) => {
+export const authHandler: RequestHandler = async (req, _res, next) => {
 	const url = req.url;
 
 	if (

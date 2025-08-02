@@ -4,22 +4,22 @@ import {
 	ObjectIsGroup,
 	ObjectIsOrganization,
 } from "activitypub-types";
-import {
-	Channel,
-	Guild,
-	type GuildTextChannel,
-	Member,
-	User,
-} from "../../entity";
+import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
+import { Member } from "../../entity/member";
 import { Role } from "../../entity/role";
+import type { GuildTextChannel } from "../../entity/textChannel";
+import type { User } from "../../entity/user";
+import type { ActorMention } from "../activitypub/constants";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	ObjectIsRole,
 	resolveAPObject,
 	resolveCollectionEntries,
+	resolveId,
 	resolveWebfinger,
-	splitQualifiedMention,
-} from "../activitypub";
+} from "../activitypub/resolve";
+import { ObjectIsRole } from "../activitypub/transformers/role";
+import { splitQualifiedMention } from "../activitypub/util";
 import { config } from "../config";
 import { getDatabase } from "../database";
 import { emitGatewayEvent } from "../events";
@@ -78,31 +78,41 @@ export const getGuilds = (user_id: string) =>
 		})
 		.getMany();
 
-export const joinGuild = async (user_id: string, guild_id: string) => {
+export const joinGuild = async (
+	user_id: ActorMention,
+	guild_id: ActorMention,
+) => {
+	const guild = await getOrFetchGuild(guild_id);
+	const user = await getOrFetchUser(user_id);
+
+	// if (user.domain !== config.federation.instance_url.origin)
+	// 	throw new APError("Tried to join a guild for a user we don't control?");
+
 	const member = await Member.create({
-		user: User.create({ id: user_id }),
-		roles: [Role.create({ id: guild_id })],
+		user,
+
+		// if this guild id does not exist, we should get an error when we try to save
+		roles: [Role.create({ id: guild.id })],
 	}).save();
 
-	emitGatewayEvent(guild_id, {
+	emitGatewayEvent(guild, {
 		type: "MEMBER_JOIN",
+		guild: guild_id,
 		member: member.toPublic(),
 	});
 
-	emitGatewayEvent(user_id, {
+	emitGatewayEvent(user, {
 		type: "GUILD_CREATE",
-		guild: (
-			await Guild.findOneOrFail({ where: { id: guild_id } })
-		).toPublic(),
+		guild: guild.toPublic(),
 	});
 
 	return member;
 };
 
-export const getOrFetchGuild = async (lookup: string | APOrganization) => {
-	const id = typeof lookup === "string" ? lookup : lookup.id;
-
-	if (!id) throw new APError("Cannot fetch guild without ID");
+export const getOrFetchGuild = async (
+	lookup: URL | ActorMention | APOrganization,
+) => {
+	const id = resolveId(lookup);
 
 	const mention = splitQualifiedMention(id);
 
@@ -125,7 +135,7 @@ export const getOrFetchGuild = async (lookup: string | APOrganization) => {
 
 	if (!guild && config.federation.enabled) {
 		// fetch from remote instance
-		guild = await createGuildFromRemoteOrg(lookup);
+		guild = await createGuildFromRemoteOrg(resolveId(lookup));
 		await guild.save();
 	} else if (!guild) {
 		throw new APError("Guild could not be found", 404);
@@ -144,7 +154,7 @@ export const createGuild = async (name: string, owner: User) => {
 
 	setImmediate(() => generateSigningKeys(guild));
 
-	emitGatewayEvent(owner.id, {
+	emitGatewayEvent(owner, {
 		type: "GUILD_CREATE",
 		guild: guild.toPublic(),
 	});
@@ -166,7 +176,7 @@ export const createGuild = async (name: string, owner: User) => {
 
 	guild.roles = [everyone];
 
-	emitGatewayEvent(guild.id, {
+	emitGatewayEvent(guild, {
 		type: "ROLE_CREATE",
 		role: everyone.toPublic(),
 	});
@@ -176,28 +186,27 @@ export const createGuild = async (name: string, owner: User) => {
 		roles: [everyone],
 	}).save();
 
-	emitGatewayEvent(guild.id, {
+	emitGatewayEvent(guild, {
 		type: "ROLE_MEMBER_ADD",
 		role_id: everyone.id,
+		guild: guild.mention,
 		member: member.toPublic(),
 	});
 
 	return guild;
 };
 
-export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
-	const mention =
-		typeof lookup === "string"
-			? splitQualifiedMention(lookup)
-			: // biome-ignore lint/style/noNonNullAssertion: <explanation>
-				splitQualifiedMention(lookup.id!);
+export const createGuildFromRemoteOrg = async (
+	lookup: ActorMention | URL | APActor,
+) => {
+	const mention = splitQualifiedMention(resolveId(lookup));
 
 	const obj =
 		typeof lookup === "string"
-			? tryParseUrl(lookup)
+			? await resolveWebfinger(lookup)
+			: lookup instanceof URL
 				? await resolveAPObject(lookup)
-				: await resolveWebfinger(lookup)
-			: lookup;
+				: lookup;
 
 	if (!ObjectIsOrganization(obj))
 		throw new APError("Resolved object is not Organization");
@@ -227,7 +236,7 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 		remote_id: mention.user,
 
 		name: obj.name,
-		owner: await getOrFetchUser(obj.attributedTo),
+		owner: await getOrFetchUser(resolveId(obj.attributedTo)),
 
 		// to be assigned later
 		channels: [],
@@ -253,7 +262,11 @@ export const createGuildFromRemoteOrg = async (lookup: string | APActor) => {
 			await resolveCollectionEntries(new URL(obj.following.toString()))
 		).reduce(
 			(prev, curr) => {
-				if (typeof curr === "string" || ObjectIsGroup(curr)) {
+				if (typeof curr === "string") {
+					const url = tryParseUrl(curr);
+					if (!url) return prev;
+					prev.push(getOrFetchChannel(url));
+				} else if (ObjectIsGroup(curr)) {
 					prev.push(getOrFetchChannel(curr));
 				}
 				return prev;

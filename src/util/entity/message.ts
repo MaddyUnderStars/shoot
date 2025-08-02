@@ -1,23 +1,25 @@
 import { ObjectIsNote } from "activitypub-types";
-import { DMChannel, GuildTextChannel, Member, Message } from "../../entity";
 import { Attachment } from "../../entity/attachment";
+import { DMChannel } from "../../entity/DMChannel";
+import { Embed } from "../../entity/embed";
+import { Member } from "../../entity/member";
+import { Message } from "../../entity/message";
+import { GuildTextChannel } from "../../entity/textChannel";
 import { sendActivity } from "../../sender";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	addContext,
 	buildAPAnnounceNote,
 	buildAPCreateNote,
 	buildAPNote,
-} from "../activitypub";
+} from "../activitypub/transformers/message";
+import { addContext } from "../activitypub/util";
 import { getDatabase } from "../database";
+import { generateUrlPreview } from "../embeds";
 import { emitGatewayEvent } from "../events";
 import { HttpError } from "../httperror";
+import { createLogger } from "../log";
 import { checkFileExists } from "../storage";
 import { tryParseUrl } from "../url";
-import { generateUrlPreview } from "../embeds";
-import { Embed } from "../../entity/embed";
-import { createLogger } from "../log";
-import { z } from "zod";
 
 const log = createLogger("handleMessage");
 
@@ -67,7 +69,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 		await Attachment.insert(message.files);
 	}
 
-	emitGatewayEvent(message.channel.id, {
+	emitGatewayEvent(message.channel, {
 		type: "MESSAGE_CREATE",
 		message: message.toPublic(),
 	});
@@ -91,7 +93,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 			try {
 				await federateMessage(message);
-			} catch (e) {
+			} catch (_) {
 				// we'll likely want to implement some sort of retry
 				// or eventual mark as failed behaviour here
 				log.error("FIXME: message failed to federate");
@@ -182,7 +184,7 @@ const federateMessage = async (message: Message) => {
 };
 
 const URL_REGEX =
-	/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+	/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
 const EMBED_TTL = 1000 * 60 * 60 * 24 * 7; // 1 week
 
@@ -226,7 +228,7 @@ const processEmbeds = async (message: Message) => {
 	message.embeds = embeds;
 	await message.save();
 
-	emitGatewayEvent(message.channel.id, {
+	emitGatewayEvent(message.channel, {
 		type: "MESSAGE_UPDATE",
 		message: {
 			embeds: embeds.map((x) => x.toPublic()),

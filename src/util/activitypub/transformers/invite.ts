@@ -1,6 +1,6 @@
 import type { APObject } from "activitypub-types";
-import type { Invite } from "../../../entity";
-import { config } from "../../config";
+import type { Invite } from "../../../entity/invite";
+import { makeInstanceUrl } from "../../url";
 import { buildAPActor } from "./actor";
 
 export type APGuildInvite = APObject & { type: "GuildInvite" };
@@ -8,7 +8,7 @@ export type APGuildInvite = APObject & { type: "GuildInvite" };
 export const buildAPGuildInvite = (invite: Invite): APGuildInvite => {
 	return {
 		type: "GuildInvite",
-		id: `${config.federation.instance_url.origin}/invite/${invite.code}`,
+		id: makeInstanceUrl(`/invite/${invite.code}`),
 		attributedTo: buildAPActor(invite.guild),
 	};
 };

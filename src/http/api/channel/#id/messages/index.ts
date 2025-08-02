@@ -1,14 +1,13 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message, PublicMessage } from "../../../../../entity";
 import { Attachment } from "../../../../../entity/attachment";
-import {
-	PERMISSION,
-	getDatabase,
-	handleMessage,
-	route,
-} from "../../../../../util";
+import { Message, PublicMessage } from "../../../../../entity/message";
+import { ActorMention } from "../../../../../util/activitypub/constants";
+import { getDatabase } from "../../../../../util/database";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
+import { handleMessage } from "../../../../../util/entity/message";
+import { PERMISSION } from "../../../../../util/permission";
+import { route } from "../../../../../util/route";
 
 const MessageCreate = z
 	.object({
@@ -24,7 +23,10 @@ const MessageCreate = z
 	.refine(
 		(obj) => Object.values(obj).some((x) => x.length > 0),
 		"Message must not be empty",
-	);
+	)
+	.openapi("MessageCreateRequest", {
+		minProperties: 1,
+	});
 
 const router = Router({ mergeParams: true });
 
@@ -34,7 +36,7 @@ router.post(
 	route(
 		{
 			body: MessageCreate,
-			params: z.object({ channel_id: z.string() }),
+			params: z.object({ channel_id: ActorMention }),
 			response: PublicMessage,
 		},
 		async (req, res) => {
@@ -44,7 +46,7 @@ router.post(
 
 			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
-			if (req.body.files)
+			if (req.body.files?.length)
 				await channel.throwPermission(req.user, PERMISSION.UPLOAD);
 
 			const message = Message.create({
@@ -86,7 +88,7 @@ router.get(
 	route(
 		{
 			params: z.object({
-				channel_id: z.string(),
+				channel_id: ActorMention,
 			}),
 			query: MessageFetchOpts,
 			response: z.array(PublicMessage),
@@ -111,7 +113,9 @@ router.get(
 			if (req.query.query)
 				query.andWhere(
 					"to_tsvector(messages.content) @@ to_tsquery(:query)",
-					{ query: req.query.query },
+					{
+						query: req.query.query,
+					},
 				);
 
 			if (req.query.after)

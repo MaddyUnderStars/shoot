@@ -1,6 +1,6 @@
 import EventEmitter from "node:events";
 import WebSocket, { type RawData } from "ws";
-import { createLogger } from "../../util";
+import { createLogger } from "../../util/log";
 import type {
 	JANUS_REQUEST,
 	JANUS_RESPONSE,
@@ -28,12 +28,13 @@ export class Janus extends EventEmitter {
 	private socket: WebSocket;
 	private heartbeatInterval: NodeJS.Timeout;
 	private token?: string;
+	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: incorrect lint
 	private sequence = 0;
-	private _adminSession: number;
-	private _adminHandle: number;
+	private adminSession: number;
+	private adminHandle: number;
 
 	get session() {
-		return this._adminSession;
+		return this.adminSession;
 	}
 
 	public connect = (config: JanusConfiguration): Promise<void> => {
@@ -69,8 +70,8 @@ export class Janus extends EventEmitter {
 		Log.msg("Connected");
 		this.startHeartbeat();
 
-		this._adminSession = (await this.createSession()).id;
-		this._adminHandle = (await this.attachHandle()).id;
+		this.adminSession = (await this.createSession()).id;
+		this.adminHandle = (await this.attachHandle()).id;
 	};
 
 	public createSession = () =>
@@ -91,7 +92,7 @@ export class Janus extends EventEmitter {
 				audiolevel_event: true,
 			},
 			session_id: this.session,
-			handle_id: this._adminHandle,
+			handle_id: this.adminHandle,
 		});
 
 	public joinRoom = (handle_id: number, room_id: number, display: string) =>
@@ -143,7 +144,7 @@ export class Janus extends EventEmitter {
 		clearTimeout(this.heartbeatInterval);
 	};
 
-	private onError = (e: Error) => {
+	private onError = (_e: Error) => {
 		// TODO
 	};
 
@@ -155,7 +156,7 @@ export class Janus extends EventEmitter {
 	>(
 		payload: I,
 	): Promise<O> =>
-		new Promise((resolve, reject) => {
+		new Promise((resolve) => {
 			const transaction = `${this.sequence++}`;
 			const decorated = { ...payload, token: this.token, transaction };
 

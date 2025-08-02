@@ -1,11 +1,17 @@
 import crypto from "node:crypto";
-import { Invite } from "../../entity";
+import { Invite } from "../../entity/invite";
 
 const CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let INVITE_LENGTH = 5;
 
-export const generateInviteCode = async () => {
-	let code: string | undefined = undefined;
+const DEFAULT_INVITE_EXISTS_CHECK = async (code: string) => {
+	return (await Invite.count({ where: { code } })) !== 0;
+};
+
+export const generateInviteCode = async (
+	exists = DEFAULT_INVITE_EXISTS_CHECK,
+) => {
+	let code: string | undefined;
 
 	while (!code) {
 		const tryCode = Array.from(
@@ -14,7 +20,7 @@ export const generateInviteCode = async () => {
 			.map((x) => CHARACTERS[x % CHARACTERS.length])
 			.join("");
 
-		if ((await Invite.count({ where: { code: tryCode } })) !== 0) {
+		if (await exists(tryCode)) {
 			// failed
 			INVITE_LENGTH++;
 			continue;

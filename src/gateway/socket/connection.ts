@@ -1,7 +1,8 @@
 import type { IncomingMessage } from "node:http";
 import type ws from "ws";
-import { createLogger } from "../../util";
-import { CLOSE_CODES, send, type Websocket } from "../util";
+import { createLogger } from "../../util/log";
+import { CLOSE_CODES } from "../util/codes";
+import { send, type Websocket } from "../util/websocket";
 import { onClose } from "./close";
 import { onMessage } from "./message";
 
@@ -13,6 +14,11 @@ export function onConnection(
 	request: IncomingMessage,
 ) {
 	socket.events = {};
+	socket.member_list = {
+		channel_id: undefined,
+		range: undefined,
+		events: {},
+	};
 
 	socket.sequence = 0;
 

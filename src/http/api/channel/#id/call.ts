@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PERMISSION, config, getOrFetchChannel, route } from "../../../../util";
+import { ActorMention } from "../../../../util/activitypub/constants";
+import { config } from "../../../../util/config";
+import { getOrFetchChannel } from "../../../../util/entity/channel";
+import { PERMISSION } from "../../../../util/permission";
+import { route } from "../../../../util/route";
 import { askForMediaToken, generateMediaToken } from "../../../../util/voice";
 
 const router = Router({ mergeParams: true });
@@ -15,7 +19,7 @@ router.post(
 	route(
 		{
 			params: z.object({
-				channel_id: z.string(),
+				channel_id: ActorMention,
 			}),
 			response: MediaTokenResponse,
 			errors: { 202: z.literal("Accepted") },

@@ -1,6 +1,6 @@
 import { Like } from "typeorm";
-import { createLogger } from "../../util";
-import { InstanceBehaviour } from "../../util/activitypub/instances";
+import { InstanceBehaviour } from "../../util/activitypub/instanceBehaviour";
+import { createLogger } from "../../util/log";
 import { appendToConfig } from "../util";
 
 const Log = createLogger("cli");
@@ -16,9 +16,14 @@ export const instance = async (url: string, action: string) => {
 			: url,
 	);
 
-	const { User, Guild, DMChannel, GuildTextChannel, Channel, ApCache } =
-		await import("../../entity");
-	const { initDatabase } = await import("../../util/database");
+	const { User } = await import("../../entity/user");
+	const { Guild } = await import("../../entity/guild");
+	const { DMChannel } = await import("../../entity/DMChannel");
+	const { GuildTextChannel } = await import("../../entity/textChannel");
+	const { Channel } = await import("../../entity/channel");
+	const { ApCache } = await import("../../entity/apcache");
+
+	const { initDatabase, closeDatabase } = await import("../../util/database");
 
 	await initDatabase();
 
@@ -37,11 +42,13 @@ export const instance = async (url: string, action: string) => {
 				`Guilds: ${guilds}`,
 		);
 
-		return;
+		return closeDatabase();
 	}
 
-	if (config.federation.instance_url.hostname === parsed.hostname)
-		throw new Error("You can't block yourself!");
+	if (config.federation.instance_url.hostname === parsed.hostname) {
+		Log.error("You can't block yourself");
+		return closeDatabase();
+	}
 
 	switch (action.toLowerCase()) {
 		case "block": {
@@ -70,6 +77,8 @@ export const instance = async (url: string, action: string) => {
 		}
 		default:
 			Log.error(`Action ${action} not implemented`);
-			return;
+			return closeDatabase();
 	}
+
+	closeDatabase();
 };

@@ -1,16 +1,16 @@
 import { type Response, Router } from "express";
 import z from "zod";
-import { Invite, User } from "../../entity";
+import { Invite } from "../../entity/invite";
+import { User } from "../../entity/user";
 import { getExternalPathFromActor } from "../../sender";
-import {
-	HttpError,
-	InstanceActor,
-	config,
-	findActorOfAnyType,
-	route,
-	splitQualifiedMention,
-} from "../../util";
 import type { WebfingerResponse } from "../../util/activitypub/constants";
+import { InstanceActor } from "../../util/activitypub/instanceActor";
+import { splitQualifiedMention } from "../../util/activitypub/util";
+import { config } from "../../util/config";
+import { findActorOfAnyType } from "../../util/entity/resolve";
+import { HttpError } from "../../util/httperror";
+import { route } from "../../util/route";
+import { makeInstanceUrl, makeWebappUrl } from "../../util/url";
 
 const router = Router();
 
@@ -94,12 +94,12 @@ router.get(
 
 			return res.json({
 				subject: `${type}:${id}@${config.federation.webapp_url.hostname}`,
-				aliases: [`${webapp_url.origin}${path}`],
+				aliases: [makeWebappUrl(path)],
 				links: [
 					{
 						rel: "self",
 						type: "application/activity+json",
-						href: `${instance_url.origin}${path}`,
+						href: makeInstanceUrl(path),
 					},
 				],
 			});

@@ -1,7 +1,8 @@
 import type { EventEmitter } from "node:events";
 import http from "node:http";
 import ws from "ws";
-import { createLogger, initDatabase } from "../util";
+import { initDatabase } from "../util/database";
+import { createLogger } from "../util/log";
 import { onConnection } from "./socket/connection";
 import { initJanus } from "./util/janus";
 
@@ -31,7 +32,7 @@ export class MediaGatewayServer {
 
 		try {
 			await initJanus();
-		} catch (e) {
+		} catch (_) {
 			Log.error("Failed to connect to Janus. Webrtc will be unavailable");
 			return;
 		}

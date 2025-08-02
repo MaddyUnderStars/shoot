@@ -1,7 +1,8 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 import { z } from "zod";
+import { ActorMention } from "../util/activitypub/constants";
 import { BaseModel } from "./basemodel";
-import { type Guild, PublicGuild } from "./guild";
+import type { Guild } from "./guild";
 
 @Entity("invites")
 export class Invite extends BaseModel {
@@ -22,17 +23,17 @@ export class Invite extends BaseModel {
 		return {
 			code: this.code,
 			expires: this.expires,
-			guild: this.guild.toPublic(),
+			guild: this.guild.mention,
 		};
 	}
 }
 
 export type PublicInvite = Pick<Invite, "code" | "expires"> & {
-	guild: PublicGuild;
+	guild: ActorMention;
 };
 
 export const PublicInvite: z.ZodType<PublicInvite> = z.object({
 	code: z.string(),
-	guild: PublicGuild,
+	guild: ActorMention,
 	expires: z.date(),
 });

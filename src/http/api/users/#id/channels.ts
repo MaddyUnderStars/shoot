@@ -1,11 +1,16 @@
 import type { APCreate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { DMChannel, PublicChannel } from "../../../../entity";
+import { PublicChannel } from "../../../../entity/channel";
+import { DMChannel } from "../../../../entity/DMChannel";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import { addContext, config, getOrFetchUser, route } from "../../../../util";
-import { buildAPActor } from "../../../../util/activitypub/transformers";
+import { ActorMention } from "../../../../util/activitypub/constants";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
+import { addContext } from "../../../../util/activitypub/util";
 import { createDmChannel } from "../../../../util/entity/channel";
+import { getOrFetchUser } from "../../../../util/entity/user";
+import { route } from "../../../../util/route";
+import { makeInstanceUrl } from "../../../../util/url";
 
 const router = Router({ mergeParams: true });
 
@@ -20,17 +25,19 @@ router.post(
 		{
 			body: DMChannelCreate,
 			params: z.object({
-				user_id: z.string(),
+				user_id: ActorMention,
 			}),
 			response: PublicChannel,
 		},
 		async (req, res) => {
 			const { user_id } = req.params;
 
+			const user = await getOrFetchUser(user_id);
+
 			const existing = await DMChannel.findOne({
 				where: [
-					{ owner: { id: req.user.id } },
-					{ recipients: { id: req.user.id } },
+					{ owner: { id: req.user.id }, recipients: { id: user.id } },
+					{ owner: { id: user.id }, recipients: { id: req.user.id } },
 				],
 				relations: { recipients: true, owner: true },
 			});
@@ -49,8 +56,12 @@ router.post(
 						channel.recipients,
 						addContext({
 							type: "Create",
-							id: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel)}/create`,
-							actor: `${config.federation.instance_url.origin}${getExternalPathFromActor(channel.owner)}`,
+							id: makeInstanceUrl(
+								`${getExternalPathFromActor(channel)}/create`,
+							),
+							actor: makeInstanceUrl(
+								getExternalPathFromActor(channel.owner),
+							),
 							object: buildAPActor(channel),
 						}) as APCreate,
 						channel.owner,

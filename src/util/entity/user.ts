@@ -1,23 +1,22 @@
-import bcrypt from "bcrypt";
-import { User } from "../../entity";
-import { config } from "../config";
-
 import {
 	type APActor,
 	type APNote,
 	type APPerson,
 	ObjectIsGroup,
 } from "activitypub-types";
+import bcrypt from "bcrypt";
+import type { InstanceInvite } from "../../entity/instanceInvite";
+import { User } from "../../entity/user";
+import type { ActorMention } from "../activitypub/constants";
+import { APError } from "../activitypub/error";
 import {
-	APError,
-	APObjectIsActor,
-	type ActorMention,
 	resolveAPObject,
+	resolveId,
 	resolveWebfinger,
-	splitQualifiedMention,
-} from "../activitypub";
+} from "../activitypub/resolve";
+import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
+import { config } from "../config";
 import { createLogger } from "../log";
-import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 
 const Log = createLogger("users");
@@ -27,12 +26,14 @@ export const registerUser = async (
 	password: string,
 	email?: string,
 	awaitKeyGeneration = false,
+	instanceInvite?: InstanceInvite,
 ) => {
 	const user = await User.create({
 		name: username,
 		email,
 		password_hash: await bcrypt.hash(password, 12),
 		public_key: "", // The key has yet to be generated.
+		invite: instanceInvite,
 
 		display_name: username,
 		valid_tokens_since: new Date(),
@@ -46,8 +47,8 @@ export const registerUser = async (
 	return user;
 };
 
-export const getOrFetchUser = async (lookup: string | APPerson) => {
-	const id = typeof lookup === "string" ? lookup : lookup.id;
+export const getOrFetchUser = async (lookup: ActorMention | URL | APPerson) => {
+	const id = resolveId(lookup);
 
 	if (!id) throw new APError("Cannot fetch user with undefined ID");
 
@@ -75,20 +76,19 @@ export const batchGetUsers = async (users: ActorMention[]) => {
 	return Promise.all(users.map((user) => getOrFetchUser(user)));
 };
 
-export const createUserForRemotePerson = async (lookup: string | APActor) => {
-	const domain =
-		typeof lookup === "string"
-			? splitQualifiedMention(lookup).domain
-			: new URL(lookup.id || "").hostname;
+export const createUserForRemotePerson = async (
+	lookup: string | URL | APActor,
+) => {
+	const id = resolveId(lookup);
 
-	// If we were given a URL, this is probably a actor URL
-	// otherwise, treat it as a username@domain handle
+	const mention = splitQualifiedMention(id);
+
 	const obj =
-		typeof lookup === "string"
-			? tryParseUrl(lookup)
-				? await resolveAPObject(lookup)
-				: await resolveWebfinger(lookup)
-			: lookup;
+		typeof lookup === "object"
+			? await resolveAPObject(lookup)
+			: id instanceof URL
+				? await resolveAPObject(id)
+				: await resolveWebfinger(id);
 
 	if (!APObjectIsActor(obj))
 		throw new APError("Resolved object is not Person");
@@ -109,12 +109,12 @@ export const createUserForRemotePerson = async (lookup: string | APActor) => {
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
 	return User.create({
-		domain,
+		domain: mention.domain,
 
 		remote_address: obj.id,
 
-		name: obj.name || obj.id,
-		display_name: obj.name || obj.preferredUsername,
+		name: obj.preferredUsername || mention.user,
+		display_name: obj.name || obj.preferredUsername || mention.user,
 		summary: obj.summary,
 
 		public_key: obj.publicKey.publicKeyPem,
@@ -139,7 +139,8 @@ export const getOrFetchAttributedUser = async (
 			"Cannot assign single author to this note with multiple attributedTo",
 		);
 
-	if (typeof attributed === "string") return await getOrFetchUser(attributed);
+	if (typeof attributed === "string")
+		return await getOrFetchUser(resolveId(attributed));
 
 	if (!APObjectIsActor(attributed))
 		throw new APError("note.attributedTo must be actor");

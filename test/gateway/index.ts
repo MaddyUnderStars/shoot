@@ -1,9 +1,11 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import test from "ava";
 import { setupTests } from "../helpers/env";
+
 setupTests(test);
 
 import { EventEmitter } from "node:stream";
@@ -11,7 +13,7 @@ import type {
 	GATEWAY_PAYLOAD,
 	MEMBERS_CHUNK,
 	READY,
-} from "../../src/gateway/util";
+} from "../../src/gateway/util/validation/send";
 import { createTestDm } from "../helpers/channel";
 import { createTestGuild } from "../helpers/guild";
 import { createTestUser } from "../helpers/users";
@@ -19,6 +21,9 @@ import { createTestUser } from "../helpers/users";
 class FakeSocket extends EventEmitter {
 	sequence = 0;
 	events = {};
+	member_list = {
+		events: {},
+	};
 	ip_address: "127.0.0.1";
 	auth_timeout = undefined;
 	heartbeat_timeout = undefined;

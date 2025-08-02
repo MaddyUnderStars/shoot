@@ -3,12 +3,9 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
-	ManyToMany,
-	ManyToOne,
 	PrimaryColumn,
 } from "typeorm";
 import { z } from "zod";
-import type { Message } from "./message";
 
 export enum EmbedTypes {
 	link = 0,

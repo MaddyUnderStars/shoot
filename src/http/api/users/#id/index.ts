@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PublicUser } from "../../../../entity";
-import { getOrFetchUser, route } from "../../../../util";
+import { PublicUser } from "../../../../entity/user";
+import { ActorMention } from "../../../../util/activitypub/constants";
+import { getOrFetchUser } from "../../../../util/entity/user";
+import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
 
@@ -10,7 +12,7 @@ router.get(
 	route(
 		{
 			params: z.object({
-				user_id: z.string(),
+				user_id: ActorMention,
 			}),
 			response: PublicUser,
 		},
