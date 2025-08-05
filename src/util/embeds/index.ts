@@ -3,7 +3,18 @@ import { DomHandler, Parser } from "htmlparser2";
 import providers from "oembed-providers/providers.json";
 import { z } from "zod";
 import { Embed, EmbedTypes } from "../../entity/embed";
+import { config } from "../config";
 import { tryParseUrl } from "../url";
+
+const USER_AGENT = `Shoot (https://github.com/maddyunderstars/shoot; +${config.federation.webapp_url.origin}; like discordbot)`;
+
+const EMBED_FETCH_OPTS = {
+	headers: {
+		"User-Agent": USER_AGENT,
+	},
+};
+
+const IGNORE_OEMBED = ["fxtwitter.com"];
 
 /**
  * Generates an Embed object. Does not save or check for duplicates.
@@ -11,14 +22,17 @@ import { tryParseUrl } from "../url";
 export const generateUrlPreview = async (url: URL) => {
 	const oembedUrl = await discoverOEmbed(url);
 
-	if (!oembedUrl)
-		throw new EmbedGenerationError("Failed to discover OEmbed endpoint");
+	let parsed: OEmbed;
 
-	const resp = await fetch(oembedUrl);
+	if (oembedUrl) {
+		const resp = await fetch(oembedUrl, EMBED_FETCH_OPTS);
 
-	const json = await resp.json();
+		const json = await resp.json();
 
-	const parsed = OEmbed.parse(json);
+		parsed = OEmbed.parse(json);
+	} else {
+		parsed = await buildOEmbed(url);
+	}
 
 	const embed = Embed.create({
 		target: url.toString(),
@@ -28,6 +42,58 @@ export const generateUrlPreview = async (url: URL) => {
 
 	return embed;
 };
+
+// if a site doesn't provide oembed, build it ourselves
+const buildOEmbed = async (url: URL): Promise<OEmbed> => {
+	const resp = await fetch(url, EMBED_FETCH_OPTS);
+
+	const handler = new DomHandler();
+	const parser = new Parser(handler);
+
+	const text = await resp.text();
+	parser.parseComplete(text);
+
+	const metas = findAll(
+		(elem) =>
+			!!(
+				elem.tagName === "meta" &&
+				elem.attribs?.property &&
+				elem.attribs?.content
+			),
+		handler.root,
+	);
+
+	return {
+		type: "rich",
+		provider_url: url.origin,
+		provider_name: getMetaContent(metas, "og:site_name"),
+		author_name:
+			getMetaContent(metas, "twitter:creator") ??
+			getMetaContent(metas, "article:author"),
+		thumbnail_url:
+			getMetaContent(metas, "twitter:image") ??
+			getMetaContent(metas, "og:image"),
+		thumbnail_height: tryParseInt(
+			getMetaContent(metas, "twitter:image:height") ??
+				getMetaContent(metas, "og:image:height"),
+		),
+		thumbnail_width: tryParseInt(
+			getMetaContent(metas, "twitter:image:width") ??
+				getMetaContent(metas, "og:image:width"),
+		),
+		title: getMetaContent(metas, "og:title"),
+	};
+};
+
+const tryParseInt = (x: string | undefined) => {
+	if (x === undefined) return x;
+	const ret = Number.parseInt(x);
+	if (Number.isNaN(ret)) return undefined;
+	return ret;
+};
+
+const getMetaContent = (metas: ReturnType<typeof findAll>, name: string) =>
+	metas.find((x) => x.attribs.property === name)?.attribs.content;
 
 const findProviderInRegistry = (url: URL) => {
 	const provider = providers.find(
@@ -48,6 +114,8 @@ const findProviderInRegistry = (url: URL) => {
 };
 
 const discoverOEmbed = async (url: URL): Promise<URL | null> => {
+	if (IGNORE_OEMBED.includes(url.hostname)) return null;
+
 	if (url.protocol !== "https:")
 		throw new EmbedGenerationError(`Unsupported protocol ${url.protocol}`);
 
@@ -56,7 +124,7 @@ const discoverOEmbed = async (url: URL): Promise<URL | null> => {
 	const registry = findProviderInRegistry(url);
 	if (registry) return registry;
 
-	const resp = await fetch(url);
+	const resp = await fetch(url, EMBED_FETCH_OPTS);
 
 	// check link headers
 	const link = findLinkHeader(resp.headers);
@@ -117,17 +185,18 @@ class EmbedGenerationError extends Error {}
 
 const OEmbed = z
 	.object({
-		version: z.literal("1.0").optional(), // not optional per spec...
-		title: z.string().optional(),
-		author_name: z.string().optional(),
-		author_url: z.string().optional(),
-		provider_name: z.string().optional(),
-		provider_url: z.string().optional(),
-		cache_age: z.number().optional(),
-		thumbnail_url: z.string().optional(),
-		thumbnail_width: z.number().optional(),
-		thumbnail_height: z.number().optional(),
+		version: z.literal("1.0"), // not optional per spec...
+		title: z.string(),
+		author_name: z.string(),
+		author_url: z.string(),
+		provider_name: z.string(),
+		provider_url: z.string(),
+		cache_age: z.number(),
+		thumbnail_url: z.string(),
+		thumbnail_width: z.number(),
+		thumbnail_height: z.number(),
 	})
+	.partial()
 	.and(
 		z.union([
 			z.object({
@@ -135,21 +204,23 @@ const OEmbed = z
 			}),
 			z.object({
 				type: z.literal("photo"),
-				url: z.string().url(),
-				width: z.number().min(1),
-				height: z.number().min(1),
+				url: z.string().url().optional(),
+				width: z.number().min(1).optional(),
+				height: z.number().min(1).optional(),
 			}),
 			z.object({
 				type: z.literal("video"),
-				html: z.string(),
-				width: z.number().min(1),
-				height: z.number().min(1),
+				html: z.string().optional(),
+				width: z.number().min(1).optional(),
+				height: z.number().min(1).optional(),
 			}),
 			z.object({
 				type: z.literal("rich"),
-				html: z.string(),
-				width: z.number(),
-				height: z.number(),
+				html: z.string().optional(),
+				width: z.number().optional(),
+				height: z.number().optional(),
 			}),
 		]),
 	);
+
+type OEmbed = z.infer<typeof OEmbed>;
