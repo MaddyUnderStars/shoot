@@ -140,6 +140,10 @@ export const getOrFetchChannel = async (
 };
 
 export const channelInGuild = async (channel_id: string, guild_id: string) => {
+	// if we receive an ActorMention here, just convert it
+	if (channel_id.includes("@")) channel_id = channel_id.split("@")[0];
+	if (guild_id.includes("@")) guild_id = guild_id.split("@")[0];
+
 	return (
 		(await GuildTextChannel.count({
 			where: {
