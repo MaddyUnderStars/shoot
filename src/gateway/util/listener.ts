@@ -1,5 +1,6 @@
 import type { BaseModel } from "../../entity/basemodel";
-import { User } from "../../entity/user";
+import { Channel } from "../../entity/channel";
+import { Guild } from "../../entity/guild";
 import { splitQualifiedMention } from "../../util/activitypub/util";
 import { channelInGuild } from "../../util/entity/channel";
 import { listenGatewayEvent, makeGatewayTarget } from "../../util/events";
@@ -49,12 +50,12 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 
 		case "CHANNEL_CREATE": {
 			const { user } = splitQualifiedMention(payload.channel.mention);
-			listenEvents(socket, [User.create({ id: user })]);
+			listenEvents(socket, [Channel.create({ id: user })]);
 			break;
 		}
 		case "GUILD_CREATE": {
 			const { user } = splitQualifiedMention(payload.guild.mention);
-			listenEvents(socket, [User.create({ id: user })]);
+			listenEvents(socket, [Guild.create({ id: user })]);
 			break;
 		}
 		case "GUILD_DELETE":
