@@ -5,7 +5,7 @@ import { EMBED_GENERATORS } from "./generators";
 
 export const EMBED_FETCH_OPTS: RequestInit = {
 	headers: {
-		"User-Agent": USER_AGENT,
+		"User-Agent": `${USER_AGENT}; like discordbot`,
 	},
 
 	redirect: "follow",
@@ -57,7 +57,7 @@ export const generateUrlPreview = async (url: URL) => {
 	});
 
 	const type = res.headers.get("Content-Type");
-	if (type?.startsWith("image/*") || type?.startsWith("video/*")) {
+	if (type?.startsWith("image/") || type?.startsWith("video/")) {
 		// if it's image/* or video/* return simple embed
 
 		return EMBED_GENERATORS.simple(url, res);

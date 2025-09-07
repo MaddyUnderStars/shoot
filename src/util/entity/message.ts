@@ -231,6 +231,7 @@ const processEmbeds = async (message: Message) => {
 	emitGatewayEvent(message.channel, {
 		type: "MESSAGE_UPDATE",
 		message: {
+			id: message.id,
 			embeds: embeds.map((x) => x.toPublic()),
 		},
 	});

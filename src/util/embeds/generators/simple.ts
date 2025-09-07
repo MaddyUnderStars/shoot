@@ -3,8 +3,8 @@ import type { EMBED_GENERATOR } from ".";
 
 export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
 	const types = {
-		"image/*": EmbedTypes.photo,
-		"video/*": EmbedTypes.video,
+		"image/": EmbedTypes.photo,
+		"video/": EmbedTypes.video,
 	};
 
 	const type =

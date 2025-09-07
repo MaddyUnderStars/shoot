@@ -36,7 +36,7 @@ export type MESSAGE_CREATE = {
 
 export type MESSAGE_UPDATE = {
 	type: "MESSAGE_UPDATE";
-	message: Partial<PublicMessage>;
+	message: Partial<PublicMessage> & Pick<PublicMessage, "id">;
 };
 
 export type MESSAGE_DELETE = {

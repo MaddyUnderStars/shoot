@@ -10,18 +10,25 @@ export const genericEmbedGenerator: EMBED_GENERATOR = async (url) => {
 		findMeta(doc, "og:image:url") ??
 		findMeta(doc, "og:image:secure_url");
 
+	// also check oembed?
+
 	return Embed.create({
 		target: url.href,
 		type: EmbedType.rich,
 
-		title: findMeta(doc, "og:title"),
-		description: findMeta(doc, "og:description"),
+		title:
+			findMeta(doc, "og:title") ??
+			findMeta(doc, "twitter:title") ??
+			findDomTag(doc, "title"),
+		description:
+			findMeta(doc, "og:description") ?? findMeta(doc, "description"),
 
 		author_name:
-			findMeta(doc, "article:author") ?? findMeta(doc, "book:author"),
+			findMeta(doc, "article:author") ??
+			findMeta(doc, "book:author") ??
+			findMeta(doc, "twitter:creator"),
 
-		provider_name:
-			findMeta(doc, "og:site_name") ?? findDomTag(doc, "title"),
+		provider_name: findMeta(doc, "og:site_name") ?? url.hostname,
 		provider_url: url.origin,
 
 		images: image_url
