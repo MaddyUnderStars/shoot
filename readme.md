@@ -5,17 +5,35 @@ Shoot is a (work in progress) instant messenger for the fediverse.
 Connect with your friends on Shoot or other federated services like Mastodon, Pixelfed, \*key with
 direct messages, group chats, and guilds.
 
-Planned feature set:
+Current features:
 
 -   Direct messaging
 -   Group chats
--   Guilds, containing channels and roles
--   Voice and video chat(?)
--   End to end encryption(?)
--   Instantly message your friends on other Activitypub federated services
--   Various trust/safety/antispam features
+-   Guilds and channels
+-   Voice chat
+-	URL previews ('Embeds')
+-	Message attachments
+-	WIP Federation with other Shoot instances
+
+Planned:
+
+- [End to end encryption](https://github.com/MaddyUnderStars/shoot/issues/55)
+- [Federation with other fediverse software](https://github.com/MaddyUnderStars/shoot/issues/67)
+- [Mentions ('pings'), notifications](https://github.com/MaddyUnderStars/shoot/issues/62)
+- Video chat
+- Lots of moderation and safety tooling
 
 ## Getting Started
+
+Just want to chat? Check out these client applications:
+- [Official Shoot Client](https://github.com/MaddyUnderStars/shoot-client). You can find a hosted version of this web app [here](https://understars.dev/shoot-client)
+- [Sheet](https://github.com/TheEntropyShard/Sheet)
+
+Building a client? PRs are welcome!
+
+If you instead want to install the server or contribute, see below.
+
+## Installation
 
 Requires:
 - Nodejs version 18 or higher
