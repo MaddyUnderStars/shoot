@@ -6,6 +6,7 @@ import {
 	PrimaryColumn,
 } from "typeorm";
 import { z } from "zod";
+import { onlyTruthy } from "../util/object";
 
 export enum EmbedTypes {
 	link = 0,
@@ -32,10 +33,19 @@ export class Embed extends BaseEntity {
 	title: string | null;
 
 	@Column({ type: String, nullable: true })
+	description: string | null;
+
+	@Column({ type: String, nullable: true })
 	author_name: string | null;
 
 	@Column({ type: String, nullable: true })
 	author_url: string | null;
+
+	@Column({ type: String, nullable: true })
+	footer: string | null;
+
+	@Column({ type: String, nullable: true })
+	footer_icon: string | null;
 
 	@Column({ type: String, nullable: true })
 	provider_name: string | null;
@@ -43,85 +53,82 @@ export class Embed extends BaseEntity {
 	@Column({ type: String, nullable: true })
 	provider_url: string | null;
 
-	@Column({ type: String, nullable: true })
-	thumbnail_url: string | null;
+	@Column({ type: "simple-json", nullable: true })
+	images: EmbedMedia[] | null;
 
-	@Column({ type: Number, nullable: true })
-	thumbnail_width: number | null;
+	@Column({ type: "simple-json", nullable: true })
+	videos: EmbedMedia[] | null;
 
-	@Column({ type: Number, nullable: true })
-	thumbnail_height: number | null;
-
-	@Column({ type: Number, nullable: true })
-	width: number | null;
-
-	@Column({ type: Number, nullable: true })
-	height: number | null;
-
-	@Column({ type: String, nullable: true })
-	url: string | null;
-
-	@Column({ type: String, nullable: true })
-	html: string | null;
-
-	public toPublic() {
+	public toPublic = (): PublicEmbed => {
 		return {
 			target: this.target,
-			type: EmbedTypes[this.type],
-			title: this.title ?? undefined,
-			author_name: this.author_name ?? undefined,
-			author_url: this.author_url ?? undefined,
-			provider_name: this.provider_name ?? undefined,
-			provider_url: this.provider_url ?? undefined,
-			thumbnail_url: this.thumbnail_url ?? undefined,
-			thumbnail_width: this.thumbnail_width ?? undefined,
-			thumbnail_height: this.thumbnail_height ?? undefined,
+			created_at: this.created_at,
+			type: this.type,
 
-			width: this.width ?? undefined,
-			height: this.height ?? undefined,
-			url: this.url,
-			html: this.html ?? undefined,
-		} as PublicEmbed;
-	}
+			title: this.title ?? undefined,
+			description: this.description ?? undefined,
+
+			images: this.images ?? [],
+			videos: this.videos ?? [],
+
+			author: onlyTruthy({
+				name: this.author_name,
+				url: this.author_url,
+			}),
+
+			footer: onlyTruthy({
+				text: this.footer,
+				icon: this.footer_icon,
+			}),
+
+			provider: onlyTruthy({
+				name: this.provider_name,
+				url: this.provider_url,
+			}),
+		};
+	};
 }
 
-export type PublicEmbed = z.infer<typeof PublicEmbed>;
+const EmbedMedia = z.object({
+	url: z.string().url(),
+	width: z.number().optional(),
+	height: z.number().optional(),
+	alt: z.string().optional(),
+});
 
-export const PublicEmbed = z
-	.object({
-		target: z.string().url(),
-		title: z.string().optional(),
-		author_name: z.string().optional(),
-		author_url: z.string().optional(),
-		provider_name: z.string().optional(),
-		provider_url: z.string().optional(),
-		thumbnail_url: z.string().optional(),
-		thumbnail_width: z.number().optional(),
-		thumbnail_height: z.number().optional(),
-	})
-	.and(
-		z.union([
-			z.object({
-				type: z.literal("link"),
-			}),
-			z.object({
-				type: z.literal("photo"),
-				url: z.string().url(),
-				width: z.number().min(1),
-				height: z.number().min(1),
-			}),
-			z.object({
-				type: z.literal("video"),
-				html: z.string(),
-				width: z.number().min(1),
-				height: z.number().min(1),
-			}),
-			z.object({
-				type: z.literal("rich"),
-				html: z.string(),
-				width: z.number(),
-				height: z.number(),
-			}),
-		]),
-	)
-	.openapi("PublicEmbed");
+export type EmbedMedia = z.infer<typeof EmbedMedia>;
+
+export const PublicEmbed = z.object({
+	target: z.string().url(),
+	created_at: z.date(),
+	type: z.nativeEnum(EmbedTypes),
+
+	title: z.string().optional(),
+	description: z.string().optional(),
+
+	images: EmbedMedia.array(),
+	videos: EmbedMedia.array(),
+
+	author: z
+		.object({
+			name: z.string().optional(),
+			url: z.string().optional(),
+		})
+		.optional(),
+
+	footer: z
+		.object({
+			text: z.string().optional(),
+			icon: z.string().optional(),
+		})
+		.optional(),
+
+	provider: z
+		.object({
+			name: z.string().optional(),
+			url: z.string().optional(),
+		})
+		.optional(),
+});
+
+export type PublicEmbed = z.infer<typeof PublicEmbed>;

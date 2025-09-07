@@ -186,7 +186,7 @@ const federateMessage = async (message: Message) => {
 const URL_REGEX =
 	/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
-const EMBED_TTL = 1000 * 60 * 60 * 24 * 7; // 1 week
+const EMBED_TTL = 1000 * 60 * 60 * 24 * 7; // 1 week. TODO: configure
 
 const processEmbeds = async (message: Message) => {
 	if (!message.content) return;
