@@ -1,6 +1,8 @@
+import crypto from "node:crypto";
 import { findAll, innerText } from "domutils";
 import { DomHandler, Parser } from "htmlparser2";
 import { USER_AGENT } from "../activitypub/constants";
+import { config } from "../config";
 import { EMBED_GENERATORS } from "./generators";
 
 export const EMBED_FETCH_OPTS: RequestInit = {
@@ -66,4 +68,32 @@ export const generateUrlPreview = async (url: URL) => {
 	// otherwise, use a generator
 
 	return EMBED_GENERATORS.generic(url, res);
+};
+
+const signMediaProxyUrl = (url: URL) => {
+	if (!config.media_proxy.secret) return url;
+
+	const hash = crypto
+		.createHmac("sha1", config.media_proxy.secret)
+		.update(url.pathname)
+		.digest("base64")
+		.replace(/\+/g, "-")
+		.replace(/\//g, "_");
+
+	url.pathname = `${hash}/${url.pathname}`;
+	return url;
+};
+
+export const getImageProxyUrl = (
+	url: URL,
+	width: number,
+	height: number,
+): URL => {
+	if (!config.media_proxy.enabled) return url;
+
+	const path = `fit-in/${width}x${height}/${url.host}/${url.pathname}`;
+
+	const ret = new URL(path, config.media_proxy.url);
+
+	return signMediaProxyUrl(ret);
 };

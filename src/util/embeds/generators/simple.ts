@@ -1,4 +1,5 @@
 import { Embed, EmbedTypes } from "../../../entity/embed";
+import { getImageProxyUrl } from "..";
 import type { EMBED_GENERATOR } from ".";
 
 export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
@@ -18,7 +19,7 @@ export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
 
 		[type === EmbedTypes.photo ? "images" : "videos"]: [
 			{
-				url: url.href,
+				url: getImageProxyUrl(url, 400, 400).href,
 				// TODO: width, height
 			},
 		],

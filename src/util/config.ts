@@ -34,7 +34,7 @@ const config = Object.freeze({
 
 			if (val !== undefined && val in LogLevel) {
 				if (typeof val === "number") return val;
-				//@ts-ignore don't care about types right now
+				//@ts-expect-error don't care about types right now
 				return LogLevel[val];
 			}
 
@@ -326,6 +326,32 @@ const config = Object.freeze({
 		: {
 				enabled: false,
 				url: new URL("http://localhost"),
+			},
+
+	/**
+	 * Media proxy settings. Shoot supports Imagor/Thumbor for proxying remote images.
+	 * While optional, it's recommended this is enabled as it:
+	 * - prevents simple IP grabbing of clients, or whatever other data is leaked when fetching media
+	 * - prevents effectively DDOSing remote servers hosting media when being requests by many clients
+	 */
+	media_proxy: ifExistsGet<boolean>("media_proxy.enabled")
+		? {
+				enabled: true,
+
+				/**
+				 * The public endpoint of the imagor proxy server. Clients will connect to this address.
+				 */
+				url: new URL(get<string>("media_proxy.url")),
+
+				/**
+				 * Optional signing key to prevent users from generating their own media proxy requests
+				 */
+				secret: ifExistsGet<string>("media_proxy.secret"),
+			}
+		: {
+				enabled: false,
+				url: new URL("http://localhost"),
+				secret: undefined,
 			},
 });
 
