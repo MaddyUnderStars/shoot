@@ -42,6 +42,8 @@ Requires:
 - Optional: [Janus media server](https://janus.conf.meetecho.com/) for voice chat support
 - Optional: [Redis](https://redis.io/) can be used for the inbound federation queue.
 - Optional: [RabbitMQ](https://www.rabbitmq.com/) can be used to horizontally scale Shoot.
+- Optional: [Imagor](https://github.com/cshum/imagor) can be used as a remote image proxy for URL previews.
+- Optional: [S3](https://aws.amazon.com/s3/) or [other API-compatible object storage](https://github.com/minio/minio) can be used to store user uploaded attachments and other media.
 
 Once you have all the prerequisites set up, download and build the server:
 
