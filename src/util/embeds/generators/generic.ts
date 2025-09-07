@@ -3,6 +3,7 @@ import {
 	fetchDom,
 	findDomTag,
 	findMeta,
+	getImageMetadata,
 	getImageProxyUrl,
 	tryParseNumber,
 } from "..";
@@ -18,6 +19,14 @@ export const genericEmbedGenerator: EMBED_GENERATOR = async (url) => {
 
 	const width = tryParseNumber(findMeta(doc, "og:image:width"));
 	const height = tryParseNumber(findMeta(doc, "og:image:height"));
+
+	const imageMeta = image_url
+		? await getImageMetadata(
+				new URL(image_url),
+				Math.min(width ?? 1000, 1000),
+				Math.min(height ?? 1000, 1000),
+			)
+		: undefined;
 
 	// also check oembed?
 
@@ -45,13 +54,13 @@ export const genericEmbedGenerator: EMBED_GENERATOR = async (url) => {
 					{
 						url: getImageProxyUrl(
 							new URL(image_url),
-							width ?? 400,
-							height ?? 400,
+							Math.min(width ?? 1000, 1000),
+							Math.min(height ?? 1000, 1000),
 						).href,
 
 						// todo: use imagor to find these as fallback
-						width,
-						height,
+						width: imageMeta?.width,
+						height: imageMeta?.height,
 
 						alt: findMeta(doc, "og:image:alt") ?? undefined,
 					},

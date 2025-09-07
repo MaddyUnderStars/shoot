@@ -70,6 +70,28 @@ export const generateUrlPreview = async (url: URL) => {
 	return EMBED_GENERATORS.generic(url, res);
 };
 
+type ImageMetadata = {
+	width: number;
+	height: number;
+};
+
+export const getImageMetadata = async (
+	url: URL,
+	width: number,
+	height: number,
+): Promise<ImageMetadata> => {
+	if (!config.media_proxy.enabled) return { width, height };
+
+	const path = `/meta/fit-in/${width}x${height}/${url.host}/${url.pathname}`;
+
+	const endpoint = signMediaProxyUrl(new URL(path, config.media_proxy.url));
+
+	const res = await fetch(endpoint);
+	const json = await res.json();
+
+	return { width: json.width, height: json.height };
+};
+
 const signMediaProxyUrl = (url: URL) => {
 	if (!config.media_proxy.secret) return url;
 

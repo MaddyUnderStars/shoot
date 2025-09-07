@@ -1,5 +1,5 @@
 import { Embed, EmbedTypes } from "../../../entity/embed";
-import { getImageProxyUrl } from "..";
+import { getImageMetadata, getImageProxyUrl } from "..";
 import type { EMBED_GENERATOR } from ".";
 
 export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
@@ -13,14 +13,18 @@ export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
 			head.headers.get("Content-Type")?.startsWith(key),
 		)?.[1] ?? EmbedTypes.link;
 
+	const meta = await getImageMetadata(url, 1000, 1000);
+
 	return Embed.create({
 		target: url.href,
 		type,
 
 		[type === EmbedTypes.photo ? "images" : "videos"]: [
 			{
-				url: getImageProxyUrl(url, 400, 400).href,
-				// TODO: width, height
+				url: getImageProxyUrl(url, meta.width, meta.height).href,
+
+				width: meta.width,
+				height: meta.height,
 			},
 		],
 	});
