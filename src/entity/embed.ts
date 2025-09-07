@@ -98,37 +98,39 @@ const EmbedMedia = z.object({
 
 export type EmbedMedia = z.infer<typeof EmbedMedia>;
 
-export const PublicEmbed = z.object({
-	target: z.string().url(),
-	created_at: z.date(),
-	type: z.nativeEnum(EmbedTypes),
+export const PublicEmbed = z
+	.object({
+		target: z.string().url(),
+		created_at: z.date(),
+		type: z.nativeEnum(EmbedTypes),
 
-	title: z.string().optional(),
-	description: z.string().optional(),
+		title: z.string().optional(),
+		description: z.string().optional(),
 
-	images: EmbedMedia.array(),
-	videos: EmbedMedia.array(),
+		images: EmbedMedia.array(),
+		videos: EmbedMedia.array(),
 
-	author: z
-		.object({
-			name: z.string().optional(),
-			url: z.string().optional(),
-		})
-		.optional(),
+		author: z
+			.object({
+				name: z.string().optional(),
+				url: z.string().optional(),
+			})
+			.optional(),
 
-	footer: z
-		.object({
-			text: z.string().optional(),
-			icon: z.string().optional(),
-		})
-		.optional(),
+		footer: z
+			.object({
+				text: z.string().optional(),
+				icon: z.string().optional(),
+			})
+			.optional(),
 
-	provider: z
-		.object({
-			name: z.string().optional(),
-			url: z.string().optional(),
-		})
-		.optional(),
-});
+		provider: z
+			.object({
+				name: z.string().optional(),
+				url: z.string().optional(),
+			})
+			.optional(),
+	})
+	.openapi("PublicEmbed");
 
 export type PublicEmbed = z.infer<typeof PublicEmbed>;
