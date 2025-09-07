@@ -5,7 +5,8 @@ import type {
 	APObject,
 	APOrderedCollectionPage,
 } from "activitypub-types";
-import { XMLParser } from "fast-xml-parser";
+import { findAll } from "domutils";
+import { DomHandler, Parser } from "htmlparser2";
 import { ApCache } from "../../entity/apcache";
 import { config } from "../config";
 import { createLogger } from "../log";
@@ -177,19 +178,26 @@ const doWebfingerOrFindTemplate = async (
 
 	const hostmeta = await fetch(`${url.origin}/.well-known/host-meta`);
 	if (!hostmeta.ok) throw new APError("Could not resolve webfinger address");
-	const parser = new XMLParser({
-		ignoreAttributes: false,
-		attributeNamePrefix: "@_",
-	});
-	const obj = parser.parse(await hostmeta.text());
 
-	const template = obj?.XRD?.Link?.["@_template"];
-	if (!template)
-		throw new APError(
-			"host-meta did not contain root->XRD->Link[template]",
-		);
+	const handler = new DomHandler();
+	const parser = new Parser(handler, { xmlMode: true });
 
-	const templateUrl = new URL(template.replace("{uri}", lookup));
+	parser.parseComplete(await hostmeta.text());
+
+	// const template = obj?.XRD?.Link?.["@_template"];
+	const template = findAll(
+		(elem) =>
+			elem.tagName.toLowerCase() === "link" &&
+			elem.attribs.rel === "application/xrd+xml" &&
+			!!elem.attribs.template,
+		handler.root,
+	)?.[0];
+
+	if (!template) throw new APError("host-meta did not contain template link");
+
+	const templateUrl = new URL(
+		template.attribs.template.replace("{uri}", lookup.toString()),
+	);
 
 	throwInstanceBlock(templateUrl);
 

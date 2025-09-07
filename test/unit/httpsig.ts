@@ -1,10 +1,12 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import type { APActivity } from "activitypub-types";
 import test from "ava";
 import { setupTests } from "../helpers/env";
+
 setupTests(test);
 
 test("Using Instance Actor", async (t) => {

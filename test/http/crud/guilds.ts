@@ -1,14 +1,16 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import test from "ava";
 import { setupTests } from "../../helpers/env";
+
 setupTests(test);
 
 import request from "supertest";
-import { createTestUser } from "../../helpers/users";
 import { createTestGuild } from "../../helpers/guild";
+import { createTestUser } from "../../helpers/users";
 
 test("edit guild as owner", async (t) => {
 	const { APIServer } = await import("../../../src/http/server");

@@ -34,6 +34,11 @@ export type MESSAGE_CREATE = {
 	message: PublicMessage;
 };
 
+export type MESSAGE_UPDATE = {
+	type: "MESSAGE_UPDATE";
+	message: Partial<PublicMessage> & Pick<PublicMessage, "id">;
+};
+
 export type MESSAGE_DELETE = {
 	type: "MESSAGE_DELETE";
 	message_id: string;
@@ -151,6 +156,7 @@ export type HEARTBEAT_ACK = {
 
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
+	| MESSAGE_UPDATE
 	| MESSAGE_DELETE
 	| CHANNEL_CREATE
 	| CHANNEL_UPDATE

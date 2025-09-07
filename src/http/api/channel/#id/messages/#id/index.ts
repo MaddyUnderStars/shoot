@@ -36,6 +36,9 @@ router.get(
 					channel: { id: channel.id },
 					id: req.params.message_id,
 				},
+				relations: {
+					embeds: true,
+				},
 				loadRelationIds: {
 					relations: ["channel", "author"],
 					disableMixedMap: true,

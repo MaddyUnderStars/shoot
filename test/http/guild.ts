@@ -1,10 +1,12 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
+
 extendZodWithOpenApi(z);
 
 import test from "ava";
 import { setupTests } from "../helpers/env";
 import { createTestUser } from "../helpers/users";
+
 setupTests(test);
 
 import request from "supertest";
