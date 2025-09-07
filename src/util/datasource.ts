@@ -25,7 +25,7 @@ const DATASOURCE_OPTIONS = new DataSource({
 	database: IS_SQLITE ? CONNECTION_STRING.split("://")[1] : undefined,
 	supportBigNumbers: true,
 	bigNumberStrings: false,
-	synchronize: true, // TODO
+	synchronize: false, // TODO
 	logging: config.database.log,
 
 	// these reference js files because they are done at runtime, and we compile
