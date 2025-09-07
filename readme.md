@@ -29,7 +29,7 @@ Just want to chat? Check out these client applications:
 - [Official Shoot Client](https://github.com/MaddyUnderStars/shoot-client). You can find a hosted version of this web app [here](https://understars.dev/shoot-client)
 - [Sheet](https://github.com/TheEntropyShard/Sheet)
 
-Building a client? PRs are welcome!
+Building a client? PRs to this list are welcome!
 
 If you instead want to install the server or contribute, see below.
 
