@@ -6,11 +6,7 @@ The docker-compose file will:
 - Set up a basic Shoot instance (single process `npm run start` equivalent)
 - Set up a postgres database
 
-It will not:
-- Set up Nginx
-- Set up Janus
-- Set up RabbitMQ
-- Set up Redis
+It will not set up any optional dependencies.
 
 It is a bare-bones installation for those who wish to get up and running quickly.
 For those who wish to set up more sophisticated Shoot instances, you must still do so manually.

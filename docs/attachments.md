@@ -1,5 +1,7 @@
 # Message Attachments
 
+This document describes the Shoot API for uploading message attachments.
+
 ## Uploading
 
 Shoot supports attaching files to messages. The basic flow is described below:
