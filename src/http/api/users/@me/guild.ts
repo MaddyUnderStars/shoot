@@ -58,7 +58,7 @@ router.delete(
 
 					return `guild_members.id IN ${sub}`;
 				},
-				{ guild_id: mention.user },
+				{ guild_id: mention.id },
 			)
 			.andWhere('"guild_members"."userId" = :user_id', {
 				user_id: req.user.id,
@@ -69,7 +69,7 @@ router.delete(
 		if (deleted.affected) {
 			emitGatewayEvent(Guild.create({ id: req.params.guild_id }), {
 				type: "MEMBER_LEAVE",
-				guild: `${mention.user}@${mention.domain}`,
+				guild: `${mention.id}@${mention.domain}`,
 				user: req.user.mention,
 			});
 		}

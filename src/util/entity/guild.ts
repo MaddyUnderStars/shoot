@@ -119,11 +119,11 @@ export const getOrFetchGuild = async (
 	let guild = await Guild.findOne({
 		where: [
 			{
-				id: mention.user,
+				id: mention.id,
 				domain: mention.domain,
 			},
 			{
-				remote_id: mention.user,
+				remote_id: mention.id,
 				domain: mention.domain,
 			},
 			{
@@ -233,7 +233,7 @@ export const createGuildFromRemoteOrg = async (
 
 	const guild = Guild.create({
 		domain: mention.domain,
-		remote_id: mention.user,
+		remote_id: mention.id,
 
 		name: obj.name,
 		owner: await getOrFetchUser(resolveId(obj.attributedTo)),

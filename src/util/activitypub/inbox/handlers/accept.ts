@@ -56,7 +56,7 @@ const AcceptFollow: ActivityHandler = async (activity, target) => {
 	// so we should already have the actor responsible for accepting, probably
 
 	const mention = splitQualifiedMention(activity.actor);
-	const from = await findActorOfAnyType(mention.user, mention.domain);
+	const from = await findActorOfAnyType(mention.id, mention.domain);
 
 	if (from instanceof User) {
 		// A friend request was accepted

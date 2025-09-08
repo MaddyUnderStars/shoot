@@ -90,7 +90,7 @@ router.get(
 				(lookup: string) => Promise<{ id: string; path: string }>
 			>;
 
-			const { id, path } = await handlers[type](mention.user);
+			const { id, path } = await handlers[type](mention.id);
 
 			return res.json({
 				subject: `${type}:${id}@${config.federation.webapp_url.hostname}`,

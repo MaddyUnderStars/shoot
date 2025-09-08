@@ -15,7 +15,7 @@ export const getOrFetchMember = async (
 	const member = await Member.findOne({
 		where: {
 			user: {
-				name: mention.user,
+				name: mention.id,
 				domain: mention.domain,
 			},
 		},
@@ -47,7 +47,7 @@ export const isMemberOfGuild = async (guild_id: string, user: User) => {
 				roles: {
 					guild: [
 						{ remote_address: guild_id },
-						{ id: guild.user, domain: guild.domain },
+						{ id: guild.id, domain: guild.domain },
 					],
 				},
 				user: { id: user.id },

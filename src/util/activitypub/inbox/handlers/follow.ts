@@ -55,7 +55,7 @@ export const FollowActivityHandler: ActivityHandler = async (
 		const code = splitQualifiedMention(invite_code);
 
 		const invite = await Invite.findOneOrFail({
-			where: { code: code.user },
+			where: { code: code.id },
 			relations: { guild: true },
 		});
 

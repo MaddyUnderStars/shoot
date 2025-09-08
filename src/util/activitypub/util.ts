@@ -19,11 +19,11 @@ import { APError } from "./error";
  */
 export const splitQualifiedMention = (lookup: string | URL) => {
 	let domain: string;
-	let user: string;
+	let id: string;
 	if (typeof lookup === "string" && lookup.includes("@")) {
 		// lookup a @handle@domain
 		if (lookup[0] === "@") lookup = lookup.slice(1);
-		[user, domain] = lookup.split("@");
+		[id, domain] = lookup.split("@");
 	} else {
 		// lookup was a URL ( hopefully )
 
@@ -33,12 +33,12 @@ export const splitQualifiedMention = (lookup: string | URL) => {
 		}
 
 		domain = url.hostname;
-		user = url.pathname.split("/").reverse()[0]; // not great
+		id = url.pathname.split("/").reverse()[0]; // not great
 	}
 
 	return {
 		domain,
-		user,
+		id,
 	};
 };
 

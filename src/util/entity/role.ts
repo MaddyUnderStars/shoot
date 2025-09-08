@@ -30,7 +30,7 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 		throw new APError("role requires attributedTo guild");
 
 	const role = Role.create({
-		remote_id: mention.user,
+		remote_id: mention.id,
 		name: obj.name,
 		allow: obj.allow,
 		deny: obj.deny,

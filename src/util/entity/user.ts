@@ -56,7 +56,7 @@ export const getOrFetchUser = async (lookup: ActorMention | URL | APPerson) => {
 
 	let user = await User.findOne({
 		where: {
-			name: mention.user,
+			name: mention.id,
 			domain: mention.domain,
 		},
 	});
@@ -113,8 +113,8 @@ export const createUserForRemotePerson = async (
 
 		remote_address: obj.id,
 
-		name: obj.preferredUsername || mention.user,
-		display_name: obj.name || obj.preferredUsername || mention.user,
+		name: obj.preferredUsername || mention.id,
+		display_name: obj.name || obj.preferredUsername || mention.id,
 		summary: obj.summary,
 
 		public_key: obj.publicKey.publicKeyPem,

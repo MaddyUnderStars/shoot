@@ -104,7 +104,7 @@ export const getChannel = async (lookup: ActorMention | URL) => {
 		.leftJoinAndSelect("channels.guild", "guild")
 		.leftJoinAndSelect("guild.owner", "guild_owner")
 		.where((qb) => {
-			qb.where("channels.id = :id", { id: mention.user }).andWhere(
+			qb.where("channels.id = :id", { id: mention.id }).andWhere(
 				"channels.domain = :domain",
 				{ domain: mention.domain },
 			);
@@ -113,7 +113,7 @@ export const getChannel = async (lookup: ActorMention | URL) => {
 			new Brackets((inner) => {
 				inner
 					.where("channels.remote_id = :lookup", {
-						lookup: mention.user,
+						lookup: mention.id,
 					})
 					.andWhere("channels.domain = :domain", {
 						domain: mention.domain,
@@ -191,7 +191,7 @@ export const createChannelFromRemoteGroup = async (
 
 	let channel: Channel = Channel.create({
 		domain: mention.domain,
-		remote_id: mention.user,
+		remote_id: mention.id,
 		name: obj.name,
 		remote_address: obj.id,
 		public_key: obj.publicKey.publicKeyPem,
@@ -262,7 +262,7 @@ const resolveChannelOwner = async (lookup: string) => {
 
 	const mention = splitQualifiedMention(id);
 
-	const actor = await findActorOfAnyType(mention.user, mention.domain);
+	const actor = await findActorOfAnyType(mention.id, mention.domain);
 	if (actor) return actor;
 
 	// otherwise, do a remote lookup

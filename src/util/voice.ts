@@ -53,7 +53,7 @@ export const validateMediaToken = (
 				const mention = splitQualifiedMention(decoded.user_mention);
 
 				const user = await User.findOne({
-					where: { name: mention.user, domain: mention.domain },
+					where: { name: mention.id, domain: mention.domain },
 				});
 
 				if (!user) return reject(INVALID_TOKEN);

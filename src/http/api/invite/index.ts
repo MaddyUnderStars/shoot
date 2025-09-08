@@ -30,7 +30,7 @@ router.post(
 
 			if (req.params.invite_code.includes("@")) {
 				const split = splitQualifiedMention(req.params.invite_code);
-				inviteCode = split.user;
+				inviteCode = split.id;
 				domain = split.domain;
 			} else {
 				inviteCode = req.params.invite_code;

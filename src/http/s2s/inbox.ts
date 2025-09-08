@@ -39,7 +39,7 @@ router.post(
 				throw new APError("Not addressed to a user we control");
 
 			const actor = await findActorOfAnyType(
-				mention.user,
+				mention.id,
 				config.federation.webapp_url.hostname,
 			);
 			if (!actor)

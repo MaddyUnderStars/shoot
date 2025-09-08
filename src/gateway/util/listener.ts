@@ -49,13 +49,13 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 		// TODO: for relationships, see #54
 
 		case "CHANNEL_CREATE": {
-			const { user } = splitQualifiedMention(payload.channel.mention);
-			listenEvents(socket, [Channel.create({ id: user })]);
+			const { id } = splitQualifiedMention(payload.channel.mention);
+			listenEvents(socket, [Channel.create({ id })]);
 			break;
 		}
 		case "GUILD_CREATE": {
-			const { user } = splitQualifiedMention(payload.guild.mention);
-			listenEvents(socket, [Guild.create({ id: user })]);
+			const { id } = splitQualifiedMention(payload.guild.mention);
+			listenEvents(socket, [Guild.create({ id })]);
 			break;
 		}
 		case "GUILD_DELETE":
