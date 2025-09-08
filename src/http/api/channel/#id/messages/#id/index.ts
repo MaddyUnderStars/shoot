@@ -105,6 +105,9 @@ router.delete(
 					channel: { id: channel.id },
 					id: req.params.message_id,
 				},
+				loadRelationIds: {
+					disableMixedMap: true,
+				},
 			});
 
 			// we can always delete our own messages
