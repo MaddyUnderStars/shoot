@@ -19,7 +19,7 @@ const CONNECTION_TYPE = CONNECTION_STRING.replace(
 const IS_SQLITE = CONNECTION_TYPE === "sqlite";
 
 const DATASOURCE_OPTIONS = new DataSource({
-	//@ts-ignore
+	//@ts-expect-error
 	type: CONNECTION_TYPE,
 	url: IS_SQLITE ? undefined : CONNECTION_STRING,
 	database: IS_SQLITE ? CONNECTION_STRING.split("://")[1] : undefined,

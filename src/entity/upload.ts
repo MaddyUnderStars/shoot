@@ -21,7 +21,7 @@ import type { Channel } from "./channel";
  */
 @Entity("local_uploads")
 export class LocalUpload extends BaseModel {
-	@ManyToOne("channels", { cascade: ["remove"] })
+	@ManyToOne("channels", { onDelete: "CASCADE" })
 	channel: Channel;
 
 	@Column()
