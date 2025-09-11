@@ -12,3 +12,8 @@ export const onlyTruthy = <T extends object>(obj: T): Truthy<T> | undefined => {
 
 	return ret;
 };
+
+export const uniqueBy =
+	<T>(key: keyof T, set = new Set()) =>
+	(object: T) =>
+		!set.has(object[key]) && set.add(object[key]);
