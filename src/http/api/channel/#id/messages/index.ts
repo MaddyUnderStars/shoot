@@ -2,12 +2,10 @@ import { Router } from "express";
 import { z } from "zod";
 import { Attachment } from "../../../../../entity/attachment";
 import { Message, PublicMessage } from "../../../../../entity/message";
-import { PublicUser } from "../../../../../entity/user";
 import { ActorMention } from "../../../../../util/activitypub/constants";
 import { getDatabase } from "../../../../../util/database";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 import { handleMessage } from "../../../../../util/entity/message";
-import { uniqueBy } from "../../../../../util/object";
 import { PERMISSION } from "../../../../../util/permission";
 import { route } from "../../../../../util/route";
 
@@ -82,7 +80,6 @@ const MessageFetchOpts = z.object({
 	before: z.string().optional(),
 	around: z.string().optional(),
 	query: z.string().optional(),
-	include_users: z.boolean().default(false),
 });
 
 // Get messages of a channel
@@ -94,10 +91,7 @@ router.get(
 				channel_id: ActorMention,
 			}),
 			query: MessageFetchOpts,
-			response: z.object({
-				messages: z.array(PublicMessage),
-				users: z.array(PublicUser).optional(),
-			}),
+			response: z.array(PublicMessage),
 		},
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
@@ -160,18 +154,12 @@ router.get(
 			// 	},
 			// });
 
-			return res.json({
-				messages: messages.map((x) => {
+			return res.json(
+				messages.map((x) => {
 					x.channel = channel;
 					return x.toPublic();
 				}),
-				users: req.query.include_users
-					? messages
-							.map((x) => x.author)
-							.filter(uniqueBy("id"))
-							.map((x) => x.toPublic())
-					: undefined,
-			});
+			);
 		},
 	),
 );
