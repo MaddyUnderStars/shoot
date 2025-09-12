@@ -67,7 +67,7 @@ router.patch(
 			if (req.body.summary) update.summary = req.body.summary;
 
 			// current_password is required to set email
-			if (req.body.email) update.summary = req.body.email;
+			if (req.body.email) update.email = req.body.email;
 
 			if (req.body.password) {
 				// zod schema enforces that current_password is provided
