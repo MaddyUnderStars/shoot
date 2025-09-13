@@ -1,10 +1,11 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { BaseModel } from "./basemodel";
 import type { Guild } from "./guild";
 
 @Entity("invites")
+@Index(["code", "guild"], { unique: true })
 export class Invite extends BaseModel {
 	@Column()
 	code: string;
