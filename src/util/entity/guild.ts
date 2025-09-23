@@ -27,6 +27,7 @@ import { DefaultPermissions } from "../permission";
 import { tryParseUrl } from "../url";
 import { generateSigningKeys } from "./actor";
 import { createGuildTextChannel, getOrFetchChannel } from "./channel";
+import { isMemberOfGuild } from "./member";
 import { createRoleFromRemote } from "./role";
 import { getOrFetchUser } from "./user";
 
@@ -82,8 +83,13 @@ export const joinGuild = async (
 	user_id: ActorMention,
 	guild_id: ActorMention,
 ) => {
-	const guild = await getOrFetchGuild(guild_id);
 	const user = await getOrFetchUser(user_id);
+
+	if (await isMemberOfGuild(guild_id, user)) {
+		throw new Error("You are already a member of this guild");
+	}
+
+	const guild = await getOrFetchGuild(guild_id);
 
 	// if (user.domain !== config.federation.instance_url.origin)
 	// 	throw new APError("Tried to join a guild for a user we don't control?");

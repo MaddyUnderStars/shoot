@@ -41,9 +41,14 @@ router.post(
 				where: {
 					code: inviteCode,
 				},
-				loadRelationIds: {
-					relations: ["guild"],
-					disableMixedMap: true,
+				select: {
+					guild: {
+						id: true,
+						domain: true,
+					},
+				},
+				relations: {
+					guild: true,
 				},
 			});
 
