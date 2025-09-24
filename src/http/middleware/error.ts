@@ -15,6 +15,8 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 	let code = 400;
 	let message: string = error.message;
 
+	let hasLogged = false;
+
 	switch (true) {
 		case error instanceof ValidationError:
 			res.status(code).json({
@@ -75,8 +77,11 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 		}
 		default:
 			Log.error(error);
+			hasLogged = true;
 			break;
 	}
+
+	if (!hasLogged) Log.verbose(error);
 
 	return res.status(code).json({ code, message });
 };
