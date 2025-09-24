@@ -98,7 +98,9 @@ export const resolveAPObject = async <T extends AnyAPObject>(
  * @returns ActorMention or URL
  * @throws APError if could not resolve to an ID
  */
-export const resolveId = (prop: string | AnyAPObject | APLink) => {
+export const resolveId = (prop: string | AnyAPObject | APLink | URL) => {
+	if (prop instanceof URL) return prop;
+
 	if (typeof prop === "string") {
 		// this may be a url or actor mention
 		const url = tryParseUrl(prop);
