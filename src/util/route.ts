@@ -81,7 +81,6 @@ export type RouteOptions<TParams, TResponse, TBody, TQuery> = {
 	 * 200 response
 	 */
 	response?: ZodSchema<TResponse>;
-	summary?: string;
 	/**
 	 * non-200 response codes
 	 * if `true` specified, use default schema for that code if available

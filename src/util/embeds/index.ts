@@ -45,7 +45,7 @@ export const findDomTag = (root: Document, tagName: string, key?: string) =>
 export const tryParseNumber = (str: string | undefined | null) => {
 	if (!str) return undefined;
 
-	return Number.parseInt(str);
+	return Number.parseInt(str, 10);
 };
 
 /**

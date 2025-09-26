@@ -56,9 +56,9 @@ const getRoutes = (router: Router) => {
 			if (layer.handle.name === "router") {
 				ret.push(
 					..._getRoutes(
-						//@ts-ignore
+						//@ts-expect-error
 						layer.handle,
-						//@ts-ignore
+						//@ts-expect-error
 						convertRegexToPath(layer.regexp, layer.keys),
 					),
 				);
@@ -76,10 +76,10 @@ const getRoutes = (router: Router) => {
 
 			ret.push({
 				path: prefix + layer.route.path,
-				//@ts-ignore
+				//@ts-expect-error
 				method: Object.entries(layer.route.methods)[0][0] as Method,
 				// TODO: this will probably break
-				//@ts-ignore
+				//@ts-expect-error
 				options: layer.route.stack[0].handle.ROUTE_OPTIONS,
 
 				requires_auth: !NO_AUTH_ROUTES.some((x) => {

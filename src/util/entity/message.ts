@@ -1,10 +1,12 @@
 import { ObjectIsNote } from "activitypub-types";
+import { Queue } from "bullmq";
 import { Attachment } from "../../entity/attachment";
 import { DMChannel } from "../../entity/DMChannel";
 import { Embed } from "../../entity/embed";
 import { Member } from "../../entity/member";
 import { Message } from "../../entity/message";
 import { GuildTextChannel } from "../../entity/textChannel";
+import type { PushNotificationJobData } from "../../push/worker";
 import { sendActivity } from "../../sender";
 import { APError } from "../activitypub/error";
 import {
@@ -12,7 +14,8 @@ import {
 	buildAPCreateNote,
 	buildAPNote,
 } from "../activitypub/transformers/message";
-import { addContext } from "../activitypub/util";
+import { addContext, splitQualifiedMention } from "../activitypub/util";
+import { config } from "../config";
 import { getDatabase } from "../database";
 import { generateUrlPreview } from "../embeds";
 import { emitGatewayEvent } from "../events";
@@ -73,6 +76,8 @@ export const handleMessage = async (message: Message, federate = true) => {
 		type: "MESSAGE_CREATE",
 		message: message.toPublic(),
 	});
+
+	message = await processMentions(message);
 
 	// this could be a long running task
 	// and we don't care about it's result
@@ -235,4 +240,49 @@ const processEmbeds = async (message: Message) => {
 			embeds: embeds.map((x) => x.toPublic()),
 		},
 	});
+};
+
+const getNotificationQueue = () => {
+	return config.notifications.enabled
+		? new Queue<PushNotificationJobData>("notifications", {
+				connection: {
+					host: config.redis.host,
+					port: config.redis.port,
+				},
+			})
+		: null;
+};
+
+const MENTION_REGEX =
+	/@[a-zA-Z].*?@[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}/gim;
+const processMentions = async (message: Message): Promise<Message> => {
+	const mentions =
+		message.content?.split(" ").filter((x) => x.match(MENTION_REGEX)) ?? [];
+
+	const queue = getNotificationQueue();
+
+	for (const mention of mentions) {
+		const parsed = splitQualifiedMention(mention);
+
+		// we can't do push notifications of this user
+		if (parsed.domain !== config.federation.instance_url.hostname) continue;
+
+		// queue a notification for this user
+
+		if (queue) {
+			await queue.add(`${mention}-${Date.now()}`, {
+				user: `${parsed.id}@${parsed.domain}`,
+				notification: {
+					title:
+						message.channel instanceof DMChannel
+							? message.channel.name
+							: `${message.channel.name}: ${message.author.display_name}`,
+					body: message.content ?? "[You were mentioned]",
+					sent: message.published.valueOf(),
+				},
+			});
+		}
+	}
+
+	return message;
 };

@@ -24,7 +24,8 @@ export const generateRegInvite = async (
 	await InstanceInvite.create({
 		code,
 		expires: !expiry || expiry === "-1" ? null : new Date(expiry),
-		maxUses: !maxUses || maxUses === "-1" ? null : Number.parseInt(maxUses),
+		maxUses:
+			!maxUses || maxUses === "-1" ? null : Number.parseInt(maxUses, 10),
 	}).save();
 
 	Log.msg(`Saved invite with code ${code}`);

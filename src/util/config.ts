@@ -353,6 +353,23 @@ const config = Object.freeze({
 				url: new URL("http://localhost"),
 				secret: undefined,
 			},
+
+	/**
+	 * Push notifications via the Web Push API.
+	 * Generate a public and private key via https://github.com/web-push-libs/web-push
+	 * `npx web-push generate-vapid-keys`
+	 */
+	notifications: ifExistsGet<boolean>("notifications.enabled")
+		? {
+				enabled: true,
+				privateKey: get<string>("notifications.privateKey"),
+				publicKey: get<string>("notifications.publicKey"),
+			}
+		: {
+				enabled: false,
+				privateKey: "",
+				publicKey: "",
+			},
 });
 
 export { config };

@@ -30,7 +30,7 @@ export const initRabbitMQ = async (consume: boolean) => {
 
 	client = await rabbit.connect({
 		hostname: url.hostname,
-		port: Number.parseInt(url.port),
+		port: Number.parseInt(url.port, 10),
 		username: url.username,
 		password: url.password,
 		vhost: url.pathname,

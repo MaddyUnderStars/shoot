@@ -72,10 +72,10 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 			type: ret.ContentType,
 			length: ret.ContentLength,
 			width: ret.Metadata?.width
-				? Number.parseInt(ret.Metadata.width)
+				? Number.parseInt(ret.Metadata.width, 10)
 				: undefined,
 			height: ret.Metadata?.height
-				? Number.parseInt(ret.Metadata.height)
+				? Number.parseInt(ret.Metadata.height, 10)
 				: undefined,
 		};
 	} catch (e) {

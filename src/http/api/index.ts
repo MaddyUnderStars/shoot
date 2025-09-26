@@ -41,6 +41,10 @@ import users_me_channels from "./users/@me/channels";
 
 router.use("/users/@me/channels", users_me_channels);
 
+import users_me_push from "./users/@me/push";
+
+router.use("/users/@me/push", users_me_push);
+
 import users_id from "./users/#id";
 
 router.use("/users/:user_id", users_id);

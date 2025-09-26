@@ -95,7 +95,12 @@ router.get(
 				//     localComments: 0,
 				// },
 				openRegistrations: config.registration.enabled,
-				// metadata: {},
+				metadata: {
+					// Not sure I'm happy putting this here...
+					webPushPublicKey: config.notifications.enabled
+						? config.notifications.publicKey
+						: null,
+				},
 			});
 		},
 	),

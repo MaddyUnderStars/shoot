@@ -26,9 +26,9 @@ if (NODE_MAJOR_VERSION < NODE_REQUIRED_VERSION) {
 	process.exit(1);
 }
 
-const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3001;
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3001;
 const MEDIA_PORT = process.env.MEDIA_PORT
-	? Number.parseInt(process.env.MEDIA_PORT)
+	? Number.parseInt(process.env.MEDIA_PORT, 10)
 	: 3003;
 
 process.on("uncaughtException", (error, origin) => {

@@ -20,7 +20,7 @@
 			"smartStep": true,
 			"runtimeArgs": [
 				"--enable-source-maps"
-			]
+			],
 		},
 		{
 			"type": "node",

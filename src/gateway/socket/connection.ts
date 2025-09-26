@@ -35,9 +35,8 @@ export function onConnection(
 
 	Log.verbose(`New client from '${socket.ip_address}'`);
 
-	//@ts-ignore what is wrong here
+	//@ts-expect-error what is wrong here
 	socket.addEventListener("close", onClose);
-	//@ts-ignore
 	socket.addEventListener("message", async function (ev) {
 		try {
 			await onMessage.call(socket, ev);

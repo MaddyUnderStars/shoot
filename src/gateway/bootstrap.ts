@@ -11,7 +11,7 @@ import { GatewayServer } from "./server";
 setLogOptions(config.log);
 const Log = createLogger("bootstrap");
 
-const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3002;
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3002;
 
 process.on("uncaughtException", (error, origin) => {
 	Log.error(`Caught ${origin}`, error);

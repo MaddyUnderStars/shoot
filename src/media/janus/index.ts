@@ -28,7 +28,6 @@ export class Janus extends EventEmitter {
 	private socket: WebSocket;
 	private heartbeatInterval: NodeJS.Timeout;
 	private token?: string;
-	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: incorrect lint
 	private sequence = 0;
 	private adminSession: number;
 	private adminHandle: number;
