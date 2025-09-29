@@ -279,6 +279,13 @@ const processMentions = async (message: Message): Promise<Message> => {
 							: `${message.channel.name}: ${message.author.display_name}`,
 					body: message.content ?? "[You were mentioned]",
 					sent: message.published.valueOf(),
+
+					channel: message.channel.mention,
+					guild:
+						message.channel instanceof GuildTextChannel
+							? message.channel.guild.mention
+							: undefined,
+					author: message.author.mention,
 				},
 			});
 		}

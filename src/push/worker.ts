@@ -25,6 +25,10 @@ export type PushNotificationJobData = {
 		body: string;
 		sent: number; // timestamp of when notification sent
 		image?: string; // url of image to display
+
+		channel?: ActorMention;
+		guild?: ActorMention;
+		author?: ActorMention;
 	};
 };
 
