@@ -19,6 +19,7 @@ import { generateUrlPreview } from "../embeds";
 import { emitGatewayEvent } from "../events";
 import { HttpError } from "../httperror";
 import { createLogger } from "../log";
+import { PERMISSION } from "../permission";
 import { checkFileExists } from "../storage";
 import { tryParseUrl } from "../url";
 
@@ -31,7 +32,10 @@ const log = createLogger("handleMessage");
  * MUTATES the provided message to add the inserted database ID
  */
 export const handleMessage = async (message: Message, federate = true) => {
-	// validation
+	await message.channel.throwPermission(
+		message.author,
+		PERMISSION.SEND_MESSAGES,
+	);
 
 	if (message.files) {
 		for (const file of message.files) {

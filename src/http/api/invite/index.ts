@@ -11,6 +11,7 @@ import {
 } from "../../../util/activitypub/util";
 import { config } from "../../../util/config";
 import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
+import { PERMISSION } from "../../../util/permission";
 import { route } from "../../../util/route";
 import { makeInstanceUrl } from "../../../util/url";
 
@@ -110,9 +111,21 @@ router.delete(
 		async (req, res) => {
 			const { invite_code } = req.params;
 
-			await Invite.delete({
-				code: invite_code,
+			const invite = await Invite.findOneOrFail({
+				where: {
+					code: invite_code,
+				},
+				relations: {
+					guild: true,
+				},
 			});
+
+			await invite.guild.throwPermission(
+				req.user,
+				PERMISSION.MANAGE_INVITES,
+			);
+
+			await invite.remove();
 
 			return res.sendStatus(200);
 		},
