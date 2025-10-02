@@ -30,7 +30,10 @@ export const ActorMention = z
 			message: "Invalid mention",
 		},
 	)
-	.openapi("ActorMention", { type: "string", pattern: "^.*@.*$" });
+	.openapi("ActorMention", {
+		type: "string",
+		pattern: ActorMentionRegex.source,
+	});
 
 export type ActorMention = z.infer<typeof ActorMention>;
 
