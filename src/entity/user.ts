@@ -1,8 +1,16 @@
-import { Column, Entity, Index, ManyToOne } from "typeorm";
+import {
+	Column,
+	Entity,
+	Index,
+	JoinColumn,
+	ManyToOne,
+	OneToOne,
+} from "typeorm";
 import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { Actor } from "./actor";
 import { InstanceInvite } from "./instanceInvite";
+import type { UserSetting } from "./userSetting";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
@@ -32,6 +40,13 @@ export class User extends Actor {
 		onDelete: "CASCADE",
 	})
 	invite: InstanceInvite | null;
+
+	@OneToOne("user_settings", (settings: UserSetting) => settings.user, {
+		onDelete: "CASCADE",
+		nullable: true,
+	})
+	@JoinColumn()
+	settings: UserSetting;
 
 	/** User customisation fields start here */
 

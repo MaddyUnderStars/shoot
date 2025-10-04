@@ -7,6 +7,7 @@ import {
 import bcrypt from "bcrypt";
 import type { InstanceInvite } from "../../entity/instanceInvite";
 import { User } from "../../entity/user";
+import { UserSetting } from "../../entity/userSetting";
 import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
 import {
@@ -38,6 +39,8 @@ export const registerUser = async (
 		display_name: username,
 		valid_tokens_since: new Date(),
 		domain: config.federation.webapp_url.hostname,
+
+		settings: UserSetting.create({}),
 	}).save();
 
 	if (awaitKeyGeneration) await generateSigningKeys(user);
