@@ -2,12 +2,14 @@ import { Queue } from "bullmq";
 import { DMChannel } from "../entity/DMChannel";
 import type { Message } from "../entity/message";
 import { GuildTextChannel } from "../entity/textChannel";
+import { User } from "../entity/user";
 import {
 	type ActorMention,
 	ActorMentionRegex,
 } from "../util/activitypub/constants";
 import { splitQualifiedMention } from "../util/activitypub/util";
 import { config } from "../util/config";
+import { PERMISSION } from "../util/permission";
 import type { PushNotificationJobData } from "./worker";
 
 export const sendNotifications = async (message: Message) => {
@@ -43,7 +45,22 @@ export const sendNotifications = async (message: Message) => {
 
 		if (promises.has(m)) continue;
 
-		promises.set(m, queueNotif(m, message));
+		const split = splitQualifiedMention(mention);
+
+		const user = await User.findOne({
+			where: {
+				name: split.id,
+				domain: split.domain,
+			},
+		});
+
+		if (!user) continue;
+
+		// if the user can't see this channel, prevent pinging them
+		if (
+			await message.channel.checkPermission(user, PERMISSION.VIEW_CHANNEL)
+		)
+			promises.set(m, queueNotif(m, message));
 	}
 
 	await Promise.all(promises);
