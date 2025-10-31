@@ -64,7 +64,7 @@
 		"pg": "^8.13.1",
 		"rabbitmq-stream-js-client": "^0.6.2",
 		"ts-deepmerge": "^7.0.2",
-		"typeorm": "^0.3.24",
+		"typeorm": "^0.3.27",
 		"typeorm-cursor-pagination": "^0.10.1",
 		"uuid": "^11.0.3",
 		"web-push": "^3.6.7",
