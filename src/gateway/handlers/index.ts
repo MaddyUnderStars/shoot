@@ -30,4 +30,5 @@ export const handlers: Record<string, GatewayMessageHandler<unknown>> = {
 	identify: require("./identify").onIdentify,
 	heartbeat: require("./heartbeat").onHeartbeat,
 	members: require("./members").onSubscribeMembers,
+	typing: require("./typing").onTyping,
 };
