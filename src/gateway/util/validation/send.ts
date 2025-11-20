@@ -153,7 +153,12 @@ export type HEARTBEAT_ACK = {
 	// The expected sequence number
 	type: "HEARTBEAT_ACK";
 };
-
+export type TYPING = {
+type: "TYPING",
+channel: ActorMention,
+user: ActorMention,
+timestamp: number
+}
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
 	| MESSAGE_UPDATE
@@ -176,4 +181,5 @@ export type GATEWAY_EVENT =
 	| INVITE_CREATE
 	| MEMBERS_CHUNK
 	| READY
-	| HEARTBEAT_ACK;
+	| HEARTBEAT_ACK
+        | TYPING;

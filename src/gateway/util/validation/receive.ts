@@ -20,3 +20,7 @@ export const SUBSCRIBE_MEMBERS = z.object({
 	/** Subscribe to only online members */
 	online: z.boolean().nullable().optional(),
 });
+
+export const TYPING = z.object({
+channel: ActorMention
+});

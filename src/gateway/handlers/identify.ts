@@ -28,7 +28,8 @@ export const onIdentify = makeHandler(async function (payload) {
 	}
 
 	this.user_id = user.id;
-
+        this.user_mention = user.mention;
+        this.last_typing = Date.now();
 	const [session, dmChannels, guilds, relationships] = await Promise.all([
 		Session.create({
 			user,
