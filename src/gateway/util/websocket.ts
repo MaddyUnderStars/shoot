@@ -1,16 +1,19 @@
 import type { Session } from "../../entity/session";
-import type { GATEWAY_PAYLOAD } from "./validation/send";
 import type { ActorMention } from "../../util/activitypub/constants";
+import type { GATEWAY_PAYLOAD } from "./validation/send";
 export interface Websocket extends Omit<WebSocket, "send"> {
 	/** The source IP address of this socket */
 	ip_address: string;
 
 	/** The user ID of this authenticated socket */
 	user_id: string;
-        /** The user mention of this authenticated user */
-        user_mention: ActorMention,
-        /** The user last typing timestamp */
-        last_typing: number,
+
+	/** The user mention of this authenticated user */
+	user_mention: ActorMention;
+
+	/** The user last typing timestamp */
+	last_typing?: number;
+
 	/** The session attached to this connection */
 	session: Session;
 

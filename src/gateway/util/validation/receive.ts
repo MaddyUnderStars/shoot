@@ -22,5 +22,5 @@ export const SUBSCRIBE_MEMBERS = z.object({
 });
 
 export const TYPING = z.object({
-channel: ActorMention
+	channel: ActorMention,
 });
