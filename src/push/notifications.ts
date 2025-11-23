@@ -4,6 +4,10 @@ import type { Message } from "../entity/message";
 import { GuildTextChannel } from "../entity/textChannel";
 import { User } from "../entity/user";
 import {
+	ChannelNotificationPreferences,
+	UserChannelSettings,
+} from "../entity/userChannelSettings";
+import {
 	type ActorMention,
 	ActorMentionRegex,
 } from "../util/activitypub/constants";
@@ -25,10 +29,7 @@ export const sendNotifications = async (message: Message) => {
 		for (const recipient of recipients) {
 			if (promises.has(recipient.mention)) continue;
 
-			promises.set(
-				recipient.mention,
-				queueNotif(recipient.mention, message),
-			);
+			promises.set(recipient.mention, queueNotif(recipient, message));
 		}
 	}
 
@@ -60,23 +61,41 @@ export const sendNotifications = async (message: Message) => {
 		if (
 			await message.channel.checkPermission(user, PERMISSION.VIEW_CHANNEL)
 		)
-			promises.set(m, queueNotif(m, message));
+			promises.set(user.mention, queueNotif(user, message, true));
 	}
 
 	await Promise.all(promises);
 };
 
-const queueNotif = async (user: ActorMention, message: Message) => {
-	const { domain } = splitQualifiedMention(user);
-
-	if (domain !== config.federation.instance_url.hostname) return;
+const queueNotif = async (user: User, message: Message, isMention = false) => {
+	if (user.isRemote()) return;
 
 	const queue = getNotificationQueue();
-
 	if (!queue) return;
 
-	await queue.add(`${user}-${Date.now()}`, {
-		user,
+	const settings = await UserChannelSettings.findOne({
+		where: {
+			channelId: message.channel.id,
+			userSettingsUserId: user.id,
+		},
+	});
+
+	/**
+	 * (if this channel is muted) or (we have disabled notifications)
+	 * or (we have asked for only mentions AND this is not a mention)
+	 * then skip it
+	 */
+	if (
+		(settings?.muted_until ?? 0) > new Date() ||
+		settings?.notifications === ChannelNotificationPreferences.NONE ||
+		(settings?.notifications ===
+			ChannelNotificationPreferences.ONLY_MENTIONS &&
+			!isMention)
+	)
+		return;
+
+	await queue.add(`${user.mention}-${Date.now()}`, {
+		user: user.mention,
 		notification: {
 			title:
 				message.channel instanceof DMChannel
