@@ -48,7 +48,7 @@
 		"@aws-sdk/s3-request-presigner": "^3.717.0",
 		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
 		"bcrypt": "^6.0.0",
-		"body-parser": "^2.2.0",
+		"body-parser": "^2.2.1",
 		"bullmq": "^5.34.4",
 		"config": "^4.0.0",
 		"cors": "^2.8.5",
