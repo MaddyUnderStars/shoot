@@ -46,7 +46,7 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	const webfinger =
 		actor instanceof User && !isInstanceActor
-			? `${actor.name}@${config.federation.webapp_url.hostname}`
+			? `${actor.name}@${config().federation.webapp_url.hostname}`
 			: undefined;
 
 	const inbox = isInstanceActor

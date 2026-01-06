@@ -19,7 +19,7 @@ router.put(
 	"/",
 	route({ query: z.object({ t: z.string().jwt() }) }, async (req, res) => {
 		const token = await new Promise<localFileJwt>((resolve, reject) => {
-			jwt.verify(req.query.t, config.security.jwt_secret, (err, d) => {
+			jwt.verify(req.query.t, config().security.jwt_secret, (err, d) => {
 				if (err || !d || typeof d === "string") return reject(err);
 				resolve(d as localFileJwt);
 			});
@@ -35,7 +35,7 @@ router.put(
 			size: token.size,
 		});
 
-		const p = path.join(config.storage.directory, token.key);
+		const p = path.join(config().storage.directory, token.key);
 
 		await mkdir(path.dirname(p), { recursive: true });
 

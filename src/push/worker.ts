@@ -13,9 +13,9 @@ import { initDatabase } from "../util/database";
 import { getOrFetchUser } from "../util/entity/user";
 
 webPush.setVapidDetails(
-	config.federation.instance_url.origin,
-	config.notifications.publicKey,
-	config.notifications.privateKey,
+	config().federation.instance_url.origin,
+	config().notifications.publicKey,
+	config().notifications.privateKey,
 );
 
 export type PushNotificationJobData = {
@@ -37,7 +37,7 @@ const jobHandler = async (job: Job<PushNotificationJobData>) => {
 
 	if (
 		splitQualifiedMention(job.data.user).domain !==
-		config.federation.webapp_url.hostname
+		config().federation.webapp_url.hostname
 	)
 		return;
 
@@ -65,8 +65,8 @@ const jobHandler = async (job: Job<PushNotificationJobData>) => {
 
 const worker = new Worker("notifications", jobHandler, {
 	connection: {
-		host: config.redis.host,
-		port: config.redis.port,
+		host: config().redis.host,
+		port: config().redis.port,
 	},
 	autorun: false,
 });

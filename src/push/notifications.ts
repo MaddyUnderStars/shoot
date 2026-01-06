@@ -69,7 +69,7 @@ export const sendNotifications = async (message: Message) => {
 const queueNotif = async (user: ActorMention, message: Message) => {
 	const { domain } = splitQualifiedMention(user);
 
-	if (domain !== config.federation.instance_url.hostname) return;
+	if (domain !== config().federation.instance_url.hostname) return;
 
 	const queue = getNotificationQueue();
 
@@ -99,11 +99,11 @@ let NOTIFICATION_QUEUE: Queue | null;
 const getNotificationQueue = () => {
 	if (NOTIFICATION_QUEUE) return NOTIFICATION_QUEUE;
 
-	NOTIFICATION_QUEUE = config.notifications.enabled
+	NOTIFICATION_QUEUE = config().notifications.enabled
 		? new Queue<PushNotificationJobData>("notifications", {
 				connection: {
-					host: config.redis.host,
-					port: config.redis.port,
+					host: config().redis.host,
+					port: config().redis.port,
 				},
 			})
 		: null;

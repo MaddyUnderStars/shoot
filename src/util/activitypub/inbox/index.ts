@@ -9,11 +9,11 @@ import { APError } from "../error";
 import { ActivityHandlers } from "./handlers";
 
 const getQueue = () => {
-	return config.federation.queue.use_inbound
+	return config().federation.queue.use_inbound
 		? new Queue<APInboundJobData>("inbound", {
 				connection: {
-					host: config.redis.host,
-					port: config.redis.port,
+					host: config().redis.host,
+					port: config().redis.port,
 				},
 			})
 		: null;

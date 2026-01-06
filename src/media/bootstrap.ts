@@ -8,7 +8,7 @@ import { config } from "../util/config";
 import { createLogger, setLogOptions } from "../util/log";
 import { MediaGatewayServer } from "./server";
 
-setLogOptions(config.log);
+setLogOptions(config().log);
 const Log = createLogger("bootstrap");
 
 const MEDIA_PORT = process.env.MEDIA_PORT

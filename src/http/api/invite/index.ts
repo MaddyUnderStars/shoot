@@ -35,7 +35,7 @@ router.post(
 				domain = split.domain;
 			} else {
 				inviteCode = req.params.invite_code;
-				domain = config.federation.instance_url.origin;
+				domain = config().federation.instance_url.origin;
 			}
 
 			const invite = await Invite.findOne({

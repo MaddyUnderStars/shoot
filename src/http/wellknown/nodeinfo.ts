@@ -49,10 +49,10 @@ router.get(
 			response: DiscoverResponse,
 		},
 		async (req, res) => {
-			if (!config.federation.enabled)
+			if (!config().federation.enabled)
 				throw new HttpError("Federation is disabled", 400);
 
-			const host = config.federation.instance_url.origin;
+			const host = config().federation.instance_url.origin;
 
 			res.json({
 				links: [
@@ -94,11 +94,11 @@ router.get(
 				//     localPosts: 0,
 				//     localComments: 0,
 				// },
-				openRegistrations: config.registration.enabled,
+				openRegistrations: config().registration.enabled,
 				metadata: {
 					// Not sure I'm happy putting this here...
-					webPushPublicKey: config.notifications.enabled
-						? config.notifications.publicKey
+					webPushPublicKey: config().notifications.enabled
+						? config().notifications.publicKey
 						: null,
 				},
 			});

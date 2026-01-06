@@ -8,7 +8,7 @@ import { config } from "../util/config";
 import { createLogger, setLogOptions } from "../util/log";
 import { APIServer } from "./server";
 
-setLogOptions(config.log);
+setLogOptions(config().log);
 const Log = createLogger("bootstrap");
 
 const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3001;

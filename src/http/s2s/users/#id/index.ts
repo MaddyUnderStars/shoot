@@ -21,7 +21,7 @@ router.get(
 		const user = await User.findOneOrFail({
 			where: {
 				name: user_id,
-				domain: config.federation.webapp_url.hostname,
+				domain: config().federation.webapp_url.hostname,
 			},
 		});
 
@@ -75,7 +75,7 @@ router.get(
 						name: req.params.user_id,
 					})
 					.andWhere("to.domain = :domain", {
-						domain: config.federation.webapp_url.hostname,
+						domain: config().federation.webapp_url.hostname,
 					}),
 			}),
 		),

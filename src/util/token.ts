@@ -16,7 +16,7 @@ export const getUserFromToken = (token: string): Promise<User> =>
 
 		jwt.verify(
 			token,
-			config.security.jwt_secret,
+			config().security.jwt_secret,
 			{
 				algorithms: ["HS256"],
 			},
@@ -49,7 +49,7 @@ export const generateToken = (id: string): Promise<string> => {
 	return new Promise((res, rej) =>
 		jwt.sign(
 			{ id, iat } as UserTokenData,
-			config.security.jwt_secret,
+			config().security.jwt_secret,
 			{ algorithm },
 			(err, token) => {
 				if (err || !token) return rej(err);

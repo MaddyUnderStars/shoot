@@ -8,7 +8,7 @@ import path from "node:path";
 import { DataSource } from "typeorm";
 import { config } from "./config";
 
-const CONNECTION_STRING = config.database.url;
+const CONNECTION_STRING = config().database.url;
 const CONNECTION_TYPE = CONNECTION_STRING.replace(
 	// standardise so our migrations folder works
 	"postgresql://",
@@ -26,7 +26,7 @@ const DATASOURCE_OPTIONS = new DataSource({
 	supportBigNumbers: true,
 	bigNumberStrings: false,
 	synchronize: false, // TODO
-	logging: config.database.log,
+	logging: config().database.log,
 
 	// these reference js files because they are done at runtime, and we compile
 	// it'll break if you run Shoot under ts-node or tsx or whatever

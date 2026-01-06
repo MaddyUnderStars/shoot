@@ -52,8 +52,8 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 
 const worker = new Worker("inbound", jobHandler, {
 	connection: {
-		host: config.redis.host,
-		port: config.redis.port,
+		host: config().redis.host,
+		port: config().redis.port,
 	},
 	autorun: false,
 });
@@ -75,7 +75,7 @@ worker.on("error", (e) => {
 	await initDatabase();
 	await initRabbitMQ(false);
 
-	if (!config.rabbitmq.enabled)
+	if (!config().rabbitmq.enabled)
 		console.error(
 			"rabbitmq isn't configured. this worker won't be able to emit gateway events",
 		);

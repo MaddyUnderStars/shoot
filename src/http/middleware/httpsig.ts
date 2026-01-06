@@ -13,7 +13,10 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 		return next(); // allow GET /actor unsigned
 	}
 
-	if (!req.headers.signature && !config.federation.require_http_signatures) {
+	if (
+		!req.headers.signature &&
+		!config().federation.require_http_signatures
+	) {
 		/**
 		 * This request hasn't been signed and we don't require sigs for every req
 		 *

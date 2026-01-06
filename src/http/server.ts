@@ -21,7 +21,7 @@ export class APIServer {
 
 		this.app.use(cors());
 
-		this.app.set("trust proxy", config.security.trust_proxy);
+		this.app.set("trust proxy", config().security.trust_proxy);
 
 		morgan.token("mode", (req) =>
 			isFederationRequest(req.headers) ? "fed" : "api",
@@ -30,12 +30,12 @@ export class APIServer {
 		morgan.token("type", (req) => req.headers["content-type"]);
 		morgan.token("accept", (req) => req.headers.accept);
 
-		if (config.http.log)
+		if (config().http.log)
 			this.app.use(
-				morgan(config.http.log_format, {
+				morgan(config().http.log_format, {
 					stream: createLogStream("HTTP"),
 					skip(_req, res) {
-						const log = config.http.log;
+						const log = config().http.log;
 						const skip =
 							log?.includes(res.statusCode.toString()) ?? false;
 						return log?.charAt(0) === "-" ? skip : !skip;

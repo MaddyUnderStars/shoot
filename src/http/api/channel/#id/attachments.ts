@@ -68,9 +68,9 @@ router.post(
 
 			const ret: z.infer<typeof AttachmentsResponse> = [];
 			for (const file of req.body) {
-				if (file.size > config.storage.max_file_size)
+				if (file.size > config().storage.max_file_size)
 					throw new HttpError(
-						`${file.name} exceeds maximum size (${config.storage.max_file_size})`,
+						`${file.name} exceeds maximum size (${config().storage.max_file_size})`,
 					);
 
 				if (

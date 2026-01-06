@@ -45,7 +45,7 @@ export const instance = async (url: string, action: string) => {
 		return closeDatabase();
 	}
 
-	if (config.federation.instance_url.hostname === parsed.hostname) {
+	if (config().federation.instance_url.hostname === parsed.hostname) {
 		Log.error("You can't block yourself");
 		return closeDatabase();
 	}

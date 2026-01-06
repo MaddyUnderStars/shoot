@@ -89,7 +89,7 @@ router.get(
 // 			return res.json(
 // 				addContext(
 // 					await makeOrderedCollection<APPerson>({
-// 						id: `${config.federation.instance_url.origin}${req.originalUrl}`,
+// 						id: `${config().federation.instance_url.origin}${req.originalUrl}`,
 // 						page: req.query.page ?? false,
 // 						min_id: req.query.min_id,
 // 						max_id: req.query.max_id,

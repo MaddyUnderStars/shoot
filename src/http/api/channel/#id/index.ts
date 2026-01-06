@@ -55,7 +55,7 @@ router.patch(
 
 		await channel.throwPermission(req.user, PERMISSION.MANAGE_CHANNELS);
 
-		if (channel.domain === config.federation.webapp_url.hostname) {
+		if (channel.domain === config().federation.webapp_url.hostname) {
 			// This is a local channel
 
 			channel.assign(req.body);

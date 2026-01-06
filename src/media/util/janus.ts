@@ -5,7 +5,7 @@ let janus: Janus;
 
 export const initJanus = () => {
 	janus = new Janus();
-	return janus.connect({ address: { url: config.webrtc.janus_url } });
+	return janus.connect({ address: { url: config().webrtc.janus_url } });
 };
 
 export const getJanus = () => {

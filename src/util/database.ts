@@ -6,8 +6,6 @@ import { createLogger } from "./log";
 
 const Log = createLogger("database");
 
-const CONNECTION_STRING = config.database.url;
-
 let connection: DataSource | null = null;
 let initCalled: Promise<DataSource> | null = null;
 
@@ -15,7 +13,7 @@ export const initDatabase = async () => {
 	if (connection) return connection;
 	if (initCalled) return await initCalled;
 
-	Log.msg(`Connecting to ${CONNECTION_STRING}`);
+	Log.msg(`Connecting to ${config().database.url}`);
 
 	try {
 		initCalled = DATASOURCE_OPTIONS.initialize();

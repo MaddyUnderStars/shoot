@@ -1,109 +1,94 @@
 import nodeConfig from "config";
-import type { InstanceBehaviour } from "./activitypub/instanceBehaviour";
+import z from "zod";
+import { InstanceBehaviour } from "./activitypub/instanceBehaviour";
 import { LogLevel } from "./log";
-import { tryParseUrl } from "./url";
 
-const LOCALHOST_URL = new URL("http://localhost");
+// const LOCALHOST_URL = new URL("http://localhost");
 
 const ifExistsGet = <T>(key: string): T | undefined => {
 	return nodeConfig.has(key) ? nodeConfig.get(key) : undefined;
 };
 
-const get = <T>(key: string): T => {
-	try {
-		return nodeConfig.get(key);
-	} catch (e) {
-		console.error(e instanceof Error ? e.message : e);
-		process.exit();
-	}
-};
+// const get = <T>(key: string): T => {
+// 	try {
+// 		return nodeConfig.get(key);
+// 	} catch (e) {
+// 		console.error(e instanceof Error ? e.message : e);
+// 		process.exit();
+// 	}
+// };
 
-const config = Object.freeze({
+const RateLimitSchema = z.object({
 	/**
-	 * options relating to Shoot's own logging
+	 * Milliseconds
+	 * @default 15 minutes
 	 */
-	log: {
-		/**
-		 * Maximum level of logs to print
-		 * see LogLevel enum for values
-		 * @default "verbose"
-		 */
-		level: (() => {
-			const val =
-				ifExistsGet<string | number>("log.level") ?? LogLevel.verbose;
+	window: z.number().default(15 * 60 * 1000),
 
-			if (val !== undefined && val in LogLevel) {
-				if (typeof val === "number") return val;
-				//@ts-expect-error don't care about types right now
-				return LogLevel[val];
-			}
+	/**
+	 * Number of requests per window.
+	 * @default Default: 100
+	 */
+	limit: z.number().default(100),
+});
 
-			console.error("log.level is invalid");
-			process.exit(1);
-		})(),
+const ConfigSchema = z.object({
+	/**
+	 * Shoots own logging configuration
+	 */
+	log: z
+		.object({
+			/**
+			 * Maximum level of logs to print
+			 * see LogLevel enum for values
+			 * @default "verbose"
+			 */
+			level: z.nativeEnum(LogLevel).default(LogLevel.verbose),
 
-		/**
-		 * Whether or not to include dates in log messages
-		 */
-		include_date: ifExistsGet<boolean>("log.include_date") ?? true,
-	},
+			/**
+			 * Whether or not to include dates in log messages
+			 */
+			include_date: z.boolean().default(true),
+		})
+		.default({}),
+	http: z
+		.object({
+			/**
+			 * Whether to enable morgan logging of http requests.
+			 * @example `200, 404` will log requests with status codes 200, 400
+			 * @example `-200` will log all non-200 responses
+			 * @example `-` will log all responses
+			 * @example `-200, 404` will log all codes except 200, 404
+			 */
+			log: z.string().optional(),
 
-	http: {
-		/**
-		 * Whether to enable morgan logging of http requests.
-		 * @example `200, 404` will log requests with status codes 200, 400
-		 * @example `-200` will log all non-200 responses
-		 * @example `-` will log all responses
-		 */
-		log: ifExistsGet<string>("http.log"),
+			/**
+			 * Log format to use when morgan logging is enabled
+			 * @see https://www.npmjs.com/package/morgan#predefined-formats
+			 * @default "combined"
+			 */
+			log_format: z.string().default("combined"),
 
-		/**
-		 * Log format to use when morgan logging is enabled
-		 * @see https://www.npmjs.com/package/morgan#predefined-formats
-		 * @default "combined"
-		 */
-		log_format: ifExistsGet<string>("http.log_format") ?? "combined",
-
-		/**
-		 * Rate limiter for incoming HTTP API requests.
-		 * Valid keys: `s2s`, `auth`, `nodeinfo`, `wellknown`, `global`
-		 */
-		rate: ifExistsGet("http.rate")
-			? Object.fromEntries(
-					["s2s", "auth", "nodeinfo", "wellknown", "global"].map(
-						(type) => [
-							type,
-							{
-								/**
-								 * Milliseconds
-								 * @default 15 minutes
-								 */
-								window:
-									ifExistsGet<number>(
-										`http.rate.${type}.window`,
-									) ?? 15 * 60 * 1000,
-
-								/**
-								 * Number of requests per window.
-								 * @default Default: 100
-								 */
-								limit:
-									ifExistsGet<number>(
-										`http.rate.${type}limit`,
-									) ?? 100,
-							},
-						],
-					),
-				)
-			: (false as false),
-	},
-
-	security: {
+			/**
+			 * Rate limiter for incoming HTTP API requests.
+			 */
+			rate: z
+				.object({
+					s2s: RateLimitSchema.default({}),
+					auth: RateLimitSchema.default({}),
+					nodeinfo: RateLimitSchema.default({}),
+					wellknown: RateLimitSchema.default({}),
+					global: RateLimitSchema.default({}),
+				})
+				.default({}),
+		})
+		.default({}),
+	security: z.object({
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.
 		 * Generate with `crypto.randomBytes(256).toString("base64")` or `npm run cli -- generate-keys`
 		 */
-		jwt_secret: get<string>("security.jwt_secret"),
+		jwt_secret: z.string(),
 
 		/**
 		 * How to determine the client IP when behind a proxy
@@ -111,203 +96,184 @@ const config = Object.freeze({
 		 *
 		 * @default "loopback,uniquelocal"
 		 */
-		trust_proxy:
-			ifExistsGet<string>("security.trust_proxy") ??
-			"loopback,uniquelocal",
-	},
-
-	database: {
+		trust_proxy: z.string().default("loopback,uniquelocal"),
+	}),
+	database: z.object({
 		/**
 		 * A URL style database connection string
 		 * @example `mysql://username:password@address:port/database_name`
 		 */
-		url: get<string>("database.url"),
+		url: z.string().url(),
 
 		/**
 		 * Whether to log database operations.
 		 */
-		log: ifExistsGet<boolean>("database.log"),
-	},
+		log: z.boolean().default(false),
+	}),
+	federation: z
+		.object({
+			/**
+			 * Is federation enabled?
+			 * If disabled, foreign network features will be unavailable.
+			 */
+			enabled: z.boolean().default(false),
 
-	federation: ifExistsGet<boolean>("federation.enabled")
-		? {
-				/**
-				 * Is federation enabled?
-				 * If disabled, foreign network features will be unavailable.
-				 */
-				enabled: true,
+			/**
+			 * The URL of the webapp for this instance.
+			 * If not hosting a webapp, set this to the same value as instance_url
+			 */
+			webapp_url: z
+				.string()
+				.url()
+				.transform((x) => new URL(x)),
 
-				/**
-				 * The URL of the webapp for this instance.
-				 * If not set/invalid, the federation.instance_url will be used instead.
-				 */
-				webapp_url:
-					tryParseUrl(get("federation.webapp_url")) ??
-					new URL(get<string>("federation.instance_url")),
+			/**
+			 * The URL of this instance. Required.
+			 */
+			instance_url: z
+				.string()
+				.url()
+				.transform((x) => new URL(x)),
 
-				/**
-				 * The URL of this instance. Required.
-				 */
-				instance_url: new URL(get<string>("federation.instance_url")),
+			/**
+			 * Aka, authorised fetch. Require HTTP signatures from remote servers for all requests
+			 * If disabled, only require when absolutely necessary such as when receiving a new chat message,
+			 * while reading public data will still be allowed.
+			 */
+			require_http_signatures: z.boolean().default(false),
 
-				/**
-				 * Aka, authorised fetch. Require HTTP signatures from remote servers for all requests
-				 * If disabled, only require when absolutely necessary such as when receiving a new chat message,
-				 * while reading public data will still be allowed.
-				 */
-				require_http_signatures:
-					ifExistsGet<boolean>(
-						"federation.require_http_signatures",
-					) ?? false,
-
-				/**
-				 * Various settings related to the federation queues implemented using Redis.
-				 * You can configure Redis via the `redis.*` config options.
-				 */
-				queue: {
+			/**
+			 * Various settings related to the federation queues implemented using Redis.
+			 * You can configure Redis via the `redis.*` config options.
+			 */
+			queue: z
+				.object({
 					/**
 					 * Whether or not to use the inbound queue. Requires redis.
 					 * @default false
 					 */
-					use_inbound:
-						ifExistsGet<boolean>("federation.queue.use_inbound") ??
-						false,
-				},
+					use_inbound: z.boolean().default(false),
+				})
+				.default({}),
 
-				/**
-				 * The public and private keys of the instance actor (/actor)
-				 * used for verifying and signing HTTP signatures
-				 */
-				public_key: get<string>("federation.public_key"),
-				private_key: get<string>("federation.private_key"),
+			/**
+			 * The public and private keys of the instance actor (/actor)
+			 * used for verifying and signing HTTP signatures
+			 */
+			public_key: z.string(),
+			private_key: z.string(),
 
-				/**
-				 * Control whether the `federation.instances` property is a denylist or allowlist
-				 *
-				 * @default false
-				 */
-				allowlist:
-					ifExistsGet<boolean>("federation.allowlist") ?? false,
+			/**
+			 * Control whether the `federation.instances` property is a denylist or allowlist
+			 *
+			 * @default false
+			 */
+			allowlist: z.boolean().default(false),
 
-				/**
-				 * Control how Shoot handles requests from different instances
-				 * This is a key-value store where the key is `new URL(instance).origin`
-				 * and the value is the desired behaviour defined by InstanceBehaviour
-				 *
-				 * TODO it would be good if we could provide reasons for these
-				 */
-				instances:
-					ifExistsGet<{
-						[instance: string]: InstanceBehaviour;
-					}>("federation.instances") ?? {},
-			}
-		: {
-				enabled: false,
-				webapp_url: LOCALHOST_URL,
-				instance_url: LOCALHOST_URL,
-				require_http_signatures: false,
-				public_key: "",
-				private_key: "",
-				queue: {
-					use_inbound: true,
-				},
-				allowlist: false,
-				instances: {},
-			},
+			/**
+			 * Control how Shoot handles requests from different instances
+			 * This is a key-value store where the key is `new URL(instance).origin`
+			 * and the value is the desired behaviour defined by InstanceBehaviour
+			 *
+			 * TODO it would be good if we could provide reasons for these
+			 */
+			instances: z
+				.record(z.string(), z.nativeEnum(InstanceBehaviour))
+				.default({}),
+		})
+		.default({
+			webapp_url: "http://localhost",
+			instance_url: "http://localhost",
+			public_key: "",
+			private_key: "",
+		}),
+	webrtc: z
+		.object({
+			/**
+			 * If Webrtc is disabled, voice calls will not be allowed and the signalling server
+			 * will not be started.
+			 */
+			enabled: z.boolean().default(false),
 
-	webrtc: {
-		/** Janus gateway api secret */
-		janus_secret: ifExistsGet<string>("webrtc.janus_secret"),
-		/**
-		 * Janus gateway url. Websocket, http, or unix socket
-		 * @default "ws://localhost:8188"
-		 */
-		janus_url:
-			ifExistsGet<string>("webrtc.janus_url") ?? "ws://localhost:8188",
+			/** Janus gateway api secret */
+			janus_secret: z.string().optional(),
 
-		// signalling_servers: getArray<string>("webrtc.signalling_servers"),
-		signal_address: ifExistsGet<string>("webrtc.signal_address"),
-	},
+			/**
+			 * Janus gateway url. Websocket, http, or unix socket
+			 * @default "ws://localhost:8188"
+			 */
+			janus_url: z.string().url().default("ws://localhost:8188"),
 
-	registration: ifExistsGet<boolean>("registration.enabled")
-		? {
-				/**
-				 * If registration is disabled, new users cannot be created from the API.
-				 * The CLI can still be used to create users using admin operations.
-				 */
-				enabled: true,
-			}
-		: { enabled: false },
+			signal_address: z.string().url().optional(),
+		})
+		.default({}),
+	registration: z
+		.object({
+			/**
+			 * If registration is disabled, new users cannot be created from the API.
+			 * The CLI can still be used to create users using admin operations.
+			 */
+			enabled: z.boolean().default(false),
+		})
+		.default({}),
+	storage: z
+		.object({
+			/**
+			 * The local directory to upload user content.
+			 * If storage.s3.* is defined and valid, s3 will be used instead
+			 * @default "./storage"
+			 */
+			directory: z.string().default("./storage"),
 
-	storage: {
-		/**
-		 * The local directory to upload user content.
-		 * If storage.s3.* is defined and valid, s3 will be used instead
-		 * @default "./storage"
-		 */
-		directory: ifExistsGet<string>("storage.directory") ?? "./storage",
-
-		/**
-		 * Maximum size of user uploaded content in bytes
-		 * @default 10mb
-		 */
-		max_file_size:
-			ifExistsGet<number>("storage.max_file_size") ?? 1024 * 1024 * 10,
-
-		s3: ifExistsGet<boolean>("storage.s3.enabled")
-			? {
-					enabled: true,
+			/**
+			 * Maximum size of user uploaded content in bytes
+			 * @default 10mb
+			 */
+			max_file_size: z.number().default(1024 * 1024 * 10),
+			s3: z
+				.object({
+					enabled: z.boolean().default(false),
 
 					/**
 					 * The endpoint to use for s3 storage.
 					 * If not provided, uses aws s3
 					 */
-					endpoint: ifExistsGet<string>("storage.s3.endpoint"),
-
-					region: get<string>("storage.s3.region"),
-
-					bucket: get<string>("storage.s3.bucket"),
-
-					accessKey: get<string>("storage.s3.accessKey"),
-
-					secret: get<string>("storage.s3.secret"),
+					endpoint: z.string().optional(),
+					region: z.string(),
+					bucket: z.string(),
+					accessKey: z.string(),
+					secret: z.string(),
 
 					/**
 					 * Whether to force path style URLs for S3 objects
 					 * (e.g., https://s3.amazonaws.com/{bucket}/ instead of https://{bucket}.s3.amazonaws.com/
 					 */
-					forcePathStyle:
-						ifExistsGet<boolean>("storage.s3.forcePathStyle") ??
-						false,
-				}
-			: {
-					enabled: false,
-					endpoint: undefined,
-					region: "",
-					bucket: "",
-					accessKey: "",
-					secret: "",
-				},
-	},
+					forcePathStyle: z.boolean().default(false),
+				})
+				.default({ region: "", bucket: "", accessKey: "", secret: "" }),
+		})
+		.default({}),
 
 	/**
 	 * Redis is optional. It is currently only used for the inbound federation queue
 	 */
-	redis: {
-		/**
-		 * The IP/hostname of the Redis instance to connect to
-		 *
-		 * @default "localhost"
-		 */
-		host: ifExistsGet<string>("redis.host") ?? "localhost",
+	redis: z
+		.object({
+			/**
+			 * The IP/hostname of the Redis instance to connect to
+			 *
+			 * @default "localhost"
+			 */
+			host: z.string().default("localhost"),
 
-		/**
-		 * The port to use when connecting to a Redis host
-		 *
-		 * @default 6379
-		 */
-		port: ifExistsGet<number>("redis.port") ?? 6379,
-	},
+			/**
+			 * The port to use when connecting to a Redis host
+			 *
+			 * @default 6379
+			 */
+			port: z.number().default(6379),
+		})
+		.default({}),
 
 	/**
 	 * RabbitMQ is optional.
@@ -318,15 +284,15 @@ const config = Object.freeze({
 	 * It is used for sending events from the API, among other components, to the gateway
 	 * when they do not share memory
 	 */
-	rabbitmq: ifExistsGet<boolean>("rabbitmq.enabled")
-		? {
-				enabled: true,
-				url: new URL(get<string>("rabbitmq.url")),
-			}
-		: {
-				enabled: false,
-				url: new URL("http://localhost"),
-			},
+	rabbitmq: z
+		.object({
+			enabled: z.boolean().default(false),
+			url: z
+				.string()
+				.url()
+				.transform((x) => new URL(x)),
+		})
+		.default({ url: "http://localhost" }),
 
 	/**
 	 * Media proxy settings. Shoot supports Imagor/Thumbor for proxying remote images.
@@ -334,42 +300,75 @@ const config = Object.freeze({
 	 * - prevents simple IP grabbing of clients, or whatever other data is leaked when fetching media
 	 * - prevents effectively DDOSing remote servers hosting media when being requests by many clients
 	 */
-	media_proxy: ifExistsGet<boolean>("media_proxy.enabled")
-		? {
-				enabled: true,
+	media_proxy: z
+		.object({
+			enabled: z.boolean().default(false),
 
-				/**
-				 * The public endpoint of the imagor proxy server. Clients will connect to this address.
-				 */
-				url: new URL(get<string>("media_proxy.url")),
+			/**
+			 * The public endpoint of the imagor proxy server. Clients will connect to this address.
+			 */
+			url: z.string().url(),
 
-				/**
-				 * Optional signing key to prevent users from generating their own media proxy requests
-				 */
-				secret: ifExistsGet<string>("media_proxy.secret"),
-			}
-		: {
-				enabled: false,
-				url: new URL("http://localhost"),
-				secret: undefined,
-			},
+			/**
+			 * Optional signing key to prevent users from generating their own media proxy requests
+			 */
+			secret: z.string().optional(),
+		})
+		.default({ url: "http://localhost" }),
 
 	/**
 	 * Push notifications via the Web Push API.
 	 * Generate a public and private key via https://github.com/web-push-libs/web-push
 	 * `npx web-push generate-vapid-keys`
 	 */
-	notifications: ifExistsGet<boolean>("notifications.enabled")
-		? {
-				enabled: true,
-				privateKey: get<string>("notifications.privateKey"),
-				publicKey: get<string>("notifications.publicKey"),
-			}
-		: {
-				enabled: false,
-				privateKey: "",
-				publicKey: "",
-			},
+	notifications: z
+		.object({
+			enabled: z.boolean().default(false),
+			privateKey: z.string(),
+			publicKey: z.string(),
+		})
+		.default({ publicKey: "", privateKey: "" }),
 });
+
+export type ConfigSchema = z.infer<typeof ConfigSchema>;
+
+let configCache: ConfigSchema | undefined;
+
+const parseConfig = () => {
+	const recursion = (schema: z.AnyZodObject, path: string) => {
+		if (schema.shape) {
+			// schema is an object
+
+			const ret: Record<string, unknown> = {};
+
+			for (const key in schema.shape) {
+				const value = schema.shape[key];
+
+				const loaded = recursion(
+					value,
+					`${path ? `${path}.` : ""}${key}`,
+				);
+
+				if (loaded) ret[key] = loaded;
+			}
+
+			return Object.keys(ret).length ? ret : undefined;
+		}
+
+		// otherwise schema is a primitive value
+
+		return ifExistsGet(path);
+	};
+
+	const object = recursion(ConfigSchema, "");
+
+	return ConfigSchema.parse(object);
+};
+
+const config = () => {
+	if (!configCache) configCache = parseConfig();
+
+	return configCache;
+};
 
 export { config };

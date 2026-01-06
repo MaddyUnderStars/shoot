@@ -23,7 +23,7 @@ router.get(
 		const guild = await Guild.findOneOrFail({
 			where: {
 				id: guild_id,
-				domain: config.federation.webapp_url.hostname,
+				domain: config().federation.webapp_url.hostname,
 			},
 			relations: {
 				owner: true,
@@ -45,7 +45,7 @@ router.post(
 			const guild = await Guild.findOneOrFail({
 				where: {
 					id: req.params.guild_id,
-					domain: config.federation.webapp_url.hostname,
+					domain: config().federation.webapp_url.hostname,
 				},
 			});
 

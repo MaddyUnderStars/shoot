@@ -8,12 +8,12 @@ const router = Router();
 router.get(
 	"/host-meta",
 	route({}, async (_req, res) => {
-		if (!config.federation.enabled)
+		if (!config().federation.enabled)
 			throw new HttpError("Federation is disabled", 400);
 
 		res.setHeader("Content-Type", "application/xrd+xml");
 
-		const host = config.federation.instance_url.origin;
+		const host = config().federation.instance_url.origin;
 
 		const ret = `<?xml version="1.0" encoding="UTF-8"?>
 		<XRD

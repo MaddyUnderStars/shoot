@@ -24,7 +24,7 @@ router.get(
 					id: message_id,
 					channel: {
 						id: channel_id,
-						domain: config.federation.webapp_url.hostname,
+						domain: config().federation.webapp_url.hostname,
 					},
 				},
 				relations: {

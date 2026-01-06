@@ -30,7 +30,7 @@ router.get(
 				.leftJoinAndSelect("channels.guild", "guild")
 				.where("channels.id = :id", { id: channel_id })
 				.andWhere("channels.domain = :domain", {
-					domain: config.federation.webapp_url.hostname,
+					domain: config().federation.webapp_url.hostname,
 				})
 				.getOneOrFail();
 
@@ -56,7 +56,7 @@ router.post(
 				.leftJoinAndSelect("guild.owner", "g_owner")
 				.where("channels.id = :id", { id: req.params.channel_id })
 				.andWhere("channels.domain = :domain", {
-					domain: config.federation.webapp_url.hostname,
+					domain: config().federation.webapp_url.hostname,
 				})
 				.getOneOrFail();
 

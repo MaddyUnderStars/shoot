@@ -3,7 +3,7 @@ import { config } from "../config";
 import local from "./local";
 import s3 from "./s3";
 
-const api = config.storage.s3.enabled ? s3 : local;
+const api = config().storage.s3.enabled ? s3 : local;
 
 export type PutFileRequest = {
 	channel_id: string;

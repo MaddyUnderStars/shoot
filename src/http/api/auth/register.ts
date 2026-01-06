@@ -26,7 +26,7 @@ router.post(
 	route(
 		{ body: RegisterRequest, response: RegisterResponse },
 		async (req, res) => {
-			if (!config.registration.enabled && !req.body.invite)
+			if (!config().registration.enabled && !req.body.invite)
 				throw new HttpError("Registration is disabled", 400);
 
 			const { username, email, password } = req.body;
