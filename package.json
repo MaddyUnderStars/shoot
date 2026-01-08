@@ -14,13 +14,15 @@
 		"build": "tsc",
 		"prepare": "husky || true",
 		"openapi": "node --enable-source-maps dist/src/scripts/openapi.js",
-		"test": "c8 --all --src ./src --exclude-after-remap ava",
+		"test": "vitest",
 		"lint": "npx @biomejs/biome check --write src"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
+		"@swc/core": "^1.15.8",
+		"@testcontainers/postgresql": "^11.11.0",
 		"@types/bcrypt": "^5.0.2",
 		"@types/config": "^3.3.3",
 		"@types/cors": "^2.8.17",
@@ -35,8 +37,12 @@
 		"@types/ws": "^8.5.13",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.1.0",
+		"pg": "^8.16.3",
 		"supertest": "^7.0.0",
-		"typescript": "^5.7.2"
+		"testcontainers": "^11.11.0",
+		"typescript": "^5.7.2",
+		"unplugin-swc": "^1.5.9",
+		"vitest": "^4.0.16"
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "^7.3.0",
@@ -57,7 +63,6 @@
 		"jsonwebtoken": "^9.0.2",
 		"morgan": "^1.10.1",
 		"oembed-providers": "github:iamcal/oembed",
-		"pg": "^8.13.1",
 		"rabbitmq-stream-js-client": "^0.6.2",
 		"ts-deepmerge": "^7.0.2",
 		"typeorm": "^0.3.27",
