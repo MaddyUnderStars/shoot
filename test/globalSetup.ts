@@ -7,6 +7,7 @@ const create = async (project: TestProject) => {
 
 	const postgres = await new PostgreSqlContainer("postgres")
 		.withNetwork(network)
+		.withReuse()
 		.start();
 
 	project.provide("NETWORK_ID", network.getId());

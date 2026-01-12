@@ -5,7 +5,7 @@ exports[`Can create user 1`] = `
   "collections": null,
   "created_date": null,
   "display_name": "testUser",
-  "domain": "chat.understars.dev",
+  "domain": "localhost",
   "email": "test@localhost",
   "id": null,
   "inviteCode": null,

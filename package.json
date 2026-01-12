@@ -38,7 +38,7 @@
 		"husky": "^9.1.7",
 		"lint-staged": "^16.1.0",
 		"pg": "^8.16.3",
-		"supertest": "^7.0.0",
+		"supertest": "^7.2.2",
 		"testcontainers": "^11.11.0",
 		"typescript": "^5.7.2",
 		"unplugin-swc": "^1.5.9",

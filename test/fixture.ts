@@ -1,22 +1,17 @@
 /** biome-ignore-all lint/correctness/noEmptyPattern: required by vite */
-
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
-
-extendZodWithOpenApi(z);
-
 import crypto from "node:crypto";
 import { Client as PgClient } from "pg";
 import { getContainerRuntimeClient, StartedNetwork } from "testcontainers";
-import type { DeepPartial } from "typeorm";
 import { test as baseTest, inject } from "vitest";
-import type { ConfigSchema } from "../src/util/config";
+import type { APIServer } from "../src/http/server";
+import { ConfigSchema } from "../src/util/ConfigSchema";
 
 export const test = baseTest.extend<{
 	network: StartedNetwork;
 	dbClient: PgClient;
 	database: string;
-	config: DeepPartial<ConfigSchema>;
+	config: ConfigSchema;
+	api: APIServer;
 }>({
 	network: [
 		async ({}, use) => {
@@ -30,40 +25,43 @@ export const test = baseTest.extend<{
 
 			await use(network);
 		},
-		{ scope: "worker" },
+		{ scope: "file" },
 	],
 
-	dbClient: async ({ database }, use) => {
-		const postgres = inject("POSTGRES_AUTH");
+	dbClient: [
+		async ({ database }, use) => {
+			const postgres = inject("POSTGRES_AUTH");
 
-		const client = new PgClient({
-			...postgres,
-			database,
-		});
+			const client = new PgClient({
+				...postgres,
+				database,
+			});
 
-		await client.connect();
+			await client.connect();
 
-		await use(client);
+			await use(client);
 
-		await client.end();
-	},
+			await client.end();
+		},
+		{ scope: "file" },
+	],
 
 	database: [
-		async ({ task }, use) => {
+		async ({}, use) => {
 			const postgres = inject("POSTGRES_AUTH");
 
 			const client = new PgClient(postgres);
 
 			await client.connect();
 
-			const name = `shoot_${task.id.replaceAll("-", "_")}`;
+			const name = `shoot_${Math.random().toString().split(".")[1]}`;
 			await client.query(`CREATE DATABASE ${name}`);
 
 			await client.end();
 
 			await use(name);
 		},
-		{ scope: "test" },
+		{ scope: "file" },
 	],
 
 	config: [
@@ -73,7 +71,7 @@ export const test = baseTest.extend<{
 			const config = {
 				database: {
 					url: `postgres://${postgres.user}:${postgres.password}@${postgres.host}:${postgres.port}/${database}`,
-					log: true,
+					log: false,
 				},
 				security: {
 					jwt_secret: crypto.randomBytes(256).toString("base64"),
@@ -81,8 +79,27 @@ export const test = baseTest.extend<{
 			};
 
 			process.env.NODE_CONFIG = JSON.stringify(config);
-			await use(config);
+			await use(ConfigSchema.parse(config));
 		},
-		{ auto: true },
+		{ auto: true, scope: "file" },
+	],
+
+	api: [
+		async ({ config }, use) => {
+			process.env.NODE_CONFIG = JSON.stringify(config);
+
+			const { APIServer } = await import("../src/http/server");
+			const { initDatabase, closeDatabase } = await import(
+				"../src/util/database"
+			);
+
+			const api = new APIServer();
+			await initDatabase();
+
+			await use(api);
+
+			closeDatabase();
+		},
+		{ scope: "file" },
 	],
 });
