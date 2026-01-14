@@ -1,10 +1,14 @@
 /** biome-ignore-all lint/correctness/noEmptyPattern: required by vite */
 import crypto from "node:crypto";
+import { promisify } from "node:util";
 import { Client as PgClient } from "pg";
 import { getContainerRuntimeClient, StartedNetwork } from "testcontainers";
 import { test as baseTest, inject } from "vitest";
 import type { APIServer } from "../src/http/server";
 import { ConfigSchema } from "../src/util/ConfigSchema";
+import { KEY_OPTIONS } from "../src/util/rsa";
+
+const generateKeyPair = promisify(crypto.generateKeyPair);
 
 export const test = baseTest.extend<{
 	network: StartedNetwork;
@@ -68,6 +72,8 @@ export const test = baseTest.extend<{
 		async ({ database }, use) => {
 			const postgres = inject("POSTGRES_AUTH");
 
+			const keys = await generateKeyPair("rsa", KEY_OPTIONS);
+
 			const config = {
 				database: {
 					url: `postgres://${postgres.user}:${postgres.password}@${postgres.host}:${postgres.port}/${database}`,
@@ -75,6 +81,14 @@ export const test = baseTest.extend<{
 				},
 				security: {
 					jwt_secret: crypto.randomBytes(256).toString("base64"),
+					trust_proxy: "loopback,uniquelocal",
+				},
+				federation: {
+					enabled: true,
+					public_key: keys.publicKey,
+					private_key: keys.privateKey,
+					webapp_url: "http://localhost",
+					instance_url: "http://localhost",
 				},
 			};
 
