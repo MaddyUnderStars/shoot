@@ -90,6 +90,9 @@ export const test = baseTest.extend<{
 					webapp_url: "http://localhost",
 					instance_url: "http://localhost",
 				},
+				registration: {
+					enabled: true,
+				},
 			};
 
 			process.env.NODE_CONFIG = JSON.stringify(config);
