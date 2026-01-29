@@ -2,11 +2,13 @@
 import crypto from "node:crypto";
 import { promisify } from "node:util";
 import { Client as PgClient } from "pg";
-import { getContainerRuntimeClient, StartedNetwork } from "testcontainers";
+import type { StartedNetwork } from "testcontainers";
 import { test as baseTest, inject } from "vitest";
 import type { APIServer } from "../src/http/server";
 import { ConfigSchema } from "../src/util/ConfigSchema";
 import { KEY_OPTIONS } from "../src/util/rsa";
+import { createTestDatabase } from "./testUtils/database";
+import { getTestNetwork } from "./testUtils/network";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
@@ -19,13 +21,7 @@ export const test = baseTest.extend<{
 }>({
 	network: [
 		async ({}, use) => {
-			const runtime = await getContainerRuntimeClient();
-			const netId = inject("NETWORK_ID");
-			const netName = inject("NETWORK_NAME");
-
-			const rawNet = runtime.network.getById(netId);
-
-			const network = new StartedNetwork(runtime, netName, rawNet);
+			const network = await getTestNetwork();
 
 			await use(network);
 		},
@@ -52,18 +48,7 @@ export const test = baseTest.extend<{
 
 	database: [
 		async ({}, use) => {
-			const postgres = inject("POSTGRES_AUTH");
-
-			const client = new PgClient(postgres);
-
-			await client.connect();
-
-			const name = `shoot_${Math.random().toString().split(".")[1]}`;
-			await client.query(`CREATE DATABASE ${name}`);
-
-			await client.end();
-
-			await use(name);
+			await use(await createTestDatabase());
 		},
 		{ scope: "file" },
 	],

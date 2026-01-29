@@ -1,5 +1,5 @@
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
-import { Network } from "testcontainers";
+import { GenericContainer, Network } from "testcontainers";
 import type { TestProject } from "vitest/node";
 
 const create = async (project: TestProject) => {
@@ -26,6 +26,11 @@ const create = async (project: TestProject) => {
 };
 
 export default async (project: TestProject) => {
+	// await GenericContainer.fromDockerfile(".")
+	// 	.withBuildkit()
+	// 	.withCache(true)
+	// 	.build("shoot:test", { deleteOnExit: false });
+
 	let res = await create(project);
 
 	project.onTestsRerun(async () => {

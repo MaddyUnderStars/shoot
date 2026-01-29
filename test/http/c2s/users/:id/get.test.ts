@@ -1,5 +1,6 @@
 import request from "supertest";
 import { test } from "../../../../fixture";
+import { startShootContainer } from "../../../../testUtils/container";
 import { createTestUser } from "../../../../testUtils/users";
 
 test("Get local user by mention", async ({ api, expect }) => {
@@ -18,4 +19,8 @@ test("Get local user by mention", async ({ api, expect }) => {
 	expect(res.body.name).toBe(user2.user.name);
 });
 
-// TODO: federated user
+test("Get foreign user by mention", { timeout: 60_000 }, async () => {
+	const remote = await startShootContainer();
+
+	await remote.stop();
+});
