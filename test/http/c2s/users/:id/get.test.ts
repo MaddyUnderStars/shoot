@@ -1,6 +1,9 @@
 import request from "supertest";
 import { test } from "../../../../fixture";
-import { startShootContainer } from "../../../../testUtils/container";
+import {
+	getShootContainerUrl,
+	startShootContainer,
+} from "../../../../testUtils/container";
 import { createTestUser } from "../../../../testUtils/users";
 
 test("Get local user by mention", async ({ api, expect }) => {
@@ -19,8 +22,41 @@ test("Get local user by mention", async ({ api, expect }) => {
 	expect(res.body.name).toBe(user2.user.name);
 });
 
-test("Get foreign user by mention", { timeout: 60_000 }, async () => {
-	const remote = await startShootContainer();
+test(
+	"Get foreign user by mention",
+	{ timeout: 60_000 },
+	async ({ expect, onTestFinished }) => {
+		const [local, remote] = await Promise.all([
+			startShootContainer("local"),
+			startShootContainer("remote"),
+		]);
 
-	await remote.stop();
-});
+		onTestFinished(async () => {
+			await Promise.all([local.stop(), remote.stop()]);
+		});
+
+		const [localUser, remoteUser] = await Promise.all([
+			createTestUser(local),
+			createTestUser(remote),
+		]);
+
+		const res = await fetch(
+			new URL(
+				`/users/${remoteUser.user.mention}`,
+				getShootContainerUrl(local),
+			),
+			{
+				headers: {
+					Authorization: localUser.token,
+				},
+			},
+		);
+
+		const body = await res.json();
+
+		expect(res.status).toBe(200);
+		expect(body.mention).toBe(remoteUser.user.mention);
+		expect(body.display_name).toBe(remoteUser.user.display_name);
+		expect(body.name).toBe(remoteUser.user.name);
+	},
+);

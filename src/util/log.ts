@@ -60,7 +60,7 @@ const levelConsoleMap = {
 // we can't use config here because importing config ends up parsing it
 // bit of an oversight... but we can work around that by exposing a setter
 const options = {
-	level: LogLevel.verbose,
+	level: process.env.VITEST ? LogLevel.none : LogLevel.verbose,
 	include_date: true,
 };
 
