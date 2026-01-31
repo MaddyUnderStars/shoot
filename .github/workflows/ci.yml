@@ -24,4 +24,6 @@ jobs:
 
             - run: docker build -t shoot:test .
 
+            - run: npm ci
+
             - run: npm test
