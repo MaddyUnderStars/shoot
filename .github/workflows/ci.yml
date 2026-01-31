@@ -22,10 +22,6 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: "npm"
 
-            - run: npm ci
-
-            - run: npm run build
-
-            - run: npm run openapi
+            - run: docker build -t shoot:test .
 
             - run: npm test
