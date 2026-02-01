@@ -26,9 +26,9 @@ test(
 
 		// create DM between them
 
-		const localLogs = waitForLogMessage(
-			local,
-			"[AP:DISTRIBUTE] Sent activity",
+		let remoteLogs = waitForLogMessage(
+			remote,
+			'query: INSERT INTO "channels"',
 		);
 
 		const dmRes = await fetch(
@@ -52,12 +52,9 @@ test(
 
 		const dm = await dmRes.json();
 
-		await localLogs;
+		await remoteLogs;
 
-		const remoteLogs = waitForLogMessage(
-			remote,
-			'query: INSERT INTO "messages"',
-		);
+		remoteLogs = waitForLogMessage(remote, 'query: INSERT INTO "messages"');
 		const sendRes = await fetch(
 			new URL(
 				`/channel/${dm.mention}/messages`,
