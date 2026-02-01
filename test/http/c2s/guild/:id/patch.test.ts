@@ -9,7 +9,7 @@ test.for([
 	[PERMISSION.ADMIN, true],
 	[PERMISSION.MANAGE_GUILD, true],
 	[PERMISSION.NONE, false],
-])("Can edit guild as $permission ", async (opts, { api, dbClient }) => {
+])("Can edit guild as $0 ", async (opts, { api, dbClient }) => {
 	const permission = opts[0] as PERMISSION;
 	const allowed = opts[1] as boolean;
 
