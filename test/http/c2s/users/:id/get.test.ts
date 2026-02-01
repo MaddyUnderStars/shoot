@@ -27,8 +27,8 @@ test(
 	{ timeout: 60_000 },
 	async ({ expect, onTestFinished }) => {
 		const [local, remote] = await Promise.all([
-			startShootContainer("local"),
-			startShootContainer("remote"),
+			startShootContainer(),
+			startShootContainer(),
 		]);
 
 		onTestFinished(async () => {

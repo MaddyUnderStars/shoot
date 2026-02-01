@@ -12,24 +12,21 @@ import type { ConfigSchema } from "../../src/util/ConfigSchema";
 import { KEY_OPTIONS } from "../../src/util/rsa";
 import { createTestDatabase } from "./database";
 import { getTestNetwork } from "./network";
+import { getTestString } from "./random";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
 export const startShootContainer = async (
-	name: string,
 	config?: DeepPartial<ConfigSchema>,
 ) => {
-	// const image = await GenericContainer.fromDockerfile(".")
-	// 	.withCache(true)
-	// 	.withBuildkit()
-	// 	.build("shoot:latest");
-
 	const databaseName = await createTestDatabase();
 	const postgres = inject("POSTGRES_AUTH");
 
 	const keys = await generateKeyPair("rsa", KEY_OPTIONS);
 
 	const network = await getTestNetwork();
+
+	const name = getTestString();
 
 	const shoot = await new GenericContainer("shoot:test")
 		.withPullPolicy({ shouldPull: () => false })
@@ -50,6 +47,9 @@ export const startShootContainer = async (
 					{
 						log: {
 							include_date: false,
+						},
+						http: {
+							log: "-",
 						},
 						registration: {
 							enabled: true,
@@ -84,4 +84,35 @@ export const getShootContainerUrl = (container: StartedTestContainer) => {
 	return new URL(
 		`http://${container.getHost()}:${container.getFirstMappedPort()}`,
 	);
+};
+
+export const waitForLogMessage = async <
+	T extends string | RegExp,
+	Ret = T extends string ? string : RegExpMatchArray,
+>(
+	container: StartedTestContainer,
+	target: T,
+) => {
+	const logs = await container.logs({ tail: 5 });
+
+	return new Promise((resolve, reject) => {
+		logs.on("data", (line) => {
+			if (typeof target === "string" && line.includes(target)) {
+				logs.destroy();
+
+				return resolve(line as Ret);
+			} else if (target instanceof RegExp) {
+				const match = line.match(target);
+				if (match) {
+					logs.destroy();
+					return resolve(match as Ret);
+				}
+			}
+		});
+
+		logs.on("end", () => {
+			reject(`Did not see log message before end of stream ${target}`);
+			logs.destroy();
+		});
+	});
 };

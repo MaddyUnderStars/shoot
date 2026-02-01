@@ -1,5 +1,5 @@
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
-import { GenericContainer, Network } from "testcontainers";
+import { Network } from "testcontainers";
 import type { TestProject } from "vitest/node";
 
 const create = async (project: TestProject) => {
@@ -7,7 +7,6 @@ const create = async (project: TestProject) => {
 
 	const postgres = await new PostgreSqlContainer("postgres")
 		.withNetwork(network)
-		.withReuse()
 		.start();
 
 	project.provide("NETWORK_ID", network.getId());
