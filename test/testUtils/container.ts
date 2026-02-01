@@ -28,7 +28,9 @@ export const startShootContainer = async (
 
 	const name = getTestString();
 
-	const shoot = await new GenericContainer("shoot:test")
+	const shoot = await new GenericContainer(
+		process.env.DOCKER_IMAGE ?? "shoot:test",
+	)
 		.withPullPolicy({ shouldPull: () => false })
 		.withHostname(name)
 		.withNetwork(network)
