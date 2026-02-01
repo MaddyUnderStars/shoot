@@ -1,7 +1,7 @@
 import { handleCli } from "../../src/cli/cli";
 import { test } from "../fixture";
 
-test("Can create user", async ({ expect, dbClient }) => {
+test("CLI can create user", async ({ expect, dbClient }) => {
 	expect(
 		await handleCli([
 			"node",

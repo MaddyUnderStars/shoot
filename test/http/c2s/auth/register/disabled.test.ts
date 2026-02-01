@@ -2,12 +2,12 @@ import request from "supertest";
 import { describe } from "vitest";
 import { test } from "../../../../fixture";
 
-describe("disabled", () => {
+describe("Registration is disabled", () => {
 	test.beforeEach(({ config }) => {
 		config.registration.enabled = false;
 	});
 
-	test("without token", async ({ api }) => {
+	test("Cannot register without token", async ({ api }) => {
 		await request(api.app)
 			.post("/auth/register")
 			.send({
@@ -20,7 +20,7 @@ describe("disabled", () => {
 			.expect(400);
 	});
 
-	test("with token", async ({ api, dbClient, expect }) => {
+	test("Can register with token", async ({ api, dbClient, expect }) => {
 		await dbClient.query(
 			"INSERT INTO instance_invites (code) VALUES ($1)",
 			["testinvite"],

@@ -1,7 +1,7 @@
 import request from "supertest";
 import { test } from "../../../../fixture";
 
-test.sequential("Happy", async ({ api, expect }) => {
+test.sequential("Can Login", async ({ api, expect }) => {
 	const { registerUser } = await import(
 		"../../../../../src/util/entity/user"
 	);
@@ -19,7 +19,7 @@ test.sequential("Happy", async ({ api, expect }) => {
 	expect(res.body.token).toBeTypeOf("string");
 });
 
-test.sequential("Invalid password", async ({ api }) => {
+test.sequential("Login rejects invalid password", async ({ api }) => {
 	await request(api.app)
 		.post("/auth/login")
 		.send({
@@ -29,7 +29,7 @@ test.sequential("Invalid password", async ({ api }) => {
 		.expect(401);
 });
 
-test.sequential("Invalid username", async ({ api }) => {
+test.sequential("Login rejects invalid username", async ({ api }) => {
 	await request(api.app)
 		.post("/auth/login")
 		.send({

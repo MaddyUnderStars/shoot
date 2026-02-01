@@ -3,12 +3,12 @@ import { describe } from "vitest";
 import { test } from "../../../../fixture";
 import { createTestUser } from "../../../../testUtils/users";
 
-describe.sequential("DM", () => {
+describe.sequential("DM channels", () => {
 	let user1: Awaited<ReturnType<typeof createTestUser>>;
 	let user2: Awaited<ReturnType<typeof createTestUser>>;
 	let channel: string;
 
-	test("Create", async ({ api, expect }) => {
+	test("Can create", async ({ api, expect }) => {
 		[user1, user2] = await Promise.all([
 			createTestUser(api),
 			createTestUser(api),
@@ -43,7 +43,7 @@ describe.sequential("DM", () => {
 			});
 	});
 
-	test("Send message", async ({ api, expect }) => {
+	test("Can send message", async ({ api, expect }) => {
 		const sendRes = await request(api.app)
 			.post(`/channel/${channel}/messages`)
 			.auth(user1.token, { type: "bearer" })

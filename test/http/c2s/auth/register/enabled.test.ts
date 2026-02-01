@@ -2,8 +2,8 @@ import request from "supertest";
 import { describe } from "vitest";
 import { test } from "../../../../fixture";
 
-describe("enabled", () => {
-	test("without token", async ({ api }) => {
+describe("Registration is enabled", () => {
+	test("Can register without token", async ({ api }) => {
 		await request(api.app)
 			.post("/auth/register")
 			.send({
