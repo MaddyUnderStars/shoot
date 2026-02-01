@@ -33,12 +33,15 @@ export const getOrFetchMember = async (
 	return member;
 };
 
-export const isMemberOfGuildThrow = async (guild_id: string, user: User) => {
+export const isMemberOfGuildThrow = async (
+	guild_id: ActorMention,
+	user: User,
+) => {
 	if (!(await isMemberOfGuild(guild_id, user)))
 		throw new HttpError("Missing permission", 404);
 };
 
-export const isMemberOfGuild = async (guild_id: string, user: User) => {
+export const isMemberOfGuild = async (guild_id: ActorMention, user: User) => {
 	const guild = splitQualifiedMention(guild_id);
 
 	return (
