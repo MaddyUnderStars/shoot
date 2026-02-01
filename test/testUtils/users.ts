@@ -10,6 +10,8 @@ const isApiServer = (
 	target: APIServer | StartedTestContainer,
 ): target is APIServer => "app" in target;
 
+export type TestUser = Awaited<ReturnType<typeof createTestUser>>;
+
 export const createTestUser = async (
 	target: APIServer | StartedTestContainer,
 ) => {
