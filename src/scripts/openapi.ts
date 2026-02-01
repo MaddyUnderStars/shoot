@@ -14,6 +14,10 @@ process.env.NODE_CONFIG = JSON.stringify({
 	database: {
 		url: "postgres://127.0.0.1",
 	},
+	federation: {
+		webapp_url: "https://localhost",
+		instance_url: "https://localhost",
+	},
 	security: {
 		jwt_secret: "a",
 	},
@@ -236,7 +240,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 
 const document = generateOpenapi(apiRoutes, "application/json");
 writeFile(
-	path.join(__dirname, "..", "..", "..", "assets", "client.json"),
+	path.join(__dirname, "..", "..", "assets", "client.json"),
 	JSON.stringify(document),
 	{},
 	(err) => {
