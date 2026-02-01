@@ -33,7 +33,7 @@ services:
         condition: service_healthy
     environment:
       - 'NODE_CONFIG={"database":{"url":"postgres://postgres:postgres@postgresdb/shoot"}}'
-    command: ./dist/src/bootstrap.js
+    command: ./dist/bootstrap.js
     restart: always
 
 networks:

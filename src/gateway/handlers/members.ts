@@ -7,11 +7,11 @@ import { getDatabase } from "../../util/database";
 import { channelInGuild, getChannel } from "../../util/entity/channel";
 import { listenGatewayEvent } from "../../util/events";
 import { PERMISSION } from "../../util/permission";
+import { makeHandler } from "../util/handler";
 import { consume } from "../util/listener";
 import { SUBSCRIBE_MEMBERS } from "../util/validation/receive";
 import type { MEMBERS_CHUNK, ROLE_MEMBER_ADD } from "../util/validation/send";
 import type { Websocket } from "../util/websocket";
-import { makeHandler } from ".";
 
 export type MembersChunkItem = {
 	name: string;

@@ -8,7 +8,7 @@ export const runCliInContainer = async (
 
 	const res = await container.exec([
 		"/nodejs/bin/node",
-		"/app/dist/src/cli/index.js",
+		"/app/dist/cli/index.js",
 		...split,
 	]);
 
