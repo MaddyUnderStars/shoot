@@ -170,6 +170,7 @@ export const ConfigSchema = z.object({
 			instance_url: "http://localhost",
 			public_key: "",
 			private_key: "",
+			enabled: false,
 		}),
 	webrtc: z
 		.object({

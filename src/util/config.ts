@@ -2,21 +2,9 @@
 import type z from "zod";
 import type { AnyZodObject } from "zod";
 import { ConfigSchema } from "./ConfigSchema";
+import { createLogger } from "./log";
 
-// const LOCALHOST_URL = new URL("http://localhost");
-
-// const ifExistsGet = <T>(key: string): T | undefined => {
-// 	return nodeConfig.has(key) ? nodeConfig.get(key) : undefined;
-// };
-
-// const get = <T>(key: string): T => {
-// 	try {
-// 		return nodeConfig.get(key);
-// 	} catch (e) {
-// 		console.error(e instanceof Error ? e.message : e);
-// 		process.exit();
-// 	}
-// };
+const Log = createLogger("config");
 
 let configCache: ConfigSchema | undefined;
 
@@ -57,11 +45,23 @@ const parseConfig = () => {
 
 	const object = recursion(ConfigSchema, "");
 
-	return ConfigSchema.parse(object);
+	return ConfigSchema.safeParse(object);
 };
 
 const config = () => {
-	if (!configCache) configCache = parseConfig();
+	if (!configCache) {
+		const res = parseConfig();
+
+		if (res.error) {
+			for (const issue of res.error.issues) {
+				Log.error(`${issue.path.join(".")}: ${issue.message}`);
+			}
+
+			process.exit(1);
+		}
+
+		configCache = res.data;
+	}
 
 	return configCache;
 };
