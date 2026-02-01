@@ -7,6 +7,9 @@ export default defineConfig({
 		globalSetup: "./test/globalSetup.ts",
 		setupFiles: "./test/testSetup.ts",
 		testTimeout: 10_000,
+		reporters: process.env.GITHUB_ACTIONS
+			? ["dot", "github-actions"]
+			: ["dot"],
 	},
 	plugins: [swc.vite()],
 });
