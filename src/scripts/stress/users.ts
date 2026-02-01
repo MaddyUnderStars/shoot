@@ -32,7 +32,7 @@ const GUILD_ID = "01977599-db47-7058-a177-97e6f3e1ea7c";
 
 			display_name: name,
 			valid_tokens_since: new Date(),
-			domain: config.federation.webapp_url.hostname,
+			domain: config().federation.webapp_url.hostname,
 		}).save();
 
 		await joinGuild(user.mention, guild.mention);

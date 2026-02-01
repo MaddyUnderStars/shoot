@@ -4,24 +4,25 @@
 	"description": "Activitypub federated instant messaging server",
 	"main": "dist/bootstrap.js",
 	"scripts": {
-		"start": "node --enable-source-maps dist/src/bootstrap.js",
-		"start:http": "node --enable-source-maps dist/src/http/bootstrap.js",
-		"start:gateway": "node --enable-source-maps dist/src/gateway/bootstrap.js",
-		"start:media": "node --enable-source-maps dist/src/media/bootstrap.js",
-		"start:push": "node --enable-source-maps dist/src/push/worker.js",
-		"start:inbound_queue": "node --enable-source-maps dist/src/receiver/index.js",
-		"cli": "node --enable-source-maps dist/src/cli/index.js",
+		"start": "node --enable-source-maps dist/bootstrap.js",
+		"start:http": "node --enable-source-maps dist/http/bootstrap.js",
+		"start:gateway": "node --enable-source-maps dist/gateway/bootstrap.js",
+		"start:media": "node --enable-source-maps dist/media/bootstrap.js",
+		"start:push": "node --enable-source-maps dist/push/worker.js",
+		"start:inbound_queue": "node --enable-source-maps dist/receiver/index.js",
+		"cli": "node --enable-source-maps dist/cli/index.js",
 		"build": "tsc",
 		"prepare": "husky || true",
-		"openapi": "node --enable-source-maps dist/src/scripts/openapi.js",
-		"test": "c8 --all --src ./src --exclude-after-remap ava",
+		"openapi": "node --enable-source-maps dist/scripts/openapi.js",
+		"test": "vitest",
 		"lint": "npx @biomejs/biome check --write src"
 	},
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
-		"@ava/typescript": "^5.0.0",
 		"@biomejs/biome": "^2.2.4",
+		"@swc/core": "^1.15.8",
+		"@testcontainers/postgresql": "^11.11.0",
 		"@types/bcrypt": "^5.0.2",
 		"@types/config": "^3.3.3",
 		"@types/cors": "^2.8.17",
@@ -34,13 +35,15 @@
 		"@types/supertest": "^6.0.2",
 		"@types/web-push": "^3.6.4",
 		"@types/ws": "^8.5.13",
-		"ava": "^6.2.0",
-		"c8": "^10.1.3",
+		"@vitest/coverage-v8": "^4.0.16",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.1.0",
-		"sinon": "^19.0.2",
-		"supertest": "^7.0.0",
-		"typescript": "^5.7.2"
+		"pg": "^8.16.3",
+		"supertest": "^7.2.2",
+		"testcontainers": "^11.11.0",
+		"typescript": "^5.7.2",
+		"unplugin-swc": "^1.5.9",
+		"vitest": "^4.0.16"
 	},
 	"dependencies": {
 		"@asteasolutions/zod-to-openapi": "^7.3.0",
@@ -49,6 +52,7 @@
 		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
 		"bcrypt": "^6.0.0",
 		"body-parser": "^2.2.0",
+		"bufferutil": "^4.1.0",
 		"bullmq": "^5.34.4",
 		"config": "^4.0.0",
 		"cors": "^2.8.5",
@@ -61,7 +65,6 @@
 		"jsonwebtoken": "^9.0.2",
 		"morgan": "^1.10.1",
 		"oembed-providers": "github:iamcal/oembed",
-		"pg": "^8.13.1",
 		"rabbitmq-stream-js-client": "^0.6.2",
 		"ts-deepmerge": "^7.0.2",
 		"typeorm": "^0.3.27",
@@ -73,25 +76,5 @@
 	},
 	"lint-staged": {
 		"*.{ts,js,md}": "npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}"
-	},
-	"optionalDependencies": {
-		"bufferutil": "^4.0.8"
-	},
-	"ava": {
-		"typescript": {
-			"rewritePaths": {
-				"src/": "dist/src/",
-				"test/": "dist/test/"
-			},
-			"compile": "tsc"
-		},
-		"files": [
-			"test/**",
-			"!test/helpers/**",
-			"!test/**/*.disabled"
-		],
-		"require": [
-			"./test/helpers/force_exit.mjs"
-		]
 	}
 }

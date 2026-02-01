@@ -26,6 +26,6 @@ COPY --from=build /app/package.json /app/package.json
 
 WORKDIR /app
 
-EXPOSE 3000
+EXPOSE 3001
 
-CMD [ "./dist/src/bootstrap.js" ]
+CMD [ "./dist/bootstrap.js" ]

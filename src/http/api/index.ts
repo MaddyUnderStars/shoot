@@ -45,15 +45,15 @@ import users_me_push from "./users/@me/push";
 
 router.use("/users/@me/push", users_me_push);
 
-import users_id from "./users/#id";
+import users_id from "./users/:id";
 
 router.use("/users/:user_id", users_id);
 
-import users_id_channels from "./users/#id/channels";
+import users_id_channels from "./users/:id/channels";
 
 router.use("/users/:user_id/channels", users_id_channels);
 
-import users_id_relationship from "./users/#id/relationship";
+import users_id_relationship from "./users/:id/relationship";
 
 router.use("/users/:user_id/relationship", users_id_relationship);
 
@@ -61,31 +61,31 @@ import guild from "./guild";
 
 router.use("/guild", guild);
 
-import guild_id from "./guild/#id";
+import guild_id from "./guild/:id";
 
 router.use("/guild/:guild_id", guild_id);
 
-import guild_id_channel from "./guild/#id/channel";
+import guild_id_channel from "./guild/:id/channel";
 
 router.use("/guild/:guild_id/channel", guild_id_channel);
 
-import channels_id from "./channel/#id";
+import channels_id from "./channel/:id";
 
 router.use("/channel/:channel_id", channels_id);
 
-import channels_id_messages from "./channel/#id/messages";
+import channels_id_messages from "./channel/:id/messages";
 
 router.use("/channel/:channel_id/messages", channels_id_messages);
 
-import channels_id_call from "./channel/#id/call";
+import channels_id_call from "./channel/:id/call";
 
 router.use("/channel/:channel_id/call", channels_id_call);
 
-import channels_id_attachments from "./channel/#id/attachments";
+import channels_id_attachments from "./channel/:id/attachments";
 
 router.use("/channel/:channel_id/attachments", channels_id_attachments);
 
-import channels_id_messages_id from "./channel/#id/messages/#id";
+import channels_id_messages_id from "./channel/:id/messages/:id";
 
 router.use(
 	"/channel/:channel_id/messages/:message_id",

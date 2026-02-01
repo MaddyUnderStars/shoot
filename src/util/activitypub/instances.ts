@@ -10,10 +10,10 @@ export class InstanceBlockedError extends Error {
  */
 export const throwInstanceBlock = (instance: URL) => {
 	if (
-		config.federation.instances[instance.hostname] ===
+		config().federation.instances[instance.hostname] ===
 			InstanceBehaviour.BLOCK ||
-		(config.federation.allowlist &&
-			config.federation.instances[instance.hostname] ===
+		(config().federation.allowlist &&
+			config().federation.instances[instance.hostname] ===
 				InstanceBehaviour.ALLOW)
 	)
 		// this is caught by our error handler and times the connection out
@@ -23,7 +23,7 @@ export const throwInstanceBlock = (instance: URL) => {
 /** Return whether or not this instance is limited */
 export const instanceIsLimited = (instance: URL) => {
 	return (
-		config.federation.instances[instance.hostname] ===
+		config().federation.instances[instance.hostname] ===
 		InstanceBehaviour.LIMIT
 	);
 };

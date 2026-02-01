@@ -11,11 +11,11 @@ NONE.getKey = (_key: string) => undefined;
 export const rateLimiter = (
 	type: "s2s" | "auth" | "nodeinfo" | "wellknown" | "global",
 ): RateLimitRequestHandler => {
-	if (!config.http.rate) return NONE;
+	if (!config().http.rate) return NONE;
 
 	return rateLimit({
-		windowMs: config.http.rate[type].window,
-		limit: config.http.rate[type].limit,
+		windowMs: config().http.rate[type].window,
+		limit: config().http.rate[type].limit,
 		standardHeaders: "draft-7",
 		message: () => ({ code: 429, message: "Too many requests" }),
 		keyGenerator: (req) => {

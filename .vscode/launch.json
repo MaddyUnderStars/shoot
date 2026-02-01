@@ -39,21 +39,21 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Debug test file",
-			"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-			"args": [
-				"${file}"
-			],
-			"outputCapture": "std",
+			"name": "Debug Current Test File",
+			"autoAttachChildProcesses": true,
 			"skipFiles": [
-				"<node_internals>/**/*.js"
+				"<node_internals>/**",
+				"**/node_modules/**"
 			],
-			"console": "integratedTerminal",
-			"internalConsoleOptions": "neverOpen",
-			"outFiles": [
-				"${workspaceFolder}/dist/**/*.js"
+			"program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+			"args": [
+				"run",
+				"--test-timeout",
+				"0",
+				"${relativeFile}",
 			],
-			"cwd": "${workspaceFolder}"
+			// "smartStep": true,
+			"console": "integratedTerminal"
 		}
 	]
 }

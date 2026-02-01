@@ -26,6 +26,11 @@ import { hasAPContext, splitQualifiedMention } from "./util";
 
 const Log = createLogger("ap:resolve");
 
+if (process.env.DANGEROUS_NO_TLS)
+	Log.error(
+		"'DANGEROUS_NO_TLS' ENV VAR IS SET. THIS INSTANCE WILL ALLOW INSECURE CONNECTIONS. THIS IS A SECURITY HAZARD USED FOR TESTING PURPOSES.",
+	);
+
 export const resolveAPObject = async <T extends AnyAPObject>(
 	data: URL | T,
 	noCache = false,
@@ -45,9 +50,12 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 		if (cache) return cache.raw as T;
 	}
 
+	if (!process.env.DANGEROUS_NO_TLS && data.protocol === "http")
+		throw new APError("Tried to resolve insecure resource");
+
 	throwInstanceBlock(data);
 
-	if (data.hostname === config.federation.instance_url.hostname)
+	if (data.hostname === config().federation.instance_url.hostname)
 		throw new APError(
 			"Tried to resolve remote resource, but we are the remote!",
 		);
@@ -146,13 +154,14 @@ const doWebfingerOrFindTemplate = async (
 ): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
-	if (domain === config.federation.instance_url.hostname)
+	if (domain === config().federation.instance_url.hostname)
 		throw new APError(
 			"Tried to resolve remote resource, but we are the remote!",
 		);
 
+	const protocol = process.env.DANGEROUS_NO_TLS ? "http:" : "https:";
 	const url = new URL(
-		`https://${domain}/.well-known/webfinger?resource=${lookup}`,
+		`${protocol}//${domain}/.well-known/webfinger?resource=${lookup}`,
 	);
 
 	throwInstanceBlock(url);
@@ -201,6 +210,9 @@ const doWebfingerOrFindTemplate = async (
 		template.attribs.template.replace("{uri}", lookup.toString()),
 	);
 
+	if (!process.env.DANGEROUS_NO_TLS && templateUrl.protocol !== protocol)
+		throw new APError("host-meta gave insecure template URL");
+
 	throwInstanceBlock(templateUrl);
 
 	res = await fetch(templateUrl, opts);
@@ -229,10 +241,11 @@ export const resolveWebfinger = async (
 		);
 
 	const link = wellknown.links.find((x) => x.rel === "self");
-	if (!link || !link.href)
+	const href = link?.href;
+	if (!link || !href)
 		throw new APError(".well-known did not contain rel=self href");
 
-	return await resolveAPObject<AnyAPObject>(link);
+	return await resolveAPObject<AnyAPObject>(new URL(href));
 };
 
 /**

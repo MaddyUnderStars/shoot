@@ -35,12 +35,12 @@ router.post(
 			if (typeof to !== "string")
 				throw new APError("Don't know how to resolve to field");
 			const mention = splitQualifiedMention(to);
-			if (mention.domain !== config.federation.webapp_url.hostname)
+			if (mention.domain !== config().federation.webapp_url.hostname)
 				throw new APError("Not addressed to a user we control");
 
 			const actor = await findActorOfAnyType(
 				mention.id,
-				config.federation.webapp_url.hostname,
+				config().federation.webapp_url.hostname,
 			);
 			if (!actor)
 				throw new APError(

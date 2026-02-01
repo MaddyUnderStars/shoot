@@ -19,10 +19,10 @@ let publisher: rabbit.Publisher | null = null;
 
 export const initRabbitMQ = async (consume: boolean) => {
 	if (startedRabbitmq) return;
-	if (!config.rabbitmq.enabled) return;
+	if (!config().rabbitmq.enabled) return;
 	startedRabbitmq = true;
 
-	const url = config.rabbitmq.url;
+	const url = config().rabbitmq.url;
 
 	const STREAM_NAME = "gateway";
 

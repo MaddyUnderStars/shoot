@@ -31,7 +31,7 @@ const createEndpoint = async (file: PutFileRequest) => {
 				...file,
 				key: `${file.channel_id}/${hash}`,
 			} as localFileJwt,
-			config.security.jwt_secret,
+			config().security.jwt_secret,
 			{ expiresIn: 300 },
 			(err, encoded) => {
 				if (err || !encoded) return reject(err);
@@ -47,7 +47,7 @@ const createEndpoint = async (file: PutFileRequest) => {
 };
 
 const checkFileExists = async (channel_id: string, hash: string) => {
-	const p = path.join(config.storage.directory, channel_id, hash);
+	const p = path.join(config().storage.directory, channel_id, hash);
 	let file: Stats;
 	try {
 		file = await fs.stat(p);
@@ -77,7 +77,7 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 };
 
 const getFileStream = async (channel_id: string, hash: string) => {
-	const p = path.join(config.storage.directory, channel_id, hash);
+	const p = path.join(config().storage.directory, channel_id, hash);
 	try {
 		return Readable.from(createReadStream(p));
 	} catch (_) {
@@ -86,7 +86,7 @@ const getFileStream = async (channel_id: string, hash: string) => {
 };
 
 const deleteFile = async (channel_id: string, hash: string) => {
-	const p = path.join(config.storage.directory, channel_id, hash);
+	const p = path.join(config().storage.directory, channel_id, hash);
 	await fs.rm(p);
 };
 

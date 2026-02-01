@@ -80,11 +80,11 @@ export const getImageMetadata = async (
 	width: number,
 	height: number,
 ): Promise<ImageMetadata> => {
-	if (!config.media_proxy.enabled) return { width, height };
+	if (!config().media_proxy.enabled) return { width, height };
 
 	const path = `/meta/fit-in/${width}x${height}/${url.host}/${url.pathname}`;
 
-	const endpoint = signMediaProxyUrl(new URL(path, config.media_proxy.url));
+	const endpoint = signMediaProxyUrl(new URL(path, config().media_proxy.url));
 
 	const res = await fetch(endpoint);
 	const json = await res.json();
@@ -93,10 +93,12 @@ export const getImageMetadata = async (
 };
 
 const signMediaProxyUrl = (url: URL) => {
-	if (!config.media_proxy.secret) return url;
+	const secret = config().media_proxy.secret;
+
+	if (!secret) return url;
 
 	const hash = crypto
-		.createHmac("sha1", config.media_proxy.secret)
+		.createHmac("sha1", secret)
 		.update(url.pathname)
 		.digest("base64")
 		.replace(/\+/g, "-")
@@ -111,11 +113,11 @@ export const getImageProxyUrl = (
 	width: number,
 	height: number,
 ): URL => {
-	if (!config.media_proxy.enabled) return url;
+	if (!config().media_proxy.enabled) return url;
 
 	const path = `fit-in/${width}x${height}/${url.host}/${url.pathname}`;
 
-	const ret = new URL(path, config.media_proxy.url);
+	const ret = new URL(path, config().media_proxy.url);
 
 	return signMediaProxyUrl(ret);
 };

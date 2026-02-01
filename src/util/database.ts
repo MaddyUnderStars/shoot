@@ -1,12 +1,10 @@
 import type { DataSource } from "typeorm";
 import { Migration } from "../entity/migrations";
 import { config } from "./config";
-import DATASOURCE_OPTIONS from "./datasource";
+import { getDatasource } from "./datasource";
 import { createLogger } from "./log";
 
 const Log = createLogger("database");
-
-const CONNECTION_STRING = config.database.url;
 
 let connection: DataSource | null = null;
 let initCalled: Promise<DataSource> | null = null;
@@ -15,14 +13,14 @@ export const initDatabase = async () => {
 	if (connection) return connection;
 	if (initCalled) return await initCalled;
 
-	Log.msg(`Connecting to ${CONNECTION_STRING}`);
+	Log.msg(`Connecting to ${config().database.url}`);
 
 	try {
-		initCalled = DATASOURCE_OPTIONS.initialize();
+		initCalled = getDatasource().initialize();
 		connection = await initCalled;
 	} catch (e) {
 		Log.error(e instanceof Error ? e.message : e);
-		process.exit();
+		process.exit(1);
 	}
 	await doFirstSync();
 

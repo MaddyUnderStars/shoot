@@ -23,7 +23,7 @@ const WebfingerRequest = z.object({ resource: z.string() });
 const webfingerLookupAcct = async (lookup: string) => {
 	const actor = await findActorOfAnyType(
 		lookup,
-		config.federation.webapp_url.hostname,
+		config().federation.webapp_url.hostname,
 	);
 
 	if (!actor) throw new HttpError("Actor could not be found", 404);
@@ -59,7 +59,7 @@ router.get(
 	route(
 		{ query: WebfingerRequest },
 		async (req, res: Response<WebfingerResponse>) => {
-			if (!config.federation.enabled)
+			if (!config().federation.enabled)
 				throw new HttpError("Federation is disabled", 400);
 
 			let resource = req.query.resource;
@@ -68,7 +68,7 @@ router.get(
 				resource.indexOf(":") === -1 ? "acct" : resource.split(":")[0];
 			resource = resource.replace(`${type}:`, "");
 
-			const { webapp_url, instance_url } = config.federation;
+			const { webapp_url, instance_url } = config().federation;
 
 			const mention = splitQualifiedMention(resource);
 			if (
@@ -93,7 +93,7 @@ router.get(
 			const { id, path } = await handlers[type](mention.id);
 
 			return res.json({
-				subject: `${type}:${id}@${config.federation.webapp_url.hostname}`,
+				subject: `${type}:${id}@${config().federation.webapp_url.hostname}`,
 				aliases: [makeWebappUrl(path)],
 				links: [
 					{

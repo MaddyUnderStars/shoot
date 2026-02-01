@@ -1,9 +1,10 @@
 import { CLOSE_CODES } from "../util/codes";
+import { makeHandler } from "../util/handler";
 import { consume } from "../util/listener";
 import { HEARTBEAT } from "../util/validation/receive";
 import type { HEARTBEAT_ACK } from "../util/validation/send";
 import type { Websocket } from "../util/websocket";
-import { makeHandler } from ".";
+
 export const onHeartbeat = makeHandler(async function (payload) {
 	if (payload.s !== this.sequence)
 		// TODO: send them back the missing events

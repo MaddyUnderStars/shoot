@@ -46,7 +46,7 @@ export const JoinActivityHandler: ActivityHandler = async (
 	const accept: APAccept = addContext({
 		type: "Accept",
 		result: token,
-		target: config.webrtc.signal_address,
+		target: config().webrtc.signal_address,
 		actor: makeInstanceUrl(getExternalPathFromActor(target)),
 		object: activity,
 	});

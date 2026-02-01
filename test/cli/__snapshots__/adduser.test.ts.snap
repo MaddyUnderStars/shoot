@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CLI can create user 1`] = `
+{
+  "collections": null,
+  "created_date": null,
+  "display_name": "testUser",
+  "domain": "localhost",
+  "email": "test@localhost",
+  "id": null,
+  "inviteCode": null,
+  "name": "testUser",
+  "password_hash": null,
+  "private_key": null,
+  "public_key": "",
+  "remote_address": null,
+  "remote_id": null,
+  "summary": null,
+  "valid_tokens_since": null,
+}
+`;

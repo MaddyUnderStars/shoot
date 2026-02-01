@@ -9,22 +9,6 @@ jobs:
     build:
         runs-on: ubuntu-latest
 
-        services:
-            postgres:
-                image: postgres:latest
-                env:
-                    POSTGRES_DB: postgres
-                    POSTGRES_PASSWORD: postgres
-                    POSTGRES_USER: postgres
-                ports:
-                    - 5432:5432
-                # Set health checks to wait until postgres has started
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-
         strategy:
             matrix:
                 node-version: [20.x]
@@ -38,10 +22,8 @@ jobs:
                   node-version: ${{ matrix.node-version }}
                   cache: "npm"
 
+            - run: docker build -t shoot:test .
+
             - run: npm ci
-
-            - run: npm run build
-
-            - run: npm run openapi
 
             - run: npm test

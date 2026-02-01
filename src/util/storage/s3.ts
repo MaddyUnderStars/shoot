@@ -14,15 +14,15 @@ import type { PutFileRequest } from ".";
 
 const Log = createLogger("s3");
 
-const client = config.storage.s3.enabled
+const client = config().storage.s3.enabled
 	? new S3Client({
-			region: config.storage.s3.region,
-			endpoint: config.storage.s3.endpoint,
+			region: config().storage.s3.region,
+			endpoint: config().storage.s3.endpoint,
 			credentials: {
-				accessKeyId: config.storage.s3.accessKey,
-				secretAccessKey: config.storage.s3.secret,
+				accessKeyId: config().storage.s3.accessKey,
+				secretAccessKey: config().storage.s3.secret,
 			},
-			forcePathStyle: config.storage.s3.forcePathStyle,
+			forcePathStyle: config().storage.s3.forcePathStyle,
 		})
 	: null;
 
@@ -38,7 +38,7 @@ const createEndpoint = async (file: PutFileRequest) => {
 		.digest("hex");
 
 	const command = new PutObjectCommand({
-		Bucket: config.storage.s3.bucket,
+		Bucket: config().storage.s3.bucket,
 		Key: `${file.channel_id}/${hash}`,
 		ContentLength: file.size,
 		ContentType: file.mime,
@@ -62,7 +62,7 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const command = new HeadObjectCommand({
-		Bucket: config.storage.s3.bucket,
+		Bucket: config().storage.s3.bucket,
 		Key: `${channel_id}/${hash}`,
 	});
 
@@ -88,7 +88,7 @@ const getFileStream = async (channel_id: string, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const command = new GetObjectCommand({
-		Bucket: config.storage.s3.bucket,
+		Bucket: config().storage.s3.bucket,
 		Key: `${channel_id}/${hash}`,
 	});
 
@@ -103,7 +103,7 @@ const deleteFile = async (channel_id: string, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const command = new DeleteObjectCommand({
-		Bucket: config.storage.s3.bucket,
+		Bucket: config().storage.s3.bucket,
 		Key: `${channel_id}/${hash}`,
 	});
 

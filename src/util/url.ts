@@ -24,12 +24,12 @@ export const makeUrl = (path: string, base: URL) => {
  * Appends a path to the instance URL
  */
 export const makeInstanceUrl = (path: string) => {
-	return makeUrl(path, config.federation.instance_url).href;
+	return makeUrl(path, config().federation.instance_url).href;
 };
 
 /**
  * Appends a path to the webapp URL
  */
 export const makeWebappUrl = (path: string) => {
-	return makeUrl(path, config.federation.webapp_url).href;
+	return makeUrl(path, config().federation.webapp_url).href;
 };

@@ -35,7 +35,7 @@ router.post(
 			const user = await User.findOneOrFail({
 				where: {
 					name: username.toLowerCase(),
-					domain: config.federation.webapp_url.hostname,
+					domain: config().federation.webapp_url.hostname,
 				},
 			}).catch(() => {
 				// Throw the same error, to prevent knowing accounts exists

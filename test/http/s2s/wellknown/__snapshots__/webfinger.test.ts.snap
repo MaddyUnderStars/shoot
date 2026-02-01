@@ -1,0 +1,33 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Webfinger finds guilds 1`] = `
+{
+  "aliases": [
+    "http://localhost/guild/[MENTION]",
+  ],
+  "links": [
+    {
+      "href": "http://localhost/guild/[MENTION]",
+      "rel": "self",
+      "type": "application/activity+json",
+    },
+  ],
+  "subject": "acct:[MENTION]@localhost",
+}
+`;
+
+exports[`Webfinger finds users 1`] = `
+{
+  "aliases": [
+    "http://localhost/users/[MENTION]",
+  ],
+  "links": [
+    {
+      "href": "http://localhost/users/[MENTION]",
+      "rel": "self",
+      "type": "application/activity+json",
+    },
+  ],
+  "subject": "acct:[MENTION]@localhost",
+}
+`;

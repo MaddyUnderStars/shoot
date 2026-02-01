@@ -25,8 +25,9 @@ export const handleCli = async (argv: string[]) => {
 	}
 
 	try {
-		await exec(...args);
+		return await exec(...args);
 	} catch (e) {
 		Log.error(e instanceof Error ? e.message : e);
+		return e;
 	}
 };

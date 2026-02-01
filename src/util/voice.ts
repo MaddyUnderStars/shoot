@@ -44,7 +44,7 @@ export const validateMediaToken = (
 	new Promise((resolve, reject) => {
 		jwt.verify(
 			token,
-			config.security.jwt_secret,
+			config().security.jwt_secret,
 			{ algorithms: [algorithm] },
 			async (err, out) => {
 				const decoded = out as MediaTokenData;
@@ -97,7 +97,7 @@ export const generateMediaToken = (
 	return new Promise((res, rej) =>
 		jwt.sign(
 			{ user_mention, channel_id, iat },
-			config.security.jwt_secret,
+			config().security.jwt_secret,
 			{ algorithm },
 			(err, token) => {
 				if (err || !token) return rej(err);

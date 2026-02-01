@@ -37,7 +37,7 @@ export const registerUser = async (
 
 		display_name: username,
 		valid_tokens_since: new Date(),
-		domain: config.federation.webapp_url.hostname,
+		domain: config().federation.webapp_url.hostname,
 	}).save();
 
 	if (awaitKeyGeneration) await generateSigningKeys(user);
@@ -61,7 +61,7 @@ export const getOrFetchUser = async (lookup: ActorMention | URL | APPerson) => {
 		},
 	});
 
-	if (!user && config.federation.enabled) {
+	if (!user && config().federation.enabled) {
 		// Fetch from remote instance
 		user = await createUserForRemotePerson(lookup);
 		await user.save();

@@ -33,7 +33,7 @@ export const createGuildTextChannel = async (name: string, guild: Guild) => {
 	const channel = GuildTextChannel.create({
 		name,
 		guild,
-		domain: config.federation.webapp_url.hostname,
+		domain: config().federation.webapp_url.hostname,
 		position:
 			(await GuildTextChannel.count({
 				where: { guild: { id: guild.id } },
@@ -64,7 +64,7 @@ export const createDmChannel = async (
 		name,
 		owner,
 		recipients: recipients,
-		domain: config.federation.webapp_url.hostname,
+		domain: config().federation.webapp_url.hostname,
 	});
 
 	await channel.save();
@@ -130,7 +130,7 @@ export const getOrFetchChannel = async (
 
 	let channel = await getChannel(id);
 
-	if (!channel && config.federation.enabled) {
+	if (!channel && config().federation.enabled) {
 		// fetch from remote instance
 		channel = await createChannelFromRemoteGroup(lookup);
 		await channel.save();

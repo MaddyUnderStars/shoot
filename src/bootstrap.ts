@@ -12,7 +12,7 @@ import { MediaGatewayServer } from "./media/server";
 import { config } from "./util/config";
 import { createLogger, setLogOptions } from "./util/log";
 
-setLogOptions(config.log);
+setLogOptions(config().log);
 const Log = createLogger("bootstrap");
 Log.msg("Starting");
 

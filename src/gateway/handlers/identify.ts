@@ -6,10 +6,10 @@ import { getGuilds } from "../../util/entity/guild";
 import { fetchRelationships } from "../../util/entity/relationship";
 import { getUserFromToken } from "../../util/token";
 import { CLOSE_CODES } from "../util/codes";
+import { makeHandler } from "../util/handler";
 import { consume, listenEvents } from "../util/listener";
 import { IDENTIFY } from "../util/validation/receive";
 import type { READY } from "../util/validation/send";
-import { makeHandler } from ".";
 import { startHeartbeatTimeout } from "./heartbeat";
 
 /**

@@ -91,7 +91,7 @@ export const joinGuild = async (
 
 	const guild = await getOrFetchGuild(guild_id);
 
-	// if (user.domain !== config.federation.instance_url.origin)
+	// if (user.domain !== config().federation.instance_url.origin)
 	// 	throw new APError("Tried to join a guild for a user we don't control?");
 
 	const member = await Member.create({
@@ -139,7 +139,7 @@ export const getOrFetchGuild = async (
 		relations: { channels: true, owner: true, roles: true },
 	});
 
-	if (!guild && config.federation.enabled) {
+	if (!guild && config().federation.enabled) {
 		// fetch from remote instance
 		guild = await createGuildFromRemoteOrg(resolveId(lookup));
 		await guild.save();
@@ -155,7 +155,7 @@ export const createGuild = async (name: string, owner: User) => {
 		name,
 		owner,
 
-		domain: config.federation.webapp_url.hostname,
+		domain: config().federation.webapp_url.hostname,
 	}).save();
 
 	setImmediate(() => generateSigningKeys(guild));
