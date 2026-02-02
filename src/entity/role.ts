@@ -72,12 +72,14 @@ export type PublicRole = Pick<Role, "id" | "name" | "allow" | "deny"> & {
 	guild?: ActorMention;
 };
 
+export const ZodPermission = z.nativeEnum(PERMISSION).openapi("Permission");
+
 export const PublicRole: z.ZodType<Omit<PublicRole, "guild">> = z
 	.object({
 		id: z.string().uuid(),
 		name: z.string(),
-		allow: z.nativeEnum(PERMISSION).array(),
-		deny: z.nativeEnum(PERMISSION).array(),
+		allow: ZodPermission.array(),
+		deny: ZodPermission.array(),
 		guild: ActorMention,
 	})
 	.openapi("PublicRole");
