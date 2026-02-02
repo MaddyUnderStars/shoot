@@ -1,9 +1,11 @@
 import type { APPerson } from "activitypub-types";
+import type { Guild } from "../../entity/guild";
 import { Member } from "../../entity/member";
 import type { User } from "../../entity/user";
 import type { ActorMention } from "../activitypub/constants";
 import { resolveId } from "../activitypub/resolve";
 import { splitQualifiedMention } from "../activitypub/util";
+import { getDatabase } from "../database";
 import { HttpError } from "../httperror";
 import { getOrFetchUser } from "./user";
 
@@ -32,6 +34,30 @@ export const getOrFetchMember = async (
 
 	return member;
 };
+
+export const getMember = async (user: User, guild: Guild) =>
+	getDatabase()
+		.createQueryBuilder(Member, "guild_members")
+		.where(
+			(qb) => {
+				const sub = qb.connection
+					.createQueryBuilder()
+					.subQuery()
+					.select("roles.guildMembersId")
+					.from("roles_members_guild_members", "roles")
+					.where("roles.rolesId = :guild_id")
+					.getQuery();
+
+				return `guild_members.id IN ${sub}`;
+			},
+			{ guild_id: guild.id },
+		)
+		.andWhere('"guild_members"."userId" = :user_id', {
+			user_id: user.id,
+		})
+		.leftJoinAndSelect("guild_members.user", "user")
+		.leftJoinAndSelect("guild_members.roles", "roles")
+		.getOne();
 
 export const isMemberOfGuildThrow = async (
 	guild_id: ActorMention,

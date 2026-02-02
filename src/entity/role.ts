@@ -76,8 +76,8 @@ export const PublicRole: z.ZodType<Omit<PublicRole, "guild">> = z
 	.object({
 		id: z.string().uuid(),
 		name: z.string(),
-		allow: z.number().array(),
-		deny: z.number().array(),
+		allow: z.nativeEnum(PERMISSION).array(),
+		deny: z.nativeEnum(PERMISSION).array(),
 		guild: ActorMention,
 	})
 	.openapi("PublicRole");
