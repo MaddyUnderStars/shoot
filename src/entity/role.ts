@@ -5,6 +5,7 @@ import {
 	JoinTable,
 	ManyToMany,
 	ManyToOne,
+	Unique,
 } from "typeorm";
 import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
@@ -14,7 +15,9 @@ import type { Guild } from "./guild";
 import type { Member } from "./member";
 
 @Entity("roles")
-@Index(["position", "guild"], { unique: true })
+@Unique("role_ordering", ["position", "guild"], {
+	deferrable: "INITIALLY DEFERRED",
+})
 export class Role extends BaseModel {
 	/**
 	 * Roles are federated objects, and to prevent ID collision,

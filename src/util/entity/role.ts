@@ -10,6 +10,7 @@ import {
 } from "../activitypub/resolve";
 import { type APRole, ObjectIsRole } from "../activitypub/transformers/role";
 import { splitQualifiedMention } from "../activitypub/util";
+import { getDatabase } from "../database";
 import { tryParseUrl } from "../url";
 import { getOrFetchGuild } from "./guild";
 import { getOrFetchMember } from "./member";
@@ -58,4 +59,14 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 	role.members = members;
 
 	return role;
+};
+
+export const updateRoleOrdering = async (guild_id: string) => {
+	const sql = `
+update roles as r
+set position = r2.rn
+from (select id, row_number() over (order by position) as rn from channels) as r2
+where r.id = r2.id and r."guildId" = $1`;
+
+	await getDatabase().query(sql, [guild_id]);
 };
