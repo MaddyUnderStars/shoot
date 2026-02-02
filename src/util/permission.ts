@@ -37,6 +37,9 @@ export enum PERMISSION {
 
 	/** can delete any message in this channel */
 	MANAGE_MESSAGES = 11,
+
+	/** can modify, kick, ban members of guilds */
+	MANAGE_MEMBERS = 12,
 }
 
 export const DefaultPermissions: PERMISSION[] = [
