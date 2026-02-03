@@ -75,11 +75,15 @@ export class Relationship extends BaseModel {
 	}
 }
 
+export const ZodRelationshipType = z
+	.nativeEnum(RelationshipType)
+	.openapi("RelationshipType");
+
 export const PrivateRelationship = z
 	.object({
 		created: z.date(),
 		user: PublicUser,
-		type: z.nativeEnum(RelationshipType),
+		type: ZodRelationshipType,
 	})
 	.openapi("PrivateRelationship");
 
