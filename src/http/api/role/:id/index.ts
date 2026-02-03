@@ -1,7 +1,9 @@
 import { Router } from "express";
 import z from "zod";
-import { PublicRole, Role } from "../../../../entity/role";
+import { PublicRole, Role, ZodPermission } from "../../../../entity/role";
 import { isMemberOfGuildThrow } from "../../../../util/entity/member";
+import { HttpError } from "../../../../util/httperror";
+import { PERMISSION } from "../../../../util/permission";
 import { route } from "../../../../util/route";
 
 const router = Router({ mergeParams: true });
@@ -19,6 +21,61 @@ router.get(
 		await isMemberOfGuildThrow(role.guild.mention, req.user);
 
 		return res.json(role.toPublic());
+	}),
+);
+
+router.patch(
+	"/",
+	route(
+		{
+			params,
+			response: PublicRole,
+			body: z
+				.object({
+					name: z.string(),
+					allow: ZodPermission.array(),
+					deny: ZodPermission.array(),
+					position: z.number(),
+				})
+				.partial(),
+		},
+		async (req, res) => {
+			const role = await Role.findOneOrFail({
+				where: { id: req.params.role_id },
+				relations: { guild: { owner: true } },
+			});
+
+			await role.guild.throwPermission(req.user, PERMISSION.MANAGE_GUILD);
+
+			// not allowed to change these properties of default role
+			if (role.id === role.guild.id) {
+				delete req.body.name;
+				delete req.body.position;
+			}
+
+			role.assign(req.body);
+
+			await role.save();
+
+			return res.json(role.toPublic());
+		},
+	),
+);
+
+router.delete(
+	"/",
+	route({ params }, async (req, res) => {
+		const role = await Role.findOneOrFail({
+			where: { id: req.params.role_id },
+			relations: { guild: true },
+		});
+
+		await role.guild.throwPermission(req.user, PERMISSION.MANAGE_GUILD);
+
+		if (role.id === role.guild.id)
+			throw new HttpError("Cannot remove default role", 400);
+
+		return res.sendStatus(204);
 	}),
 );
 
