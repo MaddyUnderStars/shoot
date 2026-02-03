@@ -3,6 +3,8 @@ import { z } from "zod";
 import {
 	PrivateRelationship,
 	Relationship,
+	RelationshipType,
+	ZodRelationshipType,
 } from "../../../../entity/relationship";
 import type { User } from "../../../../entity/user";
 import { ActorMention } from "../../../../util/activitypub/constants";
@@ -42,9 +44,7 @@ router.post(
 			params: z.object({ user_id: ActorMention }),
 			body: z
 				.object({
-					type: z
-						.union([z.literal("blocked"), z.literal("pending")])
-						.optional(),
+					type: ZodRelationshipType.optional(),
 				})
 				.optional(),
 			response: PrivateRelationship,
@@ -64,7 +64,7 @@ router.post(
 			const rel = await acceptOrCreateRelationship(
 				req.user,
 				to,
-				req.body?.type === "blocked",
+				req.body?.type === RelationshipType.blocked,
 			);
 
 			return res.json(rel.toClient(req.user.id));
