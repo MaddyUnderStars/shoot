@@ -1,6 +1,6 @@
 // import nodeConfig from "config";
-import type z from "zod";
-import type { AnyZodObject } from "zod";
+
+import type { ZodObject } from "zod";
 import { ConfigSchema } from "./ConfigSchema";
 import { createLogger } from "./log";
 
@@ -8,9 +8,9 @@ const Log = createLogger("config");
 
 let configCache: ConfigSchema | undefined;
 
-const sourceType = (schema: AnyZodObject) => {
+const sourceType = (schema: ZodObject) => {
 	if ("innerType" in schema._def)
-		return sourceType(schema._def.innerType as AnyZodObject);
+		return sourceType(schema._def.innerType as ZodObject);
 
 	return schema;
 };
@@ -18,7 +18,7 @@ const sourceType = (schema: AnyZodObject) => {
 const parseConfig = () => {
 	const nodeConfig = require("config");
 
-	const recursion = (schema: z.AnyZodObject, path: string) => {
+	const recursion = (schema: ZodObject, path: string) => {
 		if (schema.shape) {
 			// schema is an object
 

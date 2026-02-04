@@ -30,7 +30,7 @@ const NodeInfoResponse = z.object({
 		})
 		.optional(),
 	openRegistrations: z.boolean(),
-	metadata: z.object({}).optional(),
+	metadata: z.looseObject({}).optional(),
 });
 
 const DiscoverResponse = z.object({

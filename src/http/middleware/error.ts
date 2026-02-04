@@ -31,7 +31,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 			});
 			return;
 		case error instanceof z.ZodError:
-			message = error.errors[0].message;
+			message = error.issues[0].message;
 			break;
 		case error instanceof InstanceBlockedError:
 			// TODO: I'd prefer to shadow ban i.e. send them a response as if it worked normally

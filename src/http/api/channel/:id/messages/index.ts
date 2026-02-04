@@ -74,7 +74,7 @@ router.post(
 );
 
 const MessageFetchOpts = z.object({
-	limit: z.number({ coerce: true }).max(50).min(1).optional().default(50),
+	limit: z.coerce.number().max(50).min(1).optional().default(50),
 	order: z.literal("ASC").or(z.literal("DESC")).optional().default("DESC"),
 	after: z.string().optional(),
 	before: z.string().optional(),

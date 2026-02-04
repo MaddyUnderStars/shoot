@@ -27,14 +27,14 @@ export const ConfigSchema = z.object({
 			 * see LogLevel enum for values
 			 * @default "verbose"
 			 */
-			level: z.nativeEnum(LogLevel).default(LogLevel.verbose),
+			level: z.enum(LogLevel).default(LogLevel.verbose),
 
 			/**
 			 * Whether or not to include dates in log messages
 			 */
 			include_date: z.boolean().default(true),
 		})
-		.default({}),
+		.prefault({}),
 	http: z
 		.object({
 			/**
@@ -58,15 +58,15 @@ export const ConfigSchema = z.object({
 			 */
 			rate: z
 				.object({
-					s2s: RateLimitSchema.default({}),
-					auth: RateLimitSchema.default({}),
-					nodeinfo: RateLimitSchema.default({}),
-					wellknown: RateLimitSchema.default({}),
-					global: RateLimitSchema.default({}),
+					s2s: RateLimitSchema.prefault({}),
+					auth: RateLimitSchema.prefault({}),
+					nodeinfo: RateLimitSchema.prefault({}),
+					wellknown: RateLimitSchema.prefault({}),
+					global: RateLimitSchema.prefault({}),
 				})
-				.default({}),
+				.prefault({}),
 		})
-		.default({}),
+		.prefault({}),
 	security: z.object({
 		/**
 		 * The Jsonwebtoken secret used to generate authentication tokens.
@@ -106,18 +106,12 @@ export const ConfigSchema = z.object({
 			 * The URL of the webapp for this instance.
 			 * If not hosting a webapp, set this to the same value as instance_url
 			 */
-			webapp_url: z
-				.string()
-				.url()
-				.transform((x) => new URL(x)),
+			webapp_url: z.url().transform((x) => new URL(x)),
 
 			/**
 			 * The URL of this instance. Required.
 			 */
-			instance_url: z
-				.string()
-				.url()
-				.transform((x) => new URL(x)),
+			instance_url: z.url().transform((x) => new URL(x)),
 
 			/**
 			 * Aka, authorised fetch. Require HTTP signatures from remote servers for all requests
@@ -138,7 +132,7 @@ export const ConfigSchema = z.object({
 					 */
 					use_inbound: z.boolean().default(false),
 				})
-				.default({}),
+				.prefault({}),
 
 			/**
 			 * The public and private keys of the instance actor (/actor)
@@ -165,7 +159,7 @@ export const ConfigSchema = z.object({
 				.record(z.string(), z.nativeEnum(InstanceBehaviour))
 				.default({}),
 		})
-		.default({
+		.prefault({
 			webapp_url: "http://localhost",
 			instance_url: "http://localhost",
 			public_key: "",
@@ -191,7 +185,7 @@ export const ConfigSchema = z.object({
 
 			signal_address: z.string().url().optional(),
 		})
-		.default({}),
+		.prefault({}),
 	registration: z
 		.object({
 			/**
@@ -200,7 +194,7 @@ export const ConfigSchema = z.object({
 			 */
 			enabled: z.boolean().default(false),
 		})
-		.default({}),
+		.prefault({}),
 	storage: z
 		.object({
 			/**
@@ -235,9 +229,14 @@ export const ConfigSchema = z.object({
 					 */
 					forcePathStyle: z.boolean().default(false),
 				})
-				.default({ region: "", bucket: "", accessKey: "", secret: "" }),
+				.prefault({
+					region: "",
+					bucket: "",
+					accessKey: "",
+					secret: "",
+				}),
 		})
-		.default({}),
+		.prefault({}),
 
 	/**
 	 * Redis is optional. It is currently only used for the inbound federation queue
@@ -258,7 +257,7 @@ export const ConfigSchema = z.object({
 			 */
 			port: z.number().default(6379),
 		})
-		.default({}),
+		.prefault({}),
 
 	/**
 	 * RabbitMQ is optional.
@@ -277,7 +276,7 @@ export const ConfigSchema = z.object({
 				.url()
 				.transform((x) => new URL(x)),
 		})
-		.default({ url: "http://localhost" }),
+		.prefault({ url: "http://localhost" }),
 
 	/**
 	 * Media proxy settings. Shoot supports Imagor/Thumbor for proxying remote images.
@@ -299,7 +298,7 @@ export const ConfigSchema = z.object({
 			 */
 			secret: z.string().optional(),
 		})
-		.default({ url: "http://localhost" }),
+		.prefault({ url: "http://localhost" }),
 
 	/**
 	 * Push notifications via the Web Push API.
@@ -312,7 +311,7 @@ export const ConfigSchema = z.object({
 			privateKey: z.string(),
 			publicKey: z.string(),
 		})
-		.default({ publicKey: "", privateKey: "" }),
+		.prefault({ publicKey: "", privateKey: "" }),
 });
 
 export type ConfigSchema = z.infer<typeof ConfigSchema>;

@@ -14,6 +14,7 @@
 		"build": "tsc",
 		"prepare": "husky || true",
 		"openapi": "node --enable-source-maps dist/scripts/openapi.js",
+		"config": "node --enable-source-maps dist/scripts/configSchema.js",
 		"test": "vitest",
 		"lint": "npx @biomejs/biome check --write src",
 		"postinstall": "patch-package"
@@ -21,6 +22,7 @@
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
+		"@asteasolutions/zod-to-openapi": "^8.4.0",
 		"@biomejs/biome": "^2.2.4",
 		"@swc/core": "^1.15.8",
 		"@testcontainers/postgresql": "^11.11.0",
@@ -47,7 +49,6 @@
 		"vitest": "^4.0.16"
 	},
 	"dependencies": {
-		"@asteasolutions/zod-to-openapi": "^7.3.0",
 		"@aws-sdk/client-s3": "^3.717.0",
 		"@aws-sdk/s3-request-presigner": "^3.717.0",
 		"activitypub-types": "github:spacebarchat/activitypub-types#dist",
@@ -74,7 +75,7 @@
 		"uuid": "^11.0.3",
 		"web-push": "^3.6.7",
 		"ws": "^8.18.0",
-		"zod": "^3.25.76"
+		"zod": "^4.3.6"
 	},
 	"lint-staged": {
 		"*.{ts,js,md}": "npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}"

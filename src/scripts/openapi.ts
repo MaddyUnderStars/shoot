@@ -6,7 +6,7 @@ import {
 	OpenApiGeneratorV31,
 } from "@asteasolutions/zod-to-openapi";
 import type { Router } from "express";
-import { type AnyZodObject, z } from "zod";
+import { type ZodObject, z } from "zod";
 
 extendZodWithOpenApi(z);
 
@@ -45,11 +45,11 @@ const getRoutes = (router: Router) => {
 			method: Method;
 			requires_auth: boolean;
 			options?: {
-				params: AnyZodObject;
-				body: AnyZodObject;
-				query: AnyZodObject;
-				response: AnyZodObject;
-				errors: Record<number, AnyZodObject>;
+				params: ZodObject;
+				body: ZodObject;
+				query: ZodObject;
+				response: ZodObject;
+				errors: Record<number, ZodObject>;
 			};
 		}> = [];
 

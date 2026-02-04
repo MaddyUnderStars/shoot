@@ -6,9 +6,10 @@ import {
 	OpenApiGeneratorV31,
 } from "@asteasolutions/zod-to-openapi";
 import z from "zod";
-import { ConfigSchema } from "../util/ConfigSchema";
 
 extendZodWithOpenApi(z);
+
+import { ConfigSchema } from "../util/ConfigSchema";
 
 const registry = new OpenAPIRegistry();
 
