@@ -63,6 +63,7 @@ export class Role extends BaseModel {
 			guild: this.guild?.mention,
 			allow: this.allow,
 			deny: this.deny,
+			position: this.position,
 		};
 	}
 
@@ -71,18 +72,22 @@ export class Role extends BaseModel {
 	}
 }
 
-export type PublicRole = Pick<Role, "id" | "name" | "allow" | "deny"> & {
+export type PublicRole = Pick<
+	Role,
+	"id" | "name" | "allow" | "deny" | "position"
+> & {
 	guild?: ActorMention;
 };
 
-export const ZodPermission = z.nativeEnum(PERMISSION).openapi("Permission");
+export const ZodPermission = z.enum(PERMISSION).openapi("Permission");
 
 export const PublicRole: z.ZodType<Omit<PublicRole, "guild">> = z
 	.object({
-		id: z.string().uuid(),
+		id: z.uuid(),
 		name: z.string(),
 		allow: ZodPermission.array(),
 		deny: ZodPermission.array(),
 		guild: ActorMention,
+		position: z.number(),
 	})
 	.openapi("PublicRole");

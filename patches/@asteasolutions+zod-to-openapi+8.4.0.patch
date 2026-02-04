@@ -1,13 +1,13 @@
 diff --git a/node_modules/@asteasolutions/zod-to-openapi/dist/index.cjs b/node_modules/@asteasolutions/zod-to-openapi/dist/index.cjs
-index ad67f55..3132ba4 100644
+index c8778b9..7dd1c8b 100644
 --- a/node_modules/@asteasolutions/zod-to-openapi/dist/index.cjs
 +++ b/node_modules/@asteasolutions/zod-to-openapi/dist/index.cjs
-@@ -596,7 +596,7 @@ class NativeEnumTransformer {
+@@ -742,7 +742,7 @@ class EnumTransformer {
              // This is an error, so we can't just say it's a 'string'
              throw new ZodToOpenAPIError('Enum has mixed string and number values, please specify the OpenAPI type manually');
          }
--        return Object.assign(Object.assign({}, mapNullableType(type === 'numeric' ? 'integer' : 'string')), { enum: values });
-+        return Object.assign(Object.assign({}, mapNullableType(type === 'numeric' ? 'integer' : 'string')), { enum: values, "x-enum-varnames": values.map(v => zodSchema._def.values[v]) });
+-        return Object.assign(Object.assign({}, mapNullableType(type === 'numeric' ? 'integer' : 'string')), { enum: isNullable ? [...values, null] : values });
++        return Object.assign(Object.assign({}, mapNullableType(type === 'numeric' ? 'integer' : 'string')), { enum: isNullable ? [...values, null] : values, "x-enum-varnames": values.map(v => zodSchema._def.entries[v]) });
      }
  }
  
