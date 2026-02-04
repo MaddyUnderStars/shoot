@@ -68,7 +68,7 @@
 		"morgan": "^1.10.1",
 		"oembed-providers": "github:iamcal/oembed",
 		"patch-package": "^8.0.1",
-		"rabbitmq-stream-js-client": "^0.6.2",
+		"rabbitmq-stream-js-client": "^1.0.0",
 		"ts-deepmerge": "^7.0.2",
 		"typeorm": "^0.3.27",
 		"typeorm-cursor-pagination": "^0.10.1",
