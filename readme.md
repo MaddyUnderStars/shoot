@@ -60,7 +60,7 @@ npm run build
 You should now create a config file.
 Shoot uses the [config](https://www.npmjs.com/package/config) package for reading config files. By default, they will be read from the `config` directory, and supports [many file formats](https://github.com/node-config/node-config/wiki/Configuration-Files#file-formats), although Shoot's CLI only supports JSON.
 
-You can find all available config options along with their documentation [here](https://github.com/MaddyUnderStars/shoot/blob/main/src/util/config.ts)
+You can find all available config options along with their documentation [here](https://github.com/MaddyUnderStars/shoot/blob/main/src/util/ConfigSchema.ts)
 
 You can use `npm run cli -- generate-keys` to generate the public and private keys needed for federation. *You still need to enable federation by setting `federation.enabled` to `true`*
 This command will also generate the JWT token used for user authentication.
