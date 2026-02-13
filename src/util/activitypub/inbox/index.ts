@@ -19,18 +19,16 @@ const getQueue = () => {
 		: null;
 };
 
-export const AP_ACTIVITY = z
-	.object({
-		id: z.string().url(),
-		type: z
-			.string()
-			.refine(
-				(type) =>
-					!!ActivityHandlers[type.toLowerCase() as Lowercase<string>],
-				{ message: "Activity of that type has no handler" },
-			),
-	})
-	.passthrough();
+export const AP_ACTIVITY = z.looseObject({
+	id: z.url(),
+	type: z
+		.string()
+		.refine(
+			(type) =>
+				!!ActivityHandlers[type.toLowerCase() as Lowercase<string>],
+			{ message: "Activity of that type has no handler" },
+		),
+});
 
 export const handleInbox = async (activity: APActivity, target: Actor) => {
 	activity["@context"] = undefined;
