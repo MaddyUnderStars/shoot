@@ -38,7 +38,10 @@ router.post(
 		},
 		async (req, res) => {
 			const target = await User.findOneOrFail({
-				where: { name: req.params.user_id },
+				where: {
+					name: req.params.user_id,
+					domain: config().federation.webapp_url.hostname,
+				},
 			});
 
 			await handleInbox(req.body, target);
