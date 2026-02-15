@@ -25,9 +25,7 @@ const MessageCreate = z
 		(obj) => obj.files?.length || obj.content?.length,
 		"Message must not be empty",
 	)
-	.openapi("MessageCreateRequest", {
-		anyOf: [{ required: ["content"] }, { required: ["files"] }],
-	});
+	.openapi("MessageCreateRequest");
 
 const router = Router({ mergeParams: true });
 
