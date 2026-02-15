@@ -87,7 +87,7 @@ export const getImageMetadata = async (
 	const endpoint = signMediaProxyUrl(new URL(path, config().media_proxy.url));
 
 	const res = await fetch(endpoint);
-	const json = await res.json();
+	const json = (await res.json()) as ImageMetadata;
 
 	return { width: json.width, height: json.height };
 };

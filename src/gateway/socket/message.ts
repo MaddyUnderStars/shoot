@@ -2,7 +2,7 @@ import { z } from "zod";
 import { handlers } from "../handlers";
 import type { Websocket } from "../util/websocket";
 
-export async function onMessage(this: Websocket, event: MessageEvent<unknown>) {
+export async function onMessage(this: Websocket, event: MessageEvent) {
 	const parsed = validate(event.data);
 
 	const handler = handlers[parsed.t];
@@ -11,11 +11,9 @@ export async function onMessage(this: Websocket, event: MessageEvent<unknown>) {
 	await handler.call(this, parsed);
 }
 
-const GatewayPayload = z
-	.object({
-		t: z.string(),
-	})
-	.passthrough();
+const GatewayPayload = z.looseObject({
+	t: z.string(),
+});
 
 const validate = (message: unknown) => {
 	let ret: unknown;

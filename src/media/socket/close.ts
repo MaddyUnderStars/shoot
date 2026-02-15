@@ -1,3 +1,4 @@
+import type { CloseEvent } from "ws";
 import { createLogger } from "../../util/log";
 import { emitMediaEvent } from "../util/events";
 import { getJanus } from "../util/janus";

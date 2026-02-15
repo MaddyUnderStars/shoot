@@ -1,6 +1,7 @@
 import EventEmitter from "node:events";
 import WebSocket, { type RawData } from "ws";
 import { createLogger } from "../../util/log";
+import type { RTCIceCandidate } from "../util/validation/receive";
 import type {
 	JANUS_REQUEST,
 	JANUS_RESPONSE,
@@ -130,7 +131,7 @@ export class Janus extends EventEmitter {
 			handle_id,
 		});
 
-	public trickle = (handle_id: number, candidates: RTCIceCandidateInit[]) =>
+	public trickle = (handle_id: number, candidates: RTCIceCandidate[]) =>
 		this.send({
 			janus: "trickle",
 			session_id: this.session,

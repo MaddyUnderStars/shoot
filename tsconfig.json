@@ -7,6 +7,9 @@
 		"target": "ES2022",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
+		"lib": [
+			"ESNext",
+		],
 		"module": "CommonJS",
 		"types": [],
 		"resolveJsonModule": true,

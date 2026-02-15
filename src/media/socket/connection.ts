@@ -36,7 +36,7 @@ export function onConnection(
 		}
 	});
 
-	socket.addEventListener("message", async function (ev) {
+	socket.addEventListener("message", async function (this: ws.WebSocket, ev) {
 		try {
 			await onMessage.call(socket, ev);
 		} catch (e) {

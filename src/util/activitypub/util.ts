@@ -42,7 +42,8 @@ export const splitQualifiedMention = (lookup: string | URL) => {
 	};
 };
 
-export const hasAPContext = (data: object): data is APObject => {
+export const hasAPContext = (data: unknown): data is APObject => {
+	if (typeof data !== "object" || !data) return false;
 	if (!("@context" in data)) return false;
 	const context = data["@context"] as ContextField | ContextField[];
 	if (Array.isArray(context))

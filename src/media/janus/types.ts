@@ -1,3 +1,5 @@
+import type { RTCIceCandidate } from "../util/validation/receive";
+
 export type RESPONSE_CREATE_SESSION = {
 	id: number;
 };
@@ -78,7 +80,7 @@ type REQUEST_KEEPALIVE = {
 
 type REQUEST_TRICKLE = {
 	janus: "trickle";
-	candidates: Array<RTCIceCandidateInit | null>;
+	candidates: Array<RTCIceCandidate | null>;
 	session_id: number;
 	handle_id: number;
 };

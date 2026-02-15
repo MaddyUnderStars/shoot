@@ -1,11 +1,13 @@
 import { z } from "zod";
 
-const RTCIceCandidate: z.ZodType<RTCIceCandidateInit> = z.object({
+export const RTCIceCandidate = z.object({
 	candidate: z.string(),
 	sdpMLineIndex: z.number().nullable(),
 	sdpMid: z.string().nullable(),
 	usernameFragment: z.string().nullable(),
 });
+
+export type RTCIceCandidate = z.infer<typeof RTCIceCandidate>;
 
 export const IDENTIFY = z.object({
 	/** User token to use to login */

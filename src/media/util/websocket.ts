@@ -1,3 +1,4 @@
+import type { WebSocket } from "ws";
 import type { MEDIA_EVENT } from "./validation/send";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
