@@ -27,6 +27,7 @@ import { Embeds1757219628590 } from "./migration/postgres/1757219628590-embeds";
 import { UploadsCascade1757588526875 } from "./migration/postgres/1757588526875-uploadsCascade";
 import { InviteIndex1757745204938 } from "./migration/postgres/1757745204938-inviteIndex";
 import { PushSubscription1758865221251 } from "./migration/postgres/1758865221251-pushSubscription";
+import { MessageNonce1771113785560 } from "./migration/postgres/1771113785560-messageNonce";
 
 let datasource: DataSource;
 
@@ -99,6 +100,7 @@ export const getDatasource = () => {
 			UploadsCascade1757588526875,
 			InviteIndex1757745204938,
 			PushSubscription1758865221251,
+			MessageNonce1771113785560,
 		],
 	});
 
