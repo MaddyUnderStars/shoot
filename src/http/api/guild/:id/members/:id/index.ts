@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { In } from "typeorm";
 import z from "zod";
 import { Role } from "../../../../../../entity/role";
 import { ActorMention } from "../../../../../../util/activitypub/constants";
@@ -51,23 +52,26 @@ router.patch(
 			if (body.nickname) member.nickname = body.nickname;
 
 			if (body.roles) {
+				const roleIds = new Set(req.body.roles);
+
 				// cannot edit roles without this permission
 				if (!hasManageMembers)
 					throw new HttpError("Missing permission", 400);
 
-				for (const role of body.roles) {
-					if (
-						!(await Role.count({
-							where: { guild: { id: guild.id }, id: role },
-						}))
-					)
-						return new HttpError(
-							`Role ${role} could not be found`,
-							404,
-						);
-				}
+				if (
+					(await Role.count({
+						where: {
+							guild: { id: guild.id },
+							id: In([...roleIds]),
+						},
+					})) !== roleIds.size
+				)
+					throw new HttpError(
+						"One of the specified roles could not be found",
+						404,
+					);
 
-				member.roles = body.roles.map((x) => Role.create({ id: x }));
+				member.roles = [...roleIds].map((x) => Role.create({ id: x }));
 			}
 
 			await member.save();
