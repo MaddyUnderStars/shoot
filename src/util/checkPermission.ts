@@ -34,18 +34,15 @@ export const checkPermission = async (
 			.getMany()
 	).sort((a, b) => a.position - b.position);
 
-	let allowed = false;
+	const flat = new Set<PERMISSION>();
 	// for every role in order
 	for (const role of roles) {
 		// this role has admin, allow it
 		if (role.allow.includes(PERMISSION.ADMIN)) return true;
 
-		// if every requested permission is allowed in this role, we're good
-		if (permission.every((x) => role.allow.includes(x))) allowed = true;
-		// if one of them is denied, we're not good
-		if (permission.find((x) => role.deny.includes(x))) allowed = false;
-		// if it's neutral, we just use the last set value
+		for (const allowed of role.allow) flat.add(allowed);
+		for (const denied of role.deny) flat.add(denied);
 	}
 
-	return allowed;
+	return permission.every((perm) => flat.has(perm));
 };
