@@ -1,1 +1,2915 @@
-{"openapi":"3.1.0","info":{"version":"1.0.0","title":"Client to Server API"},"servers":[{"url":"https://chat.understars.dev"}],"components":{"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT"}},"responses":{"BadRequest":{"description":"Bad request","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpError"}}}},"NotFound":{"description":"The requested resource was not found","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpError"}}}},"Unauthorised":{"description":"Unauthorised","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpError"}}}},"InternalServerError":{"description":"Internal server error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HttpError"}}}}},"schemas":{"HttpError":{"type":"object","properties":{"message":{"type":"string"},"code":{"type":"number"},"detail":{"type":"object","properties":{"body":{"type":"array","items":{"type":"object","properties":{"message":{"type":"string"},"code":{"type":"string"},"path":{"type":"array","items":{"type":"string"}}},"required":["message","code","path"]}},"param":{"type":"array","items":{"type":"object","properties":{"message":{"type":"string"},"code":{"type":"string"},"path":{"type":"array","items":{"type":"string"}}},"required":["message","code","path"]}},"query":{"type":"array","items":{"type":"object","properties":{"message":{"type":"string"},"code":{"type":"string"},"path":{"type":"array","items":{"type":"string"}}},"required":["message","code","path"]}}}}},"required":["message","code"]},"PublicUser":{"type":"object","properties":{"mention":{"$ref":"#/components/schemas/ActorMention"},"name":{"type":"string"},"summary":{"type":"string"},"display_name":{"type":"string"}},"required":["mention","name","summary","display_name"]},"ActorMention":{"type":"string","pattern":"^.*@.*$"},"PrivateUser":{"allOf":[{"$ref":"#/components/schemas/PublicUser"},{"type":"object","properties":{"email":{"type":"string"}},"required":["email"]}]},"PublicGuild":{"type":"object","properties":{"mention":{"$ref":"#/components/schemas/ActorMention"},"name":{"type":"string"},"channels":{"type":"array","items":{"$ref":"#/components/schemas/PublicGuildTextChannel"}},"roles":{"type":"array","items":{"$ref":"#/components/schemas/PublicRole"}}},"required":["mention","name"]},"PublicGuildTextChannel":{"allOf":[{"$ref":"#/components/schemas/PublicChannel"},{"type":"object","properties":{"guild":{"$ref":"#/components/schemas/ActorMention"}}}]},"PublicChannel":{"type":"object","properties":{"mention":{"$ref":"#/components/schemas/ActorMention"},"name":{"type":"string"}},"required":["mention","name"]},"PublicRole":{"type":"object","properties":{"id":{"type":"string","format":"uuid"},"name":{"type":"string"},"allow":{"type":"array","items":{"$ref":"#/components/schemas/Permission"}},"deny":{"type":"array","items":{"$ref":"#/components/schemas/Permission"}},"guild":{"$ref":"#/components/schemas/ActorMention"},"position":{"type":"number"}},"required":["id","name","allow","deny","guild","position"]},"Permission":{"type":"integer","enum":[0,1,2,3,4,5,6,7,8,9,10,11,12],"x-enum-varnames":["NONE","OWNER","ADMIN","SEND_MESSAGES","MANAGE_CHANNELS","VIEW_CHANNEL","CALL_CHANNEL","MANAGE_GUILD","MANAGE_INVITES","CREATE_INVITE","UPLOAD","MANAGE_MESSAGES","MANAGE_MEMBERS"]},"PrivateRelationship":{"type":"object","properties":{"created":{"type":"string","format":"date-time"},"user":{"$ref":"#/components/schemas/PublicUser"},"type":{"$ref":"#/components/schemas/RelationshipType"}},"required":["created","user","type"]},"RelationshipType":{"type":"integer","enum":[0,1,2],"x-enum-varnames":["pending","accepted","blocked"]},"PublicDmChannel":{"allOf":[{"$ref":"#/components/schemas/PublicChannel"},{"type":"object","properties":{"owner":{"$ref":"#/components/schemas/ActorMention"},"recipients":{"type":"array","items":{"$ref":"#/components/schemas/ActorMention"}}},"required":["owner","recipients"]}]},"PublicMessage":{"type":"object","properties":{"id":{"type":"string","format":"uuid"},"content":{"type":"string"},"published":{"type":"string","format":"date-time"},"updated":{"type":"string","format":"date-time"},"author_id":{"$ref":"#/components/schemas/ActorMention"},"channel_id":{"$ref":"#/components/schemas/ActorMention"},"files":{"type":"array","items":{"$ref":"#/components/schemas/PublicAttachment"}},"embeds":{"type":"array","items":{"$ref":"#/components/schemas/PublicEmbed"}}},"required":["id","content","published","updated","author_id","channel_id","files","embeds"]},"PublicAttachment":{"type":"object","properties":{"name":{"type":"string"},"hash":{"type":"string"},"type":{"type":"string"},"size":{"type":"number"},"width":{"type":["number","null"]},"height":{"type":["number","null"]}},"required":["name","hash","type","size"]},"PublicEmbed":{"type":"object","properties":{"target":{"type":"string","format":"uri"},"created_at":{"type":"string","format":"date-time"},"type":{"type":"integer","enum":[0,1,2,3],"x-enum-varnames":["link","photo","video","rich"]},"title":{"type":"string"},"description":{"type":"string"},"images":{"type":"array","items":{"type":"object","properties":{"url":{"type":"string","format":"uri"},"width":{"type":"number"},"height":{"type":"number"},"alt":{"type":"string"}},"required":["url"]}},"videos":{"type":"array","items":{"type":"object","properties":{"url":{"type":"string","format":"uri"},"width":{"type":"number"},"height":{"type":"number"},"alt":{"type":"string"}},"required":["url"]}},"author":{"type":"object","properties":{"name":{"type":"string"},"url":{"type":"string"}}},"footer":{"type":"object","properties":{"text":{"type":"string"},"icon":{"type":"string"}}},"provider":{"type":"object","properties":{"name":{"type":"string"},"url":{"type":"string"}}}},"required":["target","created_at","type","images","videos"]},"MessageCreateRequest":{"type":"object","properties":{"content":{"type":"string"},"files":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"hash":{"type":"string"}},"required":["name","hash"]}}},"minProperties":1}},"parameters":{}},"paths":{"/upload/":{"put":{"security":[{"bearerAuth":[]}],"tags":["upload"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"t","in":"query"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/auth/register":{"post":{"tags":["auth"],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"username":{"type":"string"},"password":{"type":"string"},"email":{"type":"string"},"invite":{"type":"string","description":"Instance registration invite"}},"required":["username","password"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/auth/login":{"post":{"tags":["auth"],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"username":{"type":"string"},"password":{"type":"string"}},"required":["username","password"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"token":{"type":"string"},"user":{"$ref":"#/components/schemas/PublicUser"}},"required":["token","user"]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/invite/{invite_code}":{"post":{"security":[{"bearerAuth":[]}],"tags":["invite"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"invite_code","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"delete":{"security":[{"bearerAuth":[]}],"tags":["invite"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"invite_code","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/@me/":{"get":{"security":[{"bearerAuth":[]}],"tags":["users"],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PrivateUser"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"patch":{"security":[{"bearerAuth":[]}],"tags":["users"],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"display_name":{"type":"string"},"summary":{"type":"string"},"current_password":{"type":"string"},"password":{"type":"string"},"email":{"type":"string","format":"email"}},"additionalProperties":false}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/@me/guild/":{"get":{"security":[{"bearerAuth":[]}],"tags":["users"],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/PublicGuild"}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/@me/guild/{guild_id}":{"delete":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"guild_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/@me/channels/":{"get":{"security":[{"bearerAuth":[]}],"tags":["users"],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/PublicChannel"}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/@me/push/":{"get":{"security":[{"bearerAuth":[]}],"tags":["users"],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"name":{"type":"string"},"created":{"type":"string","format":"date-time"}},"required":["name","created"]}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"post":{"security":[{"bearerAuth":[]}],"tags":["users"],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"endpoint":{"type":"string","format":"uri"},"p256dh":{"type":"string"},"auth":{"type":"string"}},"required":["name","endpoint","p256dh","auth"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"204":{"description":"","content":{"application/json":{"schema":{"type":"string","enum":["No Content"]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/@me/push/{name}":{"delete":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"name","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"202":{"description":"","content":{"application/json":{"schema":{"type":"string","enum":["Accepted"]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/{user_id}/":{"get":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"user_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicUser"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/{user_id}/channels/":{"post":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"user_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicChannel"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/users/{user_id}/relationship/":{"get":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"user_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PrivateRelationship"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"post":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"user_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"type":{"$ref":"#/components/schemas/RelationshipType"}}}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PrivateRelationship"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"delete":{"security":[{"bearerAuth":[]}],"tags":["users"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"user_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/guild/":{"post":{"security":[{"bearerAuth":[]}],"tags":["guild"],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","minLength":1}},"required":["name"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicGuild"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/guild/{guild_id}/":{"get":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicGuild"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"patch":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"summary":{"type":"string"}},"additionalProperties":false}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"delete":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/guild/{guild_id}/invite":{"post":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"expiry":{"type":"string","format":"date-time"}}}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"code":{"type":"string"},"guild":{"$ref":"#/components/schemas/ActorMention"},"expires":{"type":"string","format":"date-time"}},"required":["code","guild","expires"]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/role/{role_id}/":{"get":{"security":[{"bearerAuth":[]}],"tags":["role"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"role_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicRole"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"patch":{"security":[{"bearerAuth":[]}],"tags":["role"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"role_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"allow":{"type":"array","items":{"$ref":"#/components/schemas/Permission"}},"deny":{"type":"array","items":{"$ref":"#/components/schemas/Permission"}},"position":{"type":"number"}}}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicRole"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"delete":{"security":[{"bearerAuth":[]}],"tags":["role"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"role_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/guild/{guild_id}/channel/":{"post":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicGuildTextChannel"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/guild/{guild_id}/roles/":{"post":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"},"allow":{"type":"array","items":{"$ref":"#/components/schemas/Permission"},"default":[0]},"deny":{"type":"array","items":{"$ref":"#/components/schemas/Permission"},"default":[0]},"position":{"type":"number"}},"required":["name"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicRole"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/guild/{guild_id}/members/{user_id}/":{"patch":{"security":[{"bearerAuth":[]}],"tags":["guild"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"guild_id","in":"path"},{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"user_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"nickname":{"type":["string","null"]},"roles":{"type":"array","items":{"type":"string"}}}}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/channel/{channel_id}/":{"get":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"anyOf":[{"$ref":"#/components/schemas/PublicGuildTextChannel"},{"$ref":"#/components/schemas/PublicDmChannel"}]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"patch":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"delete":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/channel/{channel_id}/messages/":{"post":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/MessageCreateRequest"}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicMessage"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"get":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"},{"schema":{"type":"number","maximum":50,"minimum":1,"default":50},"required":false,"name":"limit","in":"query"},{"schema":{"anyOf":[{"type":"string","enum":["ASC"]},{"type":"string","enum":["DESC"]}],"default":"DESC"},"required":false,"name":"order","in":"query"},{"schema":{"type":"string"},"required":false,"name":"after","in":"query"},{"schema":{"type":"string"},"required":false,"name":"before","in":"query"},{"schema":{"type":"string"},"required":false,"name":"around","in":"query"},{"schema":{"type":"string"},"required":false,"name":"query","in":"query"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/PublicMessage"}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/channel/{channel_id}/call/":{"post":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"token":{"type":"string"},"ip":{"type":"string"}},"required":["token","ip"]}}}},"202":{"description":"","content":{"application/json":{"schema":{"type":"string","enum":["Accepted"]}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/channel/{channel_id}/attachments/":{"post":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"requestBody":{"content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","description":"Client defined ID for cross referencing attachments to output endpoints. Can be any value. Must be unique"},"name":{"type":"string","description":"User defined file name"},"md5":{"type":"string"},"mime":{"type":"string"},"size":{"type":"number","description":"Size in bytes"},"width":{"type":"number"},"height":{"type":"number"}},"required":["id","name","md5","mime","size"]}}}}},"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string"},"hash":{"type":"string"},"url":{"type":"string"}},"required":["id","hash","url"]}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/channel/{channel_id}/attachments/{hash}":{"get":{"tags":["channel"],"parameters":[{"schema":{"type":"string"},"required":true,"name":"hash","in":"path"},{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}},"/channel/{channel_id}/messages/{message_id}/":{"get":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"},{"schema":{"type":"string","format":"uuid"},"required":true,"name":"message_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"$ref":"#/components/schemas/PublicMessage"}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}},"delete":{"security":[{"bearerAuth":[]}],"tags":["channel"],"parameters":[{"schema":{"$ref":"#/components/schemas/ActorMention"},"required":true,"name":"channel_id","in":"path"},{"schema":{"type":"string","format":"uuid"},"required":true,"name":"message_id","in":"path"}],"responses":{"200":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorised"},"404":{"$ref":"#/components/responses/NotFound"},"500":{"$ref":"#/components/responses/InternalServerError"}}}}},"webhooks":{}}
+{
+	"openapi": "3.1.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "Client to Server API"
+	},
+	"servers": [
+		{
+			"url": "https://chat.understars.dev"
+		}
+	],
+	"components": {
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		},
+		"responses": {
+			"BadRequest": {
+				"description": "Bad request",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/HttpError"
+						}
+					}
+				}
+			},
+			"NotFound": {
+				"description": "The requested resource was not found",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/HttpError"
+						}
+					}
+				}
+			},
+			"Unauthorised": {
+				"description": "Unauthorised",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/HttpError"
+						}
+					}
+				}
+			},
+			"InternalServerError": {
+				"description": "Internal server error",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/HttpError"
+						}
+					}
+				}
+			}
+		},
+		"schemas": {
+			"HttpError": {
+				"type": "object",
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"code": {
+						"type": "number"
+					},
+					"detail": {
+						"type": "object",
+						"properties": {
+							"body": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"code": {
+											"type": "string"
+										},
+										"path": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										}
+									},
+									"required": [
+										"message",
+										"code",
+										"path"
+									]
+								}
+							},
+							"param": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"code": {
+											"type": "string"
+										},
+										"path": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										}
+									},
+									"required": [
+										"message",
+										"code",
+										"path"
+									]
+								}
+							},
+							"query": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string"
+										},
+										"code": {
+											"type": "string"
+										},
+										"path": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										}
+									},
+									"required": [
+										"message",
+										"code",
+										"path"
+									]
+								}
+							}
+						}
+					}
+				},
+				"required": [
+					"message",
+					"code"
+				]
+			},
+			"PublicUser": {
+				"type": "object",
+				"properties": {
+					"mention": {
+						"$ref": "#/components/schemas/ActorMention"
+					},
+					"name": {
+						"type": "string"
+					},
+					"summary": {
+						"type": "string"
+					},
+					"display_name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"mention",
+					"name",
+					"summary",
+					"display_name"
+				]
+			},
+			"ActorMention": {
+				"type": "string",
+				"pattern": "^.*@.*$"
+			},
+			"PrivateUser": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PublicUser"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"email": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"email"
+						]
+					}
+				]
+			},
+			"PublicGuild": {
+				"type": "object",
+				"properties": {
+					"mention": {
+						"$ref": "#/components/schemas/ActorMention"
+					},
+					"name": {
+						"type": "string"
+					},
+					"channels": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/PublicGuildTextChannel"
+						}
+					},
+					"roles": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/PublicRole"
+						}
+					}
+				},
+				"required": [
+					"mention",
+					"name"
+				]
+			},
+			"PublicGuildTextChannel": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PublicChannel"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"guild": {
+								"$ref": "#/components/schemas/ActorMention"
+							}
+						}
+					}
+				]
+			},
+			"PublicChannel": {
+				"type": "object",
+				"properties": {
+					"mention": {
+						"$ref": "#/components/schemas/ActorMention"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"mention",
+					"name"
+				]
+			},
+			"PublicRole": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"name": {
+						"type": "string"
+					},
+					"allow": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Permission"
+						}
+					},
+					"deny": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Permission"
+						}
+					},
+					"guild": {
+						"$ref": "#/components/schemas/ActorMention"
+					},
+					"position": {
+						"type": "number"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"allow",
+					"deny",
+					"guild",
+					"position"
+				]
+			},
+			"Permission": {
+				"type": "integer",
+				"enum": [
+					0,
+					1,
+					2,
+					3,
+					4,
+					5,
+					6,
+					7,
+					8,
+					9,
+					10,
+					11,
+					12
+				],
+				"x-enum-varnames": [
+					"NONE",
+					"OWNER",
+					"ADMIN",
+					"SEND_MESSAGES",
+					"MANAGE_CHANNELS",
+					"VIEW_CHANNEL",
+					"CALL_CHANNEL",
+					"MANAGE_GUILD",
+					"MANAGE_INVITES",
+					"CREATE_INVITE",
+					"UPLOAD",
+					"MANAGE_MESSAGES",
+					"MANAGE_MEMBERS"
+				]
+			},
+			"PrivateRelationship": {
+				"type": "object",
+				"properties": {
+					"created": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"user": {
+						"$ref": "#/components/schemas/PublicUser"
+					},
+					"type": {
+						"$ref": "#/components/schemas/RelationshipType"
+					}
+				},
+				"required": [
+					"created",
+					"user",
+					"type"
+				]
+			},
+			"RelationshipType": {
+				"type": "integer",
+				"enum": [
+					0,
+					1,
+					2
+				],
+				"x-enum-varnames": [
+					"pending",
+					"accepted",
+					"blocked"
+				]
+			},
+			"PublicDmChannel": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/PublicChannel"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"owner": {
+								"$ref": "#/components/schemas/ActorMention"
+							},
+							"recipients": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/ActorMention"
+								}
+							}
+						},
+						"required": [
+							"owner",
+							"recipients"
+						]
+					}
+				]
+			},
+			"PublicMessage": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"content": {
+						"type": "string"
+					},
+					"published": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updated": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"author_id": {
+						"$ref": "#/components/schemas/ActorMention"
+					},
+					"channel_id": {
+						"$ref": "#/components/schemas/ActorMention"
+					},
+					"files": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/PublicAttachment"
+						}
+					},
+					"embeds": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/PublicEmbed"
+						}
+					}
+				},
+				"required": [
+					"id",
+					"content",
+					"published",
+					"updated",
+					"author_id",
+					"channel_id",
+					"files",
+					"embeds"
+				]
+			},
+			"PublicAttachment": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"hash": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"size": {
+						"type": "number"
+					},
+					"width": {
+						"type": [
+							"number",
+							"null"
+						]
+					},
+					"height": {
+						"type": [
+							"number",
+							"null"
+						]
+					}
+				},
+				"required": [
+					"name",
+					"hash",
+					"type",
+					"size"
+				]
+			},
+			"PublicEmbed": {
+				"type": "object",
+				"properties": {
+					"target": {
+						"type": "string",
+						"format": "uri"
+					},
+					"created_at": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"type": {
+						"type": "integer",
+						"enum": [
+							0,
+							1,
+							2,
+							3
+						],
+						"x-enum-varnames": [
+							"link",
+							"photo",
+							"video",
+							"rich"
+						]
+					},
+					"title": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"images": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"url": {
+									"type": "string",
+									"format": "uri"
+								},
+								"width": {
+									"type": "number"
+								},
+								"height": {
+									"type": "number"
+								},
+								"alt": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"url"
+							]
+						}
+					},
+					"videos": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"url": {
+									"type": "string",
+									"format": "uri"
+								},
+								"width": {
+									"type": "number"
+								},
+								"height": {
+									"type": "number"
+								},
+								"alt": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"url"
+							]
+						}
+					},
+					"author": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"url": {
+								"type": "string"
+							}
+						}
+					},
+					"footer": {
+						"type": "object",
+						"properties": {
+							"text": {
+								"type": "string"
+							},
+							"icon": {
+								"type": "string"
+							}
+						}
+					},
+					"provider": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"url": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"required": [
+					"target",
+					"created_at",
+					"type",
+					"images",
+					"videos"
+				]
+			},
+			"MessageCreateRequest": {
+				"type": "object",
+				"properties": {
+					"content": {
+						"type": "string"
+					},
+					"files": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string"
+								},
+								"hash": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"name",
+								"hash"
+							]
+						}
+					},
+					"nonce": {
+						"type": "string",
+						"format": "uuid"
+					}
+				},
+				"minProperties": 1
+			}
+		},
+		"parameters": {}
+	},
+	"paths": {
+		"/upload/": {
+			"put": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"upload"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "t",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"tags": [
+					"auth"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"username": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"invite": {
+										"type": "string",
+										"description": "Instance registration invite"
+									}
+								},
+								"required": [
+									"username",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"token": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"token"
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"tags": [
+					"auth"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"username": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"username",
+									"password"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"token": {
+											"type": "string"
+										},
+										"user": {
+											"$ref": "#/components/schemas/PublicUser"
+										}
+									},
+									"required": [
+										"token",
+										"user"
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/invite/{invite_code}": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"invite"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "invite_code",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"invite"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "invite_code",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/@me/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PrivateUser"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"patch": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"display_name": {
+										"type": "string"
+									},
+									"summary": {
+										"type": "string"
+									},
+									"current_password": {
+										"type": "string"
+									},
+									"password": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string",
+										"format": "email"
+									}
+								},
+								"additionalProperties": false
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/@me/guild/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/PublicGuild"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/@me/guild/{guild_id}": {
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/@me/channels/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/PublicChannel"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/@me/push/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"name": {
+												"type": "string"
+											},
+											"created": {
+												"type": "string",
+												"format": "date-time"
+											}
+										},
+										"required": [
+											"name",
+											"created"
+										]
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"endpoint": {
+										"type": "string",
+										"format": "uri"
+									},
+									"p256dh": {
+										"type": "string"
+									},
+									"auth": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name",
+									"endpoint",
+									"p256dh",
+									"auth"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"204": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"No Content"
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/@me/push/{name}": {
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "name",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"202": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Accepted"
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/{user_id}/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicUser"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/{user_id}/channels/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicChannel"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/users/{user_id}/relationship/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PrivateRelationship"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"type": {
+										"$ref": "#/components/schemas/RelationshipType"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PrivateRelationship"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"users"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/guild/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"minLength": 1
+									}
+								},
+								"required": [
+									"name"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicGuild"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/guild/{guild_id}/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicGuild"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"patch": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"summary": {
+										"type": "string"
+									}
+								},
+								"additionalProperties": false
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/guild/{guild_id}/invite": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"expiry": {
+										"type": "string",
+										"format": "date-time"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"code": {
+											"type": "string"
+										},
+										"guild": {
+											"$ref": "#/components/schemas/ActorMention"
+										},
+										"expires": {
+											"type": "string",
+											"format": "date-time"
+										}
+									},
+									"required": [
+										"code",
+										"guild",
+										"expires"
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/role/{role_id}/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"role"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "role_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicRole"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"patch": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"role"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "role_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"allow": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/Permission"
+										}
+									},
+									"deny": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/Permission"
+										}
+									},
+									"position": {
+										"type": "number"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicRole"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"role"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "role_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/guild/{guild_id}/channel/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicGuildTextChannel"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/guild/{guild_id}/roles/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"allow": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/Permission"
+										},
+										"default": [
+											0
+										]
+									},
+									"deny": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/Permission"
+										},
+										"default": [
+											0
+										]
+									},
+									"position": {
+										"type": "number"
+									}
+								},
+								"required": [
+									"name"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicRole"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/guild/{guild_id}/members/{user_id}/": {
+			"patch": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"guild"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "guild_id",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "user_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"nickname": {
+										"type": [
+											"string",
+											"null"
+										]
+									},
+									"roles": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/PublicGuildTextChannel"
+										},
+										{
+											"$ref": "#/components/schemas/PublicDmChannel"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"patch": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"name"
+								]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/messages/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/MessageCreateRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicMessage"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "number",
+							"maximum": 50,
+							"minimum": 1,
+							"default": 50
+						},
+						"required": false,
+						"name": "limit",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string",
+									"enum": [
+										"ASC"
+									]
+								},
+								{
+									"type": "string",
+									"enum": [
+										"DESC"
+									]
+								}
+							],
+							"default": "DESC"
+						},
+						"required": false,
+						"name": "order",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "after",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "before",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "around",
+						"in": "query"
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": false,
+						"name": "query",
+						"in": "query"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/PublicMessage"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/call/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"token": {
+											"type": "string"
+										},
+										"ip": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"token",
+										"ip"
+									]
+								}
+							}
+						}
+					},
+					"202": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Accepted"
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/attachments/": {
+			"post": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"id": {
+											"type": "string",
+											"description": "Client defined ID for cross referencing attachments to output endpoints. Can be any value. Must be unique"
+										},
+										"name": {
+											"type": "string",
+											"description": "User defined file name"
+										},
+										"md5": {
+											"type": "string"
+										},
+										"mime": {
+											"type": "string"
+										},
+										"size": {
+											"type": "number",
+											"description": "Size in bytes"
+										},
+										"width": {
+											"type": "number"
+										},
+										"height": {
+											"type": "number"
+										}
+									},
+									"required": [
+										"id",
+										"name",
+										"md5",
+										"mime",
+										"size"
+									]
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "string"
+											},
+											"hash": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											}
+										},
+										"required": [
+											"id",
+											"hash",
+											"url"
+										]
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/attachments/{hash}": {
+			"get": {
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"type": "string"
+						},
+						"required": true,
+						"name": "hash",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		},
+		"/channel/{channel_id}/messages/{message_id}/": {
+			"get": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"required": true,
+						"name": "message_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PublicMessage"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			},
+			"delete": {
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"tags": [
+					"channel"
+				],
+				"parameters": [
+					{
+						"schema": {
+							"$ref": "#/components/schemas/ActorMention"
+						},
+						"required": true,
+						"name": "channel_id",
+						"in": "path"
+					},
+					{
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"required": true,
+						"name": "message_id",
+						"in": "path"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {}
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/BadRequest"
+					},
+					"401": {
+						"$ref": "#/components/responses/Unauthorised"
+					},
+					"404": {
+						"$ref": "#/components/responses/NotFound"
+					},
+					"500": {
+						"$ref": "#/components/responses/InternalServerError"
+					}
+				}
+			}
+		}
+	},
+	"webhooks": {}
+}

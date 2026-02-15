@@ -6,6 +6,7 @@ import { ActorMention } from "../../../../../util/activitypub/constants";
 import { getDatabase } from "../../../../../util/database";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 import { handleMessage } from "../../../../../util/entity/message";
+import { HttpError } from "../../../../../util/httperror";
 import { PERMISSION } from "../../../../../util/permission";
 import { route } from "../../../../../util/route";
 
@@ -18,6 +19,7 @@ const MessageCreate = z
 				hash: z.string(),
 			}),
 		),
+		nonce: z.uuid().optional(),
 	})
 	.partial()
 	.refine(
@@ -44,10 +46,30 @@ router.post(
 
 			const channel = await getOrFetchChannel(channel_id);
 
-			await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
+			await channel.throwPermission(req.user, [
+				PERMISSION.VIEW_CHANNEL,
+				PERMISSION.SEND_MESSAGES,
+			]);
 
 			if (req.body.files?.length)
 				await channel.throwPermission(req.user, PERMISSION.UPLOAD);
+
+			// check if this message was already received (via nonce)
+			const existing = req.body.nonce
+				? await Message.findOne({
+						where: { nonce: req.body.nonce },
+						relations: {
+							channel: true,
+							author: true,
+							files: true,
+							embeds: true,
+						},
+					})
+				: null;
+
+			if (existing) {
+				return res.json(existing.toPublic());
+			}
 
 			const message = Message.create({
 				channel,
@@ -64,6 +86,8 @@ router.post(
 
 				content: req.body.content,
 				author: req.user,
+
+				nonce: req.body.nonce,
 			});
 
 			await handleMessage(message);

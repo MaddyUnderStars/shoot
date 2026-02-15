@@ -62,6 +62,12 @@ export class Message extends BaseModel {
 	@JoinColumn()
 	reference_object: ApCache | null;
 
+	/**
+	 * The client generated nonce of this messaged used to prevent duplicate message sending.
+	 */
+	@Column({ type: "uuid", nullable: true })
+	nonce: string | null;
+
 	public toPublic() {
 		return {
 			id: this.id,

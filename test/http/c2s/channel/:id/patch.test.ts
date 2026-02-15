@@ -10,7 +10,7 @@ test.for([
 	// [PERMISSION.MANAGE_GUILD, true],	// this should pass
 	[PERMISSION.MANAGE_CHANNELS, true],
 	[PERMISSION.NONE, false],
-])("Can edit guild channel as $0 ", async (opts, { api, dbClient }) => {
+])("Can edit guild channel as $0", async (opts, { api, dbClient }) => {
 	const permission = opts[0] as PERMISSION;
 	const allowed = opts[1] as boolean;
 
