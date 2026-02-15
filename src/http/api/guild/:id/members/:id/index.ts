@@ -6,6 +6,7 @@ import { ActorMention } from "../../../../../../util/activitypub/constants";
 import { getOrFetchGuild } from "../../../../../../util/entity/guild";
 import { getMember } from "../../../../../../util/entity/member";
 import { getOrFetchUser } from "../../../../../../util/entity/user";
+import { emitGatewayEvent } from "../../../../../../util/events";
 import { HttpError } from "../../../../../../util/httperror";
 import { PERMISSION } from "../../../../../../util/permission";
 import { route } from "../../../../../../util/route";
@@ -51,6 +52,9 @@ router.patch(
 
 			if (body.nickname) member.nickname = body.nickname;
 
+			let additions: Set<string> = new Set();
+			let deletions: Set<string> = new Set();
+
 			if (body.roles) {
 				const roleIds = new Set(req.body.roles);
 
@@ -71,10 +75,32 @@ router.patch(
 						404,
 					);
 
+				const existing = new Set(member.roles.map((x) => x.id));
+				additions = existing.difference(roleIds);
+				deletions = roleIds.difference(existing);
+
 				member.roles = [...roleIds].map((x) => Role.create({ id: x }));
 			}
 
 			await member.save();
+
+			// wait until after the db save
+			// so that if there's a error, we don't tell clients
+			for (const role_id in additions)
+				emitGatewayEvent([member, Role.create({ id: role_id })], {
+					role_id,
+					type: "ROLE_MEMBER_ADD",
+					guild: guild.mention,
+					member: member.toPublic(),
+				});
+
+			for (const role_id in deletions)
+				emitGatewayEvent([member, Role.create({ id: role_id })], {
+					role_id,
+					type: "ROLE_MEMBER_LEAVE",
+					guild: guild.mention,
+					member: user.mention,
+				});
 
 			return res.json(member.toPublic());
 		},
