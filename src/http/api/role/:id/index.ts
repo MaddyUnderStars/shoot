@@ -2,6 +2,7 @@ import { Router } from "express";
 import z from "zod";
 import { PublicRole, Role, ZodPermission } from "../../../../entity/role";
 import { isMemberOfGuildThrow } from "../../../../util/entity/member";
+import { emitGatewayEvent } from "../../../../util/events";
 import { HttpError } from "../../../../util/httperror";
 import { PERMISSION } from "../../../../util/permission";
 import { route } from "../../../../util/route";
@@ -57,6 +58,11 @@ router.patch(
 
 			await role.save();
 
+			emitGatewayEvent(role.guild, {
+				type: "ROLE_UPDATE",
+				role: role.toPublic(),
+			});
+
 			return res.json(role.toPublic());
 		},
 	),
@@ -74,6 +80,14 @@ router.delete(
 
 		if (role.id === role.guild.id)
 			throw new HttpError("Cannot remove default role", 400);
+
+		await Role.delete({ id: role.id });
+
+		emitGatewayEvent(role.guild, {
+			type: "ROLE_DELETE",
+			guild_id: role.guild.mention,
+			role_id: role.id,
+		});
 
 		return res.sendStatus(204);
 	}),

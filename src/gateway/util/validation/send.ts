@@ -87,6 +87,17 @@ export type ROLE_CREATE = {
 	role: PublicRole;
 };
 
+export type ROLE_UPDATE = {
+	type: "ROLE_UPDATE";
+	role: PublicRole;
+};
+
+export type ROLE_DELETE = {
+	type: "ROLE_DELETE";
+	guild_id: ActorMention;
+	role_id: string; // uuid
+};
+
 export type ROLE_MEMBER_ADD = {
 	type: "ROLE_MEMBER_ADD";
 	guild: ActorMention;
@@ -173,6 +184,8 @@ export type GATEWAY_EVENT =
 	| GUILD_UPDATE
 	| GUILD_DELETE
 	| ROLE_CREATE
+	| ROLE_UPDATE
+	| ROLE_DELETE
 	| ROLE_MEMBER_ADD
 	| ROLE_MEMBER_LEAVE
 	| MEMBER_JOIN
