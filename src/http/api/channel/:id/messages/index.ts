@@ -6,7 +6,6 @@ import { ActorMention } from "../../../../../util/activitypub/constants";
 import { getDatabase } from "../../../../../util/database";
 import { getOrFetchChannel } from "../../../../../util/entity/channel";
 import { handleMessage } from "../../../../../util/entity/message";
-import { HttpError } from "../../../../../util/httperror";
 import { PERMISSION } from "../../../../../util/permission";
 import { route } from "../../../../../util/route";
 
@@ -19,15 +18,15 @@ const MessageCreate = z
 				hash: z.string(),
 			}),
 		),
-		nonce: z.uuid().optional(),
+		nonce: z.uuid(),
 	})
 	.partial()
 	.refine(
-		(obj) => Object.values(obj).some((x) => x.length > 0),
+		(obj) => obj.files?.length || obj.content?.length,
 		"Message must not be empty",
 	)
 	.openapi("MessageCreateRequest", {
-		minProperties: 1,
+		anyOf: [{ required: ["content"] }, { required: ["files"] }],
 	});
 
 const router = Router({ mergeParams: true });

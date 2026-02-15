@@ -73,3 +73,17 @@ test("Cannot send duplicate messages", async ({ api, expect }) => {
 
 	expect(duplicate.body).toEqual(msg.body);
 });
+
+test("Cannot send empty message", async ({ api }) => {
+	const user = await createTestUser(api);
+	const guild = await createTestGuild(user);
+
+	await request(api.app)
+		.post(`/channel/${guild.channels[0].mention}/messages`)
+		.auth(user.token, { type: "bearer" })
+		.send({
+			content: "",
+			files: [],
+		})
+		.expect(400);
+});
