@@ -161,7 +161,7 @@ const doWebfingerOrFindTemplate = async (
 
 	const protocol = process.env.DANGEROUS_NO_TLS ? "http:" : "https:";
 	const url = new URL(
-		`${protocol}//${domain}/.well-known/webfinger?resource=${lookup}`,
+		`${protocol}//${domain}/.well-known/webfinger?resource=acct:${lookup}`,
 	);
 
 	throwInstanceBlock(url);
