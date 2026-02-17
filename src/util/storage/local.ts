@@ -7,6 +7,7 @@ import { Readable } from "node:stream";
 import jwt from "jsonwebtoken";
 import { LocalUpload } from "../../entity/upload";
 import { config } from "../config";
+import { HttpError } from "../httperror";
 import { makeInstanceUrl } from "../url";
 import type { PutFileRequest } from ".";
 
@@ -77,9 +78,17 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 };
 
 const getFileStream = async (channel_id: string, hash: string) => {
-	const p = path.join(config().storage.directory, channel_id, hash);
+	const storageDir = path.resolve(config().storage.directory);
+
+	const rawPath = path.join(storageDir, channel_id, hash);
+
+	const normalised = path.normalize(rawPath);
+
+	// path traversal was attempted
+	if (!normalised.startsWith(storageDir)) return false;
+
 	try {
-		return Readable.from(createReadStream(p));
+		return Readable.from(createReadStream(normalised));
 	} catch (_) {
 		return false;
 	}
