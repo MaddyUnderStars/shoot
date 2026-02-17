@@ -90,7 +90,12 @@ router.get(
 				(lookup: string) => Promise<{ id: string; path: string }>
 			>;
 
-			const { id, path } = await handlers[type](mention.id);
+			const handler = handlers[type];
+
+			if (!handler)
+				throw new HttpError("Unrecognised resource type", 400);
+
+			const { id, path } = await handler(mention.id);
 
 			return res.json({
 				subject: `${type}:${id}@${config().federation.webapp_url.hostname}`,
