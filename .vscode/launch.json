@@ -11,7 +11,7 @@
 			"skipFiles": [
 				"<node_internals>/**"
 			],
-			"program": "${workspaceFolder}/src/bootstrap.ts",
+			"program": "${workspaceFolder}/src/auth/bootstrap.ts",
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],

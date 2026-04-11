@@ -81,13 +81,15 @@ export const ConfigSchema = z.object({
 		 * @default "loopback,uniquelocal"
 		 */
 		trust_proxy: z.string().default("loopback,uniquelocal"),
+
+		oidc_issuer: z.url(),
 	}),
 	database: z.object({
 		/**
 		 * A URL style database connection string
 		 * @example `mysql://username:password@address:port/database_name`
 		 */
-		url: z.string().url(),
+		url: z.url(),
 
 		/**
 		 * Whether to log database operations.
@@ -156,7 +158,7 @@ export const ConfigSchema = z.object({
 			 * TODO it would be good if we could provide reasons for these
 			 */
 			instances: z
-				.record(z.string(), z.nativeEnum(InstanceBehaviour))
+				.record(z.string(), z.enum(InstanceBehaviour))
 				.default({}),
 		})
 		.prefault({
@@ -181,9 +183,9 @@ export const ConfigSchema = z.object({
 			 * Janus gateway url. Websocket, http, or unix socket
 			 * @default "ws://localhost:8188"
 			 */
-			janus_url: z.string().url().default("ws://localhost:8188"),
+			janus_url: z.url().default("ws://localhost:8188"),
 
-			signal_address: z.string().url().optional(),
+			signal_address: z.url().optional(),
 		})
 		.prefault({}),
 	registration: z
@@ -271,10 +273,7 @@ export const ConfigSchema = z.object({
 	rabbitmq: z
 		.object({
 			enabled: z.boolean().default(false),
-			url: z
-				.string()
-				.url()
-				.transform((x) => new URL(x)),
+			url: z.url().transform((x) => new URL(x)),
 		})
 		.prefault({ url: "http://localhost" }),
 
@@ -291,7 +290,7 @@ export const ConfigSchema = z.object({
 			/**
 			 * The public endpoint of the imagor proxy server. Clients will connect to this address.
 			 */
-			url: z.string().url(),
+			url: z.url(),
 
 			/**
 			 * Optional signing key to prevent users from generating their own media proxy requests

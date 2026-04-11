@@ -5,10 +5,6 @@ extendZodWithOpenApi(z);
 
 import "dotenv/config";
 import { createServer } from "node:http";
-import { GatewayServer } from "./gateway/server";
-import { APIServer } from "./http/server";
-import { MediaGatewayServer } from "./media/server";
-
 import { config } from "./util/config";
 import { createLogger, setLogOptions } from "./util/log";
 
@@ -35,11 +31,22 @@ process.on("uncaughtException", (error, origin) => {
 	Log.error(`Caught ${origin}`, error);
 });
 
+import { AuthServer } from "./auth/server";
+import { GatewayServer } from "./gateway/server";
+import { APIServer } from "./http/server";
+import { MediaGatewayServer } from "./media/server";
+
 const http = createServer();
 
 const api = new APIServer(http);
 const gateway = new GatewayServer(http);
+const auth = new AuthServer(http);
 
 const media = new MediaGatewayServer();
 
-Promise.all([api.listen(PORT), gateway.listen(PORT), media.listen(MEDIA_PORT)]);
+Promise.all([
+	api.listen(PORT),
+	gateway.listen(PORT),
+	auth.listen(PORT),
+	media.listen(MEDIA_PORT),
+]);
