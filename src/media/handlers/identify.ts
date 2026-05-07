@@ -1,5 +1,6 @@
 import type { Channel } from "../../entity/channel";
 import type { User } from "../../entity/user";
+import { VoiceState } from "../../entity/voiceState";
 import { CLOSE_CODES } from "../../gateway/util/codes";
 import { emitGatewayEvent } from "../../util/events";
 import { validateMediaToken } from "../../util/voice";
@@ -22,7 +23,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		return;
 	}
 
-	this.user_id = user.mention;
+	this.user_mention = user.mention;
+	this.user_id = user.id;
 
 	startHeartbeatTimeout(this);
 
@@ -38,7 +40,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		this.room_id = res.room;
 	}
 
-	this.channel_id = channel.mention;
+	this.channel_id = channel.id;
+	this.channel_mention = channel.mention;
 
 	this.media_handle_id = (await janus.attachHandle()).id;
 
@@ -48,10 +51,12 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	await janus.trickle(this.media_handle_id, payload.candidates);
 
+	this.send({ type: "READY", answer: { jsep: response.jsep } });
+
 	// Notify other users we arrived
 	emitMediaEvent(this.room_id, {
 		type: "PEER_JOINED",
-		user_id: this.user_id,
+		user_id: this.user_mention,
 	});
 
 	emitGatewayEvent(channel, {
@@ -65,5 +70,11 @@ export const onIdentify = makeHandler(async function (payload) {
 		this.send(payload),
 	);
 
-	this.send({ type: "READY", answer: { jsep: response.jsep } });
+	await VoiceState.insert(
+		VoiceState.create({
+			user,
+			channel,
+			joined: new Date(),
+		}),
+	);
 }, IDENTIFY);

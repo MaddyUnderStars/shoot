@@ -7,7 +7,8 @@ export interface MediaSocket extends Omit<WebSocket, "send"> {
 
 	room_id?: number;
 
-	channel_id?: ActorMention;
+	channel_mention?: ActorMention;
+	channel_id?: string;
 
 	/** Below is copied from gateway src */
 
@@ -15,7 +16,8 @@ export interface MediaSocket extends Omit<WebSocket, "send"> {
 	ip_address: string;
 
 	/** The user ID of this authenticated socket */
-	user_id: ActorMention;
+	user_mention: ActorMention;
+	user_id: string;
 
 	/** The current sequence/event number for this socket */
 	sequence: number;

@@ -1,5 +1,6 @@
 import type { CloseEvent } from "ws";
 import { Channel } from "../../entity/channel";
+import { VoiceState } from "../../entity/voiceState";
 import { emitGatewayEvent } from "../../util/events";
 import { createLogger } from "../../util/log";
 import { emitMediaEvent } from "../util/events";
@@ -23,16 +24,18 @@ export async function onClose(this: MediaSocket, event: CloseEvent) {
 	this.events?.();
 
 	// Notify others
-	if (this.room_id && this.channel_id) {
+	if (this.room_id && this.channel_id && this.channel_mention) {
 		emitMediaEvent(this.room_id, {
 			type: "PEER_LEFT",
-			user_id: this.user_id,
+			user_id: this.user_mention,
 		});
 
 		emitGatewayEvent(Channel.create({ id: this.channel_id }), {
 			type: "VOICE_LEAVE",
-			user: this.user_id,
-			channel: this.channel_id,
+			user: this.user_mention,
+			channel: this.channel_mention,
 		});
 	}
+
+	await VoiceState.delete({ userId: this.user_id });
 }
