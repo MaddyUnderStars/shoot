@@ -1,4 +1,5 @@
 import type { WebSocket } from "ws";
+import type { ActorMention } from "../../util/activitypub/constants";
 import type { MEDIA_EVENT } from "./validation/send";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
@@ -6,13 +7,15 @@ export interface MediaSocket extends Omit<WebSocket, "send"> {
 
 	room_id?: number;
 
+	channel_id?: ActorMention;
+
 	/** Below is copied from gateway src */
 
 	/** The source IP address of this socket */
 	ip_address: string;
 
 	/** The user ID of this authenticated socket */
-	user_id: string;
+	user_id: ActorMention;
 
 	/** The current sequence/event number for this socket */
 	sequence: number;

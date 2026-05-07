@@ -2,6 +2,7 @@ import type { EventEmitter } from "node:events";
 import http from "node:http";
 import ws from "ws";
 import { initDatabase } from "../util/database";
+import { initRabbitMQ } from "../util/events";
 import { createLogger } from "../util/log";
 import { onConnection } from "./socket/connection";
 import { initJanus } from "./util/janus";
@@ -29,6 +30,8 @@ export class MediaGatewayServer {
 		});
 
 		await initDatabase();
+
+		await initRabbitMQ(false);
 
 		try {
 			await initJanus();

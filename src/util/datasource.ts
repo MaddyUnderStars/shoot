@@ -1,4 +1,3 @@
-import path from "node:path";
 import { DataSource } from "typeorm";
 
 import { ApCache } from "../entity/apcache";
@@ -19,6 +18,7 @@ import { Session } from "../entity/session";
 import { GuildTextChannel } from "../entity/textChannel";
 import { LocalUpload } from "../entity/upload";
 import { User } from "../entity/user";
+import { VoiceState } from "../entity/voiceState";
 import { config } from "./config";
 import { LocalUpload1749945089530 } from "./migration/postgres/1749945089530-local_upload";
 import { ChannelOrdering1750057984384 } from "./migration/postgres/1750057984384-channelOrdering";
@@ -83,6 +83,7 @@ export const getDatasource = () => {
 			GuildTextChannel,
 			LocalUpload,
 			User,
+			VoiceState,
 		],
 
 		migrations: [
