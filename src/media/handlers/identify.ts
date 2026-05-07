@@ -1,6 +1,7 @@
 import type { Channel } from "../../entity/channel";
 import type { User } from "../../entity/user";
 import { CLOSE_CODES } from "../../gateway/util/codes";
+import { emitGatewayEvent } from "../../util/events";
 import { validateMediaToken } from "../../util/voice";
 import { emitMediaEvent, listenMediaEvent } from "../util/events";
 import { getJanus } from "../util/janus";
@@ -37,6 +38,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		this.room_id = res.room;
 	}
 
+	this.channel_id = channel.mention;
+
 	this.media_handle_id = (await janus.attachHandle()).id;
 
 	await janus.joinRoom(this.media_handle_id, this.room_id, user.mention);
@@ -49,6 +52,12 @@ export const onIdentify = makeHandler(async function (payload) {
 	emitMediaEvent(this.room_id, {
 		type: "PEER_JOINED",
 		user_id: this.user_id,
+	});
+
+	emitGatewayEvent(channel, {
+		type: "VOICE_JOIN",
+		channel: channel.mention,
+		user: user.toPublic(),
 	});
 
 	// Join the horde

@@ -8,7 +8,7 @@ import type { PrivateRelationship } from "../../../entity/relationship";
 import type { PublicRole } from "../../../entity/role";
 import type { PrivateSession } from "../../../entity/session";
 import type { PublicGuildTextChannel } from "../../../entity/textChannel";
-import type { PrivateUser } from "../../../entity/user";
+import type { PrivateUser, PublicUser } from "../../../entity/user";
 import type { ActorMention } from "../../../util/activitypub/constants";
 import type { MembersChunkItem } from "../../handlers/members";
 
@@ -172,6 +172,18 @@ export type TYPING = {
 	timestamp: number;
 };
 
+export type VOICE_JOIN = {
+	type: "VOICE_JOIN";
+	channel: ActorMention;
+	user: PublicUser;
+};
+
+export type VOICE_LEAVE = {
+	type: "VOICE_LEAVE";
+	channel: ActorMention;
+	user: ActorMention;
+};
+
 export type GATEWAY_EVENT =
 	| MESSAGE_CREATE
 	| MESSAGE_UPDATE
@@ -197,4 +209,6 @@ export type GATEWAY_EVENT =
 	| MEMBERS_CHUNK
 	| READY
 	| HEARTBEAT_ACK
-	| TYPING;
+	| TYPING
+	| VOICE_JOIN
+	| VOICE_LEAVE;
