@@ -60,22 +60,24 @@ export const onIdentify = makeHandler(async function (payload) {
 		channel_domain: string;
 		channel_remote_id?: string;
 		users: ActorMention[];
-	}> = await getDatabase()
-		.getRepository(VoiceState)
-		.createQueryBuilder("voice")
-		.leftJoin("voice.channel", "channel")
-		.leftJoinAndSelect("voice.user", "user")
-		.where("channel.id IN (:...channel_ids)", {
-			channel_ids: dmChannels.map((x) => x.id),
-		})
-		.groupBy("channel.id")
-		.select([
-			"channel.id",
-			"channel.domain",
-			"channel.remote_id",
-			"array_agg(user.id) as users",
-		])
-		.getRawMany();
+	}> = !dmChannels.length
+		? []
+		: await getDatabase()
+				.getRepository(VoiceState)
+				.createQueryBuilder("voice")
+				.leftJoin("voice.channel", "channel")
+				.leftJoinAndSelect("voice.user", "user")
+				.where("channel.id IN (:...channel_ids)", {
+					channel_ids: dmChannels.map((x) => x.id),
+				})
+				.groupBy("channel.id")
+				.select([
+					"channel.id",
+					"channel.domain",
+					"channel.remote_id",
+					"array_agg(user.id) as users",
+				])
+				.getRawMany();
 
 	const voiceState: Record<ActorMention, ActorMention[]> = {};
 	for (const row of rawVoiceState) {
