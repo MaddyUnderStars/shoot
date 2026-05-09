@@ -85,5 +85,4 @@ Feel free to open any issues or pull requests, and I'll review them when I have 
 
 ### Tests
 
-You can run the tests with `npm run test`.
-Shoot uses [Ava](https://github.com/avajs/ava) for testing.
+You can run the tests with `npm run test`. The tests are written with Vitest, and federation is tested with Test Containers.
