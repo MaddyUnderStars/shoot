@@ -1,6 +1,9 @@
+import { In } from "typeorm";
 import { DMChannel } from "../../entity/DMChannel";
 import { Session } from "../../entity/session";
 import type { User } from "../../entity/user";
+import { VoiceState } from "../../entity/voiceState";
+import type { ActorMention } from "../../util/activitypub/constants";
 import { getDatabase } from "../../util/database";
 import { getGuilds } from "../../util/entity/guild";
 import { fetchRelationships } from "../../util/entity/relationship";
@@ -19,6 +22,8 @@ import { startHeartbeatTimeout } from "./heartbeat";
  * - Build payload and send to user
  */
 export const onIdentify = makeHandler(async function (payload) {
+	clearTimeout(this.auth_timeout);
+
 	let user: User;
 	try {
 		user = await getUserFromToken(payload.token);
@@ -51,13 +56,34 @@ export const onIdentify = makeHandler(async function (payload) {
 
 	this.session = session;
 
-	listenEvents(this, [
-		user,
-		// TODO: for relationships, see #54
-		...dmChannels,
-		...guilds,
-		...guilds.flatMap((x) => x.channels),
-	]);
+	const rawVoiceState: Array<{
+		channel_id: string;
+		channel_domain: string;
+		channel_remote_id?: string;
+		users: ActorMention[];
+	}> = await getDatabase()
+		.getRepository(VoiceState)
+		.createQueryBuilder("voice")
+		.leftJoin("voice.channel", "channel")
+		.leftJoinAndSelect("voice.user", "user")
+		.where("channel.id IN (:...channel_ids)", {
+			channel_ids: dmChannels.map((x) => x.id),
+		})
+		.groupBy("channel.id")
+		.select([
+			"channel.id",
+			"channel.domain",
+			"channel.remote_id",
+			"array_agg(user.id) as users",
+		])
+		.getRawMany();
+
+	const voiceState: Record<ActorMention, ActorMention[]> = {};
+	for (const row of rawVoiceState) {
+		const mention: ActorMention = `${row.channel_remote_id ?? row.channel_id}@${row.channel_domain}`;
+
+		voiceState[mention] = row.users;
+	}
 
 	const ret: READY = {
 		type: "READY",
@@ -66,11 +92,18 @@ export const onIdentify = makeHandler(async function (payload) {
 		channels: dmChannels.map((x) => x.toPublic()),
 		guilds: guilds.map((x) => x.toPublic()),
 		relationships: relationships.map((x) => x.toClient(this.user_id)),
+		voice: voiceState,
 	};
 
 	startHeartbeatTimeout(this);
 
-	clearTimeout(this.auth_timeout);
+	await consume(this, ret);
 
-	return await consume(this, ret);
+	listenEvents(this, [
+		user,
+		// TODO: for relationships, see #54
+		...dmChannels,
+		...guilds,
+		...guilds.flatMap((x) => x.channels),
+	]);
 }, IDENTIFY);

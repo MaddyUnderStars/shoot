@@ -158,6 +158,9 @@ export type READY = {
 	channels: Array<PublicChannel>;
 	guilds: Array<PublicGuild>;
 	relationships: Array<PrivateRelationship>;
+
+	/** channel -> users in voice */
+	voice: Record<ActorMention, ActorMention[]>;
 };
 
 export type HEARTBEAT_ACK = {
@@ -182,6 +185,11 @@ export type VOICE_LEAVE = {
 	type: "VOICE_LEAVE";
 	channel: ActorMention;
 	user: ActorMention;
+};
+
+export type VOICE_STATE = {
+	type: "VOICE_STATE";
+	states: Record<ActorMention, Array<PublicUser>>;
 };
 
 export type GATEWAY_EVENT =
@@ -211,4 +219,5 @@ export type GATEWAY_EVENT =
 	| HEARTBEAT_ACK
 	| TYPING
 	| VOICE_JOIN
-	| VOICE_LEAVE;
+	| VOICE_LEAVE
+	| VOICE_STATE;

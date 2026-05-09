@@ -57,7 +57,7 @@ const jobHandler = async (job: Job<PushNotificationJobData>) => {
 			);
 
 			console.log(res);
-		} catch (e) {
+		} catch (_e) {
 			await sub.remove();
 		}
 	}
