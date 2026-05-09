@@ -1,6 +1,8 @@
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
 export class VoiceState1778143207892 implements MigrationInterface {
+	name = "VoiceState1778143207892";
+
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
 			`CREATE TABLE "voice_state" ("userId" uuid NOT NULL, "joined" TIMESTAMP WITH TIME ZONE NOT NULL, "channelId" uuid, CONSTRAINT "PK_74d65d75dd58f8ffcd87f392a48" PRIMARY KEY ("userId"))`,
