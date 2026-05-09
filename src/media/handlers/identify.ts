@@ -70,11 +70,12 @@ export const onIdentify = makeHandler(async function (payload) {
 		this.send(payload),
 	);
 
-	await VoiceState.insert(
+	await VoiceState.upsert(
 		VoiceState.create({
 			user,
 			channel,
 			joined: new Date(),
 		}),
+		["userId"],
 	);
 }, IDENTIFY);

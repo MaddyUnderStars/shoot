@@ -7,7 +7,6 @@ import { Readable } from "node:stream";
 import jwt from "jsonwebtoken";
 import { LocalUpload } from "../../entity/upload";
 import { config } from "../config";
-import { HttpError } from "../httperror";
 import { makeInstanceUrl } from "../url";
 import type { PutFileRequest } from ".";
 
