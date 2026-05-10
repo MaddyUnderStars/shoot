@@ -1,12 +1,4 @@
-import {
-	Column,
-	CreateDateColumn,
-	Entity,
-	Index,
-	JoinColumn,
-	ManyToOne,
-	OneToOne,
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { z } from "zod";
 import type { ApCache } from "./apcache";
 import { BaseModel } from "./basemodel";
@@ -75,9 +67,7 @@ export class Relationship extends BaseModel {
 	}
 }
 
-export const ZodRelationshipType = z
-	.nativeEnum(RelationshipType)
-	.openapi("RelationshipType");
+export const ZodRelationshipType = z.nativeEnum(RelationshipType).openapi("RelationshipType");
 
 export const PrivateRelationship = z
 	.object({

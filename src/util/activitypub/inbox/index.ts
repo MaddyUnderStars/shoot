@@ -21,13 +21,9 @@ const getQueue = () => {
 
 export const AP_ACTIVITY = z.looseObject({
 	id: z.url(),
-	type: z
-		.string()
-		.refine(
-			(type) =>
-				!!ActivityHandlers[type.toLowerCase() as Lowercase<string>],
-			{ message: "Activity of that type has no handler" },
-		),
+	type: z.string().refine((type) => !!ActivityHandlers[type.toLowerCase() as Lowercase<string>], {
+		message: "Activity of that type has no handler",
+	}),
 });
 
 export const handleInbox = async (activity: APActivity, target: Actor) => {
@@ -48,13 +44,12 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 				raw: safeActivity,
 			});
 		} catch (_) {
-			throw new APError(
-				`Activity with id ${safeActivity.id} already processed`,
-			);
+			throw new APError(`Activity with id ${safeActivity.id} already processed`);
 		}
 
-		await ActivityHandlers[
-			safeActivity.type.toLowerCase() as Lowercase<string>
-		](activity, target);
+		await ActivityHandlers[safeActivity.type.toLowerCase() as Lowercase<string>](
+			activity,
+			target,
+		);
 	}
 };

@@ -91,9 +91,7 @@ export const test = baseTest.extend<{
 			process.env.NODE_CONFIG = JSON.stringify(config);
 
 			const { APIServer } = await import("../src/http/server");
-			const { initDatabase, closeDatabase } = await import(
-				"../src/util/database"
-			);
+			const { initDatabase, closeDatabase } = await import("../src/util/database");
 
 			const api = new APIServer();
 			await initDatabase();

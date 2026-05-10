@@ -54,8 +54,7 @@ const getRoutes = (router: Router) => {
 		}> = [];
 
 		for (const layer of router.stack) {
-			if (layer.name !== "router" && layer.name !== "bound dispatch")
-				continue;
+			if (layer.name !== "router" && layer.name !== "bound dispatch") continue;
 
 			if (layer.handle.name === "router") {
 				ret.push(
@@ -71,12 +70,9 @@ const getRoutes = (router: Router) => {
 
 			if (!layer.route) continue;
 
-			layer.route.path = layer.route.path.replaceAll(
-				/:(\w*)($|\/)/gm,
-				(_, a) => {
-					return `{${a}}`;
-				},
-			);
+			layer.route.path = layer.route.path.replaceAll(/:(\w*)($|\/)/gm, (_, a) => {
+				return `{${a}}`;
+			});
 
 			ret.push({
 				path: prefix + layer.route.path,
@@ -87,8 +83,7 @@ const getRoutes = (router: Router) => {
 				options: layer.route.stack[0].handle.ROUTE_OPTIONS,
 
 				requires_auth: !NO_AUTH_ROUTES.some((x) => {
-					if (typeof x === "string")
-						return (prefix + layer.route?.path).startsWith(x);
+					if (typeof x === "string") return (prefix + layer.route?.path).startsWith(x);
 					return x.test(prefix + layer.route?.path);
 				}),
 			});
@@ -106,15 +101,11 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 
 	const routes = getRoutes(router);
 
-	const bearerAuth = registry.registerComponent(
-		"securitySchemes",
-		"bearerAuth",
-		{
-			type: "http",
-			scheme: "bearer",
-			bearerFormat: "JWT",
-		},
-	);
+	const bearerAuth = registry.registerComponent("securitySchemes", "bearerAuth", {
+		type: "http",
+		scheme: "bearer",
+		bearerFormat: "JWT",
+	});
 
 	const innerErrorResponse = {
 		content: {
@@ -159,9 +150,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 		registry.registerPath({
 			method: route.method,
 			path: route.path,
-			security: route.requires_auth
-				? [{ [bearerAuth.name]: [] }]
-				: undefined,
+			security: route.requires_auth ? [{ [bearerAuth.name]: [] }] : undefined,
 			tags: [route.path.split("/")[1]],
 			request: {
 				params: route.options?.params,
@@ -189,38 +178,33 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 					},
 				},
 				...Object.fromEntries(
-					Object.entries(route.options?.errors ?? {}).map(
-						([code, schema]) => {
-							// christ
-							// why can't `x in errorMap` do this automatically?
-							if (
-								((x): x is keyof typeof errorMap =>
-									x in errorMap)(code)
-							) {
-								// if we have a common response for this
-								// just reference it instead
-
-								return [
-									code,
-									{
-										$ref: `#/components/responses/${errorMap[code]}`,
-									},
-								];
-							}
+					Object.entries(route.options?.errors ?? {}).map(([code, schema]) => {
+						// christ
+						// why can't `x in errorMap` do this automatically?
+						if (((x): x is keyof typeof errorMap => x in errorMap)(code)) {
+							// if we have a common response for this
+							// just reference it instead
 
 							return [
 								code,
 								{
-									description: schema?.description ?? "",
-									content: {
-										"application/json": {
-											schema: schema ?? z.object({}),
-										},
-									},
+									$ref: `#/components/responses/${errorMap[code]}`,
 								},
 							];
-						},
-					),
+						}
+
+						return [
+							code,
+							{
+								description: schema?.description ?? "",
+								content: {
+									"application/json": {
+										schema: schema ?? z.object({}),
+									},
+								},
+							},
+						];
+					}),
 				),
 			},
 		});
@@ -280,12 +264,4 @@ type Layer = {
 	route: Route;
 };
 
-type Method =
-	| "get"
-	| "post"
-	| "put"
-	| "delete"
-	| "patch"
-	| "head"
-	| "options"
-	| "trace";
+type Method = "get" | "post" | "put" | "delete" | "patch" | "head" | "options" | "trace";

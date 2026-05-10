@@ -1,15 +1,8 @@
-import {
-	type APActivity,
-	ObjectIsGroup,
-	ObjectIsNote,
-} from "activitypub-types";
+import { type APActivity, ObjectIsGroup, ObjectIsNote } from "activitypub-types";
 import { Channel } from "../../../../entity/channel";
 import { DMChannel } from "../../../../entity/DMChannel";
 import { User } from "../../../../entity/user";
-import {
-	createChannelFromRemoteGroup,
-	createDmChannel,
-} from "../../../entity/channel";
+import { createChannelFromRemoteGroup, createDmChannel } from "../../../entity/channel";
 import { handleMessage } from "../../../entity/message";
 import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
@@ -23,10 +16,7 @@ import type { ActivityHandler } from ".";
  * External users Create<Note> at a channel
  * the channel Announces that note and sends to channel members
  */
-export const CreateActivityHandler: ActivityHandler = async (
-	activity,
-	target,
-) => {
+export const CreateActivityHandler: ActivityHandler = async (activity, target) => {
 	if (target instanceof Channel) {
 		return await CreateAtChannel(activity, target);
 	}
@@ -38,14 +28,10 @@ export const CreateActivityHandler: ActivityHandler = async (
 
 const CreateAtUser = async (activity: APActivity, target: User) => {
 	if (!activity.object)
-		throw new APError(
-			"Create activity does not contain `object`. What are we creating?",
-		);
+		throw new APError("Create activity does not contain `object`. What are we creating?");
 
 	if (Array.isArray(activity.object))
-		throw new APError(
-			"Cannot accept Create activity with multiple `object`s",
-		);
+		throw new APError("Cannot accept Create activity with multiple `object`s");
 
 	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
@@ -93,11 +79,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 
 		if (!channel) {
 			// make it since it doesn't exist
-			channel = await createDmChannel(
-				`${sender.name} and ${target.name}`,
-				sender,
-				[target],
-			);
+			channel = await createDmChannel(`${sender.name} and ${target.name}`, sender, [target]);
 
 			await channel.save();
 
@@ -115,19 +97,14 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 
 const CreateAtChannel = async (activity: APActivity, target: Channel) => {
 	if (!activity.object)
-		throw new APError(
-			"Create activity does not contain `object`. What are we creating?",
-		);
+		throw new APError("Create activity does not contain `object`. What are we creating?");
 
 	if (Array.isArray(activity.object))
-		throw new APError(
-			"Cannot accept Create activity with multiple `object`s",
-		);
+		throw new APError("Cannot accept Create activity with multiple `object`s");
 
 	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
-	if (!ObjectIsNote(inner))
-		throw new APError(`Cannot accept Create<${inner.type}>`);
+	if (!ObjectIsNote(inner)) throw new APError(`Cannot accept Create<${inner.type}>`);
 
 	const message = await buildMessageFromAPNote(inner, target);
 

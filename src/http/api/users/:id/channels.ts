@@ -47,27 +47,18 @@ router.post(
 			const owner = req.user;
 			const recipient = await getOrFetchUser(user_id);
 
-			const channel = await createDmChannel(
-				req.body.name,
-				owner,
-				[recipient],
-				async () => {
-					await sendActivity(
-						channel.recipients,
-						addContext({
-							type: "Create",
-							id: makeInstanceUrl(
-								`${getExternalPathFromActor(channel)}/create`,
-							),
-							actor: makeInstanceUrl(
-								getExternalPathFromActor(channel.owner),
-							),
-							object: buildAPActor(channel),
-						}) as APCreate,
-						channel.owner,
-					);
-				},
-			);
+			const channel = await createDmChannel(req.body.name, owner, [recipient], async () => {
+				await sendActivity(
+					channel.recipients,
+					addContext({
+						type: "Create",
+						id: makeInstanceUrl(`${getExternalPathFromActor(channel)}/create`),
+						actor: makeInstanceUrl(getExternalPathFromActor(channel.owner)),
+						object: buildAPActor(channel),
+					}) as APCreate,
+					channel.owner,
+				);
+			});
 
 			// TODO: federate channel creation
 			// Probably create it locally and then send a Follow to recipient

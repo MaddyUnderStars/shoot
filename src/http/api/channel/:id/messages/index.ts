@@ -21,10 +21,7 @@ const MessageCreate = z
 		nonce: z.uuid(),
 	})
 	.partial()
-	.refine(
-		(obj) => obj.files?.length || obj.content?.length,
-		"Message must not be empty",
-	)
+	.refine((obj) => obj.files?.length || obj.content?.length, "Message must not be empty")
 	.openapi("MessageCreateRequest");
 
 const router = Router({ mergeParams: true });
@@ -48,8 +45,7 @@ router.post(
 				PERMISSION.SEND_MESSAGES,
 			]);
 
-			if (req.body.files?.length)
-				await channel.throwPermission(req.user, PERMISSION.UPLOAD);
+			if (req.body.files?.length) await channel.throwPermission(req.user, PERMISSION.UPLOAD);
 
 			// check if this message was already received (via nonce)
 			const existing = req.body.nonce
@@ -132,12 +128,9 @@ router.get(
 				});
 
 			if (req.query.query)
-				query.andWhere(
-					"to_tsvector(messages.content) @@ to_tsquery(:query)",
-					{
-						query: req.query.query,
-					},
-				);
+				query.andWhere("to_tsvector(messages.content) @@ to_tsquery(:query)", {
+					query: req.query.query,
+				});
 
 			if (req.query.after)
 				query.andWhere("messages.id > :after", {

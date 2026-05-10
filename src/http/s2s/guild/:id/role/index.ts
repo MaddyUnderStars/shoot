@@ -14,23 +14,20 @@ const router = Router({ mergeParams: true });
 
 router.get(
 	"/:role_id",
-	route(
-		{ params: z.object({ guild_id: z.string(), role_id: z.string() }) },
-		async (req, res) => {
-			// if (req.actor instanceof User)
-			// 	await isMemberOfGuildThrow(req.params.guild_id, req.actor);
-			// else throw new APError("Missing permission", 400);
-			const role = await Role.findOneOrFail({
-				where: {
-					guild: { id: req.params.guild_id },
-					id: req.params.role_id,
-				},
-				relations: { guild: true },
-			});
+	route({ params: z.object({ guild_id: z.string(), role_id: z.string() }) }, async (req, res) => {
+		// if (req.actor instanceof User)
+		// 	await isMemberOfGuildThrow(req.params.guild_id, req.actor);
+		// else throw new APError("Missing permission", 400);
+		const role = await Role.findOneOrFail({
+			where: {
+				guild: { id: req.params.guild_id },
+				id: req.params.role_id,
+			},
+			relations: { guild: true },
+		});
 
-			return res.json(addContext(buildAPRole(role)));
-		},
-	),
+		return res.json(addContext(buildAPRole(role)));
+	}),
 );
 
 router.get(
@@ -49,25 +46,17 @@ router.get(
 		async (req, res) =>
 			res.json(
 				await orderedCollectionHandler({
-					id: makeInstanceUrl(
-						`/guild/${req.params.guild_id}/role/${req.params.role_id}`,
-					),
+					id: makeInstanceUrl(`/guild/${req.params.guild_id}/role/${req.params.role_id}`),
 					before: req.query.before,
 					after: req.query.after,
-					convert: (x) =>
-						x.user.remote_address ?? buildAPActor(x.user),
+					convert: (x) => x.user.remote_address ?? buildAPActor(x.user),
 					entity: Member,
 					qb: getDatabase()
 						.getRepository(Member)
 						.createQueryBuilder("member")
-						.leftJoin(
-							"member.roles",
-							"role",
-							"role.id = :role_id",
-							{
-								role_id: req.params.role_id,
-							},
-						)
+						.leftJoin("member.roles", "role", "role.id = :role_id", {
+							role_id: req.params.role_id,
+						})
 						.leftJoinAndSelect("member.user", "user"),
 				}),
 			),

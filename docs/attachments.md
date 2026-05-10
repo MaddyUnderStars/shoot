@@ -21,7 +21,7 @@ Shoot supports attaching files to messages. The basic flow is described below:
 		"width": <width in pixels>,
 		"height": <height in pixels>
 	},
-	
+
 	// ... additional attachments.
 ]
 ```
@@ -46,10 +46,10 @@ Finally, you may send your message. When doing so, include the file `hash` retur
 	"files": [
 		{
 			"hash": "<the hash from /attachments>",
-			"name": "<user provided file name>"
+			"name": "<user provided file name>",
 		},
 		// ... additional attachments
-	]
+	],
 }
 ```
 
@@ -76,6 +76,7 @@ It is likely that performance will degrade while Shoot is managing an upload req
 Shoot has been tested and verified to work with [MinIO](https://min.io/).
 
 Other S3-compatible storage services may also work if they support the following:
+
 - Signature v4
 - Presigned URLs
 - `PutObject`

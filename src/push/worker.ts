@@ -35,10 +35,7 @@ export type PushNotificationJobData = {
 const jobHandler = async (job: Job<PushNotificationJobData>) => {
 	console.log(`${new Date()} ${job.data.user}`);
 
-	if (
-		splitQualifiedMention(job.data.user).domain !==
-		config().federation.webapp_url.hostname
-	)
+	if (splitQualifiedMention(job.data.user).domain !== config().federation.webapp_url.hostname)
 		return;
 
 	const user = await getOrFetchUser(job.data.user);

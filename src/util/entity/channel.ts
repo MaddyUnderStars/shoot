@@ -123,9 +123,7 @@ export const getChannel = async (lookup: ActorMention | URL) => {
 		.getOne();
 };
 
-export const getOrFetchChannel = async (
-	lookup: URL | ActorMention | APGroup,
-) => {
+export const getOrFetchChannel = async (lookup: URL | ActorMention | APGroup) => {
 	const id = resolveId(lookup);
 
 	let channel = await getChannel(id);
@@ -154,9 +152,7 @@ export const channelInGuild = async (channel_id: string, guild_id: string) => {
 	);
 };
 
-export const createChannelFromRemoteGroup = async (
-	lookup: ActorMention | URL | APActor,
-) => {
+export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | APActor) => {
 	const mention = splitQualifiedMention(resolveId(lookup));
 
 	const obj =
@@ -169,14 +165,10 @@ export const createChannelFromRemoteGroup = async (
 	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
 
 	if (!obj.publicKey?.publicKeyPem)
-		throw new APError(
-			"Resolved object is Group but does not contain public key",
-		);
+		throw new APError("Resolved object is Group but does not contain public key");
 
 	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
-		throw new APError(
-			"Resolved group doesn't have attributedTo, we don't know what owns it",
-		);
+		throw new APError("Resolved group doesn't have attributedTo, we don't know what owns it");
 
 	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
@@ -205,8 +197,7 @@ export const createChannelFromRemoteGroup = async (
 	});
 
 	if (owner instanceof User) {
-		if (!obj.followers)
-			throw new APError("DMChannel must have followers collection");
+		if (!obj.followers) throw new APError("DMChannel must have followers collection");
 
 		// note for next time u open:
 		// messages federate properly,
@@ -221,11 +212,7 @@ export const createChannelFromRemoteGroup = async (
 
 			// TODO: fetch recipients over time
 			recipients: await Promise.all([
-				...(
-					await resolveCollectionEntries(
-						new URL(obj.followers.toString()),
-					)
-				).reduce(
+				...(await resolveCollectionEntries(new URL(obj.followers.toString()))).reduce(
 					(prev, curr) => {
 						const id = typeof curr === "string" ? curr : curr.id;
 						if (id !== obj.attributedTo) {
@@ -267,10 +254,7 @@ const resolveChannelOwner = async (lookup: string) => {
 
 	// otherwise, do a remote lookup
 
-	const obj =
-		id instanceof URL
-			? await resolveAPObject(id)
-			: await resolveWebfinger(id);
+	const obj = id instanceof URL ? await resolveAPObject(id) : await resolveWebfinger(id);
 
 	if (ObjectIsPerson(obj)) return await createUserForRemotePerson(obj);
 

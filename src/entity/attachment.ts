@@ -53,9 +53,7 @@ export class Attachment extends BaseModel {
 				LocalUpload.delete({
 					hash: this.hash,
 					channel: { id: this.message.channel.id },
-				}).catch((_) =>
-					Log.error("Failed to delete LocalUpload for attachment"),
-				);
+				}).catch((_) => Log.error("Failed to delete LocalUpload for attachment"));
 			});
 	}
 }

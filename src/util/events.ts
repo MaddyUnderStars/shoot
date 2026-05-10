@@ -79,10 +79,7 @@ export const closeRabbitMQ = async () => {
 	await client?.close();
 };
 
-export const emitGatewayEvent = (
-	targets: BaseModel | BaseModel[],
-	payload: GATEWAY_EVENT,
-) => {
+export const emitGatewayEvent = (targets: BaseModel | BaseModel[], payload: GATEWAY_EVENT) => {
 	if (!Array.isArray(targets)) targets = [targets];
 
 	const targetIds = targets.map(makeGatewayTarget);
@@ -112,9 +109,7 @@ export const makeGatewayTarget = (target: BaseModel) => {
 		constr = Channel;
 	}
 
-	const name = getMetadataArgsStorage().tables.find(
-		(x) => x.target === constr,
-	)?.name;
+	const name = getMetadataArgsStorage().tables.find((x) => x.target === constr)?.name;
 
 	if (!name) {
 		throw new Error("Failed to find database table for that target");

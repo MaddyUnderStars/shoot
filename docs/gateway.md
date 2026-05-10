@@ -8,6 +8,7 @@ This document covers how to login and maintain a connection, and how to use some
 ## Gateway Events
 
 Gateway request payloads have the following structure:
+
 ```jsonc
 {
 	"t": "event_name",
@@ -18,6 +19,7 @@ Gateway request payloads have the following structure:
 You can find all [gateway request payloads here](https://github.com/MaddyUnderStars/shoot/blob/main/src/gateway/util/validation/receive.ts)
 
 Gateway response payloads have the following structure:
+
 ```jsonc
 {
 	"t": "EVENT_NAME",
@@ -50,7 +52,7 @@ If you do not, the connection will be terminated.
 ```jsonc
 {
 	"t": "identify",
-	"token": "your user token, obtained via /auth/login"
+	"token": "your user token, obtained via /auth/login",
 }
 ```
 
@@ -78,6 +80,7 @@ The heartbeat will continue for the entire duration of the websocket connection.
 The `READY` event is the largest event you will receive, which happens immediately after identifying. It contains all the information necessary to sync initially.
 
 It contains:
+
 - Your private user details
 - Your session information
 - All your channels
@@ -94,6 +97,7 @@ When you subscribe to a range, you will receive all the events for the users wit
 You may only be subscribed to one range in a channel at a time. Subscribing to a new range unsubscribes you from all other ranges.
 
 Subscribing to a range:
+
 ```jsonc
 {
 	"t": "members",
@@ -105,6 +109,7 @@ Subscribing to a range:
 The `range` prop is two integers such as `0, 100` which corresponds to the range of users between position 0 of the list and position 100.
 
 You will immediately receive a `MEMBERS_CHUNK` event:
+
 ```jsonc
 {
 	"t": "MEMBERS_CHUNK",
@@ -112,10 +117,10 @@ You will immediately receive a `MEMBERS_CHUNK` event:
 		"<role id>",
 		{
 			"member_id": "<member uuid>",
-			"name": "<member display name>"
+			"name": "<member display name>",
 		},
 		// ... other members within range
-	]
+	],
 }
 ```
 

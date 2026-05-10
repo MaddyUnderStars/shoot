@@ -10,11 +10,9 @@ export class InstanceBlockedError extends Error {
  */
 export const throwInstanceBlock = (instance: URL) => {
 	if (
-		config().federation.instances[instance.hostname] ===
-			InstanceBehaviour.BLOCK ||
+		config().federation.instances[instance.hostname] === InstanceBehaviour.BLOCK ||
 		(config().federation.allowlist &&
-			config().federation.instances[instance.hostname] ===
-				InstanceBehaviour.ALLOW)
+			config().federation.instances[instance.hostname] === InstanceBehaviour.ALLOW)
 	)
 		// this is caught by our error handler and times the connection out
 		throw new InstanceBlockedError();
@@ -22,10 +20,7 @@ export const throwInstanceBlock = (instance: URL) => {
 
 /** Return whether or not this instance is limited */
 export const instanceIsLimited = (instance: URL) => {
-	return (
-		config().federation.instances[instance.hostname] ===
-		InstanceBehaviour.LIMIT
-	);
+	return config().federation.instances[instance.hostname] === InstanceBehaviour.LIMIT;
 };
 
 // TODO: when an instance is blocked, should content that includes the blocked content be allowed?

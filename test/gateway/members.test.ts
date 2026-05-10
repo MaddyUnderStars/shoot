@@ -5,10 +5,7 @@ import { createTestGuild } from "../testUtils/guilds";
 import { createTestUser } from "../testUtils/users";
 
 test("Can request guild members", async ({ api, expect }) => {
-	const [user, user2] = await Promise.all([
-		createTestUser(api),
-		createTestUser(api),
-	]);
+	const [user, user2] = await Promise.all([createTestUser(api), createTestUser(api)]);
 
 	const guild = await createTestGuild(user);
 

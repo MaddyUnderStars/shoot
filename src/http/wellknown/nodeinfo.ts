@@ -49,8 +49,7 @@ router.get(
 			response: DiscoverResponse,
 		},
 		async (req, res) => {
-			if (!config().federation.enabled)
-				throw new HttpError("Federation is disabled", 400);
+			if (!config().federation.enabled) throw new HttpError("Federation is disabled", 400);
 
 			const host = config().federation.instance_url.origin;
 

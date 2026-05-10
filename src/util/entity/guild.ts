@@ -79,10 +79,7 @@ export const getGuilds = (user_id: string) =>
 		})
 		.getMany();
 
-export const joinGuild = async (
-	user_id: ActorMention,
-	guild_id: ActorMention,
-) => {
+export const joinGuild = async (user_id: ActorMention, guild_id: ActorMention) => {
 	const user = await getOrFetchUser(user_id);
 
 	if (await isMemberOfGuild(guild_id, user)) {
@@ -115,9 +112,7 @@ export const joinGuild = async (
 	return member;
 };
 
-export const getOrFetchGuild = async (
-	lookup: URL | ActorMention | APOrganization,
-) => {
+export const getOrFetchGuild = async (lookup: URL | ActorMention | APOrganization) => {
 	const id = resolveId(lookup);
 
 	const mention = splitQualifiedMention(id);
@@ -202,9 +197,7 @@ export const createGuild = async (name: string, owner: User) => {
 	return guild;
 };
 
-export const createGuildFromRemoteOrg = async (
-	lookup: ActorMention | URL | APActor,
-) => {
+export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APActor) => {
 	const mention = splitQualifiedMention(resolveId(lookup));
 
 	const obj =
@@ -214,18 +207,13 @@ export const createGuildFromRemoteOrg = async (
 				? await resolveAPObject(lookup)
 				: lookup;
 
-	if (!ObjectIsOrganization(obj))
-		throw new APError("Resolved object is not Organization");
+	if (!ObjectIsOrganization(obj)) throw new APError("Resolved object is not Organization");
 
 	if (!obj.publicKey?.publicKeyPem)
-		throw new APError(
-			"Resolved object is Org but does not contain public key",
-		);
+		throw new APError("Resolved object is Org but does not contain public key");
 
 	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
-		throw new APError(
-			"Resolved org doesn't have attributedTo, we don't know what owns it",
-		);
+		throw new APError("Resolved org doesn't have attributedTo, we don't know what owns it");
 
 	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
@@ -264,9 +252,7 @@ export const createGuildFromRemoteOrg = async (
 	await guild.save();
 
 	const channels = await Promise.all([
-		...(
-			await resolveCollectionEntries(new URL(obj.following.toString()))
-		).reduce(
+		...(await resolveCollectionEntries(new URL(obj.following.toString()))).reduce(
 			(prev, curr) => {
 				if (typeof curr === "string") {
 					const url = tryParseUrl(curr);
@@ -285,9 +271,7 @@ export const createGuildFromRemoteOrg = async (
 	await Channel.save(channels);
 
 	const roles = await Promise.all([
-		...(
-			await resolveCollectionEntries(new URL(obj.followers.toString()))
-		).reduce(
+		...(await resolveCollectionEntries(new URL(obj.followers.toString()))).reduce(
 			(prev, curr) => {
 				if (typeof curr === "string" || ObjectIsRole(curr)) {
 					prev.push(createRoleFromRemote(curr));

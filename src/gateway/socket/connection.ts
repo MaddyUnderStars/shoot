@@ -8,11 +8,7 @@ import { onMessage } from "./message";
 
 const Log = createLogger("GATEWAY");
 
-export function onConnection(
-	this: ws.Server,
-	socket: Websocket,
-	request: IncomingMessage,
-) {
+export function onConnection(this: ws.Server, socket: Websocket, request: IncomingMessage) {
 	socket.events = {};
 	socket.member_list = {
 		channel_id: undefined,
@@ -27,10 +23,7 @@ export function onConnection(
 	socket.send = send.bind(socket);
 
 	// TODO: trust proxy
-	const ip =
-		request.headers["x-forwarded-for"] ||
-		request.socket.remoteAddress ||
-		"unknown";
+	const ip = request.headers["x-forwarded-for"] || request.socket.remoteAddress || "unknown";
 	socket.ip_address = Array.isArray(ip) ? ip[0] : ip;
 
 	Log.verbose(`New client from '${socket.ip_address}'`);
@@ -47,8 +40,5 @@ export function onConnection(
 	});
 
 	// Trigger auth timeout after 10 seconds
-	socket.auth_timeout = setTimeout(
-		() => socket.close(CLOSE_CODES.IDENTIFY_TIMEOUT),
-		10_000,
-	);
+	socket.auth_timeout = setTimeout(() => socket.close(CLOSE_CODES.IDENTIFY_TIMEOUT), 10_000);
 }

@@ -59,8 +59,7 @@ router.patch(
 				const roleIds = new Set(req.body.roles);
 
 				// cannot edit roles without this permission
-				if (!hasManageMembers)
-					throw new HttpError("Missing permission", 400);
+				if (!hasManageMembers) throw new HttpError("Missing permission", 400);
 
 				if (
 					(await Role.count({
@@ -70,10 +69,7 @@ router.patch(
 						},
 					})) !== roleIds.size
 				)
-					throw new HttpError(
-						"One of the specified roles could not be found",
-						404,
-					);
+					throw new HttpError("One of the specified roles could not be found", 404);
 
 				const existing = new Set(member.roles.map((x) => x.id));
 				additions = existing.difference(roleIds);

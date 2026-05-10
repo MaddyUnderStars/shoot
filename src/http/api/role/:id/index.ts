@@ -78,8 +78,7 @@ router.delete(
 
 		await role.guild.throwPermission(req.user, PERMISSION.MANAGE_GUILD);
 
-		if (role.id === role.guild.id)
-			throw new HttpError("Cannot remove default role", 400);
+		if (role.id === role.guild.id) throw new HttpError("Cannot remove default role", 400);
 
 		await Role.delete({ id: role.id });
 

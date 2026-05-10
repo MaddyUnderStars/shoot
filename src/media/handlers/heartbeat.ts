@@ -24,8 +24,5 @@ export const heartbeatTimeout = (socket: MediaSocket) => {
 };
 
 export const startHeartbeatTimeout = (socket: MediaSocket) => {
-	socket.heartbeat_timeout = setTimeout(
-		() => heartbeatTimeout(socket),
-		10_000,
-	);
+	socket.heartbeat_timeout = setTimeout(() => heartbeatTimeout(socket), 10_000);
 };

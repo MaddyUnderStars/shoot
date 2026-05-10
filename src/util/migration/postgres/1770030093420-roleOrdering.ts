@@ -13,8 +13,7 @@ export class roleOrdering1770030093420 implements MigrationInterface {
 
 		const positionIdx = roles.findColumnIndices(position);
 
-		if (!positionIdx.length)
-			throw new Error("failed to find (position, guildId) index?");
+		if (!positionIdx.length) throw new Error("failed to find (position, guildId) index?");
 
 		await queryRunner.dropIndex(roles, positionIdx[0]);
 
@@ -24,9 +23,7 @@ export class roleOrdering1770030093420 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(
-			"alter table roles drop constraint role_ordering;",
-		);
+		await queryRunner.query("alter table roles drop constraint role_ordering;");
 		await queryRunner.query(
 			`CREATE UNIQUE INDEX "role_position" ON "roles" ("position", "guildId");`,
 		);

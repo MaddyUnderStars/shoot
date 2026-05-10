@@ -3,10 +3,12 @@
 When you scale up your deployment, it may be useful to horizontally scale Shoot's services.
 
 Below is a sample Nginx configuration to achieve:
+
 - Load balanced API/S2S on `api.example.com`
 - Load balanced Gateway on `gateway.example.com`
 
 Requirements:
+
 - [RabbitMQ](https://www.rabbitmq.com/)
 - Running Shoot as individual services (npm `start:http`, `start:gateway` etc)
 
@@ -38,7 +40,7 @@ server {
 		proxy_pass http://api;
 
 		proxy_no_cache 1;
-		
+
 		proxy_set_header Host $host;
 		proxy_set_header X-Forwarded-For $remote_addr;
 	}

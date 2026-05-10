@@ -19,9 +19,7 @@ export const rateLimiter = (
 		standardHeaders: "draft-7",
 		message: () => ({ code: 429, message: "Too many requests" }),
 		keyGenerator: (req) => {
-			return req.user
-				? `${type}-${req.user.id}-${req.ip}`
-				: `${type}-${req.ip}`;
+			return req.user ? `${type}-${req.user.id}-${req.ip}` : `${type}-${req.ip}`;
 		},
 	});
 };

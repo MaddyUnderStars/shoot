@@ -29,10 +29,7 @@ export const addUser = async (username: string, email?: string) => {
 	try {
 		await registerUser(username, password, email, true);
 	} catch (e) {
-		Log.error(
-			`Could not register user ${handle},`,
-			e instanceof Error ? e.message : e,
-		);
+		Log.error(`Could not register user ${handle},`, e instanceof Error ? e.message : e);
 		return;
 	}
 

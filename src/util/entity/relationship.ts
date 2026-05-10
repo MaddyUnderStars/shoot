@@ -46,9 +46,7 @@ export const createRelationship = async (
 		from,
 		to,
 		// If this is a block, the to_state is ignored
-		from_state: block
-			? RelationshipType.blocked
-			: RelationshipType.accepted,
+		from_state: block ? RelationshipType.blocked : RelationshipType.accepted,
 		to_state: RelationshipType.pending,
 		reference_object,
 	});
@@ -105,14 +103,10 @@ export const acceptRelationship = async (from: User, to: User) => {
 		},
 	});
 
-	if (!rel || rel.isBlock())
-		throw new EntityNotFoundError(Relationship, null);
+	if (!rel || rel.isBlock()) throw new EntityNotFoundError(Relationship, null);
 
 	rel.to_state = RelationshipType.accepted;
-	await Relationship.update(
-		{ id: rel.id },
-		{ to_state: RelationshipType.accepted },
-	);
+	await Relationship.update({ id: rel.id }, { to_state: RelationshipType.accepted });
 
 	// have to emit two events here as they contain different info
 	emitGatewayEvent(to, {

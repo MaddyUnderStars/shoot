@@ -36,9 +36,7 @@ export const findDomTag = (root: Document, tagName: string, key?: string) =>
 	findAll(
 		(elem) =>
 			elem.tagName === tagName &&
-			(key
-				? elem.attribs.property === key || elem.attribs.name === key
-				: true),
+			(key ? elem.attribs.property === key || elem.attribs.name === key : true),
 		root,
 	).map((x) => x.attribs.content ?? innerText(x))?.[0] ?? null;
 
@@ -108,11 +106,7 @@ const signMediaProxyUrl = (url: URL) => {
 	return url;
 };
 
-export const getImageProxyUrl = (
-	url: URL,
-	width: number,
-	height: number,
-): URL => {
+export const getImageProxyUrl = (url: URL, width: number, height: number): URL => {
 	if (!config().media_proxy.enabled) return url;
 
 	const path = `fit-in/${width}x${height}/${url.host}/${url.pathname}`;

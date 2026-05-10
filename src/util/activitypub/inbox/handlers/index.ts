@@ -8,10 +8,7 @@ import { JoinActivityHandler } from "./join";
 import { LikeActivityHandler } from "./like";
 import { UndoActivityHandler } from "./undo";
 
-export type ActivityHandler = (
-	activity: APActivity,
-	target: Actor,
-) => Promise<unknown>;
+export type ActivityHandler = (activity: APActivity, target: Actor) => Promise<unknown>;
 
 export const ActivityHandlers: { [key: Lowercase<string>]: ActivityHandler } = {
 	create: CreateActivityHandler,

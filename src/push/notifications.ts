@@ -3,10 +3,7 @@ import { DMChannel } from "../entity/DMChannel";
 import type { Message } from "../entity/message";
 import { GuildTextChannel } from "../entity/textChannel";
 import { User } from "../entity/user";
-import {
-	type ActorMention,
-	ActorMentionRegex,
-} from "../util/activitypub/constants";
+import { type ActorMention, ActorMentionRegex } from "../util/activitypub/constants";
 import { splitQualifiedMention } from "../util/activitypub/util";
 import { config } from "../util/config";
 import { PERMISSION } from "../util/permission";
@@ -18,17 +15,12 @@ export const sendNotifications = async (message: Message) => {
 	if (message.channel instanceof DMChannel) {
 		// we should notify all the recipients in this chat
 
-		const recipients = message.channel.recipients.filter(
-			(x) => x.id !== message.author.id,
-		);
+		const recipients = message.channel.recipients.filter((x) => x.id !== message.author.id);
 
 		for (const recipient of recipients) {
 			if (promises.has(recipient.mention)) continue;
 
-			promises.set(
-				recipient.mention,
-				queueNotif(recipient.mention, message),
-			);
+			promises.set(recipient.mention, queueNotif(recipient.mention, message));
 		}
 	}
 
@@ -57,9 +49,7 @@ export const sendNotifications = async (message: Message) => {
 		if (!user) continue;
 
 		// if the user can't see this channel, prevent pinging them
-		if (
-			await message.channel.checkPermission(user, PERMISSION.VIEW_CHANNEL)
-		)
+		if (await message.channel.checkPermission(user, PERMISSION.VIEW_CHANNEL))
 			promises.set(m, queueNotif(m, message));
 	}
 

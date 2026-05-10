@@ -17,26 +17,23 @@ const router = Router({ mergeParams: true });
 
 router.get(
 	"/",
-	route(
-		{ params: z.object({ channel_id: z.string() }) },
-		async (req, res) => {
-			const { channel_id } = req.params;
+	route({ params: z.object({ channel_id: z.string() }) }, async (req, res) => {
+		const { channel_id } = req.params;
 
-			const channel = await getDatabase()
-				.createQueryBuilder(Channel, "channels")
-				.select("channels")
-				.leftJoinAndSelect("channels.recipients", "recipients")
-				.leftJoinAndSelect("channels.owner", "owner")
-				.leftJoinAndSelect("channels.guild", "guild")
-				.where("channels.id = :id", { id: channel_id })
-				.andWhere("channels.domain = :domain", {
-					domain: config().federation.webapp_url.hostname,
-				})
-				.getOneOrFail();
+		const channel = await getDatabase()
+			.createQueryBuilder(Channel, "channels")
+			.select("channels")
+			.leftJoinAndSelect("channels.recipients", "recipients")
+			.leftJoinAndSelect("channels.owner", "owner")
+			.leftJoinAndSelect("channels.guild", "guild")
+			.where("channels.id = :id", { id: channel_id })
+			.andWhere("channels.domain = :domain", {
+				domain: config().federation.webapp_url.hostname,
+			})
+			.getOneOrFail();
 
-			return res.json(addContext(buildAPActor(channel)));
-		},
-	),
+		return res.json(addContext(buildAPActor(channel)));
+	}),
 );
 
 router.post(
@@ -85,8 +82,7 @@ router.get(
 				keys: ["published"],
 				before: req.query.before,
 				after: req.query.after,
-				convert: (x) =>
-					x.reference_object ? x.reference_object.id : buildAPNote(x),
+				convert: (x) => (x.reference_object ? x.reference_object.id : buildAPNote(x)),
 				entity: Message,
 				qb: getDatabase()
 					.getRepository(Message)
@@ -113,9 +109,7 @@ router.get(
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: makeInstanceUrl(
-					`/channel/${req.params.channel_id}/followers`,
-				),
+				id: makeInstanceUrl(`/channel/${req.params.channel_id}/followers`),
 				before: req.query.before,
 				after: req.query.after,
 				convert: (x) => x.remote_address ?? buildAPActor(x),

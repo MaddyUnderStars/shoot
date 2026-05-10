@@ -1,11 +1,5 @@
 import type { AnyAPObject, APActivity } from "activitypub-types";
-import {
-	BaseEntity,
-	Column,
-	CreateDateColumn,
-	Entity,
-	PrimaryColumn,
-} from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("activitypub_objects")
 export class ApCache extends BaseEntity {

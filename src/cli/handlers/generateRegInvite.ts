@@ -2,11 +2,7 @@ import { createLogger } from "../../util/log";
 
 const Log = createLogger("cli");
 
-export const generateRegInvite = async (
-	code?: string,
-	maxUses?: string,
-	expiry?: string,
-) => {
+export const generateRegInvite = async (code?: string, maxUses?: string, expiry?: string) => {
 	const { initDatabase, closeDatabase } = await import("../../util/database");
 
 	await initDatabase();
@@ -16,16 +12,14 @@ export const generateRegInvite = async (
 
 	if (!code || code === "-1") {
 		code = await generateInviteCode(
-			async (x) =>
-				(await InstanceInvite.count({ where: { code: x } })) !== 0,
+			async (x) => (await InstanceInvite.count({ where: { code: x } })) !== 0,
 		);
 	}
 
 	await InstanceInvite.create({
 		code,
 		expires: !expiry || expiry === "-1" ? null : new Date(expiry),
-		maxUses:
-			!maxUses || maxUses === "-1" ? null : Number.parseInt(maxUses, 10),
+		maxUses: !maxUses || maxUses === "-1" ? null : Number.parseInt(maxUses, 10),
 	}).save();
 
 	Log.msg(`Saved invite with code ${code}`);

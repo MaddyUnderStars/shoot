@@ -20,9 +20,7 @@ const getAPTypeFromActor = (actor: Actor) => {
 
 export const buildAPActor = (actor: Actor): APActor => {
 	if (actor.remote_address)
-		throw new APError(
-			"Tried to create an AP object for a remote resource.",
-		);
+		throw new APError("Tried to create an AP object for a remote resource.");
 
 	const isInstanceActor = actor.id === InstanceActor.id;
 
@@ -49,13 +47,9 @@ export const buildAPActor = (actor: Actor): APActor => {
 			? `${actor.name}@${config().federation.webapp_url.hostname}`
 			: undefined;
 
-	const inbox = isInstanceActor
-		? makeInstanceUrl("/inbox")
-		: makeInstanceUrl(`${id}/inbox`);
+	const inbox = isInstanceActor ? makeInstanceUrl("/inbox") : makeInstanceUrl(`${id}/inbox`);
 
-	const outbox = isInstanceActor
-		? makeInstanceUrl("/outbox")
-		: makeInstanceUrl(`${id}/outbox`);
+	const outbox = isInstanceActor ? makeInstanceUrl("/outbox") : makeInstanceUrl(`${id}/outbox`);
 
 	return {
 		preferredUsername,
@@ -80,12 +74,8 @@ export const buildAPActor = (actor: Actor): APActor => {
 		inbox,
 		outbox,
 
-		followers: isInstanceActor
-			? undefined
-			: makeInstanceUrl(`${id}/followers`),
-		following: isInstanceActor
-			? undefined
-			: makeInstanceUrl(`${id}/following`),
+		followers: isInstanceActor ? undefined : makeInstanceUrl(`${id}/followers`),
+		following: isInstanceActor ? undefined : makeInstanceUrl(`${id}/following`),
 
 		endpoints: {
 			sharedInbox: makeInstanceUrl("/inbox"),

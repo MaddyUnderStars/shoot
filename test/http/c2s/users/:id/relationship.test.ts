@@ -10,10 +10,7 @@ describe.sequential("Relationships", () => {
 	let createRes: Response;
 
 	test("Can request relationship", async ({ api }) => {
-		[user1, user2] = await Promise.all([
-			createTestUser(api),
-			createTestUser(api),
-		]);
+		[user1, user2] = await Promise.all([createTestUser(api), createTestUser(api)]);
 
 		createRes = await request(api.app)
 			.post(`/users/${user2.user.mention}/relationship`)

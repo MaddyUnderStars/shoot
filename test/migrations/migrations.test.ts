@@ -3,9 +3,7 @@ import { test } from "../fixture";
 
 describe("Migrations", () => {
 	test.sequential("Can rollback migrations from initial sync", async () => {
-		const { getDatabase, initDatabase } = await import(
-			"../../src/util/database"
-		);
+		const { getDatabase, initDatabase } = await import("../../src/util/database");
 
 		await initDatabase();
 

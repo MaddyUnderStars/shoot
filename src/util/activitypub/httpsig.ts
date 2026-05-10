@@ -30,9 +30,7 @@ const getSignString = <T extends IncomingHttpHeaders>(
 		"(request-target)": requestTarget,
 	};
 
-	return names
-		.map((header) => `${header.toLowerCase()}: ${headers[header]}`)
-		.join("\n");
+	return names.map((header) => `${header.toLowerCase()}: ${headers[header]}`).join("\n");
 };
 
 // TODO: Support hs2019 algo
@@ -71,8 +69,7 @@ export const validateHttpSignature = async (
 
 	const { signature, headers, keyId, algorithm } = sigOpts;
 
-	if (!signature || !headers || !keyId)
-		throw new APError("Invalid signature");
+	if (!signature || !headers || !keyId) throw new APError("Invalid signature");
 
 	const ALLOWED_ALGOS = ["rsa-sha256", "hs2019"];
 
@@ -89,13 +86,8 @@ export const validateHttpSignature = async (
 	// check the inner object as well
 	if (activity && "object" in activity) {
 		let tryUrl: URL | null = null;
-		if (typeof activity.object === "string")
-			tryUrl = tryParseUrl(activity.object);
-		else if (
-			activity.object &&
-			"id" in activity.object &&
-			activity.object.id
-		)
+		if (typeof activity.object === "string") tryUrl = tryParseUrl(activity.object);
+		else if (activity.object && "id" in activity.object && activity.object.id)
 			tryUrl = tryParseUrl(activity.object.id);
 
 		if (tryUrl) throwInstanceBlock(tryUrl);
@@ -118,9 +110,7 @@ export const validateHttpSignature = async (
 			throw new APError("Request was signed by a non-actor object?");
 
 		if (!remoteActor.publicKey?.publicKeyPem)
-			throw new APError(
-				"Public key of signing actor was not returned when requested",
-			);
+			throw new APError("Public key of signing actor was not returned when requested");
 
 		switch (remoteActor.type) {
 			case "Group":
@@ -145,9 +135,7 @@ export const validateHttpSignature = async (
 		let author = activity.actor ?? activity.attributedTo;
 		author = Array.isArray(author) ? author[0] : author;
 		if (typeof author !== "string")
-			throw new APError(
-				"Could not verify author was the one who signed this activity",
-			);
+			throw new APError("Could not verify author was the one who signed this activity");
 		if (actor.remote_address !== author)
 			throw new APError(
 				`Author of activity ${activity.id} did not match signing author ${actor.remote_address}`,
@@ -162,23 +150,17 @@ export const validateHttpSignature = async (
 
 	if (rawActivity || requestHeaders.digest) {
 		if (!rawActivity || !requestHeaders.digest)
-			throw new APError(
-				"If message provided, digest must be too and vice versa",
-			);
+			throw new APError("If message provided, digest must be too and vice versa");
 
 		const request = requestHeaders.digest;
-		if (typeof request !== "string")
-			throw new APError("Digest header is not string?");
+		if (typeof request !== "string") throw new APError("Digest header is not string?");
 		const [algo, inDigest] = request.split("=");
 
 		// TODO: support different digest algos
 		if (algo.toLowerCase() !== "sha-256")
 			throw new APError("Only sha-256 supported for message digests");
 
-		const digest = crypto
-			.createHash("sha256")
-			.update(rawActivity)
-			.digest("base64");
+		const digest = crypto.createHash("sha256").update(rawActivity).digest("base64");
 
 		// TODO: verify.funfedi.dev sends digests without b64 padding???
 		// but I don't know if other software does this
@@ -190,28 +172,16 @@ export const validateHttpSignature = async (
 				: digest; // otherwise we're good
 
 		if (inDigest !== digest && inDigest !== withoutPadding)
-			throw new APError(
-				"b64 sha256 digest of message does not match provided digest header",
-			);
+			throw new APError("b64 sha256 digest of message does not match provided digest header");
 	}
 
-	const expected = getSignString(
-		target,
-		method,
-		requestHeaders,
-		headers.split(/\s+/),
-	);
+	const expected = getSignString(target, method, requestHeaders, headers.split(/\s+/));
 
-	const verifier = crypto.createVerify(
-		algorithm?.toUpperCase() || ALLOWED_ALGOS[0],
-	);
+	const verifier = crypto.createVerify(algorithm?.toUpperCase() || ALLOWED_ALGOS[0]);
 	verifier.write(expected);
 	verifier.end();
 
-	const result = verifier.verify(
-		actor.public_key,
-		Buffer.from(signature, "base64"),
-	);
+	const result = verifier.verify(actor.public_key, Buffer.from(signature, "base64"));
 
 	// If the actor was cached and the result fails, retry without cache
 	// if we've already tried without cache, ignore
@@ -220,13 +190,7 @@ export const validateHttpSignature = async (
 			`Could not verify http signature with cached actor (${actor.remote_address}) public key. Retrying without cache`,
 		);
 
-		return await validateHttpSignature(
-			target,
-			method,
-			requestHeaders,
-			rawActivity,
-			true,
-		);
+		return await validateHttpSignature(target, method, requestHeaders, rawActivity, true);
 	}
 
 	if (!result) {
@@ -249,8 +213,7 @@ export const signWithHttpSignature = (
 	keys: Actor,
 	message?: string,
 ) => {
-	if (!keys.private_key)
-		throw new APError("Cannot sign activity without private key");
+	if (!keys.private_key) throw new APError("Cannot sign activity without private key");
 
 	const digest = message
 		? crypto.createHash("sha256").update(message).digest("base64")

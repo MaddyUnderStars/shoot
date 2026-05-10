@@ -35,11 +35,8 @@ export const genericEmbedGenerator: EMBED_GENERATOR = async (url) => {
 		type: EmbedType.rich,
 
 		title:
-			findMeta(doc, "og:title") ??
-			findMeta(doc, "twitter:title") ??
-			findDomTag(doc, "title"),
-		description:
-			findMeta(doc, "og:description") ?? findMeta(doc, "description"),
+			findMeta(doc, "og:title") ?? findMeta(doc, "twitter:title") ?? findDomTag(doc, "title"),
+		description: findMeta(doc, "og:description") ?? findMeta(doc, "description"),
 
 		author_name:
 			findMeta(doc, "article:author") ??

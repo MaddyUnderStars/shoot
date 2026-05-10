@@ -29,15 +29,12 @@ export const authHandler: RequestHandler = async (req, _res, next) => {
 			return x.test(url);
 		}) ||
 		ACTIVITY_JSON_ACCEPT.some((v) => req.headers.accept?.includes(v)) ||
-		ACTIVITY_JSON_ACCEPT.some((v) =>
-			req.headers["content-type"]?.includes(v),
-		)
+		ACTIVITY_JSON_ACCEPT.some((v) => req.headers["content-type"]?.includes(v))
 	)
 		return next();
 
 	const { authorization } = req.headers;
-	if (!authorization)
-		return next(new HttpError("Missing `authorization` header", 401));
+	if (!authorization) return next(new HttpError("Missing `authorization` header", 401));
 
 	let user: User;
 	try {

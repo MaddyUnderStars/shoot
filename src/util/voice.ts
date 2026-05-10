@@ -38,9 +38,7 @@ export const askForMediaToken = async (user: User, channel: Channel) => {
 
 const INVALID_TOKEN = new HttpError("Invalid token", 401);
 
-export const validateMediaToken = (
-	token: string,
-): Promise<{ user: User; channel: Channel }> =>
+export const validateMediaToken = (token: string): Promise<{ user: User; channel: Channel }> =>
 	new Promise((resolve, reject) => {
 		jwt.verify(
 			token,
@@ -80,18 +78,14 @@ export const validateMediaToken = (
 
 				// Tokens have a limited lifespan (10 minutes here)
 				// If you want to rejoin a call, just POSt /call again and get a new token
-				if (decoded.iat * 1000 < Date.now() - 10 * 1000)
-					return reject(INVALID_TOKEN);
+				if (decoded.iat * 1000 < Date.now() - 10 * 1000) return reject(INVALID_TOKEN);
 
 				return resolve({ user, channel });
 			},
 		);
 	});
 
-export const generateMediaToken = (
-	user_mention: string,
-	channel_id: string,
-): Promise<string> => {
+export const generateMediaToken = (user_mention: string, channel_id: string): Promise<string> => {
 	const iat = Math.floor(Date.now() / 1000);
 
 	return new Promise((res, rej) =>

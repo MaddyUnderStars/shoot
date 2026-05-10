@@ -5,10 +5,7 @@ import { Invite } from "../../../entity/invite";
 import { getExternalPathFromActor, sendActivity } from "../../../sender";
 import { APError } from "../../../util/activitypub/error";
 import { resolveWebfinger } from "../../../util/activitypub/resolve";
-import {
-	addContext,
-	splitQualifiedMention,
-} from "../../../util/activitypub/util";
+import { addContext, splitQualifiedMention } from "../../../util/activitypub/util";
 import { config } from "../../../util/config";
 import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
 import { PERMISSION } from "../../../util/permission";
@@ -54,13 +51,9 @@ router.post(
 			});
 
 			if (!invite) {
-				const obj = await resolveWebfinger(
-					`invite:${inviteCode}@${domain}`,
-				);
+				const obj = await resolveWebfinger(`invite:${inviteCode}@${domain}`);
 				if (obj.type !== "GuildInvite")
-					throw new APError(
-						"Remote did not respond with GuildInvite",
-					);
+					throw new APError("Remote did not respond with GuildInvite");
 
 				const { attributedTo } = obj;
 				if (
@@ -81,9 +74,7 @@ router.post(
 							`${getExternalPathFromActor(req.user)}/invite/${req.params.invite_code}`,
 						),
 						type: "Follow",
-						actor: makeInstanceUrl(
-							getExternalPathFromActor(req.user),
-						),
+						actor: makeInstanceUrl(getExternalPathFromActor(req.user)),
 						object: guild.remote_address,
 						instrument: req.params.invite_code,
 					} as APFollow),
@@ -120,10 +111,7 @@ router.delete(
 				},
 			});
 
-			await invite.guild.throwPermission(
-				req.user,
-				PERMISSION.MANAGE_INVITES,
-			);
+			await invite.guild.throwPermission(req.user, PERMISSION.MANAGE_INVITES);
 
 			await invite.remove();
 

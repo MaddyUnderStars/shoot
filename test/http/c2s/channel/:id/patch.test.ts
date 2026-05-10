@@ -25,9 +25,7 @@ test.for([
 		// have to create a new user and add them here
 		user = await createTestUser(api);
 
-		const { joinGuild } = await import(
-			"../../../../../src/util/entity/guild"
-		);
+		const { joinGuild } = await import("../../../../../src/util/entity/guild");
 		await joinGuild(user.user.mention, guild.mention);
 
 		// TODO: there's no route to give this user the role yet

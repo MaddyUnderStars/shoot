@@ -14,10 +14,7 @@ export const isFederationRequest = (headers: IncomingHttpHeaders) =>
 // Mount the s2s API on / based on the Accept header
 router.use("/", (req, res, next) => {
 	if (isFederationRequest(req.headers)) {
-		res.setHeader(
-			"Content-Type",
-			"application/activity+json; charset=utf-8",
-		);
+		res.setHeader("Content-Type", "application/activity+json; charset=utf-8");
 		s2s(req, res, next);
 	} else api(req, res, next);
 });

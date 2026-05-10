@@ -1,19 +1,10 @@
-import {
-	type APActor,
-	type APNote,
-	type APPerson,
-	ObjectIsGroup,
-} from "activitypub-types";
+import { type APActor, type APNote, type APPerson, ObjectIsGroup } from "activitypub-types";
 import bcrypt from "bcrypt";
 import type { InstanceInvite } from "../../entity/instanceInvite";
 import { User } from "../../entity/user";
 import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
-import {
-	resolveAPObject,
-	resolveId,
-	resolveWebfinger,
-} from "../activitypub/resolve";
+import { resolveAPObject, resolveId, resolveWebfinger } from "../activitypub/resolve";
 import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
 import { config } from "../config";
 import { createLogger } from "../log";
@@ -76,9 +67,7 @@ export const batchGetUsers = async (users: ActorMention[]) => {
 	return Promise.all(users.map((user) => getOrFetchUser(user)));
 };
 
-export const createUserForRemotePerson = async (
-	lookup: string | URL | APActor,
-) => {
+export const createUserForRemotePerson = async (lookup: string | URL | APActor) => {
 	const id = resolveId(lookup);
 
 	const mention = splitQualifiedMention(id);
@@ -90,18 +79,13 @@ export const createUserForRemotePerson = async (
 				? await resolveAPObject(id)
 				: await resolveWebfinger(id);
 
-	if (!APObjectIsActor(obj))
-		throw new APError("Resolved object is not Person");
+	if (!APObjectIsActor(obj)) throw new APError("Resolved object is not Person");
 
 	if (ObjectIsGroup(obj))
-		throw new APError(
-			"Refusing to treat Group as Person as Group is our native channel type",
-		);
+		throw new APError("Refusing to treat Group as Person as Group is our native channel type");
 
 	if (!obj.publicKey?.publicKeyPem)
-		throw new APError(
-			"Resolved object is Person but does not contain public key",
-		);
+		throw new APError("Resolved object is Person but does not contain public key");
 
 	if (!obj.id) throw new APError("Resolved object must have ID");
 
@@ -129,21 +113,14 @@ export const createUserForRemotePerson = async (
 	});
 };
 
-export const getOrFetchAttributedUser = async (
-	attributed: APNote["attributedTo"],
-) => {
-	if (!attributed)
-		throw new APError("Note must have attributedTo to assign author");
+export const getOrFetchAttributedUser = async (attributed: APNote["attributedTo"]) => {
+	if (!attributed) throw new APError("Note must have attributedTo to assign author");
 	if (Array.isArray(attributed))
-		throw new APError(
-			"Cannot assign single author to this note with multiple attributedTo",
-		);
+		throw new APError("Cannot assign single author to this note with multiple attributedTo");
 
-	if (typeof attributed === "string")
-		return await getOrFetchUser(resolveId(attributed));
+	if (typeof attributed === "string") return await getOrFetchUser(resolveId(attributed));
 
-	if (!APObjectIsActor(attributed))
-		throw new APError("note.attributedTo must be actor");
+	if (!APObjectIsActor(attributed)) throw new APError("note.attributedTo must be actor");
 
 	return await createUserForRemotePerson(attributed);
 };

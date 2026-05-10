@@ -66,9 +66,7 @@ export const onIdentify = makeHandler(async function (payload) {
 	});
 
 	// Join the horde
-	this.events = listenMediaEvent(this.room_id, (payload) =>
-		this.send(payload),
-	);
+	this.events = listenMediaEvent(this.room_id, (payload) => this.send(payload));
 
 	await VoiceState.upsert(
 		VoiceState.create({

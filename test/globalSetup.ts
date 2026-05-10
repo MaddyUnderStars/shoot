@@ -5,9 +5,7 @@ import type { TestProject } from "vitest/node";
 const create = async (project: TestProject) => {
 	const network = await new Network().start();
 
-	const postgres = await new PostgreSqlContainer("postgres")
-		.withNetwork(network)
-		.start();
+	const postgres = await new PostgreSqlContainer("postgres").withNetwork(network).start();
 
 	project.provide("NETWORK_ID", network.getId());
 	project.provide("NETWORK_NAME", network.getName());

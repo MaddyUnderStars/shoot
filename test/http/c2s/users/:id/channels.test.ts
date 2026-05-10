@@ -9,10 +9,7 @@ describe.sequential("DM channels", () => {
 	let channel: string;
 
 	test("Can create", async ({ api, expect }) => {
-		[user1, user2] = await Promise.all([
-			createTestUser(api),
-			createTestUser(api),
-		]);
+		[user1, user2] = await Promise.all([createTestUser(api), createTestUser(api)]);
 
 		const createRes = await request(api.app)
 			.post(`/users/${user2.user.mention}/channels`)
@@ -27,9 +24,7 @@ describe.sequential("DM channels", () => {
 			.auth(user1.token, { type: "bearer" })
 			.expect(200)
 			.then((x) => {
-				expect(
-					x.body.find((i: { mention: string }) => i.mention).mention,
-				).toBe(channel);
+				expect(x.body.find((i: { mention: string }) => i.mention).mention).toBe(channel);
 			});
 
 		await request(api.app)
@@ -37,9 +32,7 @@ describe.sequential("DM channels", () => {
 			.auth(user2.token, { type: "bearer" })
 			.expect(200)
 			.then((x) => {
-				expect(
-					x.body.find((i: { mention: string }) => i.mention).mention,
-				).toBe(channel);
+				expect(x.body.find((i: { mention: string }) => i.mention).mention).toBe(channel);
 			});
 	});
 
@@ -55,9 +48,7 @@ describe.sequential("DM channels", () => {
 			.auth(user1.token, { type: "bearer" })
 			.expect(200)
 			.then((x) => {
-				expect(x.body.find((i: { id: string }) => i.id).id).toBe(
-					sendRes.body.id,
-				);
+				expect(x.body.find((i: { id: string }) => i.id).id).toBe(sendRes.body.id);
 			});
 
 		await request(api.app)
@@ -65,9 +56,7 @@ describe.sequential("DM channels", () => {
 			.auth(user2.token, { type: "bearer" })
 			.expect(200)
 			.then((x) => {
-				expect(x.body.find((i: { id: string }) => i.id).id).toBe(
-					sendRes.body.id,
-				);
+				expect(x.body.find((i: { id: string }) => i.id).id).toBe(sendRes.body.id);
 			});
 	});
 });

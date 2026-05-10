@@ -112,9 +112,7 @@ router.delete(
 
 			// we can always delete our own messages
 			if (message.author.id !== req.user.id)
-				await channel.throwPermission(req.user, [
-					PERMISSION.MANAGE_MESSAGES,
-				]);
+				await channel.throwPermission(req.user, [PERMISSION.MANAGE_MESSAGES]);
 
 			emitGatewayEvent(channel, {
 				type: "MESSAGE_DELETE",

@@ -32,19 +32,13 @@ const log = createLogger("handleMessage");
  * MUTATES the provided message to add the inserted database ID
  */
 export const handleMessage = async (message: Message, federate = true) => {
-	await message.channel.throwPermission(
-		message.author,
-		PERMISSION.SEND_MESSAGES,
-	);
+	await message.channel.throwPermission(message.author, PERMISSION.SEND_MESSAGES);
 
 	if (message.files) {
 		for (const file of message.files) {
 			const head = await checkFileExists(message.channel.id, file.hash);
 			if (!head) {
-				throw new HttpError(
-					`Hash ${file.hash} (${file.name}) does not exist`,
-					400,
-				);
+				throw new HttpError(`Hash ${file.hash} (${file.name}) does not exist`, 400);
 			}
 
 			if (!head.length) throw new Error("no content length");
@@ -129,39 +123,29 @@ const federateMessage = async (message: Message) => {
 		const announce = buildAPAnnounceNote(note, message.channel.id);
 
 		if (message.channel instanceof DMChannel) {
-			let recipients = [
-				...message.channel.recipients,
-				message.channel.owner,
-			];
+			let recipients = [...message.channel.recipients, message.channel.owner];
 
 			// remove the author's instance from the recipients
 			// since they author'd it and already have a copy
 			// TODO: maybe this should be used as an acknowledge instead? or send an `Acknowledge` activity?
-			recipients = recipients.filter(
-				(x) => x.domain !== message.author.domain,
-			);
+			recipients = recipients.filter((x) => x.domain !== message.author.domain);
 
-			await sendActivity(
-				recipients,
-				addContext(announce),
-				message.channel,
-			);
+			await sendActivity(recipients, addContext(announce), message.channel);
 		} else if (message.channel instanceof GuildTextChannel) {
 			// TODO: for guilds, we can't download the entire members list to do dedupe for shared inbox
 			// so it would be better to do all that on the database instead
 			// i.e. a query that gets all the unique domains of each member,
 			// and then sends the activity of the shared inbox of that domain with all the members in the to field
 
-			const domains: Array<{ domain: string }> =
-				await getDatabase().query(
-					`
+			const domains: Array<{ domain: string }> = await getDatabase().query(
+				`
 				select distinct domain from users
 				left join guild_members gm on "gm"."userId" = "users"."id"
 				left join roles_members_guild_members rmgm on "rmgm"."guildMembersId" = "gm"."id"
 				where "rmgm"."rolesId" = $1
 			`,
-					[message.channel.guild.id],
-				);
+				[message.channel.guild.id],
+			);
 
 			for (const domain of domains.map((x) => x.domain)) {
 				if (domain === message.author.domain) continue;
@@ -202,10 +186,7 @@ const processEmbeds = async (message: Message) => {
 	// the urls must be separated by whitespace and must not be wrapped in <>
 	const urls = message.content
 		.split(" ")
-		.filter(
-			(x) =>
-				x.match(URL_REGEX) && !(x.startsWith("<") && x.endsWith(">")),
-		)
+		.filter((x) => x.match(URL_REGEX) && !(x.startsWith("<") && x.endsWith(">")))
 		.map((x) => tryParseUrl(x))
 		.filter((x) => !!x);
 

@@ -15,27 +15,17 @@ import { resolveId } from "../../resolve";
 import { addContext, splitQualifiedMention } from "../../util";
 import type { ActivityHandler } from ".";
 
-export const FollowActivityHandler: ActivityHandler = async (
-	activity,
-	target,
-) => {
+export const FollowActivityHandler: ActivityHandler = async (activity, target) => {
 	if (!ActivityIsFollow(activity)) return;
 
 	const from = activity.actor;
-	if (typeof from !== "string")
-		throw new APError("Follow activity must have single actor");
+	if (typeof from !== "string") throw new APError("Follow activity must have single actor");
 
 	const actor = await getOrFetchUser(resolveId(from));
-	if (!actor.collections?.inbox)
-		throw new APError("Received follow from actor without inbox");
+	if (!actor.collections?.inbox) throw new APError("Received follow from actor without inbox");
 
 	if (target instanceof User) {
-		const rel = await acceptOrCreateRelationship(
-			actor,
-			target,
-			false,
-			activity,
-		);
+		const rel = await acceptOrCreateRelationship(actor, target, false, activity);
 
 		if (rel.to_state !== RelationshipType.accepted) return;
 	} else if (target instanceof Channel) {
@@ -43,14 +33,8 @@ export const FollowActivityHandler: ActivityHandler = async (
 		throw new APError("not implemented");
 	} else if (target instanceof Guild) {
 		const invite_code = activity.instrument;
-		if (
-			!invite_code ||
-			Array.isArray(invite_code) ||
-			typeof invite_code !== "string"
-		)
-			throw new APError(
-				"Only one invite_code string value in instrument properly allowed",
-			);
+		if (!invite_code || Array.isArray(invite_code) || typeof invite_code !== "string")
+			throw new APError("Only one invite_code string value in instrument properly allowed");
 
 		const code = splitQualifiedMention(invite_code);
 

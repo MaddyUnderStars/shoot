@@ -1,6 +1,6 @@
 name: Build and Test
 permissions:
-  contents: read
+    contents: read
 
 on:
     push:

@@ -15,8 +15,7 @@ export type PutFileRequest = {
 	height?: number;
 };
 
-export const createUploadEndpoint = (file: PutFileRequest) =>
-	api.createEndpoint(file);
+export const createUploadEndpoint = (file: PutFileRequest) => api.createEndpoint(file);
 
 export const checkFileExists = (channel_id: string, hash: string) =>
 	api.checkFileExists(channel_id, hash);
@@ -24,5 +23,4 @@ export const checkFileExists = (channel_id: string, hash: string) =>
 export const getFileStream = (channel_id: string, hash: string) =>
 	api.getFileStream(channel_id, hash);
 
-export const deleteFile = (channel_id: string, hash: string) =>
-	api.deleteFile(channel_id, hash);
+export const deleteFile = (channel_id: string, hash: string) => api.deleteFile(channel_id, hash);

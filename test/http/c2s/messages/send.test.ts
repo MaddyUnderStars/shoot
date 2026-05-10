@@ -32,10 +32,10 @@ test.for([
 
 		// TODO: there's no route to give this user the role yet
 		// so just give the permission to @everyone
-		await dbClient.query(
-			"UPDATE roles SET allow = $1::roles_allow_enum[] WHERE id = $2",
-			[permissions, guild.id],
-		);
+		await dbClient.query("UPDATE roles SET allow = $1::roles_allow_enum[] WHERE id = $2", [
+			permissions,
+			guild.id,
+		]);
 	}
 
 	await request(api.app)

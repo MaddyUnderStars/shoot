@@ -1,15 +1,11 @@
 {
-	"include": [
-		"src"
-	],
+	"include": ["src"],
 	"compilerOptions": {
 		"incremental": true,
 		"target": "ES2022",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"lib": [
-			"ESNext",
-		],
+		"lib": ["ESNext"],
 		"module": "CommonJS",
 		"types": [],
 		"resolveJsonModule": true,
@@ -24,6 +20,6 @@
 		"strictPropertyInitialization": false,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
-		"skipLibCheck": true,
+		"skipLibCheck": true
 	}
 }

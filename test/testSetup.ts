@@ -9,9 +9,7 @@ import { ConfigSchema } from "../src/util/ConfigSchema";
 vi.mock(import("../src/util/config"), () => {
 	return {
 		config: () => {
-			return ConfigSchema.parse(
-				JSON.parse(process.env.NODE_CONFIG as string),
-			);
+			return ConfigSchema.parse(JSON.parse(process.env.NODE_CONFIG as string));
 		},
 	};
 });

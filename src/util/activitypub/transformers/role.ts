@@ -4,8 +4,7 @@ import { getExternalPathFromActor } from "../../../sender";
 import type { PERMISSION } from "../../permission";
 import { makeInstanceUrl } from "../../url";
 
-export const ObjectIsRole = (role: APObject): role is APRole =>
-	role.type === "Role";
+export const ObjectIsRole = (role: APObject): role is APRole => role.type === "Role";
 
 export type APRole = APObject & {
 	type: "Role";
@@ -17,9 +16,7 @@ export type APRole = APObject & {
 };
 
 export const buildAPRole = (role: Role): APRole => {
-	const id = makeInstanceUrl(
-		`${getExternalPathFromActor(role.guild)}/role/${role.id}`,
-	);
+	const id = makeInstanceUrl(`${getExternalPathFromActor(role.guild)}/role/${role.id}`);
 
 	return {
 		type: "Role",

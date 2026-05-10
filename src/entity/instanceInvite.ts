@@ -15,10 +15,7 @@ export class InstanceInvite extends BaseEntity {
 	@Column({ type: Date, nullable: true })
 	expires: Date | null;
 
-	@OneToMany(
-		() => User,
-		(user) => user.invite,
-	)
+	@OneToMany(() => User, (user) => user.invite)
 	users: User[];
 
 	/** the maximum number of uses for this invite. if null, unlimited usage */

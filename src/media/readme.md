@@ -11,4 +11,4 @@ WebRTC signalling server for voice and video
 
 Notes:
 
--   All channels are callable, which should simplify database and code as there is no distinction between 'voice channels' and text channels
+- All channels are callable, which should simplify database and code as there is no distinction between 'voice channels' and text channels

@@ -13,8 +13,7 @@ export class ChannelOrdering1750057984384 implements MigrationInterface {
 
 		const positionIdx = channels.findColumnIndices(position);
 
-		if (!positionIdx.length)
-			throw new Error("failed to find (position, guildId) index?");
+		if (!positionIdx.length) throw new Error("failed to find (position, guildId) index?");
 
 		await queryRunner.dropIndex(channels, positionIdx[0]);
 
@@ -24,9 +23,7 @@ export class ChannelOrdering1750057984384 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(
-			"alter table channels drop constraint channel_ordering;",
-		);
+		await queryRunner.query("alter table channels drop constraint channel_ordering;");
 		await queryRunner.query(
 			`CREATE UNIQUE INDEX "channel_position" ON "channels" ("position", "guildId")`,
 		);

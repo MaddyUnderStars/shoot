@@ -6,10 +6,7 @@ import { getExternalPathFromActor } from "../../../sender";
 import { getOrFetchAttributedUser } from "../../entity/user";
 import { makeInstanceUrl, makeWebappUrl } from "../../url";
 
-export const buildMessageFromAPNote = async (
-	note: APNote,
-	channel: Channel,
-): Promise<Message> => {
+export const buildMessageFromAPNote = async (note: APNote, channel: Channel): Promise<Message> => {
 	const author = await getOrFetchAttributedUser(note.attributedTo);
 	await author.save();
 
@@ -23,12 +20,8 @@ export const buildMessageFromAPNote = async (
 };
 
 export const buildAPNote = (message: Message): APNote => {
-	const id = makeInstanceUrl(
-		`/channel/${message.channel.id}/message/${message.id}`,
-	);
-	const attributedTo = makeInstanceUrl(
-		`${getExternalPathFromActor(message.author)}`,
-	);
+	const id = makeInstanceUrl(`/channel/${message.channel.id}/message/${message.id}`);
+	const attributedTo = makeInstanceUrl(`${getExternalPathFromActor(message.author)}`);
 	const to = makeInstanceUrl(`${getExternalPathFromActor(message.channel)}`);
 
 	return {
@@ -43,9 +36,7 @@ export const buildAPNote = (message: Message): APNote => {
 		content: message.content ?? undefined,
 		updated: message.updated ?? undefined,
 		summary: "",
-		url: makeWebappUrl(
-			`/channel/${message.channel.id}/message/${message.id}`,
-		),
+		url: makeWebappUrl(`/channel/${message.channel.id}/message/${message.id}`),
 		audience: makeInstanceUrl(getExternalPathFromActor(message.channel)),
 	};
 };
@@ -61,18 +52,12 @@ export const buildAPCreateNote = (inner: APNote): APCreate => {
 	};
 };
 
-export const buildAPAnnounceNote = (
-	inner: APNote,
-	channel_id: string,
-): APAnnounce => {
+export const buildAPAnnounceNote = (inner: APNote, channel_id: string): APAnnounce => {
 	const actor = makeInstanceUrl(`/channel/${channel_id}`);
 	// TODO: this should be channel_id followers
 
 	return {
-		id: new URL(
-			`/message/${inner.id?.split("/").reverse()[0]}/announce`,
-			actor,
-		).toString(), // TODO
+		id: new URL(`/message/${inner.id?.split("/").reverse()[0]}/announce`, actor).toString(), // TODO
 		type: "Announce",
 		actor,
 		published: inner.published,

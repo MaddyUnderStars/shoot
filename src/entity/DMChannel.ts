@@ -1,10 +1,4 @@
-import {
-	ChildEntity,
-	JoinColumn,
-	JoinTable,
-	ManyToMany,
-	ManyToOne,
-} from "typeorm";
+import { ChildEntity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import z from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { DefaultPermissions, type PERMISSION } from "../util/permission";
@@ -35,16 +29,10 @@ export class DMChannel extends Channel {
 		};
 	}
 
-	public checkPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
-	) => {
+	public checkPermission = async (user: User, permission: PERMISSION | PERMISSION[]) => {
 		permission = Array.isArray(permission) ? permission : [permission];
 
-		if (
-			this.owner.id === user.id ||
-			this.recipients.find((x) => x.id === user.id)
-		)
+		if (this.owner.id === user.id || this.recipients.find((x) => x.id === user.id))
 			return permission.every((x) => DefaultPermissions.includes(x));
 
 		return false;

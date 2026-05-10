@@ -1,31 +1,31 @@
 {
 	"folders": [
 		{
-			"path": "src"
+			"path": "src",
 		},
 		{
-			"path": "test"
+			"path": "test",
 		},
 		{
-			"path": "config"
+			"path": "config",
 		},
 		{
-			"path": "assets"
+			"path": "assets",
 		},
 		{
-			"path": "docs"
+			"path": "docs",
 		},
 		{
 			"name": "shoot",
-			"path": "."
-		}
+			"path": ".",
+		},
 	],
 	"settings": {
 		"typescript.tsdk": "shoot/node_modules/typescript/lib",
 		"editor.defaultFormatter": "biomejs.biome",
 		"editor.formatOnSave": true,
 		"[typescript]": {
-			"editor.defaultFormatter": "biomejs.biome"
-		}
+			"editor.defaultFormatter": "biomejs.biome",
+		},
 	},
 }

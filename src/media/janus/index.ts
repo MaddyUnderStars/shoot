@@ -40,10 +40,7 @@ export class Janus extends EventEmitter {
 	public connect = (config: JanusConfiguration): Promise<void> => {
 		this.token = config.address.token;
 
-		this.socket = new WebSocket(
-			new URL(config.address.url),
-			"janus-protocol",
-		);
+		this.socket = new WebSocket(new URL(config.address.url), "janus-protocol");
 
 		this.socket.on("close", this.onClose);
 		this.socket.on("error", this.onError);
@@ -74,8 +71,7 @@ export class Janus extends EventEmitter {
 		this.adminHandle = (await this.attachHandle()).id;
 	};
 
-	public createSession = () =>
-		this.send<RESPONSE_CREATE_SESSION>({ janus: "create" });
+	public createSession = () => this.send<RESPONSE_CREATE_SESSION>({ janus: "create" });
 
 	public attachHandle = () =>
 		this.send<RESPONSE_ATTACH_HANDLE>({
@@ -117,10 +113,7 @@ export class Janus extends EventEmitter {
 			handle_id,
 		});
 
-	public configure = (
-		handle_id: number,
-		jsep?: { type: string; sdp: string },
-	) =>
+	public configure = (handle_id: number, jsep?: { type: string; sdp: string }) =>
 		this.send<RESPONSE_CONFIGURE>({
 			janus: "message",
 			body: {
@@ -150,10 +143,7 @@ export class Janus extends EventEmitter {
 
 	// TODO: reject on timeout?
 	// TODO: rewrite
-	private send = <
-		O extends JANUS_RESPONSE_DATA,
-		I extends JANUS_REQUEST = JANUS_REQUEST,
-	>(
+	private send = <O extends JANUS_RESPONSE_DATA, I extends JANUS_REQUEST = JANUS_REQUEST>(
 		payload: I,
 	): Promise<O> =>
 		new Promise((resolve) => {
@@ -168,8 +158,7 @@ export class Janus extends EventEmitter {
 
 				if ("plugindata" in json && json.plugindata) {
 					json.data = json.plugindata;
-					if ("data" in json.data)
-						json.data = json.data.data as unknown as O;
+					if ("data" in json.data) json.data = json.data.data as unknown as O;
 					json.plugindata = undefined;
 				}
 
@@ -184,21 +173,16 @@ export class Janus extends EventEmitter {
 
 				if ("data" in json) {
 					this.socket.removeListener("message", listener);
-					this.socket.setMaxListeners(
-						this.socket.getMaxListeners() - 1,
-					);
+					this.socket.setMaxListeners(this.socket.getMaxListeners() - 1);
 					return resolve(json.data);
 				}
 
 				if (
 					payload.janus === "trickle" ||
-					(payload.janus === "message" &&
-						payload.body.request !== "configure")
+					(payload.janus === "message" && payload.body.request !== "configure")
 				) {
 					this.socket.removeListener("message", listener);
-					this.socket.setMaxListeners(
-						this.socket.getMaxListeners() - 1,
-					);
+					this.socket.setMaxListeners(this.socket.getMaxListeners() - 1);
 					resolve({} as O);
 				}
 			};

@@ -19,13 +19,9 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 	const id = resolveId(lookup);
 	const mention = splitQualifiedMention(id);
 
-	const obj =
-		id instanceof URL
-			? await resolveAPObject(id)
-			: await resolveWebfinger(id);
+	const obj = id instanceof URL ? await resolveAPObject(id) : await resolveWebfinger(id);
 
-	if (!ObjectIsRole(obj))
-		throw new APError(`Expected role but found ${obj.type}`);
+	if (!ObjectIsRole(obj)) throw new APError(`Expected role but found ${obj.type}`);
 
 	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
 		throw new APError("role requires attributedTo guild");

@@ -23,10 +23,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 				code: 400,
 				message: "Invalid request",
 				detail: Object.fromEntries(
-					Object.entries(error.issues).map(([key, value]) => [
-						key,
-						value.issues,
-					]),
+					Object.entries(error.issues).map(([key, value]) => [key, value.issues]),
 				),
 			});
 			return;
@@ -46,8 +43,7 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 			break;
 		case error.name === "EntityNotFoundError": {
 			code = 404;
-			const name =
-				error.message.match(ENTITY_NOT_FOUND_REGEX)?.[1] || "Object";
+			const name = error.message.match(ENTITY_NOT_FOUND_REGEX)?.[1] || "Object";
 			message = `${name} could not be found`;
 			break;
 		}
@@ -61,18 +57,12 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 			break;
 		case error.message === "fetch failed":
 			code = 500;
-			message =
-				error?.cause?.errors?.[0]?.message ||
-				error?.cause?.message ||
-				error.message;
+			message = error?.cause?.errors?.[0]?.message || error?.cause?.message || error.message;
 			break;
 		case "$metadata" in error: {
 			// aws s3 client error
 			code = 500;
-			message =
-				"$response" in error
-					? error.$response.reason
-					: "Internal server error";
+			message = "$response" in error ? error.$response.reason : "Internal server error";
 			break;
 		}
 		default:

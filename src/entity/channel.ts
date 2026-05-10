@@ -23,10 +23,7 @@ export class Channel extends Actor {
 		return this.toPublic();
 	}
 
-	public throwPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
-	) => {
+	public throwPermission = async (user: User, permission: PERMISSION | PERMISSION[]) => {
 		// todo: which permission?
 		if (!(await this.checkPermission(user, permission)))
 			throw new HttpError("Missing permission", 400);

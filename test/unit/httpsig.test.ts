@@ -2,13 +2,10 @@ import type { APActivity } from "activitypub-types";
 import { test } from "../fixture";
 
 test("Using Instance Actor", async ({ api }) => {
-	const { signWithHttpSignature, validateHttpSignature } = await import(
-		"../../src/util/activitypub/httpsig"
-	);
+	const { signWithHttpSignature, validateHttpSignature } =
+		await import("../../src/util/activitypub/httpsig");
 	const { User } = await import("../../src/entity/user");
-	const { InstanceActor } = await import(
-		"../../src/util/activitypub/instanceActor"
-	);
+	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor");
 
 	const actor = await User.create({
 		...InstanceActor,
@@ -17,11 +14,7 @@ test("Using Instance Actor", async ({ api }) => {
 		id: undefined,
 	}).save();
 
-	const signed = signWithHttpSignature(
-		"https://chat.understars.dev/inbox",
-		"GET",
-		actor,
-	);
+	const signed = signWithHttpSignature("https://chat.understars.dev/inbox", "GET", actor);
 
 	await validateHttpSignature(
 		"/inbox",
@@ -32,13 +25,10 @@ test("Using Instance Actor", async ({ api }) => {
 });
 
 test("Using Instance Actor with Activity", async ({ api }) => {
-	const { signWithHttpSignature, validateHttpSignature } = await import(
-		"../../src/util/activitypub/httpsig"
-	);
+	const { signWithHttpSignature, validateHttpSignature } =
+		await import("../../src/util/activitypub/httpsig");
 	const { User } = await import("../../src/entity/user");
-	const { InstanceActor } = await import(
-		"../../src/util/activitypub/instanceActor"
-	);
+	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor");
 
 	const actor = await User.create({
 		...InstanceActor,

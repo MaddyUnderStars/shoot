@@ -21,10 +21,7 @@ describe("Registration is disabled", () => {
 	});
 
 	test("Can register with token", async ({ api, dbClient, expect }) => {
-		await dbClient.query(
-			"INSERT INTO instance_invites (code) VALUES ($1)",
-			["testinvite"],
-		);
+		await dbClient.query("INSERT INTO instance_invites (code) VALUES ($1)", ["testinvite"]);
 
 		const res = await request(api.app)
 			.post("/auth/register")
@@ -41,10 +38,7 @@ describe("Registration is disabled", () => {
 		expect(res.body.token).toBeTypeOf("string");
 		expect(res.body.user).toMatchSnapshot();
 
-		const dbres = await dbClient.query(
-			"SELECT * FROM users WHERE name = $1",
-			["test"],
-		);
+		const dbres = await dbClient.query("SELECT * FROM users WHERE name = $1", ["test"]);
 
 		expect(dbres.rows[0]).toBeTruthy();
 	});

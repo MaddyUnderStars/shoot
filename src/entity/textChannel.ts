@@ -32,19 +32,16 @@ export class GuildTextChannel extends Channel {
 		return this.toPublic();
 	}
 
-	public checkPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
-	) => checkPermission(user, this.guild, permission);
+	public checkPermission = async (user: User, permission: PERMISSION | PERMISSION[]) =>
+		checkPermission(user, this.guild, permission);
 }
 
 export type PublicGuildTextChannel = PublicChannel & {
 	guild?: ActorMention;
 };
 
-export const PublicGuildTextChannel: z.ZodType<PublicGuildTextChannel> =
-	PublicChannel.and(
-		z.object({
-			guild: ActorMention.optional(),
-		}),
-	).openapi("PublicGuildTextChannel");
+export const PublicGuildTextChannel: z.ZodType<PublicGuildTextChannel> = PublicChannel.and(
+	z.object({
+		guild: ActorMention.optional(),
+	}),
+).openapi("PublicGuildTextChannel");

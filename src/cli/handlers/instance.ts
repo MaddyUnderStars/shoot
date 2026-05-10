@@ -11,9 +11,7 @@ export const instance = async (url: string, action: string) => {
 	const { config } = await import("../../util/config");
 
 	const parsed = new URL(
-		!url.startsWith("http://") && !url.startsWith("https://")
-			? `https://${url}`
-			: url,
+		!url.startsWith("http://") && !url.startsWith("https://") ? `https://${url}` : url,
 	);
 
 	const { User } = await import("../../entity/user");

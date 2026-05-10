@@ -99,9 +99,6 @@ router.use("/channel/:channel_id/attachments", channels_id_attachments);
 
 import channels_id_messages_id from "./channel/:id/messages/:id";
 
-router.use(
-	"/channel/:channel_id/messages/:message_id",
-	channels_id_messages_id,
-);
+router.use("/channel/:channel_id/messages/:message_id", channels_id_messages_id);
 
 export default router;

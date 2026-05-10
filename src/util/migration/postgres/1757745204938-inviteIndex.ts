@@ -10,8 +10,6 @@ export class InviteIndex1757745204938 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(
-			`DROP INDEX "public"."IDX_d93b870a3ddf61f5279dae3969"`,
-		);
+		await queryRunner.query(`DROP INDEX "public"."IDX_d93b870a3ddf61f5279dae3969"`);
 	}
 }

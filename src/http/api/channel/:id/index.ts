@@ -2,16 +2,10 @@ import { Router } from "express";
 import { z } from "zod";
 import { Channel } from "../../../../entity/channel";
 import { PublicDmChannel } from "../../../../entity/DMChannel";
-import {
-	GuildTextChannel,
-	PublicGuildTextChannel,
-} from "../../../../entity/textChannel";
+import { GuildTextChannel, PublicGuildTextChannel } from "../../../../entity/textChannel";
 import { ActorMention } from "../../../../util/activitypub/constants";
 import { config } from "../../../../util/config";
-import {
-	getOrFetchChannel,
-	updateChannelOrdering,
-} from "../../../../util/entity/channel";
+import { getOrFetchChannel, updateChannelOrdering } from "../../../../util/entity/channel";
 import { emitGatewayEvent } from "../../../../util/events";
 import { HttpError } from "../../../../util/httperror";
 import { PERMISSION } from "../../../../util/permission";
@@ -61,13 +55,10 @@ router.patch(
 			channel.assign(req.body);
 			await Channel.update({ id: channel.id }, req.body);
 
-			emitGatewayEvent(
-				channel instanceof GuildTextChannel ? channel.guild : channel,
-				{
-					type: "CHANNEL_UPDATE",
-					channel: channel.toPublic(),
-				},
-			);
+			emitGatewayEvent(channel instanceof GuildTextChannel ? channel.guild : channel, {
+				type: "CHANNEL_UPDATE",
+				channel: channel.toPublic(),
+			});
 
 			return res.sendStatus(204);
 		}
@@ -90,16 +81,12 @@ router.delete(
 		emitGatewayEvent(channel, {
 			type: "CHANNEL_DELETE",
 			channel: channel.mention,
-			guild:
-				channel instanceof GuildTextChannel
-					? channel.guild.mention
-					: undefined,
+			guild: channel instanceof GuildTextChannel ? channel.guild.mention : undefined,
 		});
 
 		await channel.remove();
 
-		if (channel instanceof GuildTextChannel)
-			await updateChannelOrdering(channel.guild.id);
+		if (channel instanceof GuildTextChannel) await updateChannelOrdering(channel.guild.id);
 
 		res.sendStatus(204);
 	}),

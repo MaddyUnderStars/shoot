@@ -1,43 +1,43 @@
 services:
-  postgresdb:
-    image: postgres:18-alpine
-    ports:
-      - 5432:5432
-    networks:
-      - default
-    volumes:
-      - shoot-postgres:/var/lib/postgresql
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=shoot
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
-      interval: 10s
-      timeout: 60s
-      start_period: 5s
-      retries: 5
+    postgresdb:
+        image: postgres:18-alpine
+        ports:
+            - 5432:5432
+        networks:
+            - default
+        volumes:
+            - shoot-postgres:/var/lib/postgresql
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=shoot
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+            interval: 10s
+            timeout: 60s
+            start_period: 5s
+            retries: 5
 
-  backend:
-    networks:
-      - default
-    build:
-      context: .
-    ports:
-      - 3001:3001
-    volumes:
-      - ./config:/app/config
-      - shoot-storage:/app/storage
-    depends_on:
-      postgresdb:
-        condition: service_healthy
-    environment:
-      - 'NODE_CONFIG={"database":{"url":"postgres://postgres:postgres@postgresdb/shoot"}}'
-    command: ./dist/bootstrap.js
-    restart: always
+    backend:
+        networks:
+            - default
+        build:
+            context: .
+        ports:
+            - 3001:3001
+        volumes:
+            - ./config:/app/config
+            - shoot-storage:/app/storage
+        depends_on:
+            postgresdb:
+                condition: service_healthy
+        environment:
+            - 'NODE_CONFIG={"database":{"url":"postgres://postgres:postgres@postgresdb/shoot"}}'
+        command: ./dist/bootstrap.js
+        restart: always
 
 networks:
-  default:
+    default:
 volumes:
-  shoot-postgres:
-  shoot-storage:
+    shoot-postgres:
+    shoot-storage:

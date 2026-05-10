@@ -40,8 +40,7 @@ router.post(
 				deny: req.body.deny,
 				position:
 					req.body.position ??
-					(await Role.count({ where: { guild: { id: guild.id } } })) +
-						1,
+					(await Role.count({ where: { guild: { id: guild.id } } })) + 1,
 			}).save();
 
 			await updateRoleOrdering(guild.id);

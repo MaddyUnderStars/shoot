@@ -36,10 +36,7 @@ router.post(
 				return res.sendStatus(202);
 			}
 
-			const token = await generateMediaToken(
-				req.user.mention,
-				channel.id,
-			);
+			const token = await generateMediaToken(req.user.mention, channel.id);
 
 			// TODO
 			return res.json({

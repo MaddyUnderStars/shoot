@@ -9,9 +9,7 @@ import { getDatabase } from "../database";
 import { HttpError } from "../httperror";
 import { getOrFetchUser } from "./user";
 
-export const getOrFetchMember = async (
-	lookup: ActorMention | URL | APPerson,
-) => {
+export const getOrFetchMember = async (lookup: ActorMention | URL | APPerson) => {
 	const mention = splitQualifiedMention(resolveId(lookup));
 
 	const member = await Member.findOne({
@@ -59,12 +57,8 @@ export const getMember = async (user: User, guild: Guild) =>
 		.leftJoinAndSelect("guild_members.roles", "roles")
 		.getOne();
 
-export const isMemberOfGuildThrow = async (
-	guild_id: ActorMention,
-	user: User,
-) => {
-	if (!(await isMemberOfGuild(guild_id, user)))
-		throw new HttpError("Missing permission", 404);
+export const isMemberOfGuildThrow = async (guild_id: ActorMention, user: User) => {
+	if (!(await isMemberOfGuild(guild_id, user))) throw new HttpError("Missing permission", 404);
 };
 
 export const isMemberOfGuild = async (guild_id: ActorMention, user: User) => {
@@ -74,10 +68,7 @@ export const isMemberOfGuild = async (guild_id: ActorMention, user: User) => {
 		(await Member.count({
 			where: {
 				roles: {
-					guild: [
-						{ remote_address: guild_id },
-						{ id: guild.id, domain: guild.domain },
-					],
+					guild: [{ remote_address: guild_id }, { id: guild.id, domain: guild.domain }],
 				},
 				user: { id: user.id },
 			},

@@ -1,11 +1,4 @@
-import {
-	AfterLoad,
-	Column,
-	Entity,
-	JoinColumn,
-	ManyToOne,
-	OneToMany,
-} from "typeorm";
+import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { checkPermission } from "../util/checkPermission";
@@ -39,9 +32,7 @@ export class Guild extends Actor {
 			mention: this.mention,
 			name: this.name,
 
-			channels: this.channels
-				? this.channels.map((x) => x.toPublic())
-				: undefined,
+			channels: this.channels ? this.channels.map((x) => x.toPublic()) : undefined,
 
 			roles: this.roles ? this.roles.map((x) => x.toPublic()) : undefined,
 		};
@@ -51,26 +42,20 @@ export class Guild extends Actor {
 		return this.toPublic();
 	}
 
-	public throwPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
-	) => {
+	public throwPermission = async (user: User, permission: PERMISSION | PERMISSION[]) => {
 		// todo: which permission?
 		if (!(await this.checkPermission(user, permission)))
 			throw new HttpError("Missing permission", 400);
 		return true;
 	};
 
-	public checkPermission = async (
-		user: User,
-		permission: PERMISSION | PERMISSION[],
-	) => checkPermission(user, this, permission);
+	public checkPermission = async (user: User, permission: PERMISSION | PERMISSION[]) =>
+		checkPermission(user, this, permission);
 
 	@AfterLoad()
 	_sort = () => {
 		if (this.roles) this.roles.sort((a, b) => b.position - a.position);
-		if (this.channels)
-			this.channels.sort((a, b) => b.position - a.position);
+		if (this.channels) this.channels.sort((a, b) => b.position - a.position);
 	};
 }
 

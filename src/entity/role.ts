@@ -1,12 +1,4 @@
-import {
-	Column,
-	Entity,
-	Index,
-	JoinTable,
-	ManyToMany,
-	ManyToOne,
-	Unique,
-} from "typeorm";
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, Unique } from "typeorm";
 import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { DefaultPermissions, PERMISSION } from "../util/permission";
@@ -72,10 +64,7 @@ export class Role extends BaseModel {
 	}
 }
 
-export type PublicRole = Pick<
-	Role,
-	"id" | "name" | "allow" | "deny" | "position"
-> & {
+export type PublicRole = Pick<Role, "id" | "name" | "allow" | "deny" | "position"> & {
 	guild?: ActorMention;
 };
 

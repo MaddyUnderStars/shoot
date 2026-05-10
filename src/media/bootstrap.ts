@@ -11,9 +11,7 @@ import { MediaGatewayServer } from "./server";
 setLogOptions(config().log);
 const Log = createLogger("bootstrap");
 
-const MEDIA_PORT = process.env.MEDIA_PORT
-	? Number.parseInt(process.env.MEDIA_PORT, 10)
-	: 3003;
+const MEDIA_PORT = process.env.MEDIA_PORT ? Number.parseInt(process.env.MEDIA_PORT, 10) : 3003;
 
 process.on("uncaughtException", (error, origin) => {
 	Log.error(`Caught ${origin}`, error);

@@ -2,9 +2,7 @@ import request from "supertest";
 import { test } from "../../../../fixture";
 
 test.sequential("Can Login", async ({ api, expect }) => {
-	const { registerUser } = await import(
-		"../../../../../src/util/entity/user"
-	);
+	const { registerUser } = await import("../../../../../src/util/entity/user");
 
 	await registerUser("test", "test");
 

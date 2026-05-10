@@ -8,11 +8,7 @@ import { onMessage } from "./message";
 
 const Log = createLogger("media");
 
-export function onConnection(
-	this: ws.Server,
-	socket: MediaSocket,
-	request: IncomingMessage,
-) {
+export function onConnection(this: ws.Server, socket: MediaSocket, request: IncomingMessage) {
 	socket.sequence = 0;
 
 	//@ts-expect-error
@@ -20,10 +16,7 @@ export function onConnection(
 	socket.send = send.bind(socket);
 
 	// TODO: trust proxy
-	const ip =
-		request.headers["x-forwarded-for"] ||
-		request.socket.remoteAddress ||
-		"unknown";
+	const ip = request.headers["x-forwarded-for"] || request.socket.remoteAddress || "unknown";
 	socket.ip_address = Array.isArray(ip) ? ip[0] : ip;
 
 	Log.verbose(`New client from '${socket.ip_address}'`);
@@ -46,8 +39,5 @@ export function onConnection(
 	});
 
 	// Trigger auth timeout after 10 seconds
-	socket.auth_timeout = setTimeout(
-		() => socket.close(CLOSE_CODES.IDENTIFY_TIMEOUT),
-		10_000,
-	);
+	socket.auth_timeout = setTimeout(() => socket.close(CLOSE_CODES.IDENTIFY_TIMEOUT), 10_000);
 }

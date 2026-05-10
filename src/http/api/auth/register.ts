@@ -23,46 +23,35 @@ const RegisterResponse = z.object({
 
 router.post(
 	"/register",
-	route(
-		{ body: RegisterRequest, response: RegisterResponse },
-		async (req, res) => {
-			if (!config().registration.enabled && !req.body.invite)
-				throw new HttpError("Registration is disabled", 400);
+	route({ body: RegisterRequest, response: RegisterResponse }, async (req, res) => {
+		if (!config().registration.enabled && !req.body.invite)
+			throw new HttpError("Registration is disabled", 400);
 
-			const { username, email, password } = req.body;
+		const { username, email, password } = req.body;
 
-			let invite: InstanceInvite | undefined;
+		let invite: InstanceInvite | undefined;
 
-			if (req.body.invite) {
-				invite = await InstanceInvite.createQueryBuilder("invite")
-					.where("invite.code = :code", { code: req.body.invite })
-					.andWhere(
-						"(invite.expires < now() or invite.expires is null)",
-					)
-					.andWhere((qb) => {
-						const inner = qb
-							.createQueryBuilder()
-							.from(User, "users")
-							.where("users.invite = invite.code")
-							.select("count(*)")
-							.getSql();
+		if (req.body.invite) {
+			invite = await InstanceInvite.createQueryBuilder("invite")
+				.where("invite.code = :code", { code: req.body.invite })
+				.andWhere("(invite.expires < now() or invite.expires is null)")
+				.andWhere((qb) => {
+					const inner = qb
+						.createQueryBuilder()
+						.from(User, "users")
+						.where("users.invite = invite.code")
+						.select("count(*)")
+						.getSql();
 
-						return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
-					})
-					.getOneOrFail();
-			}
+					return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
+				})
+				.getOneOrFail();
+		}
 
-			const user = await registerUser(
-				username.toLowerCase(),
-				password,
-				email,
-				false,
-				invite,
-			);
+		const user = await registerUser(username.toLowerCase(), password, email, false, invite);
 
-			return res.json({ token: await generateToken(user.id) });
-		},
-	),
+		return res.json({ token: await generateToken(user.id) });
+	}),
 );
 
 export default router;

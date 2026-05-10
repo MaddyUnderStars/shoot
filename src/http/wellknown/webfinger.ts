@@ -21,18 +21,12 @@ const WebfingerRequest = z.object({ resource: z.string() });
 // but then, invites would be actors, and that's stupid!
 
 const webfingerLookupAcct = async (lookup: string) => {
-	const actor = await findActorOfAnyType(
-		lookup,
-		config().federation.webapp_url.hostname,
-	);
+	const actor = await findActorOfAnyType(lookup, config().federation.webapp_url.hostname);
 
 	if (!actor) throw new HttpError("Actor could not be found", 404);
 
 	// this is really, really gross. TODO: fix
-	const id =
-		actor instanceof User || actor.id === InstanceActor.id
-			? actor.name
-			: actor.id;
+	const id = actor instanceof User || actor.id === InstanceActor.id ? actor.name : actor.id;
 	const path = getExternalPathFromActor(actor);
 
 	return {
@@ -56,60 +50,45 @@ const webfingerLookupInvite = async (lookup: string) => {
 
 router.get(
 	"/webfinger",
-	route(
-		{ query: WebfingerRequest },
-		async (req, res: Response<WebfingerResponse>) => {
-			if (!config().federation.enabled)
-				throw new HttpError("Federation is disabled", 400);
+	route({ query: WebfingerRequest }, async (req, res: Response<WebfingerResponse>) => {
+		if (!config().federation.enabled) throw new HttpError("Federation is disabled", 400);
 
-			let resource = req.query.resource;
+		let resource = req.query.resource;
 
-			const type =
-				resource.indexOf(":") === -1 ? "acct" : resource.split(":")[0];
-			resource = resource.replace(`${type}:`, "");
+		const type = resource.indexOf(":") === -1 ? "acct" : resource.split(":")[0];
+		resource = resource.replace(`${type}:`, "");
 
-			const { webapp_url, instance_url } = config().federation;
+		const { webapp_url, instance_url } = config().federation;
 
-			const mention = splitQualifiedMention(resource);
-			if (
-				mention.domain !== webapp_url.hostname &&
-				mention.domain !== instance_url.hostname
-			)
-				throw new HttpError("Resource not found", 404);
+		const mention = splitQualifiedMention(resource);
+		if (mention.domain !== webapp_url.hostname && mention.domain !== instance_url.hostname)
+			throw new HttpError("Resource not found", 404);
 
-			res.setHeader(
-				"Content-Type",
-				"application/jrd+json; charset=utf-8",
-			);
+		res.setHeader("Content-Type", "application/jrd+json; charset=utf-8");
 
-			const handlers = {
-				acct: webfingerLookupAcct,
-				invite: webfingerLookupInvite,
-			} as Record<
-				string,
-				(lookup: string) => Promise<{ id: string; path: string }>
-			>;
+		const handlers = {
+			acct: webfingerLookupAcct,
+			invite: webfingerLookupInvite,
+		} as Record<string, (lookup: string) => Promise<{ id: string; path: string }>>;
 
-			const handler = handlers[type];
+		const handler = handlers[type];
 
-			if (!handler)
-				throw new HttpError("Unrecognised resource type", 400);
+		if (!handler) throw new HttpError("Unrecognised resource type", 400);
 
-			const { id, path } = await handler(mention.id);
+		const { id, path } = await handler(mention.id);
 
-			return res.json({
-				subject: `${type}:${id}@${config().federation.webapp_url.hostname}`,
-				aliases: [makeWebappUrl(path)],
-				links: [
-					{
-						rel: "self",
-						type: "application/activity+json",
-						href: makeInstanceUrl(path),
-					},
-				],
-			});
-		},
-	),
+		return res.json({
+			subject: `${type}:${id}@${config().federation.webapp_url.hostname}`,
+			aliases: [makeWebappUrl(path)],
+			links: [
+				{
+					rel: "self",
+					type: "application/activity+json",
+					href: makeInstanceUrl(path),
+				},
+			],
+		});
+	}),
 );
 
 export default router;

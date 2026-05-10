@@ -3,6 +3,7 @@
 Shoot provides a Dockerfile and docker-compose file.
 
 The docker-compose file will:
+
 - Set up a basic Shoot instance (single process `npm run start` equivalent)
 - Set up a postgres database
 
@@ -14,6 +15,7 @@ For those who wish to set up more sophisticated Shoot instances, you must still 
 ## Usage
 
 Requirements:
+
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
@@ -26,6 +28,7 @@ The configuration is mounted on `./config`.
 You may use the Shoot CLI to generate keys as normal. Follow the [installation instructions](../readme.md#Installation) to see how to do so.
 
 Then, add the remaining required values to the generated config:
+
 - `federation.instance_url`: can just be "http://localhost:3001" for a simple local setup
 - `federation.webapp_url`: can be the same as `federation.instance_url`
 

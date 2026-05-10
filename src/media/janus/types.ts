@@ -69,9 +69,7 @@ type JANUS_SUCCESS<T extends JANUS_RESPONSE_DATA> = {
 	jsep?: { type: "answer"; sdp: string };
 };
 
-export type JANUS_RESPONSE<T extends JANUS_RESPONSE_DATA> =
-	| JANUS_SUCCESS<T>
-	| JANUS_ACK;
+export type JANUS_RESPONSE<T extends JANUS_RESPONSE_DATA> = JANUS_SUCCESS<T> | JANUS_ACK;
 
 type REQUEST_KEEPALIVE = {
 	janus: "keepalive";

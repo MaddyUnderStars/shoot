@@ -31,12 +31,8 @@ export class Embeds1757219628590 implements MigrationInterface {
 		await queryRunner.query(
 			`ALTER TABLE "messages_embeds_embeds" DROP CONSTRAINT "FK_4ecd06cb6bbe71bf0bfc138dcb7"`,
 		);
-		await queryRunner.query(
-			`DROP INDEX "public"."IDX_cbbe0ec3f729857ef44c372234"`,
-		);
-		await queryRunner.query(
-			`DROP INDEX "public"."IDX_4ecd06cb6bbe71bf0bfc138dcb"`,
-		);
+		await queryRunner.query(`DROP INDEX "public"."IDX_cbbe0ec3f729857ef44c372234"`);
+		await queryRunner.query(`DROP INDEX "public"."IDX_4ecd06cb6bbe71bf0bfc138dcb"`);
 		await queryRunner.query(`DROP TABLE "messages_embeds_embeds"`);
 		await queryRunner.query(`DROP TABLE "embeds"`);
 	}

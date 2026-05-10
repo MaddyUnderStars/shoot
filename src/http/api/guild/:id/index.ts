@@ -79,25 +79,22 @@ router.patch(
 
 router.delete(
 	"/",
-	route(
-		{ params: z.object({ guild_id: ActorMention }) },
-		async (req, res) => {
-			const { guild_id } = req.params;
+	route({ params: z.object({ guild_id: ActorMention }) }, async (req, res) => {
+		const { guild_id } = req.params;
 
-			const guild = await getOrFetchGuild(guild_id);
+		const guild = await getOrFetchGuild(guild_id);
 
-			await guild.throwPermission(req.user, PERMISSION.ADMIN);
+		await guild.throwPermission(req.user, PERMISSION.ADMIN);
 
-			emitGatewayEvent(guild, {
-				type: "GUILD_DELETE",
-				guild: guild.mention,
-			});
+		emitGatewayEvent(guild, {
+			type: "GUILD_DELETE",
+			guild: guild.mention,
+		});
 
-			await guild.remove();
+		await guild.remove();
 
-			return res.sendStatus(204);
-		},
-	),
+		return res.sendStatus(204);
+	}),
 );
 
 router.post(

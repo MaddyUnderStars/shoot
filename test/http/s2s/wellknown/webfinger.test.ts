@@ -11,10 +11,7 @@ test("Webfinger finds users", async ({ api, expect }) => {
 		.expect(200);
 
 	const standardised = JSON.parse(
-		JSON.stringify(res.body).replaceAll(
-			user.user.mention.split("@")[0],
-			"[MENTION]",
-		),
+		JSON.stringify(res.body).replaceAll(user.user.mention.split("@")[0], "[MENTION]"),
 	);
 	expect(standardised).toMatchSnapshot();
 });
@@ -27,9 +24,7 @@ test("Webfinger finds guilds", async ({ api, expect }) => {
 		.get(`/.well-known/webfinger?resource=${guild.mention}`)
 		.expect(200);
 
-	const standardised = JSON.parse(
-		JSON.stringify(res.body).replaceAll(guild.id, "[MENTION]"),
-	);
+	const standardised = JSON.parse(JSON.stringify(res.body).replaceAll(guild.id, "[MENTION]"));
 	expect(standardised).toMatchSnapshot();
 });
 

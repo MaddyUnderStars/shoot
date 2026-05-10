@@ -44,10 +44,7 @@ export interface Websocket extends Omit<WebSocket, "send"> {
 	};
 
 	/** The original socket.send function */
-	raw_send: (
-		this: Websocket,
-		data: string | ArrayBufferLike | Blob | ArrayBufferView,
-	) => unknown;
+	raw_send: (this: Websocket, data: string | ArrayBufferLike | Blob | ArrayBufferView) => unknown;
 
 	/** The new socket.send function */
 	send: (this: Websocket, data: GATEWAY_PAYLOAD) => unknown;

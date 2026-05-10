@@ -46,15 +46,12 @@ export const hasAPContext = (data: unknown): data is APObject => {
 	if (typeof data !== "object" || !data) return false;
 	if (!("@context" in data)) return false;
 	const context = data["@context"] as ContextField | ContextField[];
-	if (Array.isArray(context))
-		return !!context.find((x) => x === ACTIVITYSTREAMS_CONTEXT);
+	if (Array.isArray(context)) return !!context.find((x) => x === ACTIVITYSTREAMS_CONTEXT);
 	return context === ACTIVITYSTREAMS_CONTEXT;
 };
 
 export const APObjectIsActor = (obj: AnyAPObject): obj is APActor => {
-	return (
-		ObjectIsPerson(obj) || ObjectIsApplication(obj) || ObjectIsGroup(obj)
-	);
+	return ObjectIsPerson(obj) || ObjectIsApplication(obj) || ObjectIsGroup(obj);
 };
 
 export const addContext = <T extends AnyAPObject | APActivity>(

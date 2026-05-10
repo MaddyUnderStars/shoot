@@ -21,9 +21,7 @@ export const orderedCollectionHandler = async <T extends BaseModel>(
 
 	const paginator = buildPaginator({
 		entity,
-		paginationKeys: props.keys
-			? props.keys
-			: (["id"] as Extract<BaseModel, string>),
+		paginationKeys: props.keys ? props.keys : (["id"] as Extract<BaseModel, string>),
 		query: {
 			limit: 50,
 			order: "ASC",

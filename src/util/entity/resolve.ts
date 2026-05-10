@@ -5,8 +5,7 @@ import { User } from "../../entity/user";
 import { InstanceActor } from "../activitypub/instanceActor";
 
 export const findActorOfAnyType = async (id: string, domain: string) => {
-	if (id === InstanceActor.id && domain === InstanceActor.domain)
-		return InstanceActor;
+	if (id === InstanceActor.id && domain === InstanceActor.domain) return InstanceActor;
 
 	const isUuid = uuidValidate(id);
 

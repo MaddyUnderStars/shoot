@@ -15,10 +15,7 @@ export const onTyping = makeHandler(async function (payload) {
 
 	if (!channel) throw new Error("Channel does not exist");
 
-	await channel.throwPermission(
-		User.create({ id: this.user_id }),
-		PERMISSION.VIEW_CHANNEL,
-	);
+	await channel.throwPermission(User.create({ id: this.user_id }), PERMISSION.VIEW_CHANNEL);
 
 	emitGatewayEvent(channel, {
 		type: "TYPING",

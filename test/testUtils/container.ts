@@ -1,10 +1,6 @@
 import crypto from "node:crypto";
 import { promisify } from "node:util";
-import {
-	GenericContainer,
-	type StartedTestContainer,
-	Wait,
-} from "testcontainers";
+import { GenericContainer, type StartedTestContainer, Wait } from "testcontainers";
 import { merge } from "ts-deepmerge";
 import type { DeepPartial } from "typeorm";
 import { inject } from "vitest";
@@ -16,9 +12,7 @@ import { getTestString } from "./random";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
-export const startShootContainer = async (
-	config?: DeepPartial<ConfigSchema>,
-) => {
+export const startShootContainer = async (config?: DeepPartial<ConfigSchema>) => {
 	const databaseName = await createTestDatabase();
 	const postgres = inject("POSTGRES_AUTH");
 
@@ -28,9 +22,7 @@ export const startShootContainer = async (
 
 	const name = getTestString();
 
-	const shoot = await new GenericContainer(
-		process.env.DOCKER_IMAGE ?? "shoot:test",
-	)
+	const shoot = await new GenericContainer(process.env.DOCKER_IMAGE ?? "shoot:test")
 		.withPullPolicy({ shouldPull: () => false })
 		.withHostname(name)
 		.withNetwork(network)
@@ -57,9 +49,7 @@ export const startShootContainer = async (
 							enabled: true,
 						},
 						security: {
-							jwt_secret: crypto
-								.randomBytes(256)
-								.toString("base64"),
+							jwt_secret: crypto.randomBytes(256).toString("base64"),
 						},
 						database: {
 							url: `postgres://${postgres.user}:${postgres.password}@${postgres.hostname}/${databaseName}`,
@@ -83,9 +73,7 @@ export const startShootContainer = async (
 };
 
 export const getShootContainerUrl = (container: StartedTestContainer) => {
-	return new URL(
-		`http://${container.getHost()}:${container.getFirstMappedPort()}`,
-	);
+	return new URL(`http://${container.getHost()}:${container.getFirstMappedPort()}`);
 };
 
 export const waitForLogMessage = async <

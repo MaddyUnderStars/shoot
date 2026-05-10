@@ -7,13 +7,13 @@ direct messages, group chats, and guilds.
 
 Current features:
 
--   Direct messaging
--   Group chats
--   Guilds and channels
--   Voice chat
--	URL previews ('Embeds')
--	Message attachments
--	WIP Federation with other Shoot instances
+- Direct messaging
+- Group chats
+- Guilds and channels
+- Voice chat
+- URL previews ('Embeds')
+- Message attachments
+- WIP Federation with other Shoot instances
 
 Planned:
 
@@ -26,6 +26,7 @@ Planned:
 ## Getting Started
 
 Just want to chat? Check out these client applications:
+
 - [Official Shoot Client](https://github.com/MaddyUnderStars/shoot-client). You can find a hosted version of this web app [here](https://understars.dev/shoot-client)
 - [Sheet](https://github.com/TheEntropyShard/Sheet)
 
@@ -36,6 +37,7 @@ If you instead want to install the server or contribute, see below.
 ## Installation
 
 Requires:
+
 - Nodejs version 18 or higher
 - Postgresql
 - Git
@@ -62,15 +64,17 @@ Shoot uses the [config](https://www.npmjs.com/package/config) package for readin
 
 You can find all available config options along with their documentation [here](https://github.com/MaddyUnderStars/shoot/blob/main/src/util/ConfigSchema.ts)
 
-You can use `npm run cli -- generate-keys` to generate the public and private keys needed for federation. *You still need to enable federation by setting `federation.enabled` to `true`*
+You can use `npm run cli -- generate-keys` to generate the public and private keys needed for federation. _You still need to enable federation by setting `federation.enabled` to `true`_
 This command will also generate the JWT token used for user authentication.
 
 Once you have your config file, you can start the server with:
+
 ```sh
 npm run start
 ```
 
 While you're in the server's CLI, you may also create a new user using the command:
+
 ```sh
 npm run cli -- add-user [username]
 ```

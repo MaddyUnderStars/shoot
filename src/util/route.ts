@@ -52,11 +52,7 @@ export const route = <Params, Response, Body, Query>(
 	// 500 is triggered for a bunch of stuff. see error.ts middleware
 	opts.errors[500] = opts.errors[500] ?? true;
 
-	const ret: RequestHandler<Params, Response, Body, Query> = (
-		req,
-		res,
-		next,
-	) => {
+	const ret: RequestHandler<Params, Response, Body, Query> = (req, res, next) => {
 		return parseRequest(opts).call(this, req, res, async () => {
 			try {
 				// The handler may be async, so this await is required

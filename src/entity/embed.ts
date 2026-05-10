@@ -1,10 +1,4 @@
-import {
-	BaseEntity,
-	Column,
-	CreateDateColumn,
-	Entity,
-	PrimaryColumn,
-} from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 import { z } from "zod";
 import { onlyTruthy } from "../util/object";
 

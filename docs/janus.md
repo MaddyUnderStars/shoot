@@ -3,6 +3,7 @@
 Shoot supports voice calling via [Janus Gateway](https://github.com/meetecho/janus-gateway).
 
 You must build Janus with the following optional dependencies:
+
 - [libopus](https://opus-codec.org/)
 - [libwebsockets](https://libwebsockets.org/). Otherwise, must use Unix sockets. HTTP API is not supported.
 
@@ -13,7 +14,7 @@ You will also need an address to host Shoot's signalling server (preferably a (s
 Consult the Janus documentation.
 
 For my case running an instance in Oracle Cloud, I had to provide the interface (`-i`) and public IP `--nat-1-1`.
-Whether or not this is *correct* is unknown to me.
+Whether or not this is _correct_ is unknown to me.
 
 ## Shoot Configuration
 

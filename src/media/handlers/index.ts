@@ -10,10 +10,7 @@ export type GatewayMessageHandler<T> = (
 	message: T,
 ) => Promise<unknown> | unknown;
 
-export const makeHandler = <T>(
-	handler: GatewayMessageHandler<T>,
-	schema: ZodSchema<T>,
-) => {
+export const makeHandler = <T>(handler: GatewayMessageHandler<T>, schema: ZodSchema<T>) => {
 	return function func(this: MediaSocket, data: T) {
 		const ret = schema.safeParse(data);
 		if (!ret.success) {

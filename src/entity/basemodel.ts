@@ -15,9 +15,7 @@ export abstract class BaseModel extends BaseEntity {
 
 	// biome-ignore lint/correctness/noUnusedPrivateClassMembers: incorrect lint
 	private toJSON = () => {
-		throw new Error(
-			"Do not return database entities directly. Call .toPublic or .toPrivate",
-		);
+		throw new Error("Do not return database entities directly. Call .toPublic or .toPrivate");
 	};
 
 	// todo: better types

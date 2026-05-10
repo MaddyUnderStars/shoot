@@ -28,10 +28,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 	const channel = await getChannel(payload.channel_id);
 	if (!channel) throw new Error("Channel does not exist");
 
-	await channel.throwPermission(
-		User.create({ id: this.user_id }),
-		PERMISSION.VIEW_CHANNEL,
-	);
+	await channel.throwPermission(User.create({ id: this.user_id }), PERMISSION.VIEW_CHANNEL);
 
 	this.member_list.channel_id = channel.id;
 	this.member_list.range = payload.range.sort((a, b) => a - b);
@@ -111,10 +108,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 /**
  * Listen for guild members who gain roles and move into our listen range
  */
-export const handleMemberListRoleAdd = async (
-	socket: Websocket,
-	event: ROLE_MEMBER_ADD,
-) => {
+export const handleMemberListRoleAdd = async (socket: Websocket, event: ROLE_MEMBER_ADD) => {
 	if (!socket.member_list.channel_id) return; // hm
 
 	// If this event is for a guild that does not contain our channel, ignore it
@@ -134,21 +128,13 @@ export const handleMemberListRoleAdd = async (
 		return;
 	}
 
-	await listenRangeEvent(
-		socket,
-		event.member.id,
-		socket.member_list.channel_id,
-	);
+	await listenRangeEvent(socket, event.member.id, socket.member_list.channel_id);
 };
 
 /**
  * Listen to this user, and if they leave the range, stop listening
  */
-const listenRangeEvent = async (
-	socket: Websocket,
-	member_id: string,
-	channel_id: string,
-) => {
+const listenRangeEvent = async (socket: Websocket, member_id: string, channel_id: string) => {
 	if (socket.member_list.events[member_id]) return;
 	if (socket.user_id === member_id) return;
 
@@ -200,20 +186,13 @@ const listenRangeEvent = async (
 	);
 };
 
-const unsubscribeOutOfRange = (
-	socket: Websocket,
-	items: MEMBERS_CHUNK["items"],
-) => {
+const unsubscribeOutOfRange = (socket: Websocket, items: MEMBERS_CHUNK["items"]) => {
 	const keep = new Set(
-		items
-			.filter((x) => typeof x !== "string")
-			.map((x) => x.member_id ?? x.user_id),
+		items.filter((x) => typeof x !== "string").map((x) => x.member_id ?? x.user_id),
 	);
 
 	// Remove all subscriptions that are not in the new range
-	const [_, remove] = partition(Object.keys(socket.member_list.events), (x) =>
-		keep.has(x),
-	);
+	const [_, remove] = partition(Object.keys(socket.member_list.events), (x) => keep.has(x));
 
 	for (const x of remove) {
 		if (!socket.member_list.events[x]) continue;
@@ -281,9 +260,5 @@ const getMembers = async (
 		name: string;
 	}>
 > => {
-	return await getDatabase().query(MEMBERS_QUERY, [
-		channel_id,
-		range_low,
-		range_high,
-	]);
+	return await getDatabase().query(MEMBERS_QUERY, [channel_id, range_low, range_high]);
 };

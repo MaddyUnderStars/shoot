@@ -51,10 +51,7 @@ router.patch(
 			if (req.body.current_password) {
 				if (
 					!req.user.password_hash ||
-					!(await bcrypt.compare(
-						req.body.current_password,
-						req.user.password_hash,
-					))
+					!(await bcrypt.compare(req.body.current_password, req.user.password_hash))
 				)
 					throw new HttpError("Invalid login", 401);
 			}
@@ -62,8 +59,7 @@ router.patch(
 			const update: Partial<User> = {};
 
 			// I'm sure there's a better way to do this...
-			if (req.body.display_name)
-				update.display_name = req.body.display_name;
+			if (req.body.display_name) update.display_name = req.body.display_name;
 			if (req.body.summary) update.summary = req.body.summary;
 
 			// current_password is required to set email

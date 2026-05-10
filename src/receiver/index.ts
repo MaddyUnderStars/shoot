@@ -44,10 +44,7 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 		throw new APError(`Activity with id ${safe.id} already processed`);
 	}
 
-	await ActivityHandlers[safe.type.toLowerCase() as Lowercase<string>](
-		activity,
-		target,
-	);
+	await ActivityHandlers[safe.type.toLowerCase() as Lowercase<string>](activity, target);
 };
 
 const worker = new Worker("inbound", jobHandler, {
@@ -59,9 +56,7 @@ const worker = new Worker("inbound", jobHandler, {
 });
 
 worker.on("failed", (job) => {
-	console.warn(
-		`${new Date()} Activity ${job?.data.activity.id} failed ${job?.failedReason}`,
-	);
+	console.warn(`${new Date()} Activity ${job?.data.activity.id} failed ${job?.failedReason}`);
 });
 
 worker.on("error", (e) => {

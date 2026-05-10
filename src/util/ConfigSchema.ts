@@ -155,9 +155,7 @@ export const ConfigSchema = z.object({
 			 *
 			 * TODO it would be good if we could provide reasons for these
 			 */
-			instances: z
-				.record(z.string(), z.nativeEnum(InstanceBehaviour))
-				.default({}),
+			instances: z.record(z.string(), z.nativeEnum(InstanceBehaviour)).default({}),
 		})
 		.prefault({
 			webapp_url: "http://localhost",

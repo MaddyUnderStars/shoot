@@ -17,20 +17,13 @@ const Log = createLogger("GATEWAY:LISTENER");
  * @param emitters UUIDs of all event emitters, i.e. guilds, channels, users
  * @param callback Optional callback to use instead of default consume behaviour
  */
-export const listenEvents = (
-	socket: Websocket,
-	emitters: BaseModel[],
-	callback = consume,
-) => {
+export const listenEvents = (socket: Websocket, emitters: BaseModel[], callback = consume) => {
 	for (const emitter of emitters) {
 		const id = makeGatewayTarget(emitter);
 
-		if (socket.events[id])
-			Log.warn(`${socket.user_id} is already listening to ${emitter}`);
+		if (socket.events[id]) Log.warn(`${socket.user_id} is already listening to ${emitter}`);
 
-		socket.events[id] = listenGatewayEvent(emitter, (payload) =>
-			callback(socket, payload),
-		);
+		socket.events[id] = listenGatewayEvent(emitter, (payload) => callback(socket, payload));
 	}
 };
 
@@ -62,10 +55,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 			// if we leave a guild that we're subscribed to, remove our subscription
 			if (
 				!socket.member_list.channel_id ||
-				!(await channelInGuild(
-					socket.member_list.channel_id,
-					payload.guild,
-				))
+				!(await channelInGuild(socket.member_list.channel_id, payload.guild))
 			)
 				break;
 
@@ -97,9 +87,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 
 		case "ROLE_MEMBER_ADD":
 			// don't care about errors and can't slow down this function
-			setImmediate(() =>
-				handleMemberListRoleAdd(socket, payload).catch(() => {}),
-			);
+			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => {}));
 
 			break;
 		default:
