@@ -90,6 +90,12 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => {}));
 
 			break;
+
+		case "TYPING":
+			// don't send our typing indicators to ourselves
+			if (payload.user === socket.user_mention) return;
+
+			break;
 		default:
 			break;
 	}
