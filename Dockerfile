@@ -28,4 +28,4 @@ WORKDIR /app
 
 EXPOSE 3001
 
-CMD [ "./dist/bootstrap.js" ]
+CMD [ "./dist/src/bootstrap.js" ]

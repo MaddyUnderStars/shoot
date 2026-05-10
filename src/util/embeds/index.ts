@@ -17,7 +17,7 @@ export const EMBED_FETCH_OPTS: RequestInit = {
 // and conflicts with normal DOM types
 type Document = DomHandler["root"];
 
-export const fetchDom = async (url: URL) => {
+export const fetchDom = async (url: URL): Promise<Document> => {
 	const res = await fetch(url, EMBED_FETCH_OPTS);
 
 	const handler = new DomHandler();
