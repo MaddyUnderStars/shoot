@@ -24,5 +24,5 @@ export const generateRegInvite = async (code?: string, maxUses?: string, expiry?
 
 	Log.msg(`Saved invite with code ${code}`);
 
-	await closeDatabase();
+	closeDatabase();
 };

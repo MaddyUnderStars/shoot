@@ -115,8 +115,6 @@ router.post(
 
 			const expires = expiry ? new Date(expiry) : undefined;
 
-			await Invite.create();
-
 			const invite = Invite.create({
 				guild,
 				expires,

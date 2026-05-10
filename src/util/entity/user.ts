@@ -92,6 +92,13 @@ export const createUserForRemotePerson = async (lookup: string | URL | APActor) 
 	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
+	if (obj.followers && typeof obj.followers !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
+	if (obj.following && typeof obj.following !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
+
 	return User.create({
 		domain: mention.domain,
 
@@ -107,8 +114,8 @@ export const createUserForRemotePerson = async (lookup: string | URL | APActor) 
 			inbox: obj.inbox,
 			shared_inbox: obj.endpoints?.sharedInbox,
 			outbox: obj.outbox,
-			followers: obj.followers?.toString(),
-			following: obj.following?.toString(),
+			followers: obj.followers,
+			following: obj.following,
 		},
 	});
 };

@@ -57,8 +57,8 @@ router.post(
 			let to: User;
 			try {
 				to = await getOrFetchUser(user_id);
-			} catch (_) {
-				throw new Error("Could not find that user");
+			} catch (e) {
+				throw new Error("Could not find that user", { cause: e });
 			}
 
 			const rel = await acceptOrCreateRelationship(

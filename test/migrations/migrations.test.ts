@@ -11,7 +11,7 @@ describe("Migrations", () => {
 		const qr = db.createQueryRunner();
 		const migrations = db.migrations;
 
-		for (const migration of migrations.reverse()) {
+		for (const migration of migrations.toReversed()) {
 			await migration.down(qr);
 		}
 	});
@@ -23,7 +23,7 @@ describe("Migrations", () => {
 		const qr = db.createQueryRunner();
 		const migrations = db.migrations;
 
-		for (const migration of migrations.reverse()) {
+		for (const migration of migrations) {
 			await migration.up(qr);
 		}
 	});

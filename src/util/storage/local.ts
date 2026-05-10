@@ -51,7 +51,7 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 	let file: Stats;
 	try {
 		file = await fs.stat(p);
-	} catch (_) {
+	} catch {
 		return false;
 	}
 
@@ -88,7 +88,7 @@ const getFileStream = async (channel_id: string, hash: string) => {
 
 	try {
 		return Readable.from(createReadStream(normalised));
-	} catch (_) {
+	} catch {
 		return false;
 	}
 };

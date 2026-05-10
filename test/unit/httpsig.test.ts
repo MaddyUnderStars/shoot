@@ -1,13 +1,14 @@
 import type { APActivity } from "activitypub-types";
 import { test } from "../fixture";
 
-test("Using Instance Actor", async ({ api }) => {
+test("Using Instance Actor", async ({ api: _ }) => {
 	const { signWithHttpSignature, validateHttpSignature } =
 		await import("../../src/util/activitypub/httpsig");
 	const { User } = await import("../../src/entity/user");
 	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor");
 
 	const actor = await User.create({
+		// oxlint-disable-next-line typescript/no-misused-spread
 		...InstanceActor,
 		name: "remote_user",
 		remote_address: "http://localhost/users/remote_user",
@@ -24,13 +25,14 @@ test("Using Instance Actor", async ({ api }) => {
 	);
 });
 
-test("Using Instance Actor with Activity", async ({ api }) => {
+test("Using Instance Actor with Activity", async ({ api: _ }) => {
 	const { signWithHttpSignature, validateHttpSignature } =
 		await import("../../src/util/activitypub/httpsig");
 	const { User } = await import("../../src/entity/user");
 	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor");
 
 	const actor = await User.create({
+		// oxlint-disable-next-line typescript/no-misused-spread
 		...InstanceActor,
 		name: "remote_user2",
 		remote_address: "http://localhost/users/remote_user2",

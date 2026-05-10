@@ -40,4 +40,4 @@ const gateway = new GatewayServer(http);
 
 const media = new MediaGatewayServer();
 
-Promise.all([api.listen(PORT), gateway.listen(PORT), media.listen(MEDIA_PORT)]);
+void Promise.all([api.listen(PORT), gateway.listen(PORT), media.listen(MEDIA_PORT)]);

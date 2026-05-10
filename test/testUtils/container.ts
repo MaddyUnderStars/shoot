@@ -82,7 +82,7 @@ export const waitForLogMessage = async <
 >(
 	container: StartedTestContainer,
 	target: T,
-) => {
+): Promise<Ret> => {
 	const logs = await container.logs({ tail: 5 });
 
 	return new Promise((resolve, reject) => {
@@ -90,12 +90,12 @@ export const waitForLogMessage = async <
 			if (typeof target === "string" && line.includes(target)) {
 				logs.destroy();
 
-				return resolve(line as Ret);
+				return resolve(line);
 			} else if (target instanceof RegExp) {
 				const match = line.match(target);
 				if (match) {
 					logs.destroy();
-					return resolve(match as Ret);
+					return resolve(match);
 				}
 			}
 		});

@@ -24,6 +24,10 @@ export abstract class BaseModel extends BaseEntity {
 		return this;
 	}
 
+	public toString() {
+		return "mention" in this && typeof this.mention === "string" ? this.mention : this.id;
+	}
+
 	@BeforeInsert()
 	@BeforeUpdate()
 	public generate_id() {

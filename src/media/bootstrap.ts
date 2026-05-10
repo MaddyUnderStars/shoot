@@ -19,4 +19,4 @@ process.on("uncaughtException", (error, origin) => {
 
 const media = new MediaGatewayServer();
 
-media.listen(MEDIA_PORT);
+void media.listen(MEDIA_PORT);

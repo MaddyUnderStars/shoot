@@ -18,7 +18,7 @@ export const onIdentify = makeHandler(async function (payload) {
 		const ret = await validateMediaToken(payload.token);
 		user = ret.user;
 		channel = ret.channel;
-	} catch (_) {
+	} catch {
 		this.close(CLOSE_CODES.BAD_TOKEN);
 		return;
 	}
@@ -66,7 +66,7 @@ export const onIdentify = makeHandler(async function (payload) {
 	});
 
 	// Join the horde
-	this.events = listenMediaEvent(this.room_id, (payload) => this.send(payload));
+	this.events = listenMediaEvent(this.room_id, (data) => this.send(data));
 
 	await VoiceState.upsert(
 		VoiceState.create({

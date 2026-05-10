@@ -11,11 +11,11 @@ import { ActivityHandlers } from "./handlers";
 const getQueue = () => {
 	return config().federation.queue.use_inbound
 		? new Queue<APInboundJobData>("inbound", {
-				connection: {
-					host: config().redis.host,
-					port: config().redis.port,
-				},
-			})
+			connection: {
+				host: config().redis.host,
+				port: config().redis.port,
+			},
+		})
 		: null;
 };
 
@@ -43,7 +43,7 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 				id: safeActivity.id,
 				raw: safeActivity,
 			});
-		} catch (_) {
+		} catch {
 			throw new APError(`Activity with id ${safeActivity.id} already processed`);
 		}
 

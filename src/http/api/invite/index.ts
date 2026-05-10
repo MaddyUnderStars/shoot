@@ -81,12 +81,14 @@ router.post(
 					req.user,
 				);
 
-				return res.sendStatus(202);
+				res.sendStatus(202);
+				return;
 			}
 
 			await joinGuild(req.user.mention, invite.guild.mention);
 
-			return res.sendStatus(204);
+			res.sendStatus(204);
+			return
 		},
 	),
 );

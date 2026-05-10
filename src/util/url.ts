@@ -5,7 +5,7 @@ export const tryParseUrl = (input: string | URL) => {
 
 	try {
 		return new URL(input);
-	} catch (_) {
+	} catch {
 		return null;
 	}
 };

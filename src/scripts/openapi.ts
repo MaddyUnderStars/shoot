@@ -27,19 +27,19 @@ import apiRoutes from "../http/api";
 import { NO_AUTH_ROUTES } from "../http/middleware/auth";
 import { ZodHttpError } from "../util/route";
 
-const getRoutes = (router: Router) => {
-	const convertRegexToPath = (regexp: RegExp, keys: { name: string }[]) => {
-		return regexp
-			.toString()
-			.replaceAll("/^", "")
-			.replaceAll("\\/", "/")
-			.replaceAll("\\.", ".")
-			.replaceAll("/?(?=/|$)", "")
-			.replace(/\/i$/, "")
-			.replaceAll("(?:/([^/]+?))", () => `/{${keys.shift()?.name}}`);
-	};
+const convertRegexToPath = (regexp: RegExp, keys: { name: string }[]) => {
+	return regexp
+		.toString()
+		.replaceAll("/^", "")
+		.replaceAll("\\/", "/")
+		.replaceAll("\\.", ".")
+		.replaceAll("/?(?=/|$)", "")
+		.replace(/\/i$/, "")
+		.replaceAll("(?:/([^/]+?))", () => `/{${keys.shift()?.name}}`);
+};
 
-	const _getRoutes = (router: Router, prefix = "") => {
+const getRoutes = (baseRouter: Router) => {
+	const getRoutesRecurse = (router: Router, prefix = "") => {
 		const ret: Array<{
 			path: string;
 			method: Method;
@@ -58,7 +58,7 @@ const getRoutes = (router: Router) => {
 
 			if (layer.handle.name === "router") {
 				ret.push(
-					..._getRoutes(
+					...getRoutesRecurse(
 						//@ts-expect-error
 						layer.handle,
 						//@ts-expect-error
@@ -92,7 +92,7 @@ const getRoutes = (router: Router) => {
 		return ret;
 	};
 
-	const ret = _getRoutes(router);
+	const ret = getRoutesRecurse(baseRouter);
 	return ret;
 };
 
@@ -159,12 +159,12 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 				// }),
 				body: route.options?.body
 					? {
-							content: {
-								[requestContentType]: {
-									schema: route.options?.body,
-								},
+						content: {
+							[requestContentType]: {
+								schema: route.options?.body,
 							},
-						}
+						},
+					}
 					: undefined,
 				query: route.options?.query,
 			},

@@ -3,7 +3,7 @@ import { Writable } from "node:stream";
 
 export const createLogger = (context: string) => {
 	context = context.toUpperCase();
-	const doLog = (level: LogLevel, ...args: unknown[]) => {
+	const doLog = (level: LogLevel, ...args: unknown[]): string | void => {
 		if (options.level > level) return;
 
 		levelConsoleMap[level](
@@ -54,7 +54,7 @@ const levelConsoleMap = {
 	[LogLevel.msg]: console.log,
 	[LogLevel.warn]: console.warn,
 	[LogLevel.error]: console.error,
-	[LogLevel.none]: () => {},
+	[LogLevel.none]: () => { },
 } satisfies Record<LogLevel, (...data: unknown[]) => void>;
 
 // we can't use config here because importing config ends up parsing it

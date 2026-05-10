@@ -35,7 +35,7 @@ export const getDatabase = () => {
 };
 
 export const closeDatabase = () => {
-	connection?.destroy();
+	void connection?.destroy();
 	connection = null;
 	initCalled = null;
 };
@@ -67,7 +67,7 @@ const dbExists = async () => {
 	try {
 		await Migration.count();
 		return true;
-	} catch (_) {
+	} catch {
 		return false;
 	}
 };

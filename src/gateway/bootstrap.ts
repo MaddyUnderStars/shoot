@@ -19,4 +19,4 @@ process.on("uncaughtException", (error, origin) => {
 
 const gateway = new GatewayServer();
 
-gateway.listen(PORT);
+void gateway.listen(PORT);

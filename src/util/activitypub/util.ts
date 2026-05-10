@@ -33,7 +33,7 @@ export const splitQualifiedMention = (lookup: string | URL) => {
 		}
 
 		domain = url.hostname;
-		id = url.pathname.split("/").reverse()[0]; // not great
+		id = url.pathname.split("/").toReversed()[0]; // not great
 	}
 
 	return {

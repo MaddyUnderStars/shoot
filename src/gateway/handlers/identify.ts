@@ -26,7 +26,7 @@ export const onIdentify = makeHandler(async function (payload) {
 	let user: User;
 	try {
 		user = await getUserFromToken(payload.token);
-	} catch (_) {
+	} catch {
 		this.close(CLOSE_CODES.BAD_TOKEN);
 		return;
 	}
@@ -61,8 +61,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		channel_remote_id?: string;
 		users: ActorMention[];
 	}> = !dmChannels.length
-		? []
-		: await getDatabase()
+			? []
+			: await getDatabase()
 				.getRepository(VoiceState)
 				.createQueryBuilder("voice")
 				.leftJoin("voice.channel", "channel")

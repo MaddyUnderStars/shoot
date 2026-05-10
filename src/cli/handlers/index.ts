@@ -8,4 +8,4 @@ export const cliHandlers = {
 	"generate-reg-invite": generateRegInvite,
 	"add-user": addUser,
 	instance: instance,
-} as { [key: string]: (...rest: string[]) => unknown };
+} as { [key: string]: (...rest: string[]) => Promise<Error | void> | Error | void };

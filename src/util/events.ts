@@ -26,7 +26,7 @@ export const initRabbitMQ = async (consume: boolean) => {
 
 	const STREAM_NAME = "gateway";
 
-	Log.msg(`Connecting to ${url}`);
+	Log.msg(`Connecting to ${url.href}`);
 
 	client = await rabbit.connect({
 		hostname: url.hostname,

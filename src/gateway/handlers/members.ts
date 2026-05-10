@@ -31,6 +31,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 	await channel.throwPermission(User.create({ id: this.user_id }), PERMISSION.VIEW_CHANNEL);
 
 	this.member_list.channel_id = channel.id;
+	// oxlint-disable-next-line unicorn/no-array-sort
 	this.member_list.range = payload.range.sort((a, b) => a - b);
 
 	// TODO: this is a placeholder, simpler version for dm channels
@@ -99,7 +100,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 	unsubscribeOutOfRange(this, items);
 
-	consume(this, {
+	await consume(this, {
 		type: "MEMBERS_CHUNK",
 		items,
 	});
@@ -128,13 +129,13 @@ export const handleMemberListRoleAdd = async (socket: Websocket, event: ROLE_MEM
 		return;
 	}
 
-	await listenRangeEvent(socket, event.member.id, socket.member_list.channel_id);
+	listenRangeEvent(socket, event.member.id, socket.member_list.channel_id);
 };
 
 /**
  * Listen to this user, and if they leave the range, stop listening
  */
-const listenRangeEvent = async (socket: Websocket, member_id: string, channel_id: string) => {
+const listenRangeEvent = (socket: Websocket, member_id: string, channel_id: string) => {
 	if (socket.member_list.events[member_id]) return;
 	if (socket.user_id === member_id) return;
 

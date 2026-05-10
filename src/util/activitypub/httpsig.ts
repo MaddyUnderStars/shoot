@@ -18,10 +18,10 @@ import { APObjectIsActor } from "./util";
 
 const Log = createLogger("HTTPSIG");
 
-const getSignString = <T extends IncomingHttpHeaders>(
+const getSignString = (
 	target: string,
 	method: string,
-	headers: T,
+	headers: IncomingHttpHeaders,
 	names: string[],
 ) => {
 	const requestTarget = `${method.toLowerCase()} ${target}`;
@@ -251,6 +251,7 @@ export const signWithHttpSignature = (
 	const ret = {
 		method,
 		headers: {
+			// oxlint-disable-next-line typescript/no-misused-spread
 			...ACTIVITYPUB_FETCH_OPTS.headers,
 			...headers,
 			signature: header,

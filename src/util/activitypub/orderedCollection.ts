@@ -21,6 +21,7 @@ export const orderedCollectionHandler = async <T extends BaseModel>(
 
 	const paginator = buildPaginator({
 		entity,
+
 		paginationKeys: props.keys ? props.keys : (["id"] as Extract<BaseModel, string>),
 		query: {
 			limit: 50,
@@ -47,13 +48,13 @@ export const orderedCollectionHandler = async <T extends BaseModel>(
 	}
 
 	return addContext({
-		id: id.toString(),
+		id,
 
 		type: "OrderedCollection",
 		next: next ? next.toString() : undefined,
 		prev: prev ? prev.toString() : undefined,
 
 		totalItems: await qb.getCount(),
-		items: (data as T[]).map(convert),
+		items: data.map(convert),
 	});
 };

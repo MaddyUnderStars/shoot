@@ -37,9 +37,9 @@ const parseRequest = <TParams, TResponse, TBody, TQuery>(
 	};
 };
 
-export const route = <Params, Response, Body, Query>(
-	opts: RouteOptions<Params, Response, Body, Query>,
-	handler: RequestHandler<Params, Response, Body, Query>,
+export const route = <Params, TResponse, Body, Query>(
+	opts: RouteOptions<Params, TResponse, Body, Query>,
+	handler: RequestHandler<Params, TResponse, Body, Query>,
 ) => {
 	// these errors are generally always present. see error middleware
 	opts.errors = opts.errors ?? {};
@@ -52,10 +52,11 @@ export const route = <Params, Response, Body, Query>(
 	// 500 is triggered for a bunch of stuff. see error.ts middleware
 	opts.errors[500] = opts.errors[500] ?? true;
 
-	const ret: RequestHandler<Params, Response, Body, Query> = (req, res, next) => {
+	const ret: RequestHandler<Params, TResponse, Body, Query> = (req, res, next) => {
 		return parseRequest(opts).call(this, req, res, async () => {
 			try {
 				// The handler may be async, so this await is required
+				// oxlint-disable-next-line typescript/await-thenable
 				return await handler.call(this, req, res, next);
 			} catch (e) {
 				next(e);
@@ -97,7 +98,7 @@ enum ErrorTypes {
 }
 
 type ValidationErrors = Partial<{
-	[type in ErrorTypes]: ZodError<unknown>;
+	[type in ErrorTypes]: ZodError;
 }>;
 
 export const ZodHttpError = z

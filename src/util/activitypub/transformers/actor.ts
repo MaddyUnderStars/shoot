@@ -16,6 +16,8 @@ const getAPTypeFromActor = (actor: Actor) => {
 	if (actor instanceof User) return "Person";
 	if (actor instanceof Channel) return "Group";
 	if (actor instanceof Guild) return "Organization";
+
+	throw new APError("Not possible? Unknown Actor type");
 };
 
 export const buildAPActor = (actor: Actor): APActor => {

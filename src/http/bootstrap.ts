@@ -19,4 +19,4 @@ process.on("uncaughtException", (error, origin) => {
 
 const api = new APIServer();
 
-api.listen(PORT);
+void api.listen(PORT);

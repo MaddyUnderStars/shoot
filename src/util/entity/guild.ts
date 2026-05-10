@@ -225,6 +225,13 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 
 	if (!obj.id) throw new APError("Org must have ID");
 
+	if (obj.followers && typeof obj.followers !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
+	if (obj.following && typeof obj.following !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
+
 	const guild = Guild.create({
 		domain: mention.domain,
 		remote_id: mention.id,
@@ -244,44 +251,40 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 			inbox: obj.inbox,
 			shared_inbox: obj.endpoints?.sharedInbox,
 			outbox: obj.outbox,
-			followers: obj.followers?.toString(),
-			following: obj.following?.toString(),
+			followers: obj.followers,
+			following: obj.following,
 		},
 	});
 
 	await guild.save();
 
-	const channels = await Promise.all([
-		...(await resolveCollectionEntries(new URL(obj.following.toString()))).reduce(
-			(prev, curr) => {
-				if (typeof curr === "string") {
-					const url = tryParseUrl(curr);
-					if (!url) return prev;
-					prev.push(getOrFetchChannel(url));
-				} else if (ObjectIsGroup(curr)) {
-					prev.push(getOrFetchChannel(curr));
-				}
-				return prev;
-			},
-			[] as Array<Promise<Channel>>,
-		),
-	]);
+	const channels = await Promise.all((await resolveCollectionEntries(new URL(obj.following))).reduce(
+		(prev, curr) => {
+			if (typeof curr === "string") {
+				const url = tryParseUrl(curr);
+				if (!url) return prev;
+				prev.push(getOrFetchChannel(url));
+			} else if (ObjectIsGroup(curr)) {
+				prev.push(getOrFetchChannel(curr));
+			}
+			return prev;
+		},
+		[] as Array<Promise<Channel>>,
+	));
+
 
 	guild.channels = channels as GuildTextChannel[];
 	await Channel.save(channels);
 
-	const roles = await Promise.all([
-		...(await resolveCollectionEntries(new URL(obj.followers.toString()))).reduce(
-			(prev, curr) => {
-				if (typeof curr === "string" || ObjectIsRole(curr)) {
-					prev.push(createRoleFromRemote(curr));
-				}
-				return prev;
-			},
-			[] as Array<Promise<Role>>,
-		),
-		//.map((x) => createRoleFromRemote(x)),
-	]);
+	const roles = await Promise.all((await resolveCollectionEntries(new URL(obj.followers))).reduce(
+		(prev, curr) => {
+			if (typeof curr === "string" || ObjectIsRole(curr)) {
+				prev.push(createRoleFromRemote(curr));
+			}
+			return prev;
+		},
+		[] as Array<Promise<Role>>,
+	));
 
 	const everyone = roles.find((x) => x.remote_id === guild.remote_id);
 	if (!everyone)

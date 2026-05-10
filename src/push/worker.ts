@@ -54,7 +54,7 @@ const jobHandler = async (job: Job<PushNotificationJobData>) => {
 			);
 
 			console.log(res);
-		} catch (_e) {
+		} catch {
 			await sub.remove();
 		}
 	}
@@ -83,7 +83,7 @@ worker.on("error", (e) => {
 	console.error(e);
 });
 
-(async () => {
+void (async () => {
 	await initDatabase();
 
 	await worker.run();

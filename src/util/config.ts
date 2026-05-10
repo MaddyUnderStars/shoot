@@ -9,7 +9,7 @@ const Log = createLogger("config");
 let configCache: ConfigSchema | undefined;
 
 const sourceType = (schema: ZodObject) => {
-	if ("innerType" in schema._def) return sourceType(schema._def.innerType as ZodObject);
+	if ("innerType" in schema.def) return sourceType(schema.def.innerType as ZodObject);
 
 	return schema;
 };

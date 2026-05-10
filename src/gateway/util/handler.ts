@@ -5,7 +5,7 @@ import type { Websocket } from "../util/websocket";
 
 const Log = createLogger("gateway");
 
-export type GatewayMessageHandler<T> = (this: Websocket, message: T) => Promise<unknown> | unknown;
+export type GatewayMessageHandler<T> = (this: Websocket, message: T) => unknown;
 
 export const makeHandler = <T>(handler: GatewayMessageHandler<T>, schema: ZodSchema<T>) => {
 	return function func(this: Websocket, data: T) {
@@ -16,6 +16,7 @@ export const makeHandler = <T>(handler: GatewayMessageHandler<T>, schema: ZodSch
 			return;
 		}
 
-		return handler.call(this, data as T);
+		handler.call(this, data);
+		return;
 	};
 };

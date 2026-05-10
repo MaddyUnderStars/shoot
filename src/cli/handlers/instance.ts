@@ -6,7 +6,7 @@ import { appendToConfig } from "../util";
 const Log = createLogger("cli");
 
 export const instance = async (url: string, action: string) => {
-	if (!url) return Log.error("Must specify url");
+	if (!url) return new Error("Must specify URL");
 
 	const { config } = await import("../../util/config");
 
@@ -35,9 +35,9 @@ export const instance = async (url: string, action: string) => {
 
 		Log.msg(
 			`\n\n'${parsed.hostname}' content in our local database:\n` +
-				`Users: ${users}\n` +
-				`Channels: ${dm + text} (dm: ${dm}, guild: ${text})\n` +
-				`Guilds: ${guilds}`,
+			`Users: ${users}\n` +
+			`Channels: ${dm + text} (dm: ${dm}, guild: ${text})\n` +
+			`Guilds: ${guilds}`,
 		);
 
 		return closeDatabase();

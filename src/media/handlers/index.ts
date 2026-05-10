@@ -8,7 +8,7 @@ const Log = createLogger("gateway");
 export type GatewayMessageHandler<T> = (
 	this: MediaSocket,
 	message: T,
-) => Promise<unknown> | unknown;
+) => unknown;
 
 export const makeHandler = <T>(handler: GatewayMessageHandler<T>, schema: ZodSchema<T>) => {
 	return function func(this: MediaSocket, data: T) {
@@ -19,7 +19,8 @@ export const makeHandler = <T>(handler: GatewayMessageHandler<T>, schema: ZodSch
 			return;
 		}
 
-		return handler.call(this, data as T);
+		handler.call(this, data);
+		return;
 	};
 };
 

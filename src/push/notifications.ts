@@ -53,7 +53,7 @@ export const sendNotifications = async (message: Message) => {
 			promises.set(m, queueNotif(m, message));
 	}
 
-	await Promise.all(promises);
+	await Promise.all(promises.values());
 };
 
 const queueNotif = async (user: ActorMention, message: Message) => {
@@ -91,11 +91,11 @@ const getNotificationQueue = () => {
 
 	NOTIFICATION_QUEUE = config().notifications.enabled
 		? new Queue<PushNotificationJobData>("notifications", {
-				connection: {
-					host: config().redis.host,
-					port: config().redis.port,
-				},
-			})
+			connection: {
+				host: config().redis.host,
+				port: config().redis.port,
+			},
+		})
 		: null;
 
 	return NOTIFICATION_QUEUE;

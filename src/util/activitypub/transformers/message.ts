@@ -21,8 +21,8 @@ export const buildMessageFromAPNote = async (note: APNote, channel: Channel): Pr
 
 export const buildAPNote = (message: Message): APNote => {
 	const id = makeInstanceUrl(`/channel/${message.channel.id}/message/${message.id}`);
-	const attributedTo = makeInstanceUrl(`${getExternalPathFromActor(message.author)}`);
-	const to = makeInstanceUrl(`${getExternalPathFromActor(message.channel)}`);
+	const attributedTo = makeInstanceUrl(getExternalPathFromActor(message.author));
+	const to = makeInstanceUrl(getExternalPathFromActor(message.channel));
 
 	return {
 		type: "Note",
@@ -57,7 +57,7 @@ export const buildAPAnnounceNote = (inner: APNote, channel_id: string): APAnnoun
 	// TODO: this should be channel_id followers
 
 	return {
-		id: new URL(`/message/${inner.id?.split("/").reverse()[0]}/announce`, actor).toString(), // TODO
+		id: new URL(`/message/${inner.id?.split("/").toReversed()[0]}/announce`, actor).toString(), // TODO
 		type: "Announce",
 		actor,
 		published: inner.published,

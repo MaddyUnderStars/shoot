@@ -14,7 +14,7 @@ import { closeDatabase, initDatabase } from "../../util/database";
 import { joinGuild } from "../../util/entity/guild";
 
 const GUILD_ID = "01977599-db47-7058-a177-97e6f3e1ea7c";
-(async () => {
+void (async () => {
 	await initDatabase();
 
 	const guild = await Guild.findOneOrFail({ where: { id: GUILD_ID } });

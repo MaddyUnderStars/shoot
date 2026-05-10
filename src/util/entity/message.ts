@@ -94,7 +94,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 			try {
 				await federateMessage(message);
-			} catch (_) {
+			} catch {
 				// we'll likely want to implement some sort of retry
 				// or eventual mark as failed behaviour here
 				log.error("FIXME: message failed to federate");

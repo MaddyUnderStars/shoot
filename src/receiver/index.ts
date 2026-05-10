@@ -28,9 +28,9 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 	const safe = AP_ACTIVITY.parse(activity);
 
 	const [user, channel, guild] = await Promise.all([
-		await User.findOne({ where: { id: target_id } }),
-		await Channel.findOne({ where: { id: target_id } }),
-		await Guild.findOne({ where: { id: target_id } }),
+		User.findOne({ where: { id: target_id } }),
+		Channel.findOne({ where: { id: target_id } }),
+		Guild.findOne({ where: { id: target_id } }),
 	]);
 	const target = user ?? channel ?? guild;
 	if (!target) throw new APError("Could not find target");
@@ -40,7 +40,7 @@ const jobHandler = async (job: Job<APInboundJobData>) => {
 			id: safe.id,
 			raw: safe,
 		});
-	} catch (_) {
+	} catch {
 		throw new APError(`Activity with id ${safe.id} already processed`);
 	}
 
@@ -66,7 +66,7 @@ worker.on("error", (e) => {
 	console.error(e);
 });
 
-(async () => {
+void (async () => {
 	await initDatabase();
 	await initRabbitMQ(false);
 

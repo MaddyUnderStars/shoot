@@ -32,7 +32,7 @@ export const checkPermission = async (
 				qb.where(`roles_members.guildMembersId in ${sub}`);
 			})
 			.getMany()
-	).sort((a, b) => a.position - b.position);
+	).toSorted((a, b) => a.position - b.position);
 
 	const flat = new Set<PERMISSION>();
 	// for every role in order

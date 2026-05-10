@@ -2,7 +2,7 @@ import { getTestString } from "./random";
 import type { TestUser } from "./users";
 
 export const createTestGuild = async (owner: TestUser) => {
-	const name = `${getTestString()}`;
+	const name = getTestString();
 
 	const { createGuild } = await import("../../src/util/entity/guild");
 	const { getOrFetchUser } = await import("../../src/util/entity/user");

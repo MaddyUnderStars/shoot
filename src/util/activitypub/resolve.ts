@@ -125,21 +125,21 @@ export const resolveId = (prop: string | AnyAPObject | APLink | URL) => {
 	}
 
 	// we couldn't find an URL ID or mention
-	throw new APError(`Cannot resolve ${prop} to a URL or mention`);
+	throw new APError(`Cannot resolve ${JSON.stringify(prop)} to a URL or mention`);
 };
 
 /**
  * Returns either a URL or Object
  * @param prop A mention or URL string, or an AP object
  */
-export const resolveUrlOrObject = <T extends AnyAPObject | APLink>(
+export const resolveUrlOrObject = (
 	prop: string | AnyAPObject | APLink,
 ) => {
 	if (typeof prop === "string") {
 		const url = tryParseUrl(prop);
 		if (url) return url;
 	} else {
-		return prop as T;
+		return prop;
 	}
 
 	throw new APError(`Could not resolve ${prop} to an URL or object`);
@@ -245,7 +245,7 @@ export const resolveCollectionEntries = async (
 
 	const parent = await resolveAPObject(collection);
 
-	if (!ObjectIsCollection(parent)) throw new APError(`${collection} is not a collection`);
+	if (!ObjectIsCollection(parent)) throw new APError(`${collection.href} is not a collection`);
 
 	const items =
 		"items" in parent
@@ -254,8 +254,8 @@ export const resolveCollectionEntries = async (
 				? parent.orderedItems
 				: undefined;
 
-	if (!items && parent.first)
-		return await resolveCollectionEntries(new URL(parent.first.toString()), limit);
+	if (!items && parent.first && typeof parent.first === "string")
+		return await resolveCollectionEntries(new URL(parent.first), limit);
 
 	if (!items) throw new APError("can't find collection items");
 

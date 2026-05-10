@@ -5,4 +5,4 @@ extendZodWithOpenApi(z);
 
 import { handleCli } from "./cli";
 
-handleCli(process.argv);
+void handleCli(process.argv);

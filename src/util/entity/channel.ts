@@ -177,6 +177,12 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 
 	if (!obj.name) throw new APError("Remote 'channel' did not have name");
 
+	if (obj.followers && typeof obj.followers !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
+	if (obj.following && typeof obj.following !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
 	const owner = await resolveChannelOwner(obj.attributedTo);
 
 	if (!owner) throw new APError("Could not resolve channel owner");
@@ -206,33 +212,33 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 		// so need to save remote id to db and fetch by that
 
 		channel = DMChannel.create({
+			// oxlint-disable-next-line typescript/no-misused-spread
 			...channel,
 
 			owner,
 
 			// TODO: fetch recipients over time
-			recipients: await Promise.all([
-				...(await resolveCollectionEntries(new URL(obj.followers.toString()))).reduce(
-					(prev, curr) => {
-						const id = typeof curr === "string" ? curr : curr.id;
-						if (id !== obj.attributedTo) {
-							if (typeof curr === "string") {
-								const url = tryParseUrl(curr);
-								if (!url) return prev;
-								prev.push(getOrFetchUser(url));
-							} else if (ObjectIsPerson(curr)) {
-								prev.push(getOrFetchUser(curr));
-							}
+			recipients: await Promise.all((await resolveCollectionEntries(new URL(obj.followers))).reduce(
+				(prev, curr) => {
+					const id = typeof curr === "string" ? curr : curr.id;
+					if (id !== obj.attributedTo) {
+						if (typeof curr === "string") {
+							const url = tryParseUrl(curr);
+							if (!url) return prev;
+							prev.push(getOrFetchUser(url));
+						} else if (ObjectIsPerson(curr)) {
+							prev.push(getOrFetchUser(curr));
 						}
+					}
 
-						return prev;
-					},
-					[] as Array<Promise<User>>,
-				),
-			]),
+					return prev;
+				},
+				[] as Array<Promise<User>>,
+			)),
 		});
 	} else if (owner instanceof Guild) {
 		channel = GuildTextChannel.create({
+			// oxlint-disable-next-line typescript/no-misused-spread
 			...channel,
 
 			guild: owner,

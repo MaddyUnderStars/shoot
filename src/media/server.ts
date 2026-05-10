@@ -35,7 +35,7 @@ export class MediaGatewayServer {
 
 		try {
 			await initJanus();
-		} catch (_) {
+		} catch {
 			Log.error("Failed to connect to Janus. Webrtc will be unavailable");
 			return;
 		}

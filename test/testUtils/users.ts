@@ -12,14 +12,14 @@ const isApiServer = (target: APIServer | StartedTestContainer): target is APISer
 export type TestUser = Awaited<ReturnType<typeof createTestUser>>;
 
 export const createTestUser = async (target: APIServer | StartedTestContainer) => {
-	const username = `${getTestString()}`;
+	const username = getTestString();
 	let password: string;
 
 	let body: { token: string; user: PrivateUser };
 
 	if (isApiServer(target)) {
 		const { registerUser } = await import("../../src/util/entity/user");
-		password = `${getTestString()}`;
+		password = getTestString();
 		await registerUser(username, password);
 
 		body = (

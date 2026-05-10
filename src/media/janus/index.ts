@@ -46,9 +46,9 @@ export class Janus extends EventEmitter {
 		this.socket.on("error", this.onError);
 
 		return new Promise((resolve, reject) => {
-			const open = () => {
-				this.onOpen();
+			const open = async () => {
 				this.socket.removeListener("error", error);
+				await this.onOpen();
 				resolve();
 			};
 
@@ -143,8 +143,8 @@ export class Janus extends EventEmitter {
 
 	// TODO: reject on timeout?
 	// TODO: rewrite
-	private send = <O extends JANUS_RESPONSE_DATA, I extends JANUS_REQUEST = JANUS_REQUEST>(
-		payload: I,
+	private send = <O extends JANUS_RESPONSE_DATA>(
+		payload: JANUS_REQUEST,
 	): Promise<O> =>
 		new Promise((resolve) => {
 			const transaction = `${this.sequence++}`;
@@ -152,13 +152,15 @@ export class Janus extends EventEmitter {
 
 			const listener = (data: RawData) => {
 				// TODO: is `listener` unique for each call to send?
-				const json = JSON.parse(data.toString()) as JANUS_RESPONSE<O>;
+				// oxlint-disable-next-line typescript/no-base-to-string
+				const json: JANUS_RESPONSE<O> = JSON.parse(data.toString());
 
 				if (json.transaction !== transaction) return;
 
 				if ("plugindata" in json && json.plugindata) {
 					json.data = json.plugindata;
-					if ("data" in json.data) json.data = json.data.data as unknown as O;
+
+					if ("data" in json.data) json.data = json.data.data as O;
 					json.plugindata = undefined;
 				}
 
@@ -183,6 +185,7 @@ export class Janus extends EventEmitter {
 				) {
 					this.socket.removeListener("message", listener);
 					this.socket.setMaxListeners(this.socket.getMaxListeners() - 1);
+
 					resolve({} as O);
 				}
 			};

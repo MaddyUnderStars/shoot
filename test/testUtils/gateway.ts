@@ -3,7 +3,7 @@ import type { GATEWAY_PAYLOAD } from "../../src/gateway/util/validation/send";
 
 export class FakeSocket extends EventEmitter {
 	sequence = 0;
-	events = {};
+	events: Record<string, () => void> = {};
 	member_list = {
 		events: {},
 	};
@@ -17,7 +17,7 @@ export class FakeSocket extends EventEmitter {
 
 	public close(code?: number) {
 		this.emit("close", code);
-		Object.values(this.events).map((x) => (x as () => void)());
+		Object.values(this.events).map((x) => x());
 		this.removeAllListeners();
 	}
 }

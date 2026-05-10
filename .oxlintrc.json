@@ -1,12 +1,30 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["typescript", "unicorn", "oxc"],
+	"plugins": [
+		"typescript",
+		"unicorn",
+		"oxc"
+	],
 	"ignorePatterns": [],
 	"categories": {
 		"correctness": "error",
 		"suspicious": "warn"
 	},
-	"rules": {},
+	"rules": {
+		"typescript/no-unsafe-type-assertion": "off", // annoying
+		"typescript/restrict-template-expressions": "off", // annoying
+		"oxc/no-this-in-exported-function": "off", // not using a bundler
+	},
+	"overrides": [
+		{
+			"files": [
+				"test/fixture.ts"
+			],
+			"rules": {
+				"eslint/no-empty-pattern": "off",
+			}
+		}
+	],
 	"env": {
 		"builtin": true
 	},
