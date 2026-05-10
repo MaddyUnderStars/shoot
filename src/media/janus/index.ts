@@ -143,9 +143,7 @@ export class Janus extends EventEmitter {
 
 	// TODO: reject on timeout?
 	// TODO: rewrite
-	private send = <O extends JANUS_RESPONSE_DATA>(
-		payload: JANUS_REQUEST,
-	): Promise<O> =>
+	private send = <O extends JANUS_RESPONSE_DATA>(payload: JANUS_REQUEST): Promise<O> =>
 		new Promise((resolve) => {
 			const transaction = `${this.sequence++}`;
 			const decorated = { ...payload, token: this.token, transaction };

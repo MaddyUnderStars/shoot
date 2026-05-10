@@ -2,7 +2,6 @@ import type { User } from "../../entity/user";
 import { config } from "../config";
 import { makeInstanceUrl } from "../url";
 
-
 export const InstanceActor = Object.freeze({
 	id: "actor",
 	display_name: config().federation.webapp_url.hostname,

@@ -88,7 +88,7 @@ router.post(
 			await joinGuild(req.user.mention, invite.guild.mention);
 
 			res.sendStatus(204);
-			return
+			return;
 		},
 	),
 );

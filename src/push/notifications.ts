@@ -91,11 +91,11 @@ const getNotificationQueue = () => {
 
 	NOTIFICATION_QUEUE = config().notifications.enabled
 		? new Queue<PushNotificationJobData>("notifications", {
-			connection: {
-				host: config().redis.host,
-				port: config().redis.port,
-			},
-		})
+				connection: {
+					host: config().redis.host,
+					port: config().redis.port,
+				},
+			})
 		: null;
 
 	return NOTIFICATION_QUEUE;

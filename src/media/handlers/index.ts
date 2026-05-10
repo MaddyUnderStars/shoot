@@ -5,10 +5,7 @@ import type { MediaSocket } from "../util/websocket";
 
 const Log = createLogger("gateway");
 
-export type GatewayMessageHandler<T> = (
-	this: MediaSocket,
-	message: T,
-) => unknown;
+export type GatewayMessageHandler<T> = (this: MediaSocket, message: T) => unknown;
 
 export const makeHandler = <T>(handler: GatewayMessageHandler<T>, schema: ZodSchema<T>) => {
 	return function func(this: MediaSocket, data: T) {

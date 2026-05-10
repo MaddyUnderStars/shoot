@@ -132,9 +132,7 @@ export const resolveId = (prop: string | AnyAPObject | APLink | URL) => {
  * Returns either a URL or Object
  * @param prop A mention or URL string, or an AP object
  */
-export const resolveUrlOrObject = (
-	prop: string | AnyAPObject | APLink,
-) => {
+export const resolveUrlOrObject = (prop: string | AnyAPObject | APLink) => {
 	if (typeof prop === "string") {
 		const url = tryParseUrl(prop);
 		if (url) return url;

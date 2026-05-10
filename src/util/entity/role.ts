@@ -36,19 +36,21 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 		members: [], // to be fetched later
 	});
 
-	const members = await Promise.all((await resolveCollectionEntries(new URL(obj.members))).reduce(
-		(prev, curr) => {
-			if (typeof curr === "string") {
-				const url = tryParseUrl(curr);
-				if (!url) return prev;
-				prev.push(getOrFetchMember(url));
-			} else if (ObjectIsPerson(curr)) {
-				prev.push(getOrFetchMember(curr));
-			}
-			return prev;
-		},
-		[] as Array<Promise<Member>>,
-	));
+	const members = await Promise.all(
+		(await resolveCollectionEntries(new URL(obj.members))).reduce(
+			(prev, curr) => {
+				if (typeof curr === "string") {
+					const url = tryParseUrl(curr);
+					if (!url) return prev;
+					prev.push(getOrFetchMember(url));
+				} else if (ObjectIsPerson(curr)) {
+					prev.push(getOrFetchMember(curr));
+				}
+				return prev;
+			},
+			[] as Array<Promise<Member>>,
+		),
+	);
 
 	role.members = members;
 

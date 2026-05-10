@@ -35,9 +35,9 @@ export const instance = async (url: string, action: string) => {
 
 		Log.msg(
 			`\n\n'${parsed.hostname}' content in our local database:\n` +
-			`Users: ${users}\n` +
-			`Channels: ${dm + text} (dm: ${dm}, guild: ${text})\n` +
-			`Guilds: ${guilds}`,
+				`Users: ${users}\n` +
+				`Channels: ${dm + text} (dm: ${dm}, guild: ${text})\n` +
+				`Guilds: ${guilds}`,
 		);
 
 		return closeDatabase();

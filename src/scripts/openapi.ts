@@ -159,12 +159,12 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 				// }),
 				body: route.options?.body
 					? {
-						content: {
-							[requestContentType]: {
-								schema: route.options?.body,
+							content: {
+								[requestContentType]: {
+									schema: route.options?.body,
+								},
 							},
-						},
-					}
+						}
 					: undefined,
 				query: route.options?.query,
 			},

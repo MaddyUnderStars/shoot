@@ -98,7 +98,6 @@ export const createUserForRemotePerson = async (lookup: string | URL | APActor) 
 	if (obj.following && typeof obj.following !== "string")
 		throw new APError("Remote object `followers` must be string if present");
 
-
 	return User.create({
 		domain: mention.domain,
 

@@ -11,11 +11,11 @@ import { ActivityHandlers } from "./handlers";
 const getQueue = () => {
 	return config().federation.queue.use_inbound
 		? new Queue<APInboundJobData>("inbound", {
-			connection: {
-				host: config().redis.host,
-				port: config().redis.port,
-			},
-		})
+				connection: {
+					host: config().redis.host,
+					port: config().redis.port,
+				},
+			})
 		: null;
 };
 

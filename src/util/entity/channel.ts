@@ -218,23 +218,25 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 			owner,
 
 			// TODO: fetch recipients over time
-			recipients: await Promise.all((await resolveCollectionEntries(new URL(obj.followers))).reduce(
-				(prev, curr) => {
-					const id = typeof curr === "string" ? curr : curr.id;
-					if (id !== obj.attributedTo) {
-						if (typeof curr === "string") {
-							const url = tryParseUrl(curr);
-							if (!url) return prev;
-							prev.push(getOrFetchUser(url));
-						} else if (ObjectIsPerson(curr)) {
-							prev.push(getOrFetchUser(curr));
+			recipients: await Promise.all(
+				(await resolveCollectionEntries(new URL(obj.followers))).reduce(
+					(prev, curr) => {
+						const id = typeof curr === "string" ? curr : curr.id;
+						if (id !== obj.attributedTo) {
+							if (typeof curr === "string") {
+								const url = tryParseUrl(curr);
+								if (!url) return prev;
+								prev.push(getOrFetchUser(url));
+							} else if (ObjectIsPerson(curr)) {
+								prev.push(getOrFetchUser(curr));
+							}
 						}
-					}
 
-					return prev;
-				},
-				[] as Array<Promise<User>>,
-			)),
+						return prev;
+					},
+					[] as Array<Promise<User>>,
+				),
+			),
 		});
 	} else if (owner instanceof Guild) {
 		channel = GuildTextChannel.create({

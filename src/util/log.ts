@@ -54,7 +54,7 @@ const levelConsoleMap = {
 	[LogLevel.msg]: console.log,
 	[LogLevel.warn]: console.warn,
 	[LogLevel.error]: console.error,
-	[LogLevel.none]: () => { },
+	[LogLevel.none]: () => {},
 } satisfies Record<LogLevel, (...data: unknown[]) => void>;
 
 // we can't use config here because importing config ends up parsing it

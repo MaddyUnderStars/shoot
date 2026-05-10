@@ -11,7 +11,7 @@ export const appendToConfig = async (
 	let existing: string | undefined;
 	try {
 		existing = (await readFile(file)).toString();
-	} catch { }
+	} catch {}
 
 	const existingConfig = existing ? JSON.parse(existing) : {};
 
