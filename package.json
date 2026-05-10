@@ -19,6 +19,7 @@
 		"config": "node --enable-source-maps dist/scripts/configSchema.js",
 		"test": "vitest",
 		"fmt": "oxfmt",
+		"lint": "oxlint",
 		"postinstall": "patch-package"
 	},
 	"dependencies": {
@@ -68,6 +69,8 @@
 		"husky": "^9.1.7",
 		"lint-staged": "^16.1.0",
 		"oxfmt": "^0.48.0",
+		"oxlint": "^1.63.0",
+		"oxlint-tsgolint": "^0.22.1",
 		"pg": "^8.16.3",
 		"supertest": "^7.2.2",
 		"testcontainers": "^11.11.0",
@@ -76,6 +79,7 @@
 		"vitest": "^4.0.16"
 	},
 	"lint-staged": {
-		"*.{ts,js,md}": "oxfmt"
+		"*.{ts,js,md,tsx,jsx,css}": "oxlint",
+		"*": "oxfmt"
 	}
 }
