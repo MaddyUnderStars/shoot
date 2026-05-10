@@ -16,7 +16,7 @@
 		"openapi": "node --enable-source-maps dist/scripts/openapi.js",
 		"config": "node --enable-source-maps dist/scripts/configSchema.js",
 		"test": "vitest",
-		"lint": "npx @biomejs/biome check --write src",
+		"fmt": "oxfmt",
 		"postinstall": "patch-package"
 	},
 	"author": "MaddyUnderStars",
@@ -39,6 +39,7 @@
 		"@vitest/coverage-v8": "^4.0.16",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.1.0",
+		"oxfmt": "^0.48.0",
 		"pg": "^8.16.3",
 		"supertest": "^7.2.2",
 		"testcontainers": "^11.11.0",
@@ -75,6 +76,6 @@
 		"zod": "^4.3.6"
 	},
 	"lint-staged": {
-		"*.{ts,js,md}": "npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}"
+		"*.{ts,js,md}": "oxfmt"
 	}
 }
