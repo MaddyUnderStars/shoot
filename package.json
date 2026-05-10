@@ -22,7 +22,6 @@
 	"author": "MaddyUnderStars",
 	"license": "AGPL-3.0-or-later",
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.4",
 		"@swc/core": "^1.15.8",
 		"@testcontainers/postgresql": "^11.11.0",
 		"@types/bcrypt": "^5.0.2",
