@@ -96,6 +96,15 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 			if (payload.user === socket.user_mention) return;
 
 			break;
+
+		case "MESSAGE_CREATE":
+			// when we send a message, reset the last typing timestamp
+			// so that we can send typing events again
+			if (payload.message.author_id === socket.user_mention) {
+				socket.last_typing = undefined;
+			}
+
+			break;
 		default:
 			break;
 	}
