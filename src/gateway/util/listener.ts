@@ -86,7 +86,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 
 		case "ROLE_MEMBER_ADD":
 			// don't care about errors and can't slow down this function
-			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => { }));
+			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => {}));
 
 			break;
 

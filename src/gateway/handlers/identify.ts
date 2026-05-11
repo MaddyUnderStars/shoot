@@ -62,8 +62,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		channel_remote_id?: string;
 		users: ActorMention[];
 	}> = !dmChannels.length
-			? []
-			: await getDatabase()
+		? []
+		: await getDatabase()
 				.getRepository(VoiceState)
 				.createQueryBuilder("voice")
 				.leftJoin("voice.channel", "channel")
@@ -105,7 +105,7 @@ export const onIdentify = makeHandler(async function (payload) {
 		// this user target is emitted to for events about us that are NOT private
 		user,
 		// we receive non-private events from these users
-		...relationships.map(x => x.from.id === user.id ? x.to : x.from),
+		...relationships.map((x) => (x.from.id === user.id ? x.to : x.from)),
 		...dmChannels,
 		...guilds,
 		...guilds.flatMap((x) => x.channels),

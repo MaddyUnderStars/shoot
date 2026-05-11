@@ -54,15 +54,23 @@ export const createRelationship = async (
 	await rel.save();
 
 	// have to emit two events here as they contain different info
-	emitGatewayEvent(to, {
-		type: "RELATIONSHIP_CREATE",
-		relationship: rel.toClient(to.id),
-	}, true);
+	emitGatewayEvent(
+		to,
+		{
+			type: "RELATIONSHIP_CREATE",
+			relationship: rel.toClient(to.id),
+		},
+		true,
+	);
 
-	emitGatewayEvent(from, {
-		type: "RELATIONSHIP_CREATE",
-		relationship: rel.toClient(from.id),
-	}, true);
+	emitGatewayEvent(
+		from,
+		{
+			type: "RELATIONSHIP_CREATE",
+			relationship: rel.toClient(from.id),
+		},
+		true,
+	);
 
 	if (to.isRemote()) {
 		// this relationship is being sent by us
@@ -109,15 +117,23 @@ export const acceptRelationship = async (from: User, to: User) => {
 	await Relationship.update({ id: rel.id }, { to_state: RelationshipType.accepted });
 
 	// have to emit two events here as they contain different info
-	emitGatewayEvent(to, {
-		type: "RELATIONSHIP_UPDATE",
-		relationship: rel.toClient(to.id),
-	}, true);
+	emitGatewayEvent(
+		to,
+		{
+			type: "RELATIONSHIP_UPDATE",
+			relationship: rel.toClient(to.id),
+		},
+		true,
+	);
 
-	emitGatewayEvent(from, {
-		type: "RELATIONSHIP_UPDATE",
-		relationship: rel.toClient(from.id),
-	}, true);
+	emitGatewayEvent(
+		from,
+		{
+			type: "RELATIONSHIP_UPDATE",
+			relationship: rel.toClient(from.id),
+		},
+		true,
+	);
 
 	if (from.isRemote() && rel.reference_object) {
 		// This relationship is from someone on a remote server

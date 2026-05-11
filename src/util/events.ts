@@ -85,7 +85,11 @@ export const closeRabbitMQ = async () => {
  * @param payload Gateway payload to send to clients
  * @param isPrivate For user targets - whether this event should only been delivered to the target user and not to other users listening to their ID
  */
-export const emitGatewayEvent = (targets: BaseModel | BaseModel[], payload: GATEWAY_EVENT, isPrivate = false) => {
+export const emitGatewayEvent = (
+	targets: BaseModel | BaseModel[],
+	payload: GATEWAY_EVENT,
+	isPrivate = false,
+) => {
 	if (!Array.isArray(targets)) targets = [targets];
 
 	const targetIds = targets.map(makeGatewayTarget);

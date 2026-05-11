@@ -29,11 +29,15 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 
 	const from = await getOrFetchUser(resolveId(activity.actor));
 
-	emitGatewayEvent(from, {
-		type: "MEDIA_TOKEN_RECEIVED",
-		token: activity.result,
-		endpoint: activity.target,
-	}, true);
+	emitGatewayEvent(
+		from,
+		{
+			type: "MEDIA_TOKEN_RECEIVED",
+			token: activity.result,
+			endpoint: activity.target,
+		},
+		true,
+	);
 };
 
 const AcceptFollow: ActivityHandler = async (activity, target) => {

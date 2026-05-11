@@ -74,10 +74,14 @@ export const createDmChannel = async (
 		if (onKeyGen) await onKeyGen(channel);
 	});
 
-	emitGatewayEvent([...recipients, owner], {
-		type: "CHANNEL_CREATE",
-		channel: channel.toPublic(),
-	}, true);
+	emitGatewayEvent(
+		[...recipients, owner],
+		{
+			type: "CHANNEL_CREATE",
+			channel: channel.toPublic(),
+		},
+		true,
+	);
 
 	return channel;
 };

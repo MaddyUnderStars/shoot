@@ -104,10 +104,14 @@ export const joinGuild = async (user_id: ActorMention, guild_id: ActorMention) =
 		member: member.toPublic(),
 	});
 
-	emitGatewayEvent(user, {
-		type: "GUILD_CREATE",
-		guild: guild.toPublic(),
-	}, true);
+	emitGatewayEvent(
+		user,
+		{
+			type: "GUILD_CREATE",
+			guild: guild.toPublic(),
+		},
+		true,
+	);
 
 	return member;
 };
@@ -155,10 +159,14 @@ export const createGuild = async (name: string, owner: User) => {
 
 	setImmediate(() => generateSigningKeys(guild));
 
-	emitGatewayEvent(owner, {
-		type: "GUILD_CREATE",
-		guild: guild.toPublic(),
-	}, true);
+	emitGatewayEvent(
+		owner,
+		{
+			type: "GUILD_CREATE",
+			guild: guild.toPublic(),
+		},
+		true,
+	);
 
 	// create channels
 
