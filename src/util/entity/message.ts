@@ -208,6 +208,8 @@ const processEmbeds = async (message: Message) => {
 		embeds.push(embed);
 	}
 
+	if (!embeds.length) return;
+
 	await Promise.all(embeds.map((x) => x.save()));
 
 	// TODO: I would prefer if I could just insert into the junction table
