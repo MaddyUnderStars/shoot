@@ -77,7 +77,7 @@ export const createDmChannel = async (
 	emitGatewayEvent([...recipients, owner], {
 		type: "CHANNEL_CREATE",
 		channel: channel.toPublic(),
-	});
+	}, true);
 
 	return channel;
 };

@@ -100,12 +100,12 @@ router.delete(
 			emitGatewayEvent(req.user, {
 				type: "RELATIONSHIP_DELETE",
 				user: to.mention,
-			});
+			}, true);
 
 			emitGatewayEvent(to, {
 				type: "RELATIONSHIP_DELETE",
 				user: req.user.mention,
-			});
+			}, true);
 
 			// todo federate
 

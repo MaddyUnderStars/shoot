@@ -33,7 +33,7 @@ const AcceptJoin: ActivityHandler = async (activity, target) => {
 		type: "MEDIA_TOKEN_RECEIVED",
 		token: activity.result,
 		endpoint: activity.target,
-	});
+	}, true);
 };
 
 const AcceptFollow: ActivityHandler = async (activity, target) => {

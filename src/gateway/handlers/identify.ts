@@ -6,6 +6,7 @@ import type { ActorMention } from "../../util/activitypub/constants";
 import { getDatabase } from "../../util/database";
 import { getGuilds } from "../../util/entity/guild";
 import { fetchRelationships } from "../../util/entity/relationship";
+import { listenGatewayEvent, makeGatewayTarget } from "../../util/events";
 import { getUserFromToken } from "../../util/token";
 import { CLOSE_CODES } from "../util/codes";
 import { makeHandler } from "../util/handler";
@@ -61,8 +62,8 @@ export const onIdentify = makeHandler(async function (payload) {
 		channel_remote_id?: string;
 		users: ActorMention[];
 	}> = !dmChannels.length
-		? []
-		: await getDatabase()
+			? []
+			: await getDatabase()
 				.getRepository(VoiceState)
 				.createQueryBuilder("voice")
 				.leftJoin("voice.channel", "channel")
@@ -101,10 +102,19 @@ export const onIdentify = makeHandler(async function (payload) {
 	await consume(this, ret);
 
 	listenEvents(this, [
+		// this user target is emitted to for events about us that are NOT private
 		user,
-		// TODO: for relationships, see #54
+		// we receive non-private events from these users
+		...relationships.map(x => x.from.id === user.id ? x.to : x.from),
 		...dmChannels,
 		...guilds,
 		...guilds.flatMap((x) => x.channels),
 	]);
+
+	// this user target is the private target for events only we should see
+	// directly calling consume(ourSocket) doesn't cause problems
+	// however if we want a private event to only us via emitGatewayEvent
+	// then this is required
+	const target = `${makeGatewayTarget(user)}-only`;
+	this.events[target] = listenGatewayEvent(target, (p) => consume(this, p));
 }, IDENTIFY);

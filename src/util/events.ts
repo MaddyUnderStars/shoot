@@ -79,7 +79,13 @@ export const closeRabbitMQ = async () => {
 	await client?.close();
 };
 
-export const emitGatewayEvent = (targets: BaseModel | BaseModel[], payload: GATEWAY_EVENT) => {
+/**
+ * Emit an event via gateway to users listening to targets
+ * @param targets IDs of relevant objects
+ * @param payload Gateway payload to send to clients
+ * @param isPrivate For user targets - whether this event should only been delivered to the target user and not to other users listening to their ID
+ */
+export const emitGatewayEvent = (targets: BaseModel | BaseModel[], payload: GATEWAY_EVENT, isPrivate = false) => {
 	if (!Array.isArray(targets)) targets = [targets];
 
 	const targetIds = targets.map(makeGatewayTarget);
@@ -98,7 +104,7 @@ export const emitGatewayEvent = (targets: BaseModel | BaseModel[], payload: GATE
 	} else {
 		// normal event emit
 		for (const target of targetIds) {
-			events.emit(target, payload);
+			events.emit(target + (isPrivate ? "-only" : ""), payload);
 		}
 	}
 };
@@ -119,10 +125,10 @@ export const makeGatewayTarget = (target: BaseModel) => {
 };
 
 export const listenGatewayEvent = (
-	target: BaseModel,
+	target: BaseModel | string,
 	callback: (payload: GATEWAY_EVENT) => unknown,
 ) => {
-	const id = makeGatewayTarget(target);
+	const id = typeof target === "string" ? target : makeGatewayTarget(target);
 
 	events.setMaxListeners(events.getMaxListeners() + 1);
 	events.addListener(id, callback);

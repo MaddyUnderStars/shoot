@@ -1,6 +1,6 @@
 import {
 	type APActor,
-	type APOrganization,
+	APOrganization,
 	ObjectIsGroup,
 	ObjectIsOrganization,
 } from "activitypub-types";
@@ -107,7 +107,7 @@ export const joinGuild = async (user_id: ActorMention, guild_id: ActorMention) =
 	emitGatewayEvent(user, {
 		type: "GUILD_CREATE",
 		guild: guild.toPublic(),
-	});
+	}, true);
 
 	return member;
 };
@@ -158,7 +158,7 @@ export const createGuild = async (name: string, owner: User) => {
 	emitGatewayEvent(owner, {
 		type: "GUILD_CREATE",
 		guild: guild.toPublic(),
-	});
+	}, true);
 
 	// create channels
 

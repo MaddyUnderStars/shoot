@@ -45,7 +45,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 		emitGatewayEvent(target, {
 			type: "CHANNEL_CREATE",
 			channel: channel.toPublic(),
-		});
+		}, true);
 
 		return;
 	}
@@ -86,7 +86,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 			emitGatewayEvent(target, {
 				type: "CHANNEL_CREATE",
 				channel: channel.toPublic(),
-			});
+			}, true);
 		}
 
 		const message = await buildMessageFromAPNote(inner, channel);

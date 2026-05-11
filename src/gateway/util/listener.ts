@@ -40,7 +40,6 @@ export const removeEventListener = (socket: Websocket, id: string) => {
 export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 	switch (payload.type) {
 		// TODO: for relationships, see #54
-
 		case "CHANNEL_CREATE": {
 			const { id } = splitQualifiedMention(payload.channel.mention);
 			listenEvents(socket, [Channel.create({ id })]);
@@ -87,7 +86,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 
 		case "ROLE_MEMBER_ADD":
 			// don't care about errors and can't slow down this function
-			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => {}));
+			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => { }));
 
 			break;
 

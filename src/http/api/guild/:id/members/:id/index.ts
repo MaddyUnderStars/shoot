@@ -10,6 +10,7 @@ import { emitGatewayEvent } from "../../../../../../util/events";
 import { HttpError } from "../../../../../../util/httperror";
 import { PERMISSION } from "../../../../../../util/permission";
 import { route } from "../../../../../../util/route";
+import { GATEWAY_EVENT } from "../../../../../../gateway/util/validation/send";
 
 const router = Router({ mergeParams: true });
 
@@ -82,21 +83,29 @@ router.patch(
 
 			// wait until after the db save
 			// so that if there's a error, we don't tell clients
-			for (const role_id in additions)
-				emitGatewayEvent([member, Role.create({ id: role_id })], {
+			for (const role_id in additions) {
+				const obj: GATEWAY_EVENT = {
 					role_id,
 					type: "ROLE_MEMBER_ADD",
 					guild: guild.mention,
 					member: member.toPublic(),
-				});
+				};
 
-			for (const role_id in deletions)
-				emitGatewayEvent([member, Role.create({ id: role_id })], {
+				emitGatewayEvent([member, Role.create({ id: role_id })], obj);
+				emitGatewayEvent([member.user], obj, true);
+			}
+
+			for (const role_id in deletions) {
+				const obj: GATEWAY_EVENT = {
 					role_id,
 					type: "ROLE_MEMBER_LEAVE",
 					guild: guild.mention,
 					member: user.mention,
-				});
+				};
+
+				emitGatewayEvent([member, Role.create({ id: role_id })], obj);
+				emitGatewayEvent([member.user], obj, true);
+			}
 
 			return res.json(member.toPublic());
 		},
