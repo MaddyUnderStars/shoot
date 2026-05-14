@@ -1,9 +1,12 @@
-import type {
-	AnyAPObject,
-	APCollectionPage,
-	APLink,
-	APObject,
-	APOrderedCollectionPage,
+import {
+	ObjectIsImage,
+	ObjectIsLink,
+	type AnyAPObject,
+	type APCollectionPage,
+	type APLink,
+	type APObject,
+	type APOrderedCollectionPage,
+	type IconField,
 } from "activitypub-types";
 import { findAll } from "domutils";
 import { DomHandler, Parser } from "htmlparser2";
@@ -274,4 +277,23 @@ const ObjectIsCollection = (obj: APObject): obj is APCollectionPage | APOrderedC
 		obj.type === "Collection" ||
 		obj.type === "CollectionPage"
 	);
+};
+
+export const resolveAPImage = (val?: IconField) => {
+	if (!val) return undefined;
+
+	if (typeof val === "string") return val;
+
+	if (ObjectIsImage(val)) {
+		if (!val.url) throw new APError("IconField.url missing on Image");
+		return new URL(val.url);
+	}
+
+	// is APLink
+	if (ObjectIsLink(val)) {
+		if (!val.href) throw new APError("IconField.href missing on Link");
+		return new URL(val.href);
+	}
+
+	throw new APError("Unknown IconField type");
 };

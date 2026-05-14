@@ -3,6 +3,8 @@ import { z } from "zod";
 import { ActorMention } from "../util/activitypub/constants";
 import { Actor } from "./actor";
 import { InstanceInvite } from "./instanceInvite";
+import { getImageProxyUrl } from "../util/embeds";
+import { UrlTransformer } from "../util/columns";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
@@ -43,6 +45,30 @@ export class User extends Actor {
 	@Column({ nullable: true, type: String })
 	summary: string | null;
 
+	/**
+	 * user avatar. if null, no avatar
+	 * if URL, this is a remote avatar and should be fetched via media proxy
+	 * if not, this is a hash
+	 */
+	@Column({
+		nullable: true,
+		type: String,
+		transformer: UrlTransformer,
+	})
+	avatar: URL | string | null;
+
+	/**
+	 * user banner. if null, no banner
+	 * if URL, this is a remote banner and should be fetched via media proxy
+	 * if not, this is a hash
+	 */
+	@Column({
+		nullable: true,
+		type: String,
+		transformer: UrlTransformer,
+	})
+	banner: URL | string | null;
+
 	public get mention(): ActorMention {
 		return `${this.name}@${this.domain}`;
 	}
@@ -53,6 +79,9 @@ export class User extends Actor {
 			name: this.name,
 			display_name: this.display_name,
 			summary: this.summary,
+			// TODO #87 local avatar/banner uploads
+			avatar: this.avatar instanceof URL ? getImageProxyUrl(this.avatar, 500, 500).href : "",
+			banner: this.banner instanceof URL ? getImageProxyUrl(this.banner, 1500, 500).href : "",
 		};
 	};
 
@@ -67,6 +96,8 @@ export class User extends Actor {
 
 export type PublicUser = Pick<User, "name" | "summary" | "display_name"> & {
 	mention: ActorMention;
+	avatar?: string;
+	banner?: string;
 };
 export type PrivateUser = PublicUser & Pick<User, "email">;
 
@@ -76,6 +107,8 @@ export const PublicUser: z.ZodType<PublicUser> = z
 		name: z.string(),
 		summary: z.string(),
 		display_name: z.string(),
+		avatar: z.url().optional(),
+		banner: z.url().optional(),
 	})
 	.openapi("PublicUser");
 

@@ -84,7 +84,7 @@ export class Embed extends BaseEntity {
 }
 
 const EmbedMedia = z.object({
-	url: z.string().url(),
+	url: z.url(),
 	width: z.number().optional(),
 	height: z.number().optional(),
 	alt: z.string().optional(),
@@ -94,9 +94,9 @@ export type EmbedMedia = z.infer<typeof EmbedMedia>;
 
 export const PublicEmbed = z
 	.object({
-		target: z.string().url(),
+		target: z.url(),
 		created_at: z.date(),
-		type: z.nativeEnum(EmbedTypes),
+		type: z.enum(EmbedTypes),
 
 		title: z.string().optional(),
 		description: z.string().optional(),

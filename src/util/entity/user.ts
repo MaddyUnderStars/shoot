@@ -4,7 +4,12 @@ import type { InstanceInvite } from "../../entity/instanceInvite";
 import { User } from "../../entity/user";
 import type { ActorMention } from "../activitypub/constants";
 import { APError } from "../activitypub/error";
-import { resolveAPObject, resolveId, resolveWebfinger } from "../activitypub/resolve";
+import {
+	resolveAPObject,
+	resolveAPImage,
+	resolveId,
+	resolveWebfinger,
+} from "../activitypub/resolve";
 import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
 import { config } from "../config";
 import { createLogger } from "../log";
@@ -108,6 +113,9 @@ export const createUserForRemotePerson = async (lookup: string | URL | APActor) 
 		summary: obj.summary,
 
 		public_key: obj.publicKey.publicKeyPem,
+
+		avatar: resolveAPImage(Array.isArray(obj.icon) ? obj.icon[0] : obj.icon),
+		banner: resolveAPImage(Array.isArray(obj.image) ? obj.image[0] : obj.image),
 
 		collections: {
 			inbox: obj.inbox,

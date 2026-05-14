@@ -109,7 +109,7 @@ const signMediaProxyUrl = (url: URL) => {
 export const getImageProxyUrl = (url: URL, width: number, height: number): URL => {
 	if (!config().media_proxy.enabled) return url;
 
-	const path = `fit-in/${width}x${height}/${url.host}/${url.pathname}`;
+	const path = `fit-in/${width}x${height}/${url.host}${url.pathname}`;
 
 	const ret = new URL(path, config().media_proxy.url);
 

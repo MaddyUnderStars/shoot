@@ -224,7 +224,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 
 const document = generateOpenapi(apiRoutes, "application/json");
 writeFile(
-	path.join(__dirname, "..", "..", "assets", "client.json"),
+	path.join(__dirname, "..", "..", "..", "assets", "client.json"),
 	JSON.stringify(document),
 	{},
 	(err) => {
