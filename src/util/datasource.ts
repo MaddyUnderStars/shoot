@@ -29,6 +29,7 @@ import { InviteIndex1757745204938 } from "./migration/postgres/1757745204938-inv
 import { PushSubscription1758865221251 } from "./migration/postgres/1758865221251-pushSubscription";
 import { MessageNonce1771113785560 } from "./migration/postgres/1771113785560-messageNonce";
 import { VoiceState1778143207892 } from "./migration/postgres/1778143207892-voiceState";
+import { ProfileImages1778755429041 } from "./migration/postgres/1778755429041-profileImages";
 
 let datasource: DataSource;
 
@@ -104,6 +105,7 @@ export const getDatasource = () => {
 			PushSubscription1758865221251,
 			MessageNonce1771113785560,
 			VoiceState1778143207892,
+			ProfileImages1778755429041,
 		],
 	});
 
