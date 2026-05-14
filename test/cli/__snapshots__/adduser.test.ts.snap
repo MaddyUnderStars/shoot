@@ -2,6 +2,8 @@
 
 exports[`CLI can create user 1`] = `
 {
+  "avatar": null,
+  "banner": null,
   "collections": null,
   "created_date": null,
   "display_name": "testUser",

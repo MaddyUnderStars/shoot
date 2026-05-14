@@ -80,6 +80,6 @@
 	},
 	"lint-staged": {
 		"*.{ts,js,md,tsx,jsx,css}": "oxlint",
-		"*": "oxfmt"
+		"*": "oxfmt --no-error-on-unmatched-pattern"
 	}
 }
