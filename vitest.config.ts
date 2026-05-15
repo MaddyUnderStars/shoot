@@ -11,4 +11,5 @@ export default defineConfig({
 		retry: process.env.GITHUB_ACTIONS ? 1 : 0,
 	},
 	plugins: [swc.vite()],
+	oxc: false,
 });
