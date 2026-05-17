@@ -8,6 +8,7 @@ import { getOrFetchChannel } from "../../../../../util/entity/channel";
 import { handleMessage } from "../../../../../util/entity/message";
 import { PERMISSION } from "../../../../../util/permission";
 import { route } from "../../../../../util/route";
+import { PublicUser } from "../../../../../entity/user";
 
 const MessageCreate = z
 	.object({
@@ -108,7 +109,12 @@ router.get(
 				channel_id: ActorMention,
 			}),
 			query: MessageFetchOpts,
-			response: z.array(PublicMessage),
+			response: z
+				.object({
+					messages: z.array(PublicMessage),
+					authors: z.record(ActorMention, PublicUser),
+				})
+				.openapi("MessagesResponse"),
 		},
 		async (req, res) => {
 			const channel = await getOrFetchChannel(req.params.channel_id);
@@ -154,26 +160,20 @@ router.get(
 
 			// // TODO: handle not fetched federated channels
 
-			// // TODO: handle after, before, around
-			// // Maybe use typeorm-pagination?
-			// const messages = await Message.find({
-			// 	where: { channel: { id: channel.id } },
-			// 	take: req.params.limit,
-			// 	order: {
-			// 		published: "DESC",
-			// 	},
-			// 	relations: {
-			// 		author: true,
-			// 		channel: true,
-			// 	},
-			// });
+			const authors: Record<ActorMention, PublicUser> = {};
+			for (const message of messages) {
+				if (authors[message.author.mention]) continue;
 
-			return res.json(
-				messages.map((x) => {
+				authors[message.author.mention] = message.author.toPublic();
+			}
+
+			return res.json({
+				authors,
+				messages: messages.map((x) => {
 					x.channel = channel;
 					return x.toPublic();
 				}),
-			);
+			});
 		},
 	),
 );
