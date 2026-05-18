@@ -75,6 +75,6 @@ test("Send message to foreign user", { timeout: 20_000 }, async ({ onTestFinishe
 
 	const get = await getRes.json();
 
-	const message = get[0];
+	const message = get.messages[0];
 	expect(message.content).toBe("hello");
 });

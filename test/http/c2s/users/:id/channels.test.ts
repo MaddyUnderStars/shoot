@@ -48,7 +48,7 @@ describe.sequential("DM channels", () => {
 			.auth(user1.token, { type: "bearer" })
 			.expect(200)
 			.then((x) => {
-				expect(x.body.find((i: { id: string }) => i.id).id).toBe(sendRes.body.id);
+				expect(x.body.messages.find((i: { id: string }) => i.id).id).toBe(sendRes.body.id);
 			});
 
 		await request(api.app)
@@ -56,7 +56,7 @@ describe.sequential("DM channels", () => {
 			.auth(user2.token, { type: "bearer" })
 			.expect(200)
 			.then((x) => {
-				expect(x.body.find((i: { id: string }) => i.id).id).toBe(sendRes.body.id);
+				expect(x.body.messages.find((i: { id: string }) => i.id).id).toBe(sendRes.body.id);
 			});
 	});
 });
