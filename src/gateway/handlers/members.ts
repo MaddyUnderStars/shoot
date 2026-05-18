@@ -1,8 +1,7 @@
 import { DMChannel } from "../../entity/DMChannel";
 import { Member } from "../../entity/member";
 import { GuildTextChannel } from "../../entity/textChannel";
-import { User } from "../../entity/user";
-import type { ActorMention } from "../../util/activitypub/constants";
+import { PublicUser, User } from "../../entity/user";
 import { getDatabase } from "../../util/database";
 import { channelInGuild, getChannel } from "../../util/entity/channel";
 import { listenGatewayEvent } from "../../util/events";
@@ -16,7 +15,7 @@ import type { Websocket } from "../util/websocket";
 export type MembersChunkItem = {
 	name: string;
 	member_id?: string;
-	user_id: ActorMention;
+	user: PublicUser;
 };
 
 /**
@@ -43,11 +42,11 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 		for (const member of members) {
 			items.push({
-				user_id: member.mention, // TODO
+				user: member.toPublic(),
 				name: member.display_name ?? member.name,
 			});
 
-			listenRangeEvent(this, member.id, channel.id);
+			listenRangeEvent(this, member.mention, channel.id);
 		}
 
 		unsubscribeOutOfRange(this, items);
@@ -82,7 +81,7 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 		for (const member of role_members) {
 			if (
 				!(await channel.checkPermission(
-					User.create({ id: member.user_id }),
+					User.create({ id: member.user.id }),
 					PERMISSION.VIEW_CHANNEL,
 				))
 			)
@@ -92,8 +91,8 @@ export const onSubscribeMembers = makeHandler(async function (payload) {
 
 			items.push({
 				member_id: member.member_id,
-				user_id: `${member.name}@${member.user_domain}`,
-				name: member.display_name ?? member.name,
+				user: member.user.toPublic(),
+				name: member.user.display_name ?? member.user.name,
 			});
 		}
 	}
@@ -189,7 +188,7 @@ const listenRangeEvent = (socket: Websocket, member_id: string, channel_id: stri
 
 const unsubscribeOutOfRange = (socket: Websocket, items: MEMBERS_CHUNK["items"]) => {
 	const keep = new Set(
-		items.filter((x) => typeof x !== "string").map((x) => x.member_id ?? x.user_id),
+		items.filter((x) => typeof x !== "string").map((x) => x.member_id ?? x.user.mention),
 	);
 
 	// Remove all subscriptions that are not in the new range
@@ -220,8 +219,11 @@ const MEMBERS_QUERY = `
 					"r"."id" role_id,
 					"users"."id" user_id,
 					"users"."domain" user_domain,
-					"users"."display_name" display_name,
-					"users"."name" name
+					"users"."display_name" user_display_name,
+					"users"."name" user_name,
+					"users".summary user_summary,
+					"users".avatar user_avatar,
+					"users".banner user_banner
 				from guild_members gm
 					left join users on "users"."id" = "gm"."userId" 
 					left join roles_members_guild_members rm on "gm"."id" = "rm"."guildMembersId"
@@ -247,19 +249,38 @@ const getMemberPosition = async (
 	return ret[0]?.position;
 };
 
-const getMembers = async (
-	channel_id: string,
-	range_low: number,
-	range_high: number,
-): Promise<
-	Array<{
-		member_id: string;
-		role_id: string;
-		user_id: string;
-		user_domain?: string;
-		display_name: string;
-		name: string;
-	}>
-> => {
-	return await getDatabase().query(MEMBERS_QUERY, [channel_id, range_low, range_high]);
+const getMembers = async (channel_id: string, range_low: number, range_high: number) => {
+	const res = await getDatabase().query<
+		{
+			member_id: string;
+			role_id: string;
+			user_id: string;
+			user_domain: string;
+			user_display_name: string;
+			user_name: string;
+			user_summary: string | null;
+			user_avatar: string | null;
+			user_banner: string | null;
+		}[]
+	>(MEMBERS_QUERY, [channel_id, range_low, range_high]);
+
+	const ret: Array<{ member_id: string; role_id: string; user: User }> = [];
+
+	for (const row of res) {
+		ret.push({
+			member_id: row.member_id,
+			role_id: row.role_id,
+			user: User.create({
+				id: row.user_id,
+				name: row.user_name,
+				display_name: row.user_display_name,
+				domain: row.user_domain,
+				summary: row.user_summary,
+				avatar: row.user_avatar,
+				banner: row.user_banner,
+			}),
+		});
+	}
+
+	return ret;
 };
