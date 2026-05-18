@@ -7,6 +7,7 @@ import { getDatabase } from "../../../../util/database";
 import { getGuilds } from "../../../../util/entity/guild";
 import { emitGatewayEvent } from "../../../../util/events";
 import { route } from "../../../../util/route";
+import { BaseModel } from "../../../../entity/basemodel";
 
 const router = Router({ mergeParams: true });
 
@@ -67,7 +68,13 @@ router.delete(
 			.execute();
 
 		if (deleted.affected) {
-			emitGatewayEvent(Guild.create({ id: req.params.guild_id }), {
+			const targets: BaseModel[] = [Guild.create({ id: req.params.guild_id })];
+
+			if (deleted.raw?.[0]?.id) {
+				targets.push(Member.create({ id: deleted.raw[0].id }));
+			}
+
+			emitGatewayEvent(targets, {
 				type: "MEMBER_LEAVE",
 				guild: `${mention.id}@${mention.domain}`,
 				user: req.user.mention,
