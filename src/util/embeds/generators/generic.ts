@@ -55,7 +55,6 @@ export const genericEmbedGenerator: EMBED_GENERATOR = async (url) => {
 							Math.min(height ?? 1000, 1000),
 						).href,
 
-						// todo: use imagor to find these as fallback
 						width: imageMeta?.width,
 						height: imageMeta?.height,
 
