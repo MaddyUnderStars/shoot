@@ -53,6 +53,9 @@ export class Embed extends BaseEntity {
 	@Column({ type: "simple-json", nullable: true })
 	videos: EmbedMedia[] | null;
 
+	@Column({ type: "simple-json", nullable: true })
+	thumbnail: EmbedMedia | null;
+
 	public toPublic = (): PublicEmbed => {
 		return {
 			target: this.target,
@@ -64,6 +67,7 @@ export class Embed extends BaseEntity {
 
 			images: this.images ?? [],
 			videos: this.videos ?? [],
+			thumbnail: this.thumbnail ?? undefined,
 
 			author: onlyTruthy({
 				name: this.author_name,
@@ -103,6 +107,7 @@ export const PublicEmbed = z
 
 		images: EmbedMedia.array(),
 		videos: EmbedMedia.array(),
+		thumbnail: EmbedMedia.optional(),
 
 		author: z
 			.object({

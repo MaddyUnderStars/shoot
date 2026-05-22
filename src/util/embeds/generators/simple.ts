@@ -13,7 +13,7 @@ export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
 			head.headers.get("Content-Type")?.startsWith(key),
 		)?.[1] ?? EmbedTypes.link;
 
-	const meta = await getImageMetadata(url, 1000, 1000);
+	const meta = await getImageMetadata(url);
 
 	return Embed.create({
 		target: url.href,
@@ -21,10 +21,10 @@ export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
 
 		[type === EmbedTypes.photo ? "images" : "videos"]: [
 			{
-				url: getImageProxyUrl(url, meta.width, meta.height).href,
+				url: getImageProxyUrl(url, meta?.width ?? 1000, meta?.height ?? 1000).href,
 
-				width: meta.width,
-				height: meta.height,
+				width: meta?.width,
+				height: meta?.height,
 			},
 		],
 	});

@@ -73,14 +73,10 @@ type ImageMetadata = {
 	height: number;
 };
 
-export const getImageMetadata = async (
-	url: URL,
-	width: number,
-	height: number,
-): Promise<ImageMetadata> => {
-	if (!config().media_proxy.enabled) return { width, height };
+export const getImageMetadata = async (url: URL): Promise<ImageMetadata | null> => {
+	if (!config().media_proxy.enabled) return null;
 
-	const path = `/meta/fit-in/${width}x${height}/${url.host}/${url.pathname}`;
+	const path = `/meta/${url.host}/${url.pathname}`;
 
 	const endpoint = signMediaProxyUrl(new URL(path, config().media_proxy.url));
 
