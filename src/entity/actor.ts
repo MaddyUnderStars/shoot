@@ -21,7 +21,7 @@ export abstract class Actor extends BaseModel {
 	/**
 	 * The addresses of the collections related to the remote actor
 	 */
-	@Column({ type: "simple-json", nullable: true })
+	@Column({ type: "jsonb", nullable: true })
 	collections: {
 		inbox: string;
 		outbox: string;

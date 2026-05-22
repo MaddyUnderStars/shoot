@@ -47,13 +47,13 @@ export class Embed extends BaseEntity {
 	@Column({ type: String, nullable: true })
 	provider_url: string | null;
 
-	@Column({ type: "simple-json", nullable: true })
+	@Column({ type: "jsonb", nullable: true })
 	images: EmbedMedia[] | null;
 
-	@Column({ type: "simple-json", nullable: true })
+	@Column({ type: "jsonb", nullable: true })
 	videos: EmbedMedia[] | null;
 
-	@Column({ type: "simple-json", nullable: true })
+	@Column({ type: "jsonb", nullable: true })
 	thumbnail: EmbedMedia | null;
 
 	public toPublic = (): PublicEmbed => {

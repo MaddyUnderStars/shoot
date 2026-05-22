@@ -9,6 +9,6 @@ export class ApCache extends BaseEntity {
 	@CreateDateColumn()
 	received: Date;
 
-	@Column({ type: "simple-json" })
+	@Column({ type: "jsonb" })
 	raw: AnyAPObject | APActivity;
 }
