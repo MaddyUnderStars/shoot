@@ -28,5 +28,18 @@ test("Webfinger finds guilds", async ({ api, expect }) => {
 	expect(standardised).toMatchSnapshot();
 });
 
-test.todo("Webfinger finds channels");
+test("Webfinger finds channels", async ({ api, expect }) => {
+	const user = await createTestUser(api);
+	const guild = await createTestGuild(user);
+
+	const res = await request(api.app)
+		.get(`/.well-known/webfinger?resource=${guild.channels[0].mention}`)
+		.expect(200);
+
+	const standardised = JSON.parse(
+		JSON.stringify(res.body).replaceAll(guild.channels[0].id, "[MENTION]"),
+	);
+	expect(standardised).toMatchSnapshot();
+});
+
 test.todo("Webfinger finds guild invites");
