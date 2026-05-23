@@ -111,6 +111,20 @@ const federateMessage = async (message: Message) => {
 			? message.reference_object.raw
 			: buildAPNote(message);
 
+	if (message.channel instanceof DMChannel) {
+		// if we're a DM channel, don't bother addressing to the channel
+		// just send directly address it to the recipients
+
+		let recipients = [...message.channel.recipients, message.channel.owner];
+		recipients = recipients.filter((x) => x.domain !== message.author.domain);
+
+		const create = buildAPCreateNote(note);
+
+		await sendActivity(recipients, addContext(create), message.author);
+
+		return;
+	}
+
 	if (message.channel.remote_address) {
 		// We don't own this room, send create to channel
 

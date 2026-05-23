@@ -5,6 +5,7 @@ import { Message } from "../../../entity/message";
 import { getExternalPathFromActor } from "../../../sender";
 import { getOrFetchAttributedUser } from "../../entity/user";
 import { makeInstanceUrl, makeWebappUrl } from "../../url";
+import { DMChannel } from "../../../entity/DMChannel";
 
 export const buildMessageFromAPNote = async (note: APNote, channel: Channel): Promise<Message> => {
 	const author = await getOrFetchAttributedUser(note.attributedTo);
@@ -24,12 +25,25 @@ export const buildAPNote = (message: Message): APNote => {
 	const attributedTo = makeInstanceUrl(getExternalPathFromActor(message.author));
 	const to = makeInstanceUrl(getExternalPathFromActor(message.channel));
 
+	let toField: string[];
+
+	if (message.channel instanceof DMChannel) {
+		let recipients = [...message.channel.recipients, message.channel.owner];
+		recipients = recipients.filter((x) => x.mention !== message.author.mention);
+
+		toField = recipients.map(
+			(x) => x.remote_address || makeInstanceUrl(getExternalPathFromActor(x)),
+		);
+	} else {
+		toField = [to, `${attributedTo}/followers`];
+	}
+
 	return {
 		type: "Note",
 		id,
 		published: message.published,
 		attributedTo,
-		to: [to, `${attributedTo}/followers`],
+		to: toField,
 		cc: [
 			// "https://www.w3.org/ns/activitystreams#Public"
 		],
