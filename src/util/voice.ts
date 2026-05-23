@@ -28,6 +28,7 @@ export const askForMediaToken = async (user: User, channel: Channel) => {
 		throw new APError("getMediaTokenFromRemote called with local channel");
 
 	const join_ap: APJoin = {
+		id: makeInstanceUrl(`voice/${channel.mention}`),
 		type: "Join",
 		actor: makeInstanceUrl(getExternalPathFromActor(user)),
 		object: channel.remote_address,

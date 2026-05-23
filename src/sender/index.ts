@@ -15,6 +15,8 @@ export const sendActivity = async (
 	activity: APActivity,
 	sender: Actor = InstanceActor,
 ) => {
+	if (!activity.id) throw new Error("Tried to send activity without an ID", { cause: activity });
+
 	targets = Array.isArray(targets) ? targets : [targets];
 
 	const inboxes = targets.reduce<Set<string>>((ret, target) => {

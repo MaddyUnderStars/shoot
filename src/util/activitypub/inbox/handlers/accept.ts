@@ -1,4 +1,3 @@
-import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
 import { Guild } from "../../../../entity/guild";
 import { User } from "../../../../entity/user";
 import { joinGuild } from "../../../entity/guild";
@@ -7,9 +6,10 @@ import { findActorOfAnyType } from "../../../entity/resolve";
 import { getOrFetchUser } from "../../../entity/user";
 import { emitGatewayEvent } from "../../../events";
 import { APError } from "../../error";
-import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
+import { resolveId } from "../../resolve";
 import { splitQualifiedMention } from "../../util";
 import type { ActivityHandler } from ".";
+import { config } from "../../../config";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
@@ -73,10 +73,21 @@ export const AcceptActivityHandler: ActivityHandler = async (activity, target) =
 
 	if (Array.isArray(activity.object)) throw new APError("object is array");
 
-	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
+	const inner = resolveId(activity.object);
+	if (!(inner instanceof URL)) throw new APError("Unexpected type in object field");
 
-	activity.object = inner;
+	if (inner.hostname !== config().federation.instance_url.hostname) {
+		throw new APError("Can't accept that");
+	}
 
-	if (ActivityIsFollow(activity.object)) await AcceptFollow(activity, target);
-	else if (ActivityIsJoin(activity.object)) await AcceptJoin(activity, target);
+	// they are accepting an object we've created
+	// this should just be a follow
+
+	// TODO: actually verify that we sent an object with this ID before
+
+	if (inner.pathname.includes("follow")) {
+		await AcceptFollow(activity, target);
+	} else if (inner.pathname.includes("voice")) {
+		await AcceptJoin(activity, target);
+	}
 };

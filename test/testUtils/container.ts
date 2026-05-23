@@ -12,15 +12,16 @@ import { getTestString } from "./random";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
-export const startShootContainer = async (config?: DeepPartial<ConfigSchema>) => {
+export const startShootContainer = async (
+	name = getTestString(),
+	config?: DeepPartial<ConfigSchema>,
+) => {
 	const databaseName = await createTestDatabase();
 	const postgres = inject("POSTGRES_AUTH");
 
 	const keys = await generateKeyPair("rsa", KEY_OPTIONS);
 
 	const network = await getTestNetwork();
-
-	const name = getTestString();
 
 	const shoot = await new GenericContainer(process.env.DOCKER_IMAGE ?? "shoot:test")
 		.withPullPolicy({ shouldPull: () => false })
