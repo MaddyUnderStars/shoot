@@ -199,7 +199,7 @@ const processEmbeds = async (message: Message) => {
 	// get all urls in the message
 	// the urls must be separated by whitespace and must not be wrapped in <>
 	const urls = message.content
-		.split(" ")
+		.split(/\s/g)
 		.filter((x) => x.match(URL_REGEX) && !(x.startsWith("<") && x.endsWith(">")))
 		.map((x) => tryParseUrl(x))
 		.filter((x) => !!x);
