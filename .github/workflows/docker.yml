@@ -18,4 +18,4 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           push: true
-          tags: ghcr.io/MaddyUnderstars/shoot:latest
+          tags: ghcr.io/maddyunderstars/shoot:latest
