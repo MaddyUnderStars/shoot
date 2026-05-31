@@ -59,7 +59,7 @@ export const sendNotifications = async (message: Message) => {
 const queueNotif = async (user: ActorMention, message: Message) => {
 	const { domain } = splitQualifiedMention(user);
 
-	if (domain !== config().federation.instance_url.hostname) return;
+	if (domain !== config().federation.webapp_url.hostname) return;
 
 	const queue = getNotificationQueue();
 
