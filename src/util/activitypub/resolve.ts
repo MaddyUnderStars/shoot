@@ -188,7 +188,7 @@ const doWebfingerOrFindTemplate = async (lookup: string | URL): Promise<Webfinge
 	const template = findAll(
 		(elem) =>
 			elem.tagName.toLowerCase() === "link" &&
-			elem.attribs.rel === "application/xrd+xml" &&
+			elem.attribs.rel === "lrdd" &&
 			!!elem.attribs.template,
 		handler.root,
 	)?.[0];
