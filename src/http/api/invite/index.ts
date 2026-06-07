@@ -11,6 +11,7 @@ import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
 import { PERMISSION } from "../../../util/permission";
 import { route } from "../../../util/route";
 import { makeInstanceUrl } from "../../../util/url";
+import { ObjectIsInvite } from "../../../util/activitypub/transformers/invite";
 
 const router = Router({ mergeParams: true });
 
@@ -52,7 +53,7 @@ router.post(
 
 			if (!invite) {
 				const obj = await resolveWebfinger(`invite:${inviteCode}@${domain}`);
-				if (obj.type !== "GuildInvite")
+				if (!ObjectIsInvite(obj))
 					throw new APError("Remote did not respond with GuildInvite");
 
 				const { attributedTo } = obj;

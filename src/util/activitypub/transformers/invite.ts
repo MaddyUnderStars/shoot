@@ -1,14 +1,19 @@
-import type { APObject } from "activitypub-types";
+import type { AnyAPObject, APObject } from "activitypub-types";
 import type { Invite } from "../../../entity/invite";
 import { makeInstanceUrl } from "../../url";
 import { buildAPActor } from "./actor";
 
-export type APGuildInvite = APObject & { type: "GuildInvite" };
+export type APInviteCode = APObject & { type: "InviteCode" };
 
-export const buildAPGuildInvite = (invite: Invite): APGuildInvite => {
+export const buildAPGuildInvite = (invite: Invite): APInviteCode => {
 	return {
-		type: "GuildInvite",
+		type: "InviteCode",
 		id: makeInstanceUrl(`/invite/${invite.code}`),
+		name: invite.code,
 		attributedTo: buildAPActor(invite.guild),
 	};
+};
+
+export const ObjectIsInvite = (obj: AnyAPObject): obj is APInviteCode => {
+	return obj.type === "InviteCode";
 };
