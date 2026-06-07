@@ -47,9 +47,12 @@ export const handleInbox = async (activity: APActivity, target: Actor) => {
 			throw new APError(`Activity with id ${safeActivity.id} already processed`);
 		}
 
-		await ActivityHandlers[safeActivity.type.toLowerCase() as Lowercase<string>](
-			activity,
-			target,
-		);
+		const handler = ActivityHandlers[safeActivity.type.toLowerCase() as Lowercase<string>];
+
+		if (!handler) {
+			throw new APError(`Activity type ${safeActivity.type} has no handler`);
+		}
+
+		await handler(activity, target);
 	}
 };

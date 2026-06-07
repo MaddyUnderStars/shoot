@@ -10,6 +10,7 @@ import { resolveId } from "../../resolve";
 import { splitQualifiedMention } from "../../util";
 import type { ActivityHandler } from ".";
 import { config } from "../../../config";
+import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
@@ -85,9 +86,17 @@ export const AcceptActivityHandler: ActivityHandler = async (activity, target) =
 
 	// TODO: actually verify that we sent an object with this ID before
 
-	if (inner.pathname.includes("follow")) {
+	if (
+		typeof activity.object === "string"
+			? inner.pathname.includes("follow")
+			: ActivityIsFollow(activity.object)
+	) {
 		await AcceptFollow(activity, target);
-	} else if (inner.pathname.includes("voice")) {
+	} else if (
+		typeof activity.object === "string"
+			? inner.pathname.includes("voice")
+			: ActivityIsJoin(activity.object)
+	) {
 		await AcceptJoin(activity, target);
 	}
 };
