@@ -5,9 +5,7 @@ import type { APIServer } from "../../src/http/server";
 import { runCliInContainer } from "./cli";
 import { getShootContainerUrl } from "./container";
 import { getTestString } from "./random";
-
-const isApiServer = (target: APIServer | StartedTestContainer): target is APIServer =>
-	"app" in target;
+import { isApiServer } from "./isApiServer";
 
 export type TestUser = Awaited<ReturnType<typeof createTestUser>>;
 

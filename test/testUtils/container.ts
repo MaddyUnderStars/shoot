@@ -15,6 +15,7 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 export const startShootContainer = async (
 	name = getTestString(),
 	config?: DeepPartial<ConfigSchema>,
+	log = (_line: string) => {},
 ) => {
 	const databaseName = await createTestDatabase();
 	const postgres = inject("POSTGRES_AUTH");
@@ -28,6 +29,7 @@ export const startShootContainer = async (
 		.withHostname(name)
 		.withNetwork(network)
 		.withExposedPorts(80)
+		.withLogConsumer((s) => s.on("data", log))
 		.withWaitStrategy(
 			Wait.forHttp("/.well-known/nodeinfo/2.0", 80, {
 				abortOnContainerExit: true,
@@ -70,7 +72,7 @@ export const startShootContainer = async (
 		})
 		.start();
 
-	return shoot;
+	return { shoot, databaseName };
 };
 
 export const getShootContainerUrl = (container: StartedTestContainer) => {

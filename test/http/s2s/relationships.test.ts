@@ -10,7 +10,10 @@ test(
 	"Send friend request to foreign user",
 	{ timeout: 20_000 },
 	async ({ onTestFinished, expect }) => {
-		const [local, remote] = await Promise.all([startShootContainer(), startShootContainer()]);
+		const [{ shoot: local }, { shoot: remote }] = await Promise.all([
+			startShootContainer(),
+			startShootContainer(),
+		]);
 
 		onTestFinished(async () => {
 			await Promise.all([local.stop(), remote.stop()]);

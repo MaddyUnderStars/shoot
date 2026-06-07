@@ -17,7 +17,10 @@ test("Get local user by mention", async ({ api, expect }) => {
 });
 
 test("Get foreign user by mention", { timeout: 60_000 }, async ({ expect, onTestFinished }) => {
-	const [local, remote] = await Promise.all([startShootContainer(), startShootContainer()]);
+	const [{ shoot: local }, { shoot: remote }] = await Promise.all([
+		startShootContainer(),
+		startShootContainer(),
+	]);
 
 	onTestFinished(async () => {
 		await Promise.all([local.stop(), remote.stop()]);
