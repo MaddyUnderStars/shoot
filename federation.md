@@ -10,6 +10,7 @@
 - [FEP-2677: Identifying the Application Actor](https://codeberg.org/fediverse/fep/src/commit/f5ab0557712522ebb579c86f165ee1f3152a85d3/fep/2677/fep-2677.md)
 - [FEP-2c59: Discovery of a Webfinger address from an ActivityPub actor](https://codeberg.org/fediverse/fep/src/commit/f5ab0557712522ebb579c86f165ee1f3152a85d3/fep/2c59/fep-2c59.md)
 - [FEP-bebd: Follow Invites](https://codeberg.org/fediverse/fep/src/commit/70c8a451f3226280536623e5bdc853a984d47dae/fep/bebd/fep-bebd.md)
+- [FEP-7888: Demystifying the context property](https://codeberg.org/fediverse/fep/src/commit/70c8a451f3226280536623e5bdc853a984d47dae/fep/7888/fep-7888.md)
 
 ## Usage
 
