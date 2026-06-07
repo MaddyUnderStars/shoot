@@ -146,14 +146,20 @@ export const resolveUrlOrObject = (prop: string | AnyAPObject | APLink) => {
 	throw new APError(`Could not resolve ${prop} to an URL or object`);
 };
 
-const doWebfingerOrFindTemplate = async (lookup: string | URL): Promise<WebfingerResponse> => {
+const doWebfingerOrFindTemplate = async (
+	lookup: ActorMention | AcctURI | InviteURI | URL,
+): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
 	if (domain === config().federation.instance_url.hostname)
 		throw new APError("Tried to resolve remote resource, but we are the remote!");
 
 	const protocol = process.env.DANGEROUS_NO_TLS ? "http:" : "https:";
-	const url = new URL(`${protocol}//${domain}/.well-known/webfinger?resource=acct:${lookup}`);
+
+	const resource =
+		lookup instanceof URL ? lookup : lookup.includes(":") ? lookup : `acct:${lookup}`;
+
+	const url = new URL(`${protocol}//${domain}/.well-known/webfinger?resource=${resource}`);
 
 	throwInstanceBlock(url);
 
