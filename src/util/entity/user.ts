@@ -10,7 +10,8 @@ import {
 	resolveId,
 	resolveWebfinger,
 } from "../activitypub/resolve";
-import { APObjectIsActor, splitQualifiedMention } from "../activitypub/util";
+import { splitQualifiedMention } from "../activitypub/util";
+import { APObjectIsActor } from "../activitypub/types/APActor";
 import { config } from "../config";
 import { createLogger } from "../log";
 import { generateSigningKeys } from "./actor";

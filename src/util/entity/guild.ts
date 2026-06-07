@@ -1,9 +1,4 @@
-import {
-	type APActor,
-	APOrganization,
-	ObjectIsGroup,
-	ObjectIsOrganization,
-} from "activitypub-types";
+import { type APActor, APOrganization, ObjectIsGroup } from "activitypub-types";
 import { Channel } from "../../entity/channel";
 import { Guild } from "../../entity/guild";
 import { Member } from "../../entity/member";
@@ -30,6 +25,7 @@ import { createGuildTextChannel, getOrFetchChannel } from "./channel";
 import { isMemberOfGuild } from "./member";
 import { createRoleFromRemote } from "./role";
 import { getOrFetchUser } from "./user";
+import { ObjectIsOrganization } from "../activitypub/types/APOrganisation";
 
 export const getGuilds = (user_id: string) =>
 	/*
@@ -226,9 +222,9 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 	if (typeof obj.inbox !== "string" || typeof obj.outbox !== "string")
 		throw new APError("don't know how to handle embedded inbox/outbox");
 
-	if (!obj.following || !obj.followers)
+	if (!obj.channels || !obj.followers)
 		throw new APError(
-			"Resolved org must have following/followers to determine channels/users respectively",
+			"Resolved org must have channels/followers to determine channels/users respectively",
 		);
 
 	if (!obj.id) throw new APError("Org must have ID");
@@ -236,7 +232,7 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 	if (obj.followers && typeof obj.followers !== "string")
 		throw new APError("Remote object `followers` must be string if present");
 
-	if (obj.following && typeof obj.following !== "string")
+	if (obj.context && typeof obj.context !== "string")
 		throw new APError("Remote object `followers` must be string if present");
 
 	const guild = Guild.create({
@@ -259,14 +255,14 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 			shared_inbox: obj.endpoints?.sharedInbox,
 			outbox: obj.outbox,
 			followers: obj.followers,
-			following: obj.following,
+			context: obj.context,
 		},
 	});
 
 	await guild.save();
 
 	const channels = await Promise.all(
-		(await resolveCollectionEntries(new URL(obj.following))).reduce(
+		(await resolveCollectionEntries(new URL(obj.channels))).reduce(
 			(prev, curr) => {
 				if (typeof curr === "string") {
 					const url = tryParseUrl(curr);

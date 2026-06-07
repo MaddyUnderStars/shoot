@@ -187,6 +187,9 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 	if (obj.following && typeof obj.following !== "string")
 		throw new APError("Remote object `followers` must be string if present");
 
+	if (obj.context && typeof obj.context !== "string")
+		throw new APError("Remote object `followers` must be string if present");
+
 	const owner = await resolveChannelOwner(obj.attributedTo);
 
 	if (!owner) throw new APError("Could not resolve channel owner");
@@ -203,6 +206,7 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 			outbox: obj.outbox,
 			followers: obj.followers?.toString(),
 			following: obj.following?.toString(),
+			context: obj.context?.toString(),
 		},
 	});
 

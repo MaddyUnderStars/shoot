@@ -53,6 +53,21 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 	const outbox = isInstanceActor ? makeInstanceUrl("/outbox") : makeInstanceUrl(`${id}/outbox`);
 
+	// DM channels do regular FEP-1b12 Group membership tracking (i.e. via followers)
+	// Guild channels use the context property to link themselves to the guild's channels OrderedCollection
+	// Messages (notes) will also include a context of the channels outbox
+	// and TODO: guild members should have a context of the guild's followers???
+	// and they should be tagged by their roles??
+	const context =
+		actor instanceof GuildTextChannel
+			? makeInstanceUrl(`${getExternalPathFromActor(actor.guild)}/channels`)
+			: undefined;
+
+	const channels =
+		actor instanceof Guild
+			? makeInstanceUrl(`${getExternalPathFromActor(actor)}/channels`)
+			: undefined;
+
 	return {
 		preferredUsername,
 		name,
@@ -78,6 +93,9 @@ export const buildAPActor = (actor: Actor): APActor => {
 
 		followers: isInstanceActor ? undefined : makeInstanceUrl(`${id}/followers`),
 		following: isInstanceActor ? undefined : makeInstanceUrl(`${id}/following`),
+
+		context,
+		channels,
 
 		endpoints: {
 			sharedInbox: makeInstanceUrl("/inbox"),

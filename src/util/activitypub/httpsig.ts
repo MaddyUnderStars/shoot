@@ -14,7 +14,7 @@ import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
 import { APError } from "./error";
 import { throwInstanceBlock } from "./instances";
 import { resolveAPObject, resolveUrlOrObject } from "./resolve";
-import { APObjectIsActor } from "./util";
+import { APObjectIsActor } from "./types/APActor";
 
 const Log = createLogger("HTTPSIG");
 

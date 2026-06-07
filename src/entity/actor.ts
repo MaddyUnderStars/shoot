@@ -28,6 +28,7 @@ export abstract class Actor extends BaseModel {
 		shared_inbox: string | undefined;
 		followers?: string;
 		following?: string;
+		context?: string;
 	} | null;
 
 	/**

@@ -89,11 +89,11 @@ router.get(
 );
 
 router.get(
-	"/following",
+	"/channels",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
 			await orderedCollectionHandler({
-				id: makeInstanceUrl(`/guild/${req.params.guild_id}/following`),
+				id: makeInstanceUrl(`/guild/${req.params.guild_id}/channels`),
 				...req.query,
 				convert: (x) => x.remote_address ?? buildAPActor(x),
 				entity: Channel,
