@@ -43,13 +43,13 @@ describe.sequential("Guilds", () => {
 		guild = await createTestGuild(localUser, local);
 
 		await Promise.allSettled([guildKeyLogs, channelKeyLogs]);
-	});
+	}, 20_000);
 
 	test.afterAll(async () => {
 		await Promise.all([local.stop(), remote.stop()]);
 	});
 
-	test("Join remote guild via invite", { timeout: 20_000 }, async ({ expect }) => {
+	test("Join remote guild via invite", async ({ expect }) => {
 		const inviteRes = await containerFetch(`/guild/${guild.mention}/invite`, local, localUser, {
 			method: "POST",
 		});
