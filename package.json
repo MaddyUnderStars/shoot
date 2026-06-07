@@ -79,7 +79,7 @@
 		"vitest": "^4.0.16"
 	},
 	"lint-staged": {
-		"*.{ts,js,md,tsx,jsx,css}": "oxlint",
+		"*.{ts,js,md,tsx,jsx,css}": "oxlint --no-error-on-unmatched-pattern",
 		"*": "oxfmt --no-error-on-unmatched-pattern"
 	}
 }
