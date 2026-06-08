@@ -34,7 +34,6 @@
 		"config": "^4.0.0",
 		"cors": "^2.8.5",
 		"domutils": "^3.2.2",
-		"dotenv": "^17.2.3",
 		"express": "^4.21.2",
 		"express-rate-limit": "^7.5.0",
 		"htmlparser2": "^10.0.0",

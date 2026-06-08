@@ -3,7 +3,6 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-import "dotenv/config";
 import { createServer } from "node:http";
 import { GatewayServer } from "./gateway/server";
 import { APIServer } from "./http/server";

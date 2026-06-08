@@ -3,7 +3,6 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-import "dotenv/config";
 import { config } from "../util/config";
 import { createLogger, setLogOptions } from "../util/log";
 import { MediaGatewayServer } from "./server";

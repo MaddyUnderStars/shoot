@@ -22,7 +22,11 @@
 	],
 	"settings": {
 		"js/ts.tsdk.path": "shoot/node_modules/typescript/lib",
+		"oxc.fmt.configPath": "/home/maddy/Documents/code/shoot/server/.oxfmtrc.json",
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "oxc.oxc-vscode",
+		"[typescript]": {
+			"editor.defaultFormatter": "oxc.oxc-vscode",
+		},
 	},
 }
