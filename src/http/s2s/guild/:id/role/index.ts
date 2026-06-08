@@ -46,7 +46,9 @@ router.get(
 		async (req, res) =>
 			res.json(
 				await orderedCollectionHandler({
-					id: makeInstanceUrl(`/guild/${req.params.guild_id}/role/${req.params.role_id}`),
+					id: makeInstanceUrl(
+						`/guild/${req.params.guild_id}/role/${req.params.role_id}/members`,
+					),
 					before: req.query.before,
 					after: req.query.after,
 					convert: (x) => x.user.remote_address ?? buildAPActor(x.user),
@@ -57,7 +59,10 @@ router.get(
 						.leftJoin("member.roles", "role", "role.id = :role_id", {
 							role_id: req.params.role_id,
 						})
-						.leftJoinAndSelect("member.user", "user"),
+						.leftJoinAndSelect("member.user", "user")
+						.where("role.guildId = :guild_id", {
+							guild_id: req.params.guild_id,
+						}),
 				}),
 			),
 	),
