@@ -16,7 +16,11 @@ router.get(
 			where: {
 				code: invite_id,
 			},
-			relations: ["guild", "guild.owner"],
+			relations: {
+				guild: {
+					owner: true,
+				},
+			},
 		});
 
 		return res.json(addContext(buildAPGuildInvite(invite)));
