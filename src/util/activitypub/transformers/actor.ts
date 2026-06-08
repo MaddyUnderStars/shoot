@@ -1,4 +1,3 @@
-import type { APActor } from "activitypub-types";
 import type { Actor } from "../../../entity/actor";
 import { Channel } from "../../../entity/channel";
 import { DMChannel } from "../../../entity/DMChannel";
@@ -10,6 +9,7 @@ import { config } from "../../config";
 import { makeInstanceUrl, makeWebappUrl } from "../../url";
 import { APError } from "../error";
 import { InstanceActor } from "../instanceActor";
+import { APActor } from "../types/APActor";
 
 const getAPTypeFromActor = (actor: Actor) => {
 	if (actor.id === InstanceActor.id) return "Application";
