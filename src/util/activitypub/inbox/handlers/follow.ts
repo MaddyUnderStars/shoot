@@ -14,6 +14,7 @@ import { APError } from "../../error";
 import { resolveId } from "../../resolve";
 import { addContext, splitQualifiedMention } from "../../util";
 import type { ActivityHandler } from ".";
+import { config } from "../../../config";
 
 export const FollowActivityHandler: ActivityHandler = async (activity, target) => {
 	if (!ActivityIsFollow(activity)) return;
@@ -37,6 +38,9 @@ export const FollowActivityHandler: ActivityHandler = async (activity, target) =
 			throw new APError("Only one invite_code string value in instrument properly allowed");
 
 		const code = splitQualifiedMention(invite_code);
+
+		if (code.domain !== config().federation.webapp_url.hostname)
+			throw new APError("Shoot only supports InviteCodes from itself");
 
 		const invite = await Invite.findOneOrFail({
 			where: { code: code.id },
