@@ -1,0 +1,33 @@
+import request from "supertest";
+import { test } from "../fixture";
+import { createTestGuild } from "../testUtils/guilds";
+import { createTestUser } from "../testUtils/users";
+
+test.describe("Via config", () => {
+	test.beforeEach(async ({ config, api }) => {
+		const owner = await createTestUser(api);
+		const guild = await createTestGuild(owner);
+
+		config.registration.auto_join = [guild.id];
+	});
+
+	test("Auto joins guilds", async ({ api, expect }) => {
+		const { body: reg } = await request(api.app)
+			.post("/auth/register")
+			.send({
+				username: "test",
+				password: "test",
+				email: "test@test.com",
+			})
+			.set("Accept", "application/json")
+			.expect("Content-Type", /json/)
+			.expect(200);
+
+		const guilds = await request(api.app)
+			.get("/users/@me/guild")
+			.auth(reg.token, { type: "bearer" })
+			.expect(200);
+
+		expect(guilds.body).toHaveLength(1);
+	});
+});

@@ -15,6 +15,7 @@ import { APObjectIsActor } from "../activitypub/types/APActor";
 import { config } from "../config";
 import { createLogger } from "../log";
 import { generateSigningKeys } from "./actor";
+import { joinGuild } from "./guild";
 
 const Log = createLogger("users");
 
@@ -39,6 +40,10 @@ export const registerUser = async (
 
 	if (awaitKeyGeneration) await generateSigningKeys(user);
 	else setImmediate(() => generateSigningKeys(user));
+
+	for (const guildId of config().registration.auto_join) {
+		await joinGuild(user.mention, `${guildId}@${config().federation.webapp_url.hostname}`);
+	}
 
 	Log.verbose(`User '${user.name}' registered`);
 	return user;

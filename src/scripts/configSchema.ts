@@ -33,7 +33,7 @@ const configSchema = {
 };
 
 writeFile(
-	path.join(__dirname, "..", "..", "assets", "config.json"),
+	path.join(__dirname, "..", "..", "..", "assets", "config.json"),
 	JSON.stringify(configSchema),
 	{},
 	(err) => {

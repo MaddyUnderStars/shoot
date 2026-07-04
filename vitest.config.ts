@@ -8,7 +8,6 @@ export default defineConfig({
 		setupFiles: "./test/testSetup.ts",
 		testTimeout: 10_000,
 		reporters: process.env.GITHUB_ACTIONS ? ["default", "github-actions"] : ["dot"],
-		retry: process.env.GITHUB_ACTIONS ? 1 : 0,
 	},
 	plugins: [swc.vite()],
 	oxc: false,

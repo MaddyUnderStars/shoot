@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/correctness/noEmptyPattern: required by vite */
 import crypto from "node:crypto";
 import { promisify } from "node:util";
 import { Client as PgClient } from "pg";
@@ -59,7 +58,7 @@ export const test = baseTest.extend<{
 
 			const keys = await generateKeyPair("rsa", KEY_OPTIONS);
 
-			const config = {
+			const config = ConfigSchema.parse({
 				database: {
 					url: `postgres://${postgres.user}:${postgres.password}@${postgres.host}:${postgres.port}/${database}`,
 					log: false,
@@ -78,18 +77,35 @@ export const test = baseTest.extend<{
 				registration: {
 					enabled: true,
 				},
+			});
+
+			const handler: ProxyHandler<ConfigSchema> = {
+				set(target, prop, value, receiver) {
+					Reflect.set(target, prop, value, receiver);
+
+					process.env.NODE_CONFIG = JSON.stringify(config);
+					return true;
+				},
+				get(target, prop, receiver) {
+					const value = Reflect.get(target, prop, receiver);
+					if (typeof value === "object" && value !== null) {
+						return new Proxy(Reflect.get(target, prop), handler);
+					}
+
+					return value;
+				},
 			};
 
+			const proxy = new Proxy(config, handler);
+
 			process.env.NODE_CONFIG = JSON.stringify(config);
-			await use(ConfigSchema.parse(config));
+			await use(proxy);
 		},
 		{ auto: true, scope: "file" },
 	],
 
 	api: [
-		async ({ config }, use) => {
-			process.env.NODE_CONFIG = JSON.stringify(config);
-
+		async ({}, use) => {
 			const { APIServer } = await import("../src/http/server");
 			const { initDatabase, closeDatabase } = await import("../src/util/database");
 
