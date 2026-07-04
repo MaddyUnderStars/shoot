@@ -1,8 +1,8 @@
 import { describe } from "vitest";
 import { test } from "../fixture";
 
-describe("Migrations", () => {
-	test.sequential("Can rollback migrations from initial sync", async () => {
+describe("Migrations", { concurrent: false }, () => {
+	test("Can rollback migrations from initial sync", async () => {
 		const { getDatabase, initDatabase } = await import("../../src/util/database");
 
 		await initDatabase();
@@ -16,7 +16,7 @@ describe("Migrations", () => {
 		}
 	});
 
-	test.sequential("Can apply migrations", async () => {
+	test("Can apply migrations", async () => {
 		const { getDatabase } = await import("../../src/util/database");
 
 		const db = getDatabase();

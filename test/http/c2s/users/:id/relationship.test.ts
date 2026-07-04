@@ -3,7 +3,7 @@ import { describe } from "vitest";
 import { test } from "../../../../fixture";
 import { createTestUser } from "../../../../testUtils/users";
 
-describe.sequential("Relationships", () => {
+describe("Relationships", { concurrent: false }, () => {
 	let user1: Awaited<ReturnType<typeof createTestUser>>;
 	let user2: Awaited<ReturnType<typeof createTestUser>>;
 

@@ -1,7 +1,7 @@
 import request from "supertest";
 import { test } from "../../../../fixture";
 
-test.sequential("Can Login", async ({ api, expect }) => {
+test("Can Login", { concurrent: false }, async ({ api, expect }) => {
 	const { registerUser } = await import("../../../../../src/util/entity/user");
 
 	await registerUser("test", "test");
@@ -17,7 +17,7 @@ test.sequential("Can Login", async ({ api, expect }) => {
 	expect(res.body.token).toBeTypeOf("string");
 });
 
-test.sequential("Login rejects invalid password", async ({ api }) => {
+test("Login rejects invalid password", { concurrent: false }, async ({ api }) => {
 	await request(api.app)
 		.post("/auth/login")
 		.send({
@@ -27,7 +27,7 @@ test.sequential("Login rejects invalid password", async ({ api }) => {
 		.expect(401);
 });
 
-test.sequential("Login rejects invalid username", async ({ api }) => {
+test("Login rejects invalid username", { concurrent: false }, async ({ api }) => {
 	await request(api.app)
 		.post("/auth/login")
 		.send({

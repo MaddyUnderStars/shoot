@@ -9,7 +9,7 @@ import { Client as PgClient } from "pg";
 import { describe, inject } from "vitest";
 import { StartedTestContainer } from "testcontainers";
 
-describe.sequential("Guilds", () => {
+describe("Guilds", { concurrent: false }, () => {
 	let local: StartedTestContainer;
 	let localDatabaseName: string;
 	let remote: StartedTestContainer;
