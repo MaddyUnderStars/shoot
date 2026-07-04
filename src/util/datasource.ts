@@ -32,6 +32,7 @@ import { VoiceState1778143207892 } from "./migration/postgres/1778143207892-voic
 import { ProfileImages1778755429041 } from "./migration/postgres/1778755429041-profileImages";
 import { EmbedThumbnails1779430645216 } from "./migration/postgres/1779430645216-embedThumbnails";
 import { Jsonb1779431257338 } from "./migration/postgres/1779431257338-jsonb";
+import { AutojoinGuilds1783139862203 } from "./migration/postgres/1783139862203-autojoinGuilds";
 
 let datasource: DataSource;
 
@@ -110,6 +111,7 @@ export const getDatasource = () => {
 			ProfileImages1778755429041,
 			EmbedThumbnails1779430645216,
 			Jsonb1779431257338,
+			AutojoinGuilds1783139862203,
 		],
 	});
 

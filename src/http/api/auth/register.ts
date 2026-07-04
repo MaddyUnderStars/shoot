@@ -45,6 +45,7 @@ router.post(
 
 					return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
 				})
+				.leftJoinAndSelect("invite.guild", "guild")
 				.getOneOrFail();
 		}
 

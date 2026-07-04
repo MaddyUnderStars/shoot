@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
-import { User } from "./user";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import type { User } from "./user";
+import type { Guild } from "./guild";
 
 /**
  * Instance registration invite codes
@@ -15,10 +16,14 @@ export class InstanceInvite extends BaseEntity {
 	@Column({ type: Date, nullable: true })
 	expires: Date | null;
 
-	@OneToMany(() => User, (user) => user.invite)
+	@OneToMany("users", (user: User) => user.invite)
 	users: User[];
 
 	/** the maximum number of uses for this invite. if null, unlimited usage */
 	@Column({ type: Number, nullable: true })
 	maxUses: number | null;
+
+	/** join this guild when this invite is used */
+	@ManyToOne("guilds", { onDelete: "SET NULL", nullable: true })
+	guild: Guild | null;
 }

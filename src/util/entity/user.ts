@@ -45,6 +45,10 @@ export const registerUser = async (
 		await joinGuild(user.mention, `${guildId}@${config().federation.webapp_url.hostname}`);
 	}
 
+	if (instanceInvite?.guild) {
+		await joinGuild(user.mention, instanceInvite.guild.mention);
+	}
+
 	Log.verbose(`User '${user.name}' registered`);
 	return user;
 };
