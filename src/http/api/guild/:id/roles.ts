@@ -38,6 +38,7 @@ router.post(
 				name: req.body.name,
 				allow: req.body.allow,
 				deny: req.body.deny,
+				guild: { id: guild.id },
 				position:
 					req.body.position ??
 					(await Role.count({ where: { guild: { id: guild.id } } })) + 1,
