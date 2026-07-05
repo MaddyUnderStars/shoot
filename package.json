@@ -74,7 +74,7 @@
 		"testcontainers": "^11.11.0",
 		"typescript": "^6.0.2",
 		"unplugin-swc": "^1.5.9",
-		"vitest": "^4.0.16"
+		"vitest": "^4.1.9"
 	},
 	"lint-staged": {
 		"*.{ts,js,md,tsx,jsx,css}": "oxlint --no-error-on-unmatched-pattern",
