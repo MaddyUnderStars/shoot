@@ -1,4 +1,6 @@
+import { In } from "typeorm";
 import { DMChannel } from "../../entity/DMChannel";
+import { Role } from "../../entity/role";
 import { Session } from "../../entity/session";
 import type { User } from "../../entity/user";
 import { VoiceState } from "../../entity/voiceState";
@@ -69,6 +71,7 @@ export const onIdentify = makeHandler(async function (payload) {
 				.leftJoin("voice.channel", "channel")
 				.leftJoinAndSelect("voice.user", "user")
 				.where("channel.id IN (:...channel_ids)", {
+					// TODO: guild voice states
 					channel_ids: dmChannels.map((x) => x.id),
 				})
 				.groupBy("channel.id")
@@ -85,6 +88,25 @@ export const onIdentify = makeHandler(async function (payload) {
 		const mention: ActorMention = `${row.channel_remote_id ?? row.channel_id}@${row.channel_domain}`;
 
 		voiceState[mention] = row.users;
+	}
+
+	const roles = Object.groupBy(
+		await Role.find({
+			where: { guild: { id: In(guilds.map((x) => x.id)) } },
+			loadRelationIds: {
+				disableMixedMap: true,
+			},
+		}),
+		(role) => role.guild.id,
+	);
+
+	for (const guildId in roles) {
+		if (!roles[guildId]) continue;
+
+		const guild = guilds.find((x) => x.id === guildId);
+		if (!guild) continue; //shouldn't happen
+
+		guild.roles = roles[guildId];
 	}
 
 	const ret: READY = {
