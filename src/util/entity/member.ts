@@ -38,8 +38,7 @@ export const getMember = async (user: User, guild: Guild) =>
 		.createQueryBuilder(Member, "guild_members")
 		.where(
 			(qb) => {
-				const sub = qb.connection
-					.createQueryBuilder()
+				const sub = qb
 					.subQuery()
 					.select("roles.guildMembersId")
 					.from("roles_members_guild_members", "roles")

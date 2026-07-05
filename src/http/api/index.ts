@@ -77,6 +77,10 @@ import guild_id_roles from "./guild/:id/roles";
 
 router.use("/guild/:guild_id/roles", guild_id_roles);
 
+import guild_id_members from "./guild/:id/members/index";
+
+router.use("/guild/:guild_id/members", guild_id_members);
+
 import guild_id_members_id from "./guild/:id/members/:id/index";
 
 router.use("/guild/:guild_id/members/:user_id", guild_id_members_id);
