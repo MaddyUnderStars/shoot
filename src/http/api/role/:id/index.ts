@@ -54,7 +54,10 @@ router.patch(
 				delete req.body.position;
 			}
 
-			role.assign(req.body);
+			if (req.body.name) role.name = req.body.name;
+			if (req.body.position !== undefined) role.position = req.body.position;
+			if (req.body.allow !== undefined) role.allow = req.body.allow;
+			if (req.body.deny !== undefined) role.deny = req.body.deny;
 
 			await role.save();
 
@@ -73,7 +76,7 @@ router.delete(
 	route({ params }, async (req, res) => {
 		const role = await Role.findOneOrFail({
 			where: { id: req.params.role_id },
-			relations: { guild: true },
+			relations: { guild: { owner: true } },
 		});
 
 		await role.guild.throwPermission(req.user, PERMISSION.MANAGE_GUILD);
