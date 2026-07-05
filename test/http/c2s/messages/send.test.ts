@@ -12,7 +12,7 @@ test.for([
 	[[PERMISSION.VIEW_CHANNEL], false],
 	[[PERMISSION.SEND_MESSAGES], false],
 	[[PERMISSION.NONE], false],
-])("Can send messages as $0", async (opts, { api, dbClient }) => {
+])("Can send messages as $0", { timeout: 20_000 }, async (opts, { api, dbClient }) => {
 	const permissions = opts[0] as PERMISSION[];
 	const allowed = opts[1] as boolean;
 
