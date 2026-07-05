@@ -41,7 +41,7 @@ export const checkPermission = async (
 		if (role.allow.includes(PERMISSION.ADMIN)) return true;
 
 		for (const allowed of role.allow) flat.add(allowed);
-		for (const denied of role.deny) flat.add(denied);
+		for (const denied of role.deny) flat.delete(denied);
 	}
 
 	return permission.every((perm) => flat.has(perm));
