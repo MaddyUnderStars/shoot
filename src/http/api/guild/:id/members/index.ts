@@ -38,7 +38,7 @@ router.get(
 			const query = getDatabase()
 				.getRepository(Member)
 				.createQueryBuilder("members")
-				.limit(req.query.limit)
+				.take(req.query.limit)
 				.skip(req.query.limit * req.query.page)
 				.leftJoinAndSelect("members.roles", "roles")
 				.leftJoinAndSelect("members.user", "user")
