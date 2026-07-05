@@ -53,6 +53,8 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 			if (error.message.toLowerCase().includes("unique")) {
 				code = 400;
 				message = "Object already exists";
+			} else {
+				message = "Internal server error";
 			}
 			break;
 		case error.message === "fetch failed":
