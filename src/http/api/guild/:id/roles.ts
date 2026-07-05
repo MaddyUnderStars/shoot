@@ -6,6 +6,7 @@ import { getOrFetchGuild } from "../../../../util/entity/guild";
 import { updateRoleOrdering } from "../../../../util/entity/role";
 import { PERMISSION } from "../../../../util/permission";
 import { route } from "../../../../util/route";
+import { emitGatewayEvent } from "../../../../util/events";
 
 const router = Router({ mergeParams: true });
 
@@ -35,15 +36,20 @@ router.post(
 			// unless I have admin
 
 			const role = await Role.create({
+				guild,
 				name: req.body.name,
 				allow: req.body.allow,
 				deny: req.body.deny,
-				guild: { id: guild.id },
 				position:
 					req.body.position ?? (await Role.count({ where: { guild: { id: guild.id } } })),
 			}).save();
 
 			await updateRoleOrdering(guild.id);
+
+			emitGatewayEvent(guild, {
+				type: "ROLE_CREATE",
+				role: role.toPublic(),
+			});
 
 			return res.json(role.toPublic());
 		},
