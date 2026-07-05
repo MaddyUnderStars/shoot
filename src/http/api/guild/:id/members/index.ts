@@ -25,7 +25,10 @@ router.get(
 				username: z.string().optional(),
 				role: z.uuid().optional(),
 			}),
-			response: PublicMember.array(),
+			response: z.object({
+				members: PublicMember.array(),
+				total: z.number(),
+			}),
 		},
 		async (req, res) => {
 			const guild = await getOrFetchGuild(req.params.guild_id);
@@ -54,8 +57,12 @@ router.get(
 			}
 
 			const members = await query.getMany();
+			const total = await query.getCount();
 
-			return res.json(members.map((x) => x.toPublic()));
+			return res.json({
+				total,
+				members: members.map((x) => x.toPublic()),
+			});
 		},
 	),
 );
