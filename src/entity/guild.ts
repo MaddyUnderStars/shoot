@@ -31,6 +31,7 @@ export class Guild extends Actor {
 		return {
 			mention: this.mention,
 			name: this.name,
+			summary: this.summary ?? undefined,
 
 			channels: this.channels ? this.channels.map((x) => x.toPublic()) : undefined,
 
@@ -63,12 +64,14 @@ export type PublicGuild = Pick<Guild, "name"> & {
 	channels?: PublicGuildTextChannel[];
 	roles?: PublicRole[];
 	mention: ActorMention;
+	summary?: string;
 };
 
 export const PublicGuild: z.ZodType<PublicGuild> = z
 	.object({
 		mention: ActorMention,
 		name: z.string(),
+		summary: z.string().optional(),
 		channels: PublicGuildTextChannel.array().optional(),
 		roles: PublicRole.array().optional(),
 	})
