@@ -34,7 +34,7 @@ router.post(
 		if (req.body.invite) {
 			invite = await InstanceInvite.createQueryBuilder("invite")
 				.where("invite.code = :code", { code: req.body.invite })
-				.andWhere("(invite.expires < now() or invite.expires is null)")
+				.andWhere("(invite.expires > now() or invite.expires is null)")
 				.andWhere((qb) => {
 					const inner = qb
 						.createQueryBuilder()
