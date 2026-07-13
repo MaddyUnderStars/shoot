@@ -1,8 +1,8 @@
 import type { AnyAPObject, APOrderedCollectionPage } from "activitypub-types";
 import type { ObjectType, SelectQueryBuilder } from "typeorm";
-import type { BaseModel } from "../../entity/basemodel";
-import { addContext } from "./util";
-import { buildPaginator } from "../cursor-pagination/buildPaginator";
+import type { BaseModel } from "../../entity/basemodel.js";
+import { addContext } from "./util.js";
+import { buildPaginator } from "../cursor-pagination/buildPaginator.js";
 
 type Props<T extends BaseModel> = {
 	entity: ObjectType<T>;

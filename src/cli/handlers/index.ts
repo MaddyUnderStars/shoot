@@ -1,7 +1,7 @@
-import { addUser } from "./addUser";
-import { generateKeys } from "./generateKeys";
-import { generateRegInvite } from "./generateRegInvite";
-import { instance } from "./instance";
+import { addUser } from "./addUser.js";
+import { generateKeys } from "./generateKeys.js";
+import { generateRegInvite } from "./generateRegInvite.js";
+import { instance } from "./instance.js";
 
 export const cliHandlers = {
 	"generate-keys": generateKeys,

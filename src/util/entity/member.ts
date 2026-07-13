@@ -1,13 +1,13 @@
 import type { APPerson } from "activitypub-types";
-import type { Guild } from "../../entity/guild";
-import { Member } from "../../entity/member";
-import type { User } from "../../entity/user";
-import type { ActorMention } from "../activitypub/constants";
-import { resolveId } from "../activitypub/resolve";
-import { splitQualifiedMention } from "../activitypub/util";
-import { getDatabase } from "../database";
-import { HttpError } from "../httperror";
-import { getOrFetchUser } from "./user";
+import type { Guild } from "../../entity/guild.js";
+import { Member } from "../../entity/member.js";
+import type { User } from "../../entity/user.js";
+import type { ActorMention } from "../activitypub/constants.js";
+import { resolveId } from "../activitypub/resolve.js";
+import { splitQualifiedMention } from "../activitypub/util.js";
+import { getDatabase } from "../database.js";
+import { HttpError } from "../httperror.js";
+import { getOrFetchUser } from "./user.js";
 
 export const getOrFetchMember = async (lookup: ActorMention | URL | APPerson) => {
 	const mention = splitQualifiedMention(resolveId(lookup));

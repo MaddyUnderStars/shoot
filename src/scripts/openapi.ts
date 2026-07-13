@@ -23,9 +23,9 @@ process.env.NODE_CONFIG = JSON.stringify({
 	},
 });
 
-import apiRoutes from "../http/api";
-import { NO_AUTH_ROUTES } from "../http/middleware/auth";
-import { ZodHttpError } from "../util/route";
+import apiRoutes from "../http/api/index.js";
+import { NO_AUTH_ROUTES } from "../http/middleware/auth.js";
+import { ZodHttpError } from "../util/route.js";
 
 const convertRegexToPath = (regexp: RegExp, keys: { name: string }[]) => {
 	return regexp

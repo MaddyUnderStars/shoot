@@ -1,6 +1,6 @@
-import type { Session } from "../../entity/session";
-import type { ActorMention } from "../../util/activitypub/constants";
-import type { GATEWAY_PAYLOAD } from "./validation/send";
+import type { Session } from "../../entity/session.js";
+import type { ActorMention } from "../../util/activitypub/constants.js";
+import type { GATEWAY_PAYLOAD } from "./validation/send.js";
 export interface Websocket extends Omit<WebSocket, "send"> {
 	/** The source IP address of this socket */
 	ip_address: string;

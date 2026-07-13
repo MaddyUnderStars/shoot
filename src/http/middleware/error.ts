@@ -1,9 +1,9 @@
 import type { ErrorRequestHandler } from "express";
 import z from "zod";
-import { InstanceBlockedError } from "../../util/activitypub/instances";
-import { HttpError } from "../../util/httperror";
-import { createLogger } from "../../util/log";
-import { ValidationError } from "../../util/route";
+import { InstanceBlockedError } from "../../util/activitypub/instances.js";
+import { HttpError } from "../../util/httperror.js";
+import { createLogger } from "../../util/log.js";
+import { ValidationError } from "../../util/route.js";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
 

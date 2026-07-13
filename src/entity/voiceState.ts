@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import type { Channel } from "./channel";
-import type { User } from "./user";
+import type { Channel } from "./channel.js";
+import type { User } from "./user.js";
 
 @Entity("voice_state")
 export class VoiceState extends BaseEntity {

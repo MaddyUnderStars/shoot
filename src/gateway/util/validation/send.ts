@@ -1,16 +1,16 @@
-import type { PublicChannel } from "../../../entity/channel";
-import type { PublicDmChannel } from "../../../entity/DMChannel";
-import type { PublicGuild } from "../../../entity/guild";
-import type { PublicInvite } from "../../../entity/invite";
-import type { PublicMember } from "../../../entity/member";
-import type { PublicMessage } from "../../../entity/message";
-import type { PrivateRelationship } from "../../../entity/relationship";
-import type { PublicRole } from "../../../entity/role";
-import type { PrivateSession } from "../../../entity/session";
-import type { PublicGuildTextChannel } from "../../../entity/textChannel";
-import type { PrivateUser, PublicUser } from "../../../entity/user";
-import type { ActorMention } from "../../../util/activitypub/constants";
-import type { MembersChunkItem } from "../../handlers/members";
+import type { PublicChannel } from "../../../entity/channel.js";
+import type { PublicDmChannel } from "../../../entity/DMChannel.js";
+import type { PublicGuild } from "../../../entity/guild.js";
+import type { PublicInvite } from "../../../entity/invite.js";
+import type { PublicMember } from "../../../entity/member.js";
+import type { PublicMessage } from "../../../entity/message.js";
+import type { PrivateRelationship } from "../../../entity/relationship.js";
+import type { PublicRole } from "../../../entity/role.js";
+import type { PrivateSession } from "../../../entity/session.js";
+import type { PublicGuildTextChannel } from "../../../entity/textChannel.js";
+import type { PrivateUser, PublicUser } from "../../../entity/user.js";
+import type { ActorMention } from "../../../util/activitypub/constants.js";
+import type { MembersChunkItem } from "../../handlers/members.js";
 
 export type GATEWAY_PAYLOAD = {
 	/**

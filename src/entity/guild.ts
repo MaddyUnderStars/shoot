@@ -1,13 +1,13 @@
 import { AfterLoad, Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { checkPermission } from "../util/checkPermission";
-import { HttpError } from "../util/httperror";
-import type { PERMISSION } from "../util/permission";
-import { Actor } from "./actor";
-import { PublicRole, type Role } from "./role";
-import { type GuildTextChannel, PublicGuildTextChannel } from "./textChannel";
-import type { User } from "./user";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { checkPermission } from "../util/checkPermission.js";
+import { HttpError } from "../util/httperror.js";
+import type { PERMISSION } from "../util/permission.js";
+import { Actor } from "./actor.js";
+import { PublicRole, type Role } from "./role.js";
+import { type GuildTextChannel, PublicGuildTextChannel } from "./textChannel.js";
+import type { User } from "./user.js";
 
 @Entity("guilds")
 export class Guild extends Actor {

@@ -1,27 +1,27 @@
 import { Like } from "typeorm";
-import { InstanceBehaviour } from "../../util/activitypub/instanceBehaviour";
-import { createLogger } from "../../util/log";
-import { appendToConfig } from "../util";
+import { InstanceBehaviour } from "../../util/activitypub/instanceBehaviour.js";
+import { createLogger } from "../../util/log.js";
+import { appendToConfig } from "../util.js";
 
 const Log = createLogger("cli");
 
-export const instance = async (url: string, action: string) => {
+export const instance = async (url: string, action: string): Promise<void | Error> => {
 	if (!url) return new Error("Must specify URL");
 
-	const { config } = await import("../../util/config");
+	const { config } = await import("../../util/config.js");
 
 	const parsed = new URL(
 		!url.startsWith("http://") && !url.startsWith("https://") ? `https://${url}` : url,
 	);
 
-	const { User } = await import("../../entity/user");
-	const { Guild } = await import("../../entity/guild");
-	const { DMChannel } = await import("../../entity/DMChannel");
-	const { GuildTextChannel } = await import("../../entity/textChannel");
-	const { Channel } = await import("../../entity/channel");
-	const { ApCache } = await import("../../entity/apcache");
+	const { User } = await import("../../entity/user.js");
+	const { Guild } = await import("../../entity/guild.js");
+	const { DMChannel } = await import("../../entity/DMChannel.js");
+	const { GuildTextChannel } = await import("../../entity/textChannel.js");
+	const { Channel } = await import("../../entity/channel.js");
+	const { ApCache } = await import("../../entity/apcache.js");
 
-	const { initDatabase, closeDatabase } = await import("../../util/database");
+	const { initDatabase, closeDatabase } = await import("../../util/database.js");
 
 	await initDatabase();
 

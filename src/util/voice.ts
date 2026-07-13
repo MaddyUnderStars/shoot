@@ -1,15 +1,15 @@
 import type { APJoin } from "activitypub-types";
 import jwt from "jsonwebtoken";
-import { Channel } from "../entity/channel";
-import { User } from "../entity/user";
-import { getExternalPathFromActor, sendActivity } from "../sender";
-import { APError } from "./activitypub/error";
-import { addContext, splitQualifiedMention } from "./activitypub/util";
-import { config } from "./config";
-import { getDatabase } from "./database";
-import { HttpError } from "./httperror";
-import { PERMISSION } from "./permission";
-import { makeInstanceUrl } from "./url";
+import { Channel } from "../entity/channel.js";
+import { User } from "../entity/user.js";
+import { getExternalPathFromActor, sendActivity } from "../sender/index.js";
+import { APError } from "./activitypub/error.js";
+import { addContext, splitQualifiedMention } from "./activitypub/util.js";
+import { config } from "./config.js";
+import { getDatabase } from "./database.js";
+import { HttpError } from "./httperror.js";
+import { PERMISSION } from "./permission.js";
+import { makeInstanceUrl } from "./url.js";
 
 const algorithm = "HS256";
 

@@ -1,5 +1,5 @@
-import { createLogger } from "../util/log";
-import { cliHandlers } from "./handlers";
+import { createLogger } from "../util/log.js";
+import { cliHandlers } from "./handlers/index.js";
 
 const Log = createLogger("cli");
 

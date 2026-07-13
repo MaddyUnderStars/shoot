@@ -1,11 +1,11 @@
 import { Router } from "express";
 import z from "zod";
-import { PublicRole, Role, ZodPermission } from "../../../../entity/role";
-import { isMemberOfGuildThrow } from "../../../../util/entity/member";
-import { emitGatewayEvent } from "../../../../util/events";
-import { HttpError } from "../../../../util/httperror";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
+import { PublicRole, Role, ZodPermission } from "../../../../entity/role.js";
+import { isMemberOfGuildThrow } from "../../../../util/entity/member.js";
+import { emitGatewayEvent } from "../../../../util/events.js";
+import { HttpError } from "../../../../util/httperror.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

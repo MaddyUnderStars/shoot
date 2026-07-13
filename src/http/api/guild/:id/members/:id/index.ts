@@ -1,16 +1,16 @@
 import { Router } from "express";
 import { In } from "typeorm";
 import z from "zod";
-import { Role } from "../../../../../../entity/role";
-import { ActorMention } from "../../../../../../util/activitypub/constants";
-import { getOrFetchGuild } from "../../../../../../util/entity/guild";
-import { getMember } from "../../../../../../util/entity/member";
-import { getOrFetchUser } from "../../../../../../util/entity/user";
-import { emitGatewayEvent } from "../../../../../../util/events";
-import { HttpError } from "../../../../../../util/httperror";
-import { PERMISSION } from "../../../../../../util/permission";
-import { route } from "../../../../../../util/route";
-import { GATEWAY_EVENT } from "../../../../../../gateway/util/validation/send";
+import { Role } from "../../../../../../entity/role.js";
+import { ActorMention } from "../../../../../../util/activitypub/constants.js";
+import { getOrFetchGuild } from "../../../../../../util/entity/guild.js";
+import { getMember } from "../../../../../../util/entity/member.js";
+import { getOrFetchUser } from "../../../../../../util/entity/user.js";
+import { emitGatewayEvent } from "../../../../../../util/events.js";
+import { HttpError } from "../../../../../../util/httperror.js";
+import { PERMISSION } from "../../../../../../util/permission.js";
+import { route } from "../../../../../../util/route.js";
+import { GATEWAY_EVENT } from "../../../../../../gateway/util/validation/send.js";
 
 const router = Router({ mergeParams: true });
 

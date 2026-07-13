@@ -1,10 +1,10 @@
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, Unique } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { DefaultPermissions, PERMISSION } from "../util/permission";
-import { BaseModel } from "./basemodel";
-import type { Guild } from "./guild";
-import type { Member } from "./member";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { DefaultPermissions, PERMISSION } from "../util/permission.js";
+import { BaseModel } from "./basemodel.js";
+import type { Guild } from "./guild.js";
+import type { Member } from "./member.js";
 
 @Entity("roles")
 @Unique("role_ordering", ["position", "guild"], {

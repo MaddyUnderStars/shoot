@@ -1,27 +1,27 @@
 import { ObjectIsNote } from "activitypub-types";
-import { Attachment } from "../../entity/attachment";
-import { DMChannel } from "../../entity/DMChannel";
-import { Embed } from "../../entity/embed";
-import { Member } from "../../entity/member";
-import { Message } from "../../entity/message";
-import { GuildTextChannel } from "../../entity/textChannel";
-import { sendNotifications } from "../../push/notifications";
-import { sendActivity } from "../../sender";
-import { APError } from "../activitypub/error";
+import { Attachment } from "../../entity/attachment.js";
+import { DMChannel } from "../../entity/DMChannel.js";
+import { Embed } from "../../entity/embed.js";
+import { Member } from "../../entity/member.js";
+import { Message } from "../../entity/message.js";
+import { GuildTextChannel } from "../../entity/textChannel.js";
+import { sendNotifications } from "../../push/notifications.js";
+import { sendActivity } from "../../sender/index.js";
+import { APError } from "../activitypub/error.js";
 import {
 	buildAPAnnounceNote,
 	buildAPCreateNote,
 	buildAPNote,
-} from "../activitypub/transformers/message";
-import { addContext } from "../activitypub/util";
-import { getDatabase } from "../database";
-import { generateUrlPreview } from "../embeds";
-import { emitGatewayEvent } from "../events";
-import { HttpError } from "../httperror";
-import { createLogger } from "../log";
-import { PERMISSION } from "../permission";
-import { checkFileExists } from "../storage";
-import { tryParseUrl } from "../url";
+} from "../activitypub/transformers/message.js";
+import { addContext } from "../activitypub/util.js";
+import { getDatabase } from "../database.js";
+import { generateUrlPreview } from "../embeds/index.js";
+import { emitGatewayEvent } from "../events.js";
+import { HttpError } from "../httperror.js";
+import { createLogger } from "../log.js";
+import { PERMISSION } from "../permission.js";
+import { checkFileExists } from "../storage/index.js";
+import { tryParseUrl } from "../url.js";
 
 const log = createLogger("handleMessage");
 

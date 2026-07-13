@@ -1,21 +1,21 @@
 import { In } from "typeorm";
-import { DMChannel } from "../../entity/DMChannel";
-import { Role } from "../../entity/role";
-import { Session } from "../../entity/session";
-import type { User } from "../../entity/user";
-import { VoiceState } from "../../entity/voiceState";
-import type { ActorMention } from "../../util/activitypub/constants";
-import { getDatabase } from "../../util/database";
-import { getGuilds } from "../../util/entity/guild";
-import { fetchRelationships } from "../../util/entity/relationship";
-import { listenGatewayEvent, makeGatewayTarget } from "../../util/events";
-import { getUserFromToken } from "../../util/token";
-import { CLOSE_CODES } from "../util/codes";
-import { makeHandler } from "../util/handler";
-import { consume, listenEvents } from "../util/listener";
-import { IDENTIFY } from "../util/validation/receive";
-import type { READY } from "../util/validation/send";
-import { startHeartbeatTimeout } from "./heartbeat";
+import { DMChannel } from "../../entity/DMChannel.js";
+import { Role } from "../../entity/role.js";
+import { Session } from "../../entity/session.js";
+import type { User } from "../../entity/user.js";
+import { VoiceState } from "../../entity/voiceState.js";
+import type { ActorMention } from "../../util/activitypub/constants.js";
+import { getDatabase } from "../../util/database.js";
+import { getGuilds } from "../../util/entity/guild.js";
+import { fetchRelationships } from "../../util/entity/relationship.js";
+import { listenGatewayEvent, makeGatewayTarget } from "../../util/events.js";
+import { getUserFromToken } from "../../util/token.js";
+import { CLOSE_CODES } from "../util/codes.js";
+import { makeHandler } from "../util/handler.js";
+import { consume, listenEvents } from "../util/listener.js";
+import { IDENTIFY } from "../util/validation/receive.js";
+import type { READY } from "../util/validation/send.js";
+import { startHeartbeatTimeout } from "./heartbeat.js";
 
 /**
  * - Authenticate user

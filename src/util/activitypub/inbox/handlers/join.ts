@@ -1,15 +1,15 @@
 import type { APAccept } from "activitypub-types";
-import { Channel } from "../../../../entity/channel";
-import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import { config } from "../../../config";
-import { getOrFetchUser } from "../../../entity/user";
-import { PERMISSION } from "../../../permission";
-import { makeInstanceUrl } from "../../../url";
-import { generateMediaToken } from "../../../voice";
-import { APError } from "../../error";
-import { resolveId } from "../../resolve";
-import { addContext } from "../../util";
-import type { ActivityHandler } from ".";
+import { Channel } from "../../../../entity/channel.js";
+import { getExternalPathFromActor, sendActivity } from "../../../../sender/index.js";
+import { config } from "../../../config.js";
+import { getOrFetchUser } from "../../../entity/user.js";
+import { PERMISSION } from "../../../permission.js";
+import { makeInstanceUrl } from "../../../url.js";
+import { generateMediaToken } from "../../../voice.js";
+import { APError } from "../../error.js";
+import { resolveId } from "../../resolve.js";
+import { addContext } from "../../util.js";
+import type { ActivityHandler } from "./index.js";
 
 export const JoinActivityHandler: ActivityHandler = async (activity, target) => {
 	if (!(target instanceof Channel))

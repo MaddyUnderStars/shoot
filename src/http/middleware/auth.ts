@@ -1,9 +1,9 @@
 import type { RequestHandler } from "express";
-import type { Actor } from "../../entity/actor";
-import type { User } from "../../entity/user";
-import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants";
-import { HttpError } from "../../util/httperror";
-import { getUserFromToken } from "../../util/token";
+import type { Actor } from "../../entity/actor.js";
+import type { User } from "../../entity/user.js";
+import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants.js";
+import { HttpError } from "../../util/httperror.js";
+import { getUserFromToken } from "../../util/token.js";
 
 export const NO_AUTH_ROUTES = [
 	"/auth/login",

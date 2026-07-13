@@ -4,9 +4,9 @@ import {
 	type APObject,
 	type LdContextField,
 } from "activitypub-types";
-import { tryParseUrl } from "../url";
-import { ACTIVITYSTREAMS_CONTEXT } from "./constants";
-import { APError } from "./error";
+import { tryParseUrl } from "../url.js";
+import { ACTIVITYSTREAMS_CONTEXT } from "./constants.js";
+import { APError } from "./error.js";
 
 /**
  * Split a string or URL into the domain and user parts. For URLs, this is NOT the username auth part

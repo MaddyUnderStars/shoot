@@ -1,14 +1,14 @@
 import type { IncomingMessage } from "node:http";
-import type ws from "ws";
-import { CLOSE_CODES } from "../../gateway/util/codes";
-import { createLogger } from "../../util/log";
-import { type MediaSocket, send } from "../util/websocket";
-import { onClose } from "./close";
-import { onMessage } from "./message";
+import type { WebSocketServer, WebSocket } from "ws";
+import { CLOSE_CODES } from "../../gateway/util/codes.js";
+import { createLogger } from "../../util/log.js";
+import { type MediaSocket, send } from "../util/websocket.js";
+import { onClose } from "./close.js";
+import { onMessage } from "./message.js";
 
 const Log = createLogger("media");
 
-export function onConnection(this: ws.Server, socket: MediaSocket, request: IncomingMessage) {
+export function onConnection(this: WebSocketServer, socket: MediaSocket, request: IncomingMessage) {
 	socket.sequence = 0;
 
 	//@ts-expect-error
@@ -29,7 +29,7 @@ export function onConnection(this: ws.Server, socket: MediaSocket, request: Inco
 		}
 	});
 
-	socket.addEventListener("message", async function (this: ws.WebSocket, ev) {
+	socket.addEventListener("message", async function (this: WebSocket, ev) {
 		try {
 			await onMessage.call(socket, ev);
 		} catch (e) {

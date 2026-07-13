@@ -1,11 +1,11 @@
 import { ObjectIsNote } from "activitypub-types";
-import { User } from "../../../../entity/user";
-import { getOrFetchChannel } from "../../../entity/channel";
-import { handleMessage } from "../../../entity/message";
-import { APError } from "../../error";
-import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
-import { buildMessageFromAPNote } from "../../transformers/message";
-import type { ActivityHandler } from ".";
+import { User } from "../../../../entity/user.js";
+import { getOrFetchChannel } from "../../../entity/channel.js";
+import { handleMessage } from "../../../entity/message.js";
+import { APError } from "../../error.js";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve.js";
+import { buildMessageFromAPNote } from "../../transformers/message.js";
+import type { ActivityHandler } from "./index.js";
 
 /**
  * Channels Announce to Users to send notification of new messages

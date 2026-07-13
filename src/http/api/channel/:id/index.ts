@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel } from "../../../../entity/channel";
-import { PublicDmChannel } from "../../../../entity/DMChannel";
-import { GuildTextChannel, PublicGuildTextChannel } from "../../../../entity/textChannel";
-import { ActorMention } from "../../../../util/activitypub/constants";
-import { config } from "../../../../util/config";
-import { getOrFetchChannel, updateChannelOrdering } from "../../../../util/entity/channel";
-import { emitGatewayEvent } from "../../../../util/events";
-import { HttpError } from "../../../../util/httperror";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
+import { Channel } from "../../../../entity/channel.js";
+import { PublicDmChannel } from "../../../../entity/DMChannel.js";
+import { GuildTextChannel, PublicGuildTextChannel } from "../../../../entity/textChannel.js";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
+import { config } from "../../../../util/config.js";
+import { getOrFetchChannel, updateChannelOrdering } from "../../../../util/entity/channel.js";
+import { emitGatewayEvent } from "../../../../util/events.js";
+import { HttpError } from "../../../../util/httperror.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

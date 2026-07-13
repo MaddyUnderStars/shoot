@@ -1,12 +1,12 @@
 import type { APActivity } from "activitypub-types";
-import type { Actor } from "../entity/actor";
-import { Channel } from "../entity/channel";
-import { Guild } from "../entity/guild";
-import { User } from "../entity/user";
-import { APError } from "../util/activitypub/error";
-import { signWithHttpSignature } from "../util/activitypub/httpsig";
-import { InstanceActor } from "../util/activitypub/instanceActor";
-import { createLogger } from "../util/log";
+import type { Actor } from "../entity/actor.js";
+import { Channel } from "../entity/channel.js";
+import { Guild } from "../entity/guild.js";
+import { User } from "../entity/user.js";
+import { APError } from "../util/activitypub/error.js";
+import { signWithHttpSignature } from "../util/activitypub/httpsig.js";
+import { InstanceActor } from "../util/activitypub/instanceActor.js";
+import { createLogger } from "../util/log.js";
 
 const Log = createLogger("ap:distribute");
 

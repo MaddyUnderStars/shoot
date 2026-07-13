@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Invite } from "../../../../entity/invite";
-import { buildAPGuildInvite } from "../../../../util/activitypub/transformers/invite";
-import { addContext } from "../../../../util/activitypub/util";
-import { route } from "../../../../util/route";
+import { Invite } from "../../../../entity/invite.js";
+import { buildAPGuildInvite } from "../../../../util/activitypub/transformers/invite.js";
+import { addContext } from "../../../../util/activitypub/util.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

@@ -6,28 +6,28 @@ import {
 	ObjectIsPerson,
 } from "activitypub-types";
 import { Brackets } from "typeorm";
-import { Channel } from "../../entity/channel";
-import { DMChannel } from "../../entity/DMChannel";
-import { Guild } from "../../entity/guild";
-import { GuildTextChannel } from "../../entity/textChannel";
-import { User } from "../../entity/user";
-import type { ActorMention } from "../activitypub/constants";
-import { APError } from "../activitypub/error";
+import { Channel } from "../../entity/channel.js";
+import { DMChannel } from "../../entity/DMChannel.js";
+import { Guild } from "../../entity/guild.js";
+import { GuildTextChannel } from "../../entity/textChannel.js";
+import { User } from "../../entity/user.js";
+import type { ActorMention } from "../activitypub/constants.js";
+import { APError } from "../activitypub/error.js";
 import {
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveId,
 	resolveWebfinger,
-} from "../activitypub/resolve";
-import { splitQualifiedMention } from "../activitypub/util";
-import { config } from "../config";
-import { getDatabase } from "../database";
-import { emitGatewayEvent } from "../events";
-import { tryParseUrl } from "../url";
-import { generateSigningKeys } from "./actor";
-import { createGuildFromRemoteOrg } from "./guild";
-import { findActorOfAnyType } from "./resolve";
-import { createUserForRemotePerson, getOrFetchUser } from "./user";
+} from "../activitypub/resolve.js";
+import { splitQualifiedMention } from "../activitypub/util.js";
+import { config } from "../config.js";
+import { getDatabase } from "../database.js";
+import { emitGatewayEvent } from "../events.js";
+import { tryParseUrl } from "../url.js";
+import { generateSigningKeys } from "./actor.js";
+import { createGuildFromRemoteOrg } from "./guild.js";
+import { findActorOfAnyType } from "./resolve.js";
+import { createUserForRemotePerson, getOrFetchUser } from "./user.js";
 
 export const createGuildTextChannel = async (name: string, guild: Guild) => {
 	const channel = GuildTextChannel.create({

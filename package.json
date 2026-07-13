@@ -4,6 +4,7 @@
 	"description": "Activitypub federated instant messaging server",
 	"license": "AGPL-3.0-or-later",
 	"author": "MaddyUnderStars",
+	"type": "module",
 	"main": "dist/src/bootstrap.js",
 	"scripts": {
 		"start": "node --enable-source-maps dist/src/bootstrap.js",

@@ -1,11 +1,11 @@
 import { ChildEntity, Column, ManyToOne, Unique } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { checkPermission } from "../util/checkPermission";
-import type { PERMISSION } from "../util/permission";
-import { Channel, PublicChannel } from "./channel";
-import type { Guild } from "./guild";
-import type { User } from "./user";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { checkPermission } from "../util/checkPermission.js";
+import type { PERMISSION } from "../util/permission.js";
+import { Channel, PublicChannel } from "./channel.js";
+import type { Guild } from "./guild.js";
+import type { User } from "./user.js";
 
 @ChildEntity("guild_text")
 @Unique("channel_ordering", ["position", "guild"], {

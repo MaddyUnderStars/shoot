@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Guild, PublicGuild } from "../../../../entity/guild";
-import { Invite, PublicInvite } from "../../../../entity/invite";
-import { ActorMention } from "../../../../util/activitypub/constants";
-import { APError } from "../../../../util/activitypub/error";
-import { getOrFetchGuild } from "../../../../util/entity/guild";
-import { generateInviteCode } from "../../../../util/entity/invite";
-import { isMemberOfGuildThrow } from "../../../../util/entity/member";
-import { emitGatewayEvent } from "../../../../util/events";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
+import { Guild, PublicGuild } from "../../../../entity/guild.js";
+import { Invite, PublicInvite } from "../../../../entity/invite.js";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
+import { APError } from "../../../../util/activitypub/error.js";
+import { getOrFetchGuild } from "../../../../util/entity/guild.js";
+import { generateInviteCode } from "../../../../util/entity/invite.js";
+import { isMemberOfGuildThrow } from "../../../../util/entity/member.js";
+import { emitGatewayEvent } from "../../../../util/events.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

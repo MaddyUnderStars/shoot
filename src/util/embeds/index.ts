@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
 import { findAll, innerText } from "domutils";
 import { DomHandler, Parser } from "htmlparser2";
-import { USER_AGENT } from "../activitypub/constants";
-import { config } from "../config";
-import { EMBED_GENERATORS } from "./generators";
+import { USER_AGENT } from "../activitypub/constants.js";
+import { config } from "../config.js";
+import { EMBED_GENERATORS } from "./generators/index.js";
 
 export const EMBED_FETCH_OPTS: RequestInit = {
 	headers: {

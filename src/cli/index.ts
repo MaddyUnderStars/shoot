@@ -3,6 +3,6 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-import { handleCli } from "./cli";
+import { handleCli } from "./cli.js";
 
 void handleCli(process.argv);

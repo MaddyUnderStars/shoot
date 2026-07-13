@@ -1,20 +1,20 @@
 import crypto from "node:crypto";
 import type { IncomingHttpHeaders } from "node:http";
-import type { Actor } from "../../entity/actor";
-import { Channel } from "../../entity/channel";
-import { Guild } from "../../entity/guild";
-import { User } from "../../entity/user";
-import { getExternalPathFromActor } from "../../sender";
-import { createChannelFromRemoteGroup } from "../entity/channel";
-import { createGuildFromRemoteOrg } from "../entity/guild";
-import { createUserForRemotePerson } from "../entity/user";
-import { createLogger } from "../log";
-import { makeInstanceUrl, tryParseUrl } from "../url";
-import { ACTIVITYPUB_FETCH_OPTS } from "./constants";
-import { APError } from "./error";
-import { throwInstanceBlock } from "./instances";
-import { resolveAPObject, resolveUrlOrObject } from "./resolve";
-import { APObjectIsActor } from "./types/APActor";
+import type { Actor } from "../../entity/actor.js";
+import { Channel } from "../../entity/channel.js";
+import { Guild } from "../../entity/guild.js";
+import { User } from "../../entity/user.js";
+import { getExternalPathFromActor } from "../../sender/index.js";
+import { createChannelFromRemoteGroup } from "../entity/channel.js";
+import { createGuildFromRemoteOrg } from "../entity/guild.js";
+import { createUserForRemotePerson } from "../entity/user.js";
+import { createLogger } from "../log.js";
+import { makeInstanceUrl, tryParseUrl } from "../url.js";
+import { ACTIVITYPUB_FETCH_OPTS } from "./constants.js";
+import { APError } from "./error.js";
+import { throwInstanceBlock } from "./instances.js";
+import { resolveAPObject, resolveUrlOrObject } from "./resolve.js";
+import { APObjectIsActor } from "./types/APActor.js";
 
 const Log = createLogger("HTTPSIG");
 

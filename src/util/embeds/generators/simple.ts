@@ -1,6 +1,6 @@
-import { Embed, EmbedTypes } from "../../../entity/embed";
-import { getImageMetadata, getImageProxyUrl } from "..";
-import type { EMBED_GENERATOR } from ".";
+import { Embed, EmbedTypes } from "../../../entity/embed.js";
+import { getImageMetadata, getImageProxyUrl } from "../index.js";
+import type { EMBED_GENERATOR } from "./index.js";
 
 export const simpleEmbedGenerator: EMBED_GENERATOR = async (url, head) => {
 	const types = {

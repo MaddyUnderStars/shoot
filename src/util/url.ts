@@ -1,4 +1,4 @@
-import { config } from "./config";
+import { config } from "./config.js";
 
 export const tryParseUrl = (input: string | URL) => {
 	if (input instanceof URL) return input;

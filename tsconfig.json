@@ -2,11 +2,11 @@
 	"include": ["./src/**/*"],
 	"compilerOptions": {
 		"incremental": true,
-		"target": "ES2022",
+		"target": "esnext",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"lib": ["ESNext", "ES2024.Object"],
-		"module": "CommonJS",
+		"module": "nodenext",
 		"types": [],
 		"resolveJsonModule": true,
 		"sourceMap": true,

@@ -1,15 +1,15 @@
-import type { Channel } from "../../entity/channel";
-import type { User } from "../../entity/user";
-import { VoiceState } from "../../entity/voiceState";
-import { CLOSE_CODES } from "../../gateway/util/codes";
-import { emitGatewayEvent } from "../../util/events";
-import { validateMediaToken } from "../../util/voice";
-import { emitMediaEvent, listenMediaEvent } from "../util/events";
-import { getJanus } from "../util/janus";
-import { getRoomId, setRoomId } from "../util/rooms";
-import { IDENTIFY } from "../util/validation/receive";
-import { makeHandler } from ".";
-import { startHeartbeatTimeout } from "./heartbeat";
+import type { Channel } from "../../entity/channel.js";
+import type { User } from "../../entity/user.js";
+import { VoiceState } from "../../entity/voiceState.js";
+import { CLOSE_CODES } from "../../gateway/util/codes.js";
+import { emitGatewayEvent } from "../../util/events.js";
+import { validateMediaToken } from "../../util/voice.js";
+import { emitMediaEvent, listenMediaEvent } from "../util/events.js";
+import { getJanus } from "../util/janus.js";
+import { getRoomId, setRoomId } from "../util/rooms.js";
+import { IDENTIFY } from "../util/validation/receive.js";
+import { makeHandler } from "./index.js";
+import { startHeartbeatTimeout } from "./heartbeat.js";
 
 export const onIdentify = makeHandler(async function (payload) {
 	let user: User;

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
-import { ActorMention } from "../../../../util/activitypub/constants";
-import { config } from "../../../../util/config";
-import { getOrFetchChannel } from "../../../../util/entity/channel";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
-import { askForMediaToken, generateMediaToken } from "../../../../util/voice";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
+import { config } from "../../../../util/config.js";
+import { getOrFetchChannel } from "../../../../util/entity/channel.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
+import { askForMediaToken, generateMediaToken } from "../../../../util/voice.js";
 
 const router = Router({ mergeParams: true });
 

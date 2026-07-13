@@ -1,12 +1,12 @@
 import type { APActivity } from "activitypub-types";
 import { Queue } from "bullmq";
 import { z } from "zod";
-import type { Actor } from "../../../entity/actor";
-import { ApCache } from "../../../entity/apcache";
-import type { APInboundJobData } from "../../../receiver";
-import { config } from "../../config";
-import { APError } from "../error";
-import { ActivityHandlers } from "./handlers";
+import type { Actor } from "../../../entity/actor.js";
+import { ApCache } from "../../../entity/apcache.js";
+import type { APInboundJobData } from "../../../receiver/index.js";
+import { config } from "../../config.js";
+import { APError } from "../error.js";
+import { ActivityHandlers } from "./handlers/index.js";
 
 const getQueue = () => {
 	return config().federation.queue.use_inbound

@@ -1,12 +1,12 @@
 import { Router } from "express";
 import z from "zod";
-import { InstanceInvite } from "../../../entity/instanceInvite";
-import { User } from "../../../entity/user";
-import { config } from "../../../util/config";
-import { registerUser } from "../../../util/entity/user";
-import { HttpError } from "../../../util/httperror";
-import { route } from "../../../util/route";
-import { generateToken } from "../../../util/token";
+import { InstanceInvite } from "../../../entity/instanceInvite.js";
+import { User } from "../../../entity/user.js";
+import { config } from "../../../util/config.js";
+import { registerUser } from "../../../util/entity/user.js";
+import { HttpError } from "../../../util/httperror.js";
+import { route } from "../../../util/route.js";
+import { generateToken } from "../../../util/token.js";
 
 const router = Router();
 

@@ -1,17 +1,17 @@
 import { type APFollow, ObjectIsOrganization } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Invite } from "../../../entity/invite";
-import { getExternalPathFromActor, sendActivity } from "../../../sender";
-import { APError } from "../../../util/activitypub/error";
-import { resolveWebfinger } from "../../../util/activitypub/resolve";
-import { addContext, splitQualifiedMention } from "../../../util/activitypub/util";
-import { config } from "../../../util/config";
-import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild";
-import { PERMISSION } from "../../../util/permission";
-import { route } from "../../../util/route";
-import { makeInstanceUrl } from "../../../util/url";
-import { ObjectIsInvite } from "../../../util/activitypub/transformers/invite";
+import { Invite } from "../../../entity/invite.js";
+import { getExternalPathFromActor, sendActivity } from "../../../sender/index.js";
+import { APError } from "../../../util/activitypub/error.js";
+import { resolveWebfinger } from "../../../util/activitypub/resolve.js";
+import { addContext, splitQualifiedMention } from "../../../util/activitypub/util.js";
+import { config } from "../../../util/config.js";
+import { getOrFetchGuild, joinGuild } from "../../../util/entity/guild.js";
+import { PERMISSION } from "../../../util/permission.js";
+import { route } from "../../../util/route.js";
+import { makeInstanceUrl } from "../../../util/url.js";
+import { ObjectIsInvite } from "../../../util/activitypub/transformers/invite.js";
 
 const router = Router({ mergeParams: true });
 

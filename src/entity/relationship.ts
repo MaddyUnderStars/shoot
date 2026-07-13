@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { z } from "zod";
-import type { ApCache } from "./apcache";
-import { BaseModel } from "./basemodel";
-import { PublicUser, type User } from "./user";
+import type { ApCache } from "./apcache.js";
+import { BaseModel } from "./basemodel.js";
+import { PublicUser, type User } from "./user.js";
 
 export enum RelationshipType {
 	pending = 0,

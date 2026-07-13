@@ -1,13 +1,13 @@
-import type { BaseModel } from "../../entity/basemodel";
-import { Channel } from "../../entity/channel";
-import { Guild } from "../../entity/guild";
-import { splitQualifiedMention } from "../../util/activitypub/util";
-import { channelInGuild } from "../../util/entity/channel";
-import { listenGatewayEvent, makeGatewayTarget } from "../../util/events";
-import { createLogger } from "../../util/log";
-import { handleMemberListRoleAdd } from "../handlers/members";
-import type { GATEWAY_EVENT } from "./validation/send";
-import type { Websocket } from "./websocket";
+import type { BaseModel } from "../../entity/basemodel.js";
+import { Channel } from "../../entity/channel.js";
+import { Guild } from "../../entity/guild.js";
+import { splitQualifiedMention } from "../../util/activitypub/util.js";
+import { channelInGuild } from "../../util/entity/channel.js";
+import { listenGatewayEvent, makeGatewayTarget } from "../../util/events.js";
+import { createLogger } from "../../util/log.js";
+import { handleMemberListRoleAdd } from "../handlers/members.js";
+import type { GATEWAY_EVENT } from "./validation/send.js";
+import type { Websocket } from "./websocket.js";
 
 const Log = createLogger("GATEWAY:LISTENER");
 

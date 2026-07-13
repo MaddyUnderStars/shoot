@@ -8,9 +8,9 @@ import {
 	S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { config } from "../config";
-import { createLogger } from "../log";
-import type { PutFileRequest } from ".";
+import { config } from "../config.js";
+import { createLogger } from "../log.js";
+import type { PutFileRequest } from "./index.js";
 
 const Log = createLogger("s3");
 

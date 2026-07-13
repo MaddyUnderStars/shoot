@@ -1,14 +1,14 @@
 import type { IncomingMessage } from "node:http";
-import type ws from "ws";
-import { createLogger } from "../../util/log";
-import { CLOSE_CODES } from "../util/codes";
-import { send, type Websocket } from "../util/websocket";
-import { onClose } from "./close";
-import { onMessage } from "./message";
+import type { WebSocketServer } from "ws";
+import { createLogger } from "../../util/log.js";
+import { CLOSE_CODES } from "../util/codes.js";
+import { send, type Websocket } from "../util/websocket.js";
+import { onClose } from "./close.js";
+import { onMessage } from "./message.js";
 
 const Log = createLogger("GATEWAY");
 
-export function onConnection(this: ws.Server, socket: Websocket, request: IncomingMessage) {
+export function onConnection(this: WebSocketServer, socket: Websocket, request: IncomingMessage) {
 	socket.events = {};
 	socket.member_list = {
 		channel_id: undefined,

@@ -1,16 +1,16 @@
 import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
-import { Message, PublicMessage } from "../../../../../../entity/message";
-import { ActorMention } from "../../../../../../util/activitypub/constants";
-import { APError } from "../../../../../../util/activitypub/error";
-import { resolveAPObject } from "../../../../../../util/activitypub/resolve";
-import { buildMessageFromAPNote } from "../../../../../../util/activitypub/transformers/message";
-import { getOrFetchChannel } from "../../../../../../util/entity/channel";
-import { emitGatewayEvent } from "../../../../../../util/events";
-import { PERMISSION } from "../../../../../../util/permission";
-import { route } from "../../../../../../util/route";
-import { makeUrl, tryParseUrl } from "../../../../../../util/url";
+import { Message, PublicMessage } from "../../../../../../entity/message.js";
+import { ActorMention } from "../../../../../../util/activitypub/constants.js";
+import { APError } from "../../../../../../util/activitypub/error.js";
+import { resolveAPObject } from "../../../../../../util/activitypub/resolve.js";
+import { buildMessageFromAPNote } from "../../../../../../util/activitypub/transformers/message.js";
+import { getOrFetchChannel } from "../../../../../../util/entity/channel.js";
+import { emitGatewayEvent } from "../../../../../../util/events.js";
+import { PERMISSION } from "../../../../../../util/permission.js";
+import { route } from "../../../../../../util/route.js";
+import { makeUrl, tryParseUrl } from "../../../../../../util/url.js";
 
 const router = Router({ mergeParams: true });
 

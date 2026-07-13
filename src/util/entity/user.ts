@@ -1,21 +1,21 @@
 import { type APActor, type APNote, type APPerson, ObjectIsGroup } from "activitypub-types";
 import bcrypt from "bcrypt";
-import type { InstanceInvite } from "../../entity/instanceInvite";
-import { User } from "../../entity/user";
-import type { ActorMention } from "../activitypub/constants";
-import { APError } from "../activitypub/error";
+import type { InstanceInvite } from "../../entity/instanceInvite.js";
+import { User } from "../../entity/user.js";
+import type { ActorMention } from "../activitypub/constants.js";
+import { APError } from "../activitypub/error.js";
 import {
 	resolveAPObject,
 	resolveAPImage,
 	resolveId,
 	resolveWebfinger,
-} from "../activitypub/resolve";
-import { splitQualifiedMention } from "../activitypub/util";
-import { APObjectIsActor } from "../activitypub/types/APActor";
-import { config } from "../config";
-import { createLogger } from "../log";
-import { generateSigningKeys } from "./actor";
-import { joinGuild } from "./guild";
+} from "../activitypub/resolve.js";
+import { splitQualifiedMention } from "../activitypub/util.js";
+import { APObjectIsActor } from "../activitypub/types/APActor.js";
+import { config } from "../config.js";
+import { createLogger } from "../log.js";
+import { generateSigningKeys } from "./actor.js";
+import { joinGuild } from "./guild.js";
 
 const Log = createLogger("users");
 

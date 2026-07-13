@@ -1,10 +1,10 @@
 import { Column, Entity, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { Actor } from "./actor";
-import { InstanceInvite } from "./instanceInvite";
-import { getImageProxyUrl } from "../util/embeds";
-import { UrlTransformer } from "../util/columns";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { Actor } from "./actor.js";
+import { InstanceInvite } from "./instanceInvite.js";
+import { getImageProxyUrl } from "../util/embeds/index.js";
+import { UrlTransformer } from "../util/columns.js";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })

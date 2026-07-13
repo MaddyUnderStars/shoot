@@ -1,9 +1,9 @@
-import type { GatewayMessageHandler } from "../util/handler";
-import { onHeartbeat } from "./heartbeat";
-import { onIdentify } from "./identify";
-import { onSubscribeMembers } from "./members";
-import { onTyping } from "./typing";
-import { onVoiceQuery } from "./voiceQuery";
+import type { GatewayMessageHandler } from "../util/handler.js";
+import { onHeartbeat } from "./heartbeat.js";
+import { onIdentify } from "./identify.js";
+import { onSubscribeMembers } from "./members.js";
+import { onTyping } from "./typing.js";
+import { onVoiceQuery } from "./voiceQuery.js";
 
 export const handlers = {
 	identify: onIdentify,

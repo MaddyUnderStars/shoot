@@ -5,16 +5,16 @@ import {
 	Relationship,
 	RelationshipType,
 	ZodRelationshipType,
-} from "../../../../entity/relationship";
-import type { User } from "../../../../entity/user";
-import { ActorMention } from "../../../../util/activitypub/constants";
+} from "../../../../entity/relationship.js";
+import type { User } from "../../../../entity/user.js";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
 import {
 	acceptOrCreateRelationship,
 	fetchRelationship,
-} from "../../../../util/entity/relationship";
-import { getOrFetchUser } from "../../../../util/entity/user";
-import { emitGatewayEvent } from "../../../../util/events";
-import { route } from "../../../../util/route";
+} from "../../../../util/entity/relationship.js";
+import { getOrFetchUser } from "../../../../util/entity/user.js";
+import { emitGatewayEvent } from "../../../../util/events.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

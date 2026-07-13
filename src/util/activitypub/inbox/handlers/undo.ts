@@ -1,7 +1,7 @@
 import { ActivityIsFollow } from "activitypub-types";
-import { APError } from "../../error";
-import { resolveAPObject, resolveUrlOrObject } from "../../resolve";
-import type { ActivityHandler } from ".";
+import { APError } from "../../error.js";
+import { resolveAPObject, resolveUrlOrObject } from "../../resolve.js";
+import type { ActivityHandler } from "./index.js";
 
 export const UndoActivityHandler: ActivityHandler = async (activity, _target) => {
 	if (!activity.object) throw new APError("What are you undoing?");

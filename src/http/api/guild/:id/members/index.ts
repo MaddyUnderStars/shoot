@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { route } from "../../../../../util/route";
+import { route } from "../../../../../util/route.js";
 import z from "zod";
-import { ActorMention } from "../../../../../util/activitypub/constants";
-import { getOrFetchGuild } from "../../../../../util/entity/guild";
-import { PERMISSION } from "../../../../../util/permission";
-import { Member, PublicMember } from "../../../../../entity/member";
-import { getDatabase } from "../../../../../util/database";
+import { ActorMention } from "../../../../../util/activitypub/constants.js";
+import { getOrFetchGuild } from "../../../../../util/entity/guild.js";
+import { PERMISSION } from "../../../../../util/permission.js";
+import { Member, PublicMember } from "../../../../../entity/member.js";
+import { getDatabase } from "../../../../../util/database.js";
 
 const router = Router({ mergeParams: true });
 

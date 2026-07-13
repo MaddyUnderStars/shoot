@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
-import { ActorMention } from "../../../../util/activitypub/constants";
-import { config } from "../../../../util/config";
-import { getOrFetchChannel } from "../../../../util/entity/channel";
-import { HttpError } from "../../../../util/httperror";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
-import { createUploadEndpoint, getFileStream } from "../../../../util/storage";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
+import { config } from "../../../../util/config.js";
+import { getOrFetchChannel } from "../../../../util/entity/channel.js";
+import { HttpError } from "../../../../util/httperror.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
+import { createUploadEndpoint, getFileStream } from "../../../../util/storage/index.js";
 
 const router = Router({ mergeParams: true });
 

@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { InstanceActor } from "../../util/activitypub/instanceActor";
-import { buildAPActor } from "../../util/activitypub/transformers/actor";
-import { addContext } from "../../util/activitypub/util";
-import { route } from "../../util/route";
+import { InstanceActor } from "../../util/activitypub/instanceActor.js";
+import { buildAPActor } from "../../util/activitypub/transformers/actor.js";
+import { addContext } from "../../util/activitypub/util.js";
+import { route } from "../../util/route.js";
 
 const router = Router();
 

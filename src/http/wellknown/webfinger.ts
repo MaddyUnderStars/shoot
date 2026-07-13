@@ -1,16 +1,16 @@
 import { type Response, Router } from "express";
 import z from "zod";
-import { Invite } from "../../entity/invite";
-import { User } from "../../entity/user";
-import { getExternalPathFromActor } from "../../sender";
-import type { WebfingerResponse } from "../../util/activitypub/constants";
-import { InstanceActor } from "../../util/activitypub/instanceActor";
-import { splitQualifiedMention } from "../../util/activitypub/util";
-import { config } from "../../util/config";
-import { findActorOfAnyType } from "../../util/entity/resolve";
-import { HttpError } from "../../util/httperror";
-import { route } from "../../util/route";
-import { makeInstanceUrl, makeWebappUrl } from "../../util/url";
+import { Invite } from "../../entity/invite.js";
+import { User } from "../../entity/user.js";
+import { getExternalPathFromActor } from "../../sender/index.js";
+import type { WebfingerResponse } from "../../util/activitypub/constants.js";
+import { InstanceActor } from "../../util/activitypub/instanceActor.js";
+import { splitQualifiedMention } from "../../util/activitypub/util.js";
+import { config } from "../../util/config.js";
+import { findActorOfAnyType } from "../../util/entity/resolve.js";
+import { HttpError } from "../../util/httperror.js";
+import { route } from "../../util/route.js";
+import { makeInstanceUrl, makeWebappUrl } from "../../util/url.js";
 
 const router = Router();
 

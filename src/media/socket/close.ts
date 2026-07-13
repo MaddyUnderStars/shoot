@@ -1,11 +1,11 @@
 import type { CloseEvent } from "ws";
-import { Channel } from "../../entity/channel";
-import { VoiceState } from "../../entity/voiceState";
-import { emitGatewayEvent } from "../../util/events";
-import { createLogger } from "../../util/log";
-import { emitMediaEvent } from "../util/events";
-import { getJanus } from "../util/janus";
-import type { MediaSocket } from "../util/websocket";
+import { Channel } from "../../entity/channel.js";
+import { VoiceState } from "../../entity/voiceState.js";
+import { emitGatewayEvent } from "../../util/events.js";
+import { createLogger } from "../../util/log.js";
+import { emitMediaEvent } from "../util/events.js";
+import { getJanus } from "../util/janus.js";
+import type { MediaSocket } from "../util/websocket.js";
 
 const Log = createLogger("media");
 

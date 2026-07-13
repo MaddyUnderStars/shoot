@@ -1,4 +1,4 @@
-import { HttpError } from "../httperror";
+import { HttpError } from "../httperror.js";
 
 export class APError extends HttpError {
 	public remoteResponse: unknown;

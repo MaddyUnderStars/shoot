@@ -1,6 +1,6 @@
 import type { WebSocket } from "ws";
-import type { ActorMention } from "../../util/activitypub/constants";
-import type { MEDIA_EVENT } from "./validation/send";
+import type { ActorMention } from "../../util/activitypub/constants.js";
+import type { MEDIA_EVENT } from "./validation/send.js";
 
 export interface MediaSocket extends Omit<WebSocket, "send"> {
 	media_handle_id?: number;

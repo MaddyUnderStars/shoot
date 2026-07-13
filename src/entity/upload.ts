@@ -11,8 +11,8 @@
  */
 
 import { Column, Entity, ManyToOne } from "typeorm";
-import { BaseModel } from "./basemodel";
-import type { Channel } from "./channel";
+import { BaseModel } from "./basemodel.js";
+import type { Channel } from "./channel.js";
 
 /**
  * TODO: this class duplicates data in the Attachment entity unfortunately

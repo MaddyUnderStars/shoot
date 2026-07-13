@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import { promisify } from "node:util";
-import type { Actor } from "../../entity/actor";
-import { createLogger } from "../log";
-import { KEY_OPTIONS } from "../rsa";
+import type { Actor } from "../../entity/actor.js";
+import { createLogger } from "../log.js";
+import { KEY_OPTIONS } from "../rsa.js";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 

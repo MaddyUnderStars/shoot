@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
 import { z } from "zod";
-import { PrivateUser, User } from "../../../../entity/user";
-import { HttpError } from "../../../../util/httperror";
-import { route } from "../../../../util/route";
+import { PrivateUser, User } from "../../../../entity/user.js";
+import { HttpError } from "../../../../util/httperror.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

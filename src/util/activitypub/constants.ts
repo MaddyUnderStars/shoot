@@ -1,5 +1,5 @@
 import z from "zod";
-import { config } from "../config";
+import { config } from "../config.js";
 
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 

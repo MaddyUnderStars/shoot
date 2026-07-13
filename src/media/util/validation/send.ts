@@ -1,4 +1,4 @@
-import type { ActorMention } from "../../../util/activitypub/constants";
+import type { ActorMention } from "../../../util/activitypub/constants.js";
 
 export type HEARTBEAT_ACK = {
 	// The expected sequence number

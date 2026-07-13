@@ -1,31 +1,31 @@
 import { type APActor, APOrganization, ObjectIsGroup } from "activitypub-types";
-import { Channel } from "../../entity/channel";
-import { Guild } from "../../entity/guild";
-import { Member } from "../../entity/member";
-import { Role } from "../../entity/role";
-import type { GuildTextChannel } from "../../entity/textChannel";
-import type { User } from "../../entity/user";
-import type { ActorMention } from "../activitypub/constants";
-import { APError } from "../activitypub/error";
+import { Channel } from "../../entity/channel.js";
+import { Guild } from "../../entity/guild.js";
+import { Member } from "../../entity/member.js";
+import { Role } from "../../entity/role.js";
+import type { GuildTextChannel } from "../../entity/textChannel.js";
+import type { User } from "../../entity/user.js";
+import type { ActorMention } from "../activitypub/constants.js";
+import { APError } from "../activitypub/error.js";
 import {
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveId,
 	resolveWebfinger,
-} from "../activitypub/resolve";
-import { ObjectIsRole } from "../activitypub/transformers/role";
-import { splitQualifiedMention } from "../activitypub/util";
-import { config } from "../config";
-import { getDatabase } from "../database";
-import { emitGatewayEvent } from "../events";
-import { DefaultPermissions } from "../permission";
-import { tryParseUrl } from "../url";
-import { generateSigningKeys } from "./actor";
-import { createGuildTextChannel, getOrFetchChannel } from "./channel";
-import { isMemberOfGuild } from "./member";
-import { createRoleFromRemote } from "./role";
-import { getOrFetchUser } from "./user";
-import { ObjectIsOrganization } from "../activitypub/types/APOrganisation";
+} from "../activitypub/resolve.js";
+import { ObjectIsRole } from "../activitypub/transformers/role.js";
+import { splitQualifiedMention } from "../activitypub/util.js";
+import { config } from "../config.js";
+import { getDatabase } from "../database.js";
+import { emitGatewayEvent } from "../events.js";
+import { DefaultPermissions } from "../permission.js";
+import { tryParseUrl } from "../url.js";
+import { generateSigningKeys } from "./actor.js";
+import { createGuildTextChannel, getOrFetchChannel } from "./channel.js";
+import { isMemberOfGuild } from "./member.js";
+import { createRoleFromRemote } from "./role.js";
+import { getOrFetchUser } from "./user.js";
+import { ObjectIsOrganization } from "../activitypub/types/APOrganisation.js";
 
 export const getGuilds = (user_id: string) =>
 	/*

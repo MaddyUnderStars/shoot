@@ -1,5 +1,5 @@
-import { config } from "../config";
-import { InstanceBehaviour } from "./instanceBehaviour";
+import { config } from "../config.js";
+import { InstanceBehaviour } from "./instanceBehaviour.js";
 
 export class InstanceBlockedError extends Error {
 	name = "InstanceBlockedError";

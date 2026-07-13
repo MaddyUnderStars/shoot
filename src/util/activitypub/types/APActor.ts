@@ -5,7 +5,7 @@ import {
 	ObjectIsPerson,
 	type AnyAPObject,
 } from "activitypub-types";
-import { APOrganization, ObjectIsOrganization } from "./APOrganisation";
+import { APOrganization, ObjectIsOrganization } from "./APOrganisation.js";
 
 export type APActor = APActorOriginal | APOrganization;
 

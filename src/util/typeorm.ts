@@ -4,7 +4,7 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-import { getDatasource } from "./datasource";
+import { getDatasource } from "./datasource.js";
 
 const DATASOURCE_OPTIONS = getDatasource();
 

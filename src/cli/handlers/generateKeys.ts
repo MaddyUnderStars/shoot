@@ -2,10 +2,10 @@ import crypto from "node:crypto";
 import { promisify } from "node:util";
 import type { DeepPartial } from "typeorm";
 import webPush from "web-push";
-import type { ConfigSchema } from "../../util/ConfigSchema";
-import { createLogger } from "../../util/log";
-import { KEY_OPTIONS } from "../../util/rsa";
-import { appendToConfig } from "../util";
+import type { ConfigSchema } from "../../util/ConfigSchema.js";
+import { createLogger } from "../../util/log.js";
+import { KEY_OPTIONS } from "../../util/rsa.js";
+import { appendToConfig } from "../util.js";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 

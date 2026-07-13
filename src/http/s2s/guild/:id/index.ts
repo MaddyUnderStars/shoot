@@ -1,17 +1,17 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel } from "../../../../entity/channel";
-import { Guild } from "../../../../entity/guild";
-import { Role } from "../../../../entity/role";
-import { handleInbox } from "../../../../util/activitypub/inbox";
-import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection";
-import { buildAPActor } from "../../../../util/activitypub/transformers/actor";
-import { buildAPRole } from "../../../../util/activitypub/transformers/role";
-import { addContext } from "../../../../util/activitypub/util";
-import { config } from "../../../../util/config";
-import { getDatabase } from "../../../../util/database";
-import { route } from "../../../../util/route";
-import { makeInstanceUrl } from "../../../../util/url";
+import { Channel } from "../../../../entity/channel.js";
+import { Guild } from "../../../../entity/guild.js";
+import { Role } from "../../../../entity/role.js";
+import { handleInbox } from "../../../../util/activitypub/inbox/index.js";
+import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection.js";
+import { buildAPActor } from "../../../../util/activitypub/transformers/actor.js";
+import { buildAPRole } from "../../../../util/activitypub/transformers/role.js";
+import { addContext } from "../../../../util/activitypub/util.js";
+import { config } from "../../../../util/config.js";
+import { getDatabase } from "../../../../util/database.js";
+import { route } from "../../../../util/route.js";
+import { makeInstanceUrl } from "../../../../util/url.js";
 
 const router = Router({ mergeParams: true });
 

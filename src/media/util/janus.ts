@@ -1,5 +1,5 @@
-import { config } from "../../util/config";
-import { Janus } from "../janus";
+import { config } from "../../util/config.js";
+import { Janus } from "../janus/index.js";
 
 let janus: Janus;
 

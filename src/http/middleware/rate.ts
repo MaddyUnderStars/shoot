@@ -1,5 +1,5 @@
 import rateLimit, { type RateLimitRequestHandler } from "express-rate-limit";
-import { config } from "../../util/config";
+import { config } from "../../util/config.js";
 
 const NONE: RateLimitRequestHandler = (_req, _res, next) => {
 	return next();

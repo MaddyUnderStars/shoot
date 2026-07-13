@@ -1,10 +1,10 @@
 import { Column, Entity, TableInheritance } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { HttpError } from "../util/httperror";
-import type { PERMISSION } from "../util/permission";
-import { Actor } from "./actor";
-import type { User } from "./user";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { HttpError } from "../util/httperror.js";
+import type { PERMISSION } from "../util/permission.js";
+import { Actor } from "./actor.js";
+import type { User } from "./user.js";
 
 @Entity("channels")
 @TableInheritance({ column: { type: String, name: "type" } })

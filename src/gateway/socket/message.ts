@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { handlers } from "../handlers";
-import type { Websocket } from "../util/websocket";
+import { handlers } from "../handlers/index.js";
+import type { Websocket } from "../util/websocket.js";
 
 export async function onMessage(this: Websocket, event: MessageEvent) {
 	const parsed = validate(event.data);

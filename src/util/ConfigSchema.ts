@@ -1,6 +1,6 @@
 import z from "zod";
-import { InstanceBehaviour } from "./activitypub/instanceBehaviour";
-import { LogLevel } from "./log";
+import { InstanceBehaviour } from "./activitypub/instanceBehaviour.js";
+import { LogLevel } from "./log.js";
 
 const RateLimitSchema = z.object({
 	/**

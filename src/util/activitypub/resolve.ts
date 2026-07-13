@@ -10,22 +10,22 @@ import {
 } from "activitypub-types";
 import { findAll } from "domutils";
 import { DomHandler, Parser } from "htmlparser2";
-import { ApCache } from "../../entity/apcache";
-import { config } from "../config";
-import { createLogger } from "../log";
-import { tryParseUrl } from "../url";
+import { ApCache } from "../../entity/apcache.js";
+import { config } from "../config.js";
+import { createLogger } from "../log.js";
+import { tryParseUrl } from "../url.js";
 import {
 	ACTIVITY_JSON_ACCEPT,
 	type ActorMention,
 	ActorMentionRegex,
 	USER_AGENT,
 	WebfingerResponse,
-} from "./constants";
-import { APError } from "./error";
-import { signWithHttpSignature } from "./httpsig";
-import { InstanceActor } from "./instanceActor";
-import { throwInstanceBlock } from "./instances";
-import { hasAPContext, splitQualifiedMention } from "./util";
+} from "./constants.js";
+import { APError } from "./error.js";
+import { signWithHttpSignature } from "./httpsig.js";
+import { InstanceActor } from "./instanceActor.js";
+import { throwInstanceBlock } from "./instances.js";
+import { hasAPContext, splitQualifiedMention } from "./util.js";
 
 const Log = createLogger("ap:resolve");
 

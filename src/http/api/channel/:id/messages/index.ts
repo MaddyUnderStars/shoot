@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Attachment } from "../../../../../entity/attachment";
-import { Message, PublicMessage } from "../../../../../entity/message";
-import { ActorMention } from "../../../../../util/activitypub/constants";
-import { getDatabase } from "../../../../../util/database";
-import { getOrFetchChannel } from "../../../../../util/entity/channel";
-import { handleMessage } from "../../../../../util/entity/message";
-import { PERMISSION } from "../../../../../util/permission";
-import { route } from "../../../../../util/route";
-import { PublicUser } from "../../../../../entity/user";
+import { Attachment } from "../../../../../entity/attachment.js";
+import { Message, PublicMessage } from "../../../../../entity/message.js";
+import { ActorMention } from "../../../../../util/activitypub/constants.js";
+import { getDatabase } from "../../../../../util/database.js";
+import { getOrFetchChannel } from "../../../../../util/entity/channel.js";
+import { handleMessage } from "../../../../../util/entity/message.js";
+import { PERMISSION } from "../../../../../util/permission.js";
+import { route } from "../../../../../util/route.js";
+import { PublicUser } from "../../../../../entity/user.js";
 
 const MessageCreate = z
 	.object({

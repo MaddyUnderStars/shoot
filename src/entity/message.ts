@@ -11,14 +11,14 @@ import {
 	UpdateDateColumn,
 } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import type { AttributesOnly } from "../util/types";
-import type { ApCache } from "./apcache";
-import { type Attachment, PublicAttachment } from "./attachment";
-import { BaseModel } from "./basemodel";
-import type { Channel } from "./channel";
-import { type Embed, PublicEmbed } from "./embed";
-import type { User } from "./user";
+import { ActorMention } from "../util/activitypub/constants.js";
+import type { AttributesOnly } from "../util/types.js";
+import type { ApCache } from "./apcache.js";
+import { type Attachment, PublicAttachment } from "./attachment.js";
+import { BaseModel } from "./basemodel.js";
+import type { Channel } from "./channel.js";
+import { type Embed, PublicEmbed } from "./embed.js";
+import type { User } from "./user.js";
 
 @Entity("messages")
 export class Message extends BaseModel {

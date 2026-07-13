@@ -1,20 +1,20 @@
 import http from "node:http";
-import ws from "ws";
-import { initDatabase } from "../util/database";
-import { initRabbitMQ } from "../util/events";
-import { createLogger } from "../util/log";
-import { onConnection } from "./socket/connection";
+import { WebSocketServer } from "ws";
+import { initDatabase } from "../util/database.js";
+import { initRabbitMQ } from "../util/events.js";
+import { createLogger } from "../util/log.js";
+import { onConnection } from "./socket/connection.js";
 
 const Log = createLogger("GATEWAY");
 
 export class GatewayServer {
 	server: http.Server;
-	socket: ws.Server;
+	socket: WebSocketServer;
 
 	public constructor(server?: http.Server) {
 		this.server = server ?? http.createServer();
 
-		this.socket = new ws.Server({
+		this.socket = new WebSocketServer({
 			server: this.server,
 		});
 

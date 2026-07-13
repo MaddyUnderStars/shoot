@@ -1,9 +1,9 @@
 import { ChildEntity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import z from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { DefaultPermissions, type PERMISSION } from "../util/permission";
-import { Channel, PublicChannel } from "./channel";
-import type { User } from "./user";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { DefaultPermissions, type PERMISSION } from "../util/permission.js";
+import { Channel, PublicChannel } from "./channel.js";
+import type { User } from "./user.js";
 
 // TODO: DM channels should not exist
 // Client side, a dm channel should just be a guild channel that gets pinned to the users channel list

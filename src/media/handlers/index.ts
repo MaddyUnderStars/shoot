@@ -1,7 +1,7 @@
 import type { ZodSchema } from "zod";
-import { CLOSE_CODES } from "../../gateway/util/codes";
-import { createLogger } from "../../util/log";
-import type { MediaSocket } from "../util/websocket";
+import { CLOSE_CODES } from "../../gateway/util/codes.js";
+import { createLogger } from "../../util/log.js";
+import type { MediaSocket } from "../util/websocket.js";
 
 const Log = createLogger("gateway");
 

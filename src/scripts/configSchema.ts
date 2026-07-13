@@ -9,7 +9,7 @@ import z from "zod";
 
 extendZodWithOpenApi(z);
 
-import { ConfigSchema } from "../util/ConfigSchema";
+import { ConfigSchema } from "../util/ConfigSchema.js";
 
 const registry = new OpenAPIRegistry();
 

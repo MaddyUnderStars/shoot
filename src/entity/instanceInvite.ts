@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
-import type { User } from "./user";
-import type { Guild } from "./guild";
+import type { User } from "./user.js";
+import type { Guild } from "./guild.js";
 
 /**
  * Instance registration invite codes

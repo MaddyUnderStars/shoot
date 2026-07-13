@@ -1,9 +1,9 @@
-import { User } from "../../entity/user";
-import { getChannel } from "../../util/entity/channel";
-import { emitGatewayEvent } from "../../util/events";
-import { PERMISSION } from "../../util/permission";
-import { makeHandler } from "../util/handler";
-import { TYPING } from "../util/validation/receive";
+import { User } from "../../entity/user.js";
+import { getChannel } from "../../util/entity/channel.js";
+import { emitGatewayEvent } from "../../util/events.js";
+import { PERMISSION } from "../../util/permission.js";
+import { makeHandler } from "../util/handler.js";
+import { TYPING } from "../util/validation/receive.js";
 
 export const onTyping = makeHandler(async function (payload) {
 	const now = Date.now();

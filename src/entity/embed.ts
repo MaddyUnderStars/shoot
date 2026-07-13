@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 import { z } from "zod";
-import { onlyTruthy } from "../util/object";
+import { onlyTruthy } from "../util/object.js";
 
 export enum EmbedTypes {
 	link = 0,

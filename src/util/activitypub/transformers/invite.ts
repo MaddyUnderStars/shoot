@@ -1,7 +1,7 @@
 import type { AnyAPObject, APObject } from "activitypub-types";
-import type { Invite } from "../../../entity/invite";
-import { makeInstanceUrl } from "../../url";
-import { buildAPActor } from "./actor";
+import type { Invite } from "../../../entity/invite.js";
+import { makeInstanceUrl } from "../../url.js";
+import { buildAPActor } from "./actor.js";
 
 export type APInviteCode = APObject & { type: "InviteCode" };
 

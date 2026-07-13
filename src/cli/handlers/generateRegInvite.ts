@@ -1,14 +1,14 @@
-import { createLogger } from "../../util/log";
+import { createLogger } from "../../util/log.js";
 
 const Log = createLogger("cli");
 
 export const generateRegInvite = async (code?: string, maxUses?: string, expiry?: string) => {
-	const { initDatabase, closeDatabase } = await import("../../util/database");
+	const { initDatabase, closeDatabase } = await import("../../util/database.js");
 
 	await initDatabase();
 
-	const { InstanceInvite } = await import("../../entity/instanceInvite");
-	const { generateInviteCode } = await import("../../util/entity/invite");
+	const { InstanceInvite } = await import("../../entity/instanceInvite.js");
+	const { generateInviteCode } = await import("../../util/entity/invite.js");
 
 	if (!code || code === "-1") {
 		code = await generateInviteCode(

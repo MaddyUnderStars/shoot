@@ -1,15 +1,15 @@
-import { Guild } from "../../../../entity/guild";
-import { User } from "../../../../entity/user";
-import { joinGuild } from "../../../entity/guild";
-import { acceptRelationship } from "../../../entity/relationship";
-import { findActorOfAnyType } from "../../../entity/resolve";
-import { getOrFetchUser } from "../../../entity/user";
-import { emitGatewayEvent } from "../../../events";
-import { APError } from "../../error";
-import { resolveId } from "../../resolve";
-import { splitQualifiedMention } from "../../util";
-import type { ActivityHandler } from ".";
-import { config } from "../../../config";
+import { Guild } from "../../../../entity/guild.js";
+import { User } from "../../../../entity/user.js";
+import { joinGuild } from "../../../entity/guild.js";
+import { acceptRelationship } from "../../../entity/relationship.js";
+import { findActorOfAnyType } from "../../../entity/resolve.js";
+import { getOrFetchUser } from "../../../entity/user.js";
+import { emitGatewayEvent } from "../../../events.js";
+import { APError } from "../../error.js";
+import { resolveId } from "../../resolve.js";
+import { splitQualifiedMention } from "../../util.js";
+import type { ActivityHandler } from "./index.js";
+import { config } from "../../../config.js";
 import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { config } from "../../util/config";
-import { HttpError } from "../../util/httperror";
-import { route } from "../../util/route";
+import { config } from "../../util/config.js";
+import { HttpError } from "../../util/httperror.js";
+import { route } from "../../util/route.js";
 
 const router = Router();
 

@@ -1,11 +1,11 @@
 import type { APAnnounce, APCreate, APNote } from "activitypub-types";
-import { ApCache } from "../../../entity/apcache";
-import type { Channel } from "../../../entity/channel";
-import { Message } from "../../../entity/message";
-import { getExternalPathFromActor } from "../../../sender";
-import { getOrFetchAttributedUser } from "../../entity/user";
-import { makeInstanceUrl, makeWebappUrl } from "../../url";
-import { DMChannel } from "../../../entity/DMChannel";
+import { ApCache } from "../../../entity/apcache.js";
+import type { Channel } from "../../../entity/channel.js";
+import { Message } from "../../../entity/message.js";
+import { getExternalPathFromActor } from "../../../sender/index.js";
+import { getOrFetchAttributedUser } from "../../entity/user.js";
+import { makeInstanceUrl, makeWebappUrl } from "../../url.js";
+import { DMChannel } from "../../../entity/DMChannel.js";
 
 export const buildMessageFromAPNote = async (note: APNote, channel: Channel): Promise<Message> => {
 	const author = await getOrFetchAttributedUser(note.attributedTo);

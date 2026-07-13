@@ -8,10 +8,10 @@ import path from "node:path";
 import { Router } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
-import { LocalUpload } from "../../../entity/upload";
-import { config } from "../../../util/config";
-import { route } from "../../../util/route";
-import type { localFileJwt } from "../../../util/storage/local";
+import { LocalUpload } from "../../../entity/upload.js";
+import { config } from "../../../util/config.js";
+import { route } from "../../../util/route.js";
+import type { localFileJwt } from "../../../util/storage/local.js";
 
 const router = Router({ mergeParams: true });
 

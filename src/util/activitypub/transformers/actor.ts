@@ -1,15 +1,15 @@
-import type { Actor } from "../../../entity/actor";
-import { Channel } from "../../../entity/channel";
-import { DMChannel } from "../../../entity/DMChannel";
-import { Guild } from "../../../entity/guild";
-import { GuildTextChannel } from "../../../entity/textChannel";
-import { User } from "../../../entity/user";
-import { getExternalPathFromActor } from "../../../sender";
-import { config } from "../../config";
-import { makeInstanceUrl, makeWebappUrl } from "../../url";
-import { APError } from "../error";
-import { InstanceActor } from "../instanceActor";
-import { APActor } from "../types/APActor";
+import type { Actor } from "../../../entity/actor.js";
+import { Channel } from "../../../entity/channel.js";
+import { DMChannel } from "../../../entity/DMChannel.js";
+import { Guild } from "../../../entity/guild.js";
+import { GuildTextChannel } from "../../../entity/textChannel.js";
+import { User } from "../../../entity/user.js";
+import { getExternalPathFromActor } from "../../../sender/index.js";
+import { config } from "../../config.js";
+import { makeInstanceUrl, makeWebappUrl } from "../../url.js";
+import { APError } from "../error.js";
+import { InstanceActor } from "../instanceActor.js";
+import { APActor } from "../types/APActor.js";
 
 const getAPTypeFromActor = (actor: Actor) => {
 	if (actor.id === InstanceActor.id) return "Application";

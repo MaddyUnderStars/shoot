@@ -1,7 +1,7 @@
 import EventEmitter from "node:events";
 import WebSocket, { type RawData } from "ws";
-import { createLogger } from "../../util/log";
-import type { RTCIceCandidate } from "../util/validation/receive";
+import { createLogger } from "../../util/log.js";
+import type { RTCIceCandidate } from "../util/validation/receive.js";
 import type {
 	JANUS_REQUEST,
 	JANUS_RESPONSE,
@@ -12,7 +12,7 @@ import type {
 	RESPONSE_CREATE_SESSION,
 	RESPONSE_JOIN_ROOM,
 	RESPONSE_LEAVE_ROOM,
-} from "./types";
+} from "./types.js";
 
 const HEARTBEAT_INTERVAL = 10 * 1000;
 

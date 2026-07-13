@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 import { merge } from "ts-deepmerge";
 import type { DeepPartial } from "typeorm";
-import type { config } from "../util/config";
+import type { config } from "../util/config.js";
 
 export const appendToConfig = async (
 	obj: DeepPartial<typeof config>,

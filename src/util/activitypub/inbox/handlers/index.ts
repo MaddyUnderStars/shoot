@@ -1,12 +1,12 @@
 import type { APActivity } from "activitypub-types";
-import type { Actor } from "../../../../entity/actor";
-import { AcceptActivityHandler } from "./accept";
-import { AnnounceActivityHandler } from "./announce";
-import { CreateActivityHandler } from "./create";
-import { FollowActivityHandler } from "./follow";
-import { JoinActivityHandler } from "./join";
-import { LikeActivityHandler } from "./like";
-import { UndoActivityHandler } from "./undo";
+import type { Actor } from "../../../../entity/actor.js";
+import { AcceptActivityHandler } from "./accept.js";
+import { AnnounceActivityHandler } from "./announce.js";
+import { CreateActivityHandler } from "./create.js";
+import { FollowActivityHandler } from "./follow.js";
+import { JoinActivityHandler } from "./join.js";
+import { LikeActivityHandler } from "./like.js";
+import { UndoActivityHandler } from "./undo.js";
 
 export type ActivityHandler = (activity: APActivity, target: Actor) => Promise<unknown>;
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import z from "zod";
-import { PushSubscription } from "../../../../entity/pushSubscription";
-import { route } from "../../../../util/route";
+import { PushSubscription } from "../../../../entity/pushSubscription.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

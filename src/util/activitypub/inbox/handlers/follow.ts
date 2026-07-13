@@ -1,20 +1,20 @@
 import { ActivityIsFollow, type APAccept } from "activitypub-types";
 import { v7 as uuidv7 } from "uuid";
-import { Channel } from "../../../../entity/channel";
-import { Guild } from "../../../../entity/guild";
-import { Invite } from "../../../../entity/invite";
-import { RelationshipType } from "../../../../entity/relationship";
-import { User } from "../../../../entity/user";
-import { getExternalPathFromActor, sendActivity } from "../../../../sender";
-import { joinGuild } from "../../../entity/guild";
-import { acceptOrCreateRelationship } from "../../../entity/relationship";
-import { getOrFetchUser } from "../../../entity/user";
-import { makeInstanceUrl } from "../../../url";
-import { APError } from "../../error";
-import { resolveId } from "../../resolve";
-import { addContext, splitQualifiedMention } from "../../util";
-import type { ActivityHandler } from ".";
-import { config } from "../../../config";
+import { Channel } from "../../../../entity/channel.js";
+import { Guild } from "../../../../entity/guild.js";
+import { Invite } from "../../../../entity/invite.js";
+import { RelationshipType } from "../../../../entity/relationship.js";
+import { User } from "../../../../entity/user.js";
+import { getExternalPathFromActor, sendActivity } from "../../../../sender/index.js";
+import { joinGuild } from "../../../entity/guild.js";
+import { acceptOrCreateRelationship } from "../../../entity/relationship.js";
+import { getOrFetchUser } from "../../../entity/user.js";
+import { makeInstanceUrl } from "../../../url.js";
+import { APError } from "../../error.js";
+import { resolveId } from "../../resolve.js";
+import { addContext, splitQualifiedMention } from "../../util.js";
+import type { ActivityHandler } from "./index.js";
+import { config } from "../../../config.js";
 
 export const FollowActivityHandler: ActivityHandler = async (activity, target) => {
 	if (!ActivityIsFollow(activity)) return;

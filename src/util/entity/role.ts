@@ -1,19 +1,19 @@
 import { ObjectIsPerson } from "activitypub-types";
-import type { Member } from "../../entity/member";
-import { Role } from "../../entity/role";
-import { APError } from "../activitypub/error";
+import type { Member } from "../../entity/member.js";
+import { Role } from "../../entity/role.js";
+import { APError } from "../activitypub/error.js";
 import {
 	resolveAPObject,
 	resolveCollectionEntries,
 	resolveId,
 	resolveWebfinger,
-} from "../activitypub/resolve";
-import { type APRole, ObjectIsRole } from "../activitypub/transformers/role";
-import { splitQualifiedMention } from "../activitypub/util";
-import { getDatabase } from "../database";
-import { tryParseUrl } from "../url";
-import { getOrFetchGuild } from "./guild";
-import { getOrFetchMember } from "./member";
+} from "../activitypub/resolve.js";
+import { type APRole, ObjectIsRole } from "../activitypub/transformers/role.js";
+import { splitQualifiedMention } from "../activitypub/util.js";
+import { getDatabase } from "../database.js";
+import { tryParseUrl } from "../url.js";
+import { getOrFetchGuild } from "./guild.js";
+import { getOrFetchMember } from "./member.js";
 
 export const createRoleFromRemote = async (lookup: string | APRole) => {
 	const id = resolveId(lookup);

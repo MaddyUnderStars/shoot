@@ -1,13 +1,13 @@
 import { Queue } from "bullmq";
-import { DMChannel } from "../entity/DMChannel";
-import type { Message } from "../entity/message";
-import { GuildTextChannel } from "../entity/textChannel";
-import { User } from "../entity/user";
-import { type ActorMention, ActorMentionRegex } from "../util/activitypub/constants";
-import { splitQualifiedMention } from "../util/activitypub/util";
-import { config } from "../util/config";
-import { PERMISSION } from "../util/permission";
-import type { PushNotificationJobData } from "./worker";
+import { DMChannel } from "../entity/DMChannel.js";
+import type { Message } from "../entity/message.js";
+import { GuildTextChannel } from "../entity/textChannel.js";
+import { User } from "../entity/user.js";
+import { type ActorMention, ActorMentionRegex } from "../util/activitypub/constants.js";
+import { splitQualifiedMention } from "../util/activitypub/util.js";
+import { config } from "../util/config.js";
+import { PERMISSION } from "../util/permission.js";
+import type { PushNotificationJobData } from "./worker.js";
 
 export const sendNotifications = async (message: Message) => {
 	const promises = new Map<ActorMention, Promise<void>>();

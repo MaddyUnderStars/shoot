@@ -1,7 +1,7 @@
-import { config } from "../config";
+import { config } from "../config.js";
 
-import local from "./local";
-import s3 from "./s3";
+import local from "./local.js";
+import s3 from "./s3.js";
 
 const api = config().storage.s3.enabled ? s3 : local;
 

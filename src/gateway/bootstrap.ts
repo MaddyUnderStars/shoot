@@ -3,9 +3,9 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
-import { config } from "../util/config";
-import { createLogger, setLogOptions } from "../util/log";
-import { GatewayServer } from "./server";
+import { config } from "../util/config.js";
+import { createLogger, setLogOptions } from "../util/log.js";
+import { GatewayServer } from "./server.js";
 
 setLogOptions(config().log);
 const Log = createLogger("bootstrap");

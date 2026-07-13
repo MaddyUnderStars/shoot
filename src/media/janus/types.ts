@@ -1,4 +1,4 @@
-import type { RTCIceCandidate } from "../util/validation/receive";
+import type { RTCIceCandidate } from "../util/validation/receive.js";
 
 export type RESPONSE_CREATE_SESSION = {
 	id: number;

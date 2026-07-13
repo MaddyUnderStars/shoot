@@ -1,7 +1,7 @@
 import type { MessageEvent } from "ws";
 import { z } from "zod";
-import { handlers } from "../handlers";
-import type { MediaSocket } from "../util/websocket";
+import { handlers } from "../handlers/index.js";
+import type { MediaSocket } from "../util/websocket.js";
 
 export async function onMessage(this: MediaSocket, event: MessageEvent) {
 	const parsed = validate(event.data);

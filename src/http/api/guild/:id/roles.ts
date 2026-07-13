@@ -1,12 +1,12 @@
 import { Router } from "express";
 import z from "zod";
-import { PublicRole, Role, ZodPermission } from "../../../../entity/role";
-import { ActorMention } from "../../../../util/activitypub/constants";
-import { getOrFetchGuild } from "../../../../util/entity/guild";
-import { updateRoleOrdering } from "../../../../util/entity/role";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
-import { emitGatewayEvent } from "../../../../util/events";
+import { PublicRole, Role, ZodPermission } from "../../../../entity/role.js";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
+import { getOrFetchGuild } from "../../../../util/entity/guild.js";
+import { updateRoleOrdering } from "../../../../util/entity/role.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
+import { emitGatewayEvent } from "../../../../util/events.js";
 
 const router = Router({ mergeParams: true });
 

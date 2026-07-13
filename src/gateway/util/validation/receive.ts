@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ActorMention } from "../../../util/activitypub/constants";
+import { ActorMention } from "../../../util/activitypub/constants.js";
 
 export const IDENTIFY = z.object({
 	/** User token to use to login */

@@ -1,8 +1,8 @@
 import { Column, Entity, Index, ManyToOne } from "typeorm";
 import { z } from "zod";
-import { ActorMention } from "../util/activitypub/constants";
-import { BaseModel } from "./basemodel";
-import type { Guild } from "./guild";
+import { ActorMention } from "../util/activitypub/constants.js";
+import { BaseModel } from "./basemodel.js";
+import type { Guild } from "./guild.js";
 
 @Entity("invites")
 @Index(["code", "guild"], { unique: true })

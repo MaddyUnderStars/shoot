@@ -1,6 +1,6 @@
-import type { Embed } from "../../../entity/embed";
-import { genericEmbedGenerator } from "./generic";
-import { simpleEmbedGenerator } from "./simple";
+import type { Embed } from "../../../entity/embed.js";
+import { genericEmbedGenerator } from "./generic.js";
+import { simpleEmbedGenerator } from "./simple.js";
 
 export type EMBED_GENERATOR = (url: URL, head: Response) => Promise<Embed>;
 

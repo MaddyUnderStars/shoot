@@ -1,10 +1,10 @@
 import { BeforeRemove, Column, Entity, ManyToOne } from "typeorm";
 import { z } from "zod";
-import { createLogger } from "../util/log";
-import { deleteFile } from "../util/storage";
-import { BaseModel } from "./basemodel";
-import type { Message } from "./message";
-import { LocalUpload } from "./upload";
+import { createLogger } from "../util/log.js";
+import { deleteFile } from "../util/storage/index.js";
+import { BaseModel } from "./basemodel.js";
+import type { Message } from "./message.js";
+import { LocalUpload } from "./upload.js";
 
 const Log = createLogger("attachments");
 

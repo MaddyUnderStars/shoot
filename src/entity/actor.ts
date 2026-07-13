@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Index } from "typeorm";
-import type { ActorMention } from "../util/activitypub/constants";
-import { BaseModel } from "./basemodel";
+import type { ActorMention } from "../util/activitypub/constants.js";
+import { BaseModel } from "./basemodel.js";
 
 export abstract class Actor extends BaseModel {
 	@CreateDateColumn()

@@ -5,10 +5,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 import jwt from "jsonwebtoken";
-import { LocalUpload } from "../../entity/upload";
-import { config } from "../config";
-import { makeInstanceUrl } from "../url";
-import type { PutFileRequest } from ".";
+import { LocalUpload } from "../../entity/upload.js";
+import { config } from "../config.js";
+import { makeInstanceUrl } from "../url.js";
+import type { PutFileRequest } from "./index.js";
 
 export type localFileJwt = PutFileRequest & { key: string };
 

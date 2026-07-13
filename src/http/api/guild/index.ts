@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PublicGuild } from "../../../entity/guild";
-import { createGuild } from "../../../util/entity/guild";
-import { route } from "../../../util/route";
+import { PublicGuild } from "../../../entity/guild.js";
+import { createGuild } from "../../../util/entity/guild.js";
+import { route } from "../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

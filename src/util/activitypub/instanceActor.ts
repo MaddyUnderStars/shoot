@@ -1,6 +1,6 @@
-import type { User } from "../../entity/user";
-import { config } from "../config";
-import { makeInstanceUrl } from "../url";
+import type { User } from "../../entity/user.js";
+import { config } from "../config.js";
+import { makeInstanceUrl } from "../url.js";
 
 export const InstanceActor = Object.freeze({
 	id: "actor",

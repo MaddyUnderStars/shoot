@@ -1,16 +1,16 @@
 import { type APActivity, ObjectIsGroup, ObjectIsNote } from "activitypub-types";
-import { Channel } from "../../../../entity/channel";
-import { DMChannel } from "../../../../entity/DMChannel";
-import { User } from "../../../../entity/user";
-import { createChannelFromRemoteGroup, createDmChannel } from "../../../entity/channel";
-import { handleMessage } from "../../../entity/message";
-import { getOrFetchUser } from "../../../entity/user";
-import { emitGatewayEvent } from "../../../events";
-import { PERMISSION } from "../../../permission";
-import { APError } from "../../error";
-import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve";
-import { buildMessageFromAPNote } from "../../transformers/message";
-import type { ActivityHandler } from ".";
+import { Channel } from "../../../../entity/channel.js";
+import { DMChannel } from "../../../../entity/DMChannel.js";
+import { User } from "../../../../entity/user.js";
+import { createChannelFromRemoteGroup, createDmChannel } from "../../../entity/channel.js";
+import { handleMessage } from "../../../entity/message.js";
+import { getOrFetchUser } from "../../../entity/user.js";
+import { emitGatewayEvent } from "../../../events.js";
+import { PERMISSION } from "../../../permission.js";
+import { APError } from "../../error.js";
+import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve.js";
+import { buildMessageFromAPNote } from "../../transformers/message.js";
+import type { ActivityHandler } from "./index.js";
 
 /**
  * External users Create<Note> at a channel

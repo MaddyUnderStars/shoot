@@ -1,16 +1,16 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
-import { config } from "../util/config";
+import { config } from "../util/config.js";
 
 extendZodWithOpenApi(z);
 
 import { type Job, Worker } from "bullmq";
 import webPush from "web-push";
-import { PushSubscription } from "../entity/pushSubscription";
-import type { ActorMention } from "../util/activitypub/constants";
-import { splitQualifiedMention } from "../util/activitypub/util";
-import { initDatabase } from "../util/database";
-import { getOrFetchUser } from "../util/entity/user";
+import { PushSubscription } from "../entity/pushSubscription.js";
+import type { ActorMention } from "../util/activitypub/constants.js";
+import { splitQualifiedMention } from "../util/activitypub/util.js";
+import { initDatabase } from "../util/database.js";
+import { getOrFetchUser } from "../util/entity/user.js";
 
 webPush.setVapidDetails(
 	config().federation.instance_url.origin,

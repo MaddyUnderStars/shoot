@@ -1,8 +1,8 @@
 import type { APObject } from "activitypub-types";
-import type { Role } from "../../../entity/role";
-import { getExternalPathFromActor } from "../../../sender";
-import type { PERMISSION } from "../../permission";
-import { makeInstanceUrl } from "../../url";
+import type { Role } from "../../../entity/role.js";
+import { getExternalPathFromActor } from "../../../sender/index.js";
+import type { PERMISSION } from "../../permission.js";
+import { makeInstanceUrl } from "../../url.js";
 
 export const ObjectIsRole = (role: APObject): role is APRole => role.type === "Role";
 

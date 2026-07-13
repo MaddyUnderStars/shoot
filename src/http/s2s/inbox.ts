@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
-import { APError } from "../../util/activitypub/error";
-import { handleInbox } from "../../util/activitypub/inbox";
-import { hasAPContext, splitQualifiedMention } from "../../util/activitypub/util";
-import { config } from "../../util/config";
-import { findActorOfAnyType } from "../../util/entity/resolve";
-import { route } from "../../util/route";
+import { APError } from "../../util/activitypub/error.js";
+import { handleInbox } from "../../util/activitypub/inbox/index.js";
+import { hasAPContext, splitQualifiedMention } from "../../util/activitypub/util.js";
+import { config } from "../../util/config.js";
+import { findActorOfAnyType } from "../../util/entity/resolve.js";
+import { route } from "../../util/route.js";
 
 const router = Router();
 

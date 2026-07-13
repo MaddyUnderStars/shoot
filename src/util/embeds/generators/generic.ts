@@ -1,4 +1,4 @@
-import { Embed, EmbedTypes as EmbedType } from "../../../entity/embed";
+import { Embed, EmbedTypes as EmbedType } from "../../../entity/embed.js";
 import {
 	fetchDom,
 	findDomTag,
@@ -6,8 +6,8 @@ import {
 	getImageMetadata,
 	getImageProxyUrl,
 	tryParseNumber,
-} from "..";
-import type { EMBED_GENERATOR } from ".";
+} from "../index.js";
+import type { EMBED_GENERATOR } from "./index.js";
 
 export const genericEmbedGenerator: EMBED_GENERATOR = async (url) => {
 	const doc = await fetchDom(url);

@@ -1,23 +1,23 @@
 import type { EventEmitter } from "node:events";
 import http from "node:http";
-import ws from "ws";
-import { initDatabase } from "../util/database";
-import { initRabbitMQ } from "../util/events";
-import { createLogger } from "../util/log";
-import { onConnection } from "./socket/connection";
-import { initJanus } from "./util/janus";
+import { WebSocketServer } from "ws";
+import { initDatabase } from "../util/database.js";
+import { initRabbitMQ } from "../util/events.js";
+import { createLogger } from "../util/log.js";
+import { onConnection } from "./socket/connection.js";
+import { initJanus } from "./util/janus.js";
 
 const Log = createLogger("MEDIA");
 
 export class MediaGatewayServer {
 	server: http.Server;
-	socket: ws.Server;
+	socket: WebSocketServer;
 	janus: EventEmitter;
 
 	public constructor(server?: http.Server) {
 		this.server = server ?? http.createServer();
 
-		this.socket = new ws.Server({
+		this.socket = new WebSocketServer({
 			server: this.server,
 		});
 

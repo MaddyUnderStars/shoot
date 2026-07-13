@@ -1,5 +1,5 @@
 import EventEmitter from "node:events";
-import type { MEDIA_EVENT } from "./validation/send";
+import type { MEDIA_EVENT } from "./validation/send.js";
 
 const events = new EventEmitter();
 

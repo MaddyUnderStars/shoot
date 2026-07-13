@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { z } from "zod";
-import { PublicGuildTextChannel } from "../../../../entity/textChannel";
-import { ActorMention } from "../../../../util/activitypub/constants";
-import { createGuildTextChannel } from "../../../../util/entity/channel";
-import { getOrFetchGuild } from "../../../../util/entity/guild";
-import { PERMISSION } from "../../../../util/permission";
-import { route } from "../../../../util/route";
+import { PublicGuildTextChannel } from "../../../../entity/textChannel.js";
+import { ActorMention } from "../../../../util/activitypub/constants.js";
+import { createGuildTextChannel } from "../../../../util/entity/channel.js";
+import { getOrFetchGuild } from "../../../../util/entity/guild.js";
+import { PERMISSION } from "../../../../util/permission.js";
+import { route } from "../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 

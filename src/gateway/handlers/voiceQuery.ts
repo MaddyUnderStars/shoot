@@ -1,14 +1,14 @@
 import { In } from "typeorm";
-import { User } from "../../entity/user";
-import { VoiceState } from "../../entity/voiceState";
-import type { ActorMention } from "../../util/activitypub/constants";
-import { getDatabase } from "../../util/database";
-import { getOrFetchGuild } from "../../util/entity/guild";
-import { PERMISSION } from "../../util/permission";
-import { makeHandler } from "../util/handler";
-import { consume } from "../util/listener";
-import { VOICE_QUERY } from "../util/validation/receive";
-import type { VOICE_STATE } from "../util/validation/send";
+import { User } from "../../entity/user.js";
+import { VoiceState } from "../../entity/voiceState.js";
+import type { ActorMention } from "../../util/activitypub/constants.js";
+import { getDatabase } from "../../util/database.js";
+import { getOrFetchGuild } from "../../util/entity/guild.js";
+import { PERMISSION } from "../../util/permission.js";
+import { makeHandler } from "../util/handler.js";
+import { consume } from "../util/listener.js";
+import { VOICE_QUERY } from "../util/validation/receive.js";
+import type { VOICE_STATE } from "../util/validation/send.js";
 
 export const onVoiceQuery = makeHandler(async function (payload) {
 	const guild = await getOrFetchGuild(payload.guild);

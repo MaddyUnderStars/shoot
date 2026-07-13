@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn } from "typeorm";
-import type { User } from "./user";
+import type { User } from "./user.js";
 
 /**
  * Web Push subscriptions

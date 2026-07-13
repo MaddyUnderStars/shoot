@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { User } from "../entity/user";
-import { config } from "./config";
-import { HttpError } from "./httperror";
+import { User } from "../entity/user.js";
+import { config } from "./config.js";
+import { HttpError } from "./httperror.js";
 
 const INVALID_TOKEN = new HttpError("Invalid token", 401);
 

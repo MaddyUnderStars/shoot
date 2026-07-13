@@ -4,12 +4,12 @@ import { z } from "zod";
 extendZodWithOpenApi(z);
 
 import { createServer } from "node:http";
-import { GatewayServer } from "./gateway/server";
-import { APIServer } from "./http/server";
-import { MediaGatewayServer } from "./media/server";
+import { GatewayServer } from "./gateway/server.js";
+import { APIServer } from "./http/server.js";
+import { MediaGatewayServer } from "./media/server.js";
 
-import { config } from "./util/config";
-import { createLogger, setLogOptions } from "./util/log";
+import { config } from "./util/config.js";
+import { createLogger, setLogOptions } from "./util/log.js";
 
 setLogOptions(config().log);
 const Log = createLogger("bootstrap");

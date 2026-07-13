@@ -1,16 +1,16 @@
-import { DMChannel } from "../../entity/DMChannel";
-import { Member } from "../../entity/member";
-import { GuildTextChannel } from "../../entity/textChannel";
-import { PublicUser, User } from "../../entity/user";
-import { getDatabase } from "../../util/database";
-import { channelInGuild, getChannel } from "../../util/entity/channel";
-import { listenGatewayEvent } from "../../util/events";
-import { PERMISSION } from "../../util/permission";
-import { makeHandler } from "../util/handler";
-import { consume } from "../util/listener";
-import { SUBSCRIBE_MEMBERS } from "../util/validation/receive";
-import type { MEMBERS_CHUNK, ROLE_MEMBER_ADD } from "../util/validation/send";
-import type { Websocket } from "../util/websocket";
+import { DMChannel } from "../../entity/DMChannel.js";
+import { Member } from "../../entity/member.js";
+import { GuildTextChannel } from "../../entity/textChannel.js";
+import { PublicUser, User } from "../../entity/user.js";
+import { getDatabase } from "../../util/database.js";
+import { channelInGuild, getChannel } from "../../util/entity/channel.js";
+import { listenGatewayEvent } from "../../util/events.js";
+import { PERMISSION } from "../../util/permission.js";
+import { makeHandler } from "../util/handler.js";
+import { consume } from "../util/listener.js";
+import { SUBSCRIBE_MEMBERS } from "../util/validation/receive.js";
+import type { MEMBERS_CHUNK, ROLE_MEMBER_ADD } from "../util/validation/send.js";
+import type { Websocket } from "../util/websocket.js";
 
 export type MembersChunkItem = {
 	name: string;

@@ -1,10 +1,10 @@
 import bodyParser from "body-parser";
 import type { RequestHandler } from "express";
-import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants";
-import { validateHttpSignature } from "../../util/activitypub/httpsig";
-import { config } from "../../util/config";
-import { createLogger } from "../../util/log";
-import { makeInstanceUrl } from "../../util/url";
+import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants.js";
+import { validateHttpSignature } from "../../util/activitypub/httpsig.js";
+import { config } from "../../util/config.js";
+import { createLogger } from "../../util/log.js";
+import { makeInstanceUrl } from "../../util/url.js";
 
 const Log = createLogger("httpsignatures");
 

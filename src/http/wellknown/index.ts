@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { rateLimiter } from "../middleware/rate";
-import hostMeta from "./host-meta";
-import nodeInfo from "./nodeinfo";
-import webfinger from "./webfinger";
+import { rateLimiter } from "../middleware/rate.js";
+import hostMeta from "./host-meta.js";
+import nodeInfo from "./nodeinfo.js";
+import webfinger from "./webfinger.js";
 
 const router = Router();
 

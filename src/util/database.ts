@@ -1,8 +1,8 @@
 import type { DataSource } from "typeorm";
-import { Migration } from "../entity/migrations";
-import { config } from "./config";
-import { getDatasource } from "./datasource";
-import { createLogger } from "./log";
+import { Migration } from "../entity/migrations.js";
+import { config } from "./config.js";
+import { getDatasource } from "./datasource.js";
+import { createLogger } from "./log.js";
 
 const Log = createLogger("database");
 

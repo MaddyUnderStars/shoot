@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Message } from "../../../../../../entity/message";
-import { buildAPNote } from "../../../../../../util/activitypub/transformers/message";
-import { config } from "../../../../../../util/config";
-import { route } from "../../../../../../util/route";
+import { Message } from "../../../../../../entity/message.js";
+import { buildAPNote } from "../../../../../../util/activitypub/transformers/message.js";
+import { config } from "../../../../../../util/config.js";
+import { route } from "../../../../../../util/route.js";
 
 const router = Router({ mergeParams: true });
 
