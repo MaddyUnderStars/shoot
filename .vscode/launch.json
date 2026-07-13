@@ -14,7 +14,7 @@
 			"preLaunchTask": "tsc: build - tsconfig.json",
 			"outputCapture": "std",
 			"smartStep": true,
-			"runtimeArgs": ["--enable-source-maps"]
+			"runtimeArgs": ["--enable-source-maps", "--import", "./dist/src/zodOpenapi.js"]
 		},
 		{
 			"type": "node",
@@ -24,7 +24,8 @@
 			"program": "${file}",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"preLaunchTask": "tsc: build - tsconfig.json",
-			"outputCapture": "std"
+			"outputCapture": "std",
+			"runtimeArgs": ["--enable-source-maps", "--import", "./dist/src/zodOpenapi.js"]
 		},
 		{
 			"type": "node",

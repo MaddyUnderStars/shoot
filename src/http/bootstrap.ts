@@ -1,8 +1,3 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
-
-extendZodWithOpenApi(z);
-
 import { config } from "../util/config.js";
 import { createLogger, setLogOptions } from "../util/log.js";
 import { APIServer } from "./server.js";

@@ -1,8 +1,3 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
-
-extendZodWithOpenApi(z);
-
 import { createServer } from "node:http";
 import { GatewayServer } from "./gateway/server.js";
 import { APIServer } from "./http/server.js";

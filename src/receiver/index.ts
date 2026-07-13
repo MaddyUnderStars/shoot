@@ -1,8 +1,3 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
-
-extendZodWithOpenApi(z);
-
 import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
 import { ApCache } from "../entity/apcache.js";

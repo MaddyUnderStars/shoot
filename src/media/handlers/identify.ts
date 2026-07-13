@@ -5,10 +5,10 @@ import { CLOSE_CODES } from "../../gateway/util/codes.js";
 import { emitGatewayEvent } from "../../util/events.js";
 import { validateMediaToken } from "../../util/voice.js";
 import { emitMediaEvent, listenMediaEvent } from "../util/events.js";
+import { makeHandler } from "../util/handler.js";
 import { getJanus } from "../util/janus.js";
 import { getRoomId, setRoomId } from "../util/rooms.js";
 import { IDENTIFY } from "../util/validation/receive.js";
-import { makeHandler } from "./index.js";
 import { startHeartbeatTimeout } from "./heartbeat.js";
 
 export const onIdentify = makeHandler(async function (payload) {

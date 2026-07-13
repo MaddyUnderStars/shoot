@@ -28,4 +28,6 @@ WORKDIR /app
 
 EXPOSE 3001
 
+ENV NODE_OPTIONS="--enable-source-maps --import ./dist/src/zodOpenapi.js"
+
 CMD [ "./dist/src/bootstrap.js" ]

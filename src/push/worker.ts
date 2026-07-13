@@ -1,9 +1,4 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
-import { z } from "zod";
 import { config } from "../util/config.js";
-
-extendZodWithOpenApi(z);
-
 import { type Job, Worker } from "bullmq";
 import webPush from "web-push";
 import { PushSubscription } from "../entity/pushSubscription.js";

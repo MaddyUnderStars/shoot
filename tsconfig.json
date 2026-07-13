@@ -2,7 +2,7 @@
 	"include": ["./src/**/*"],
 	"compilerOptions": {
 		"incremental": true,
-		"target": "esnext",
+		"target": "ES2022",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"lib": ["ESNext", "ES2024.Object"],
