@@ -4,6 +4,14 @@ import type { ZodObject } from "zod";
 import { ConfigSchema } from "./ConfigSchema.js";
 import { createLogger } from "./log.js";
 
+// Because node-config reads the config files when the file is imported
+// we can't import it at the top level.
+// In commonjs, we can use sync require but in esmodules we can't
+// and I can't make the `config` method async
+// and so, we're forced to use createRequire here
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+
 const Log = createLogger("config");
 
 let configCache: ConfigSchema | undefined;
