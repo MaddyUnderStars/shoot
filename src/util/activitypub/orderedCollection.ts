@@ -1,8 +1,9 @@
-import type { AnyAPObject, APOrderedCollectionPage } from "activitypub-types";
 import type { ObjectType, SelectQueryBuilder } from "typeorm";
 import type { BaseModel } from "../../entity/basemodel.js";
 import { addContext } from "./util.js";
 import { buildPaginator } from "../cursor-pagination/buildPaginator.js";
+import { AnyAPObject } from "@shootpub/activitypub-types/object";
+import { APCollection } from "@shootpub/activitypub-types/collection";
 
 type Props<T extends BaseModel> = {
 	entity: ObjectType<T>;
@@ -16,7 +17,7 @@ type Props<T extends BaseModel> = {
 
 export const orderedCollectionHandler = async <T extends BaseModel>(
 	props: Props<T>,
-): Promise<APOrderedCollectionPage> => {
+): Promise<APCollection> => {
 	const { qb, entity, id, convert } = props;
 
 	const paginator = buildPaginator({

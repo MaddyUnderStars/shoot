@@ -10,7 +10,8 @@ import { resolveId } from "../../resolve.js";
 import { splitQualifiedMention } from "../../util.js";
 import type { ActivityHandler } from "./index.js";
 import { config } from "../../../config.js";
-import { ActivityIsFollow, ActivityIsJoin } from "activitypub-types";
+import { isAPFollow } from "@shootpub/activitypub-types/activities/follow";
+import { isAPJoin } from "@shootpub/activitypub-types/activities/join";
 
 const AcceptJoin: ActivityHandler = async (activity, target) => {
 	if (!activity.actor) throw new APError("Who is actor?");
@@ -87,15 +88,15 @@ export const AcceptActivityHandler: ActivityHandler = async (activity, target) =
 	// TODO: actually verify that we sent an object with this ID before
 
 	if (
-		typeof activity.object === "string"
+		typeof activity.object === "string" || activity.object instanceof URL
 			? inner.pathname.includes("follow")
-			: ActivityIsFollow(activity.object)
+			: isAPFollow(activity.object)
 	) {
 		await AcceptFollow(activity, target);
 	} else if (
-		typeof activity.object === "string"
+		typeof activity.object === "string" || activity.object instanceof URL
 			? inner.pathname.includes("voice")
-			: ActivityIsJoin(activity.object)
+			: isAPJoin(activity.object)
 	) {
 		await AcceptJoin(activity, target);
 	}

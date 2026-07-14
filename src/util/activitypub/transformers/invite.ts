@@ -1,4 +1,9 @@
-import type { AnyAPObject, APObject } from "activitypub-types";
+import {
+	AnyAPObject,
+	APObject,
+	isAPObject,
+	isObjectField,
+} from "@shootpub/activitypub-types/object";
 import type { Invite } from "../../../entity/invite.js";
 import { makeInstanceUrl } from "../../url.js";
 import { buildAPActor } from "./actor.js";
@@ -15,5 +20,13 @@ export const buildAPGuildInvite = (invite: Invite): APInviteCode => {
 };
 
 export const ObjectIsInvite = (obj: AnyAPObject): obj is APInviteCode => {
-	return obj.type === "InviteCode";
+	return (
+		isAPObject(obj) &&
+		"name" in obj &&
+		typeof obj.name === "string" &&
+		!!obj.name &&
+		"attributedTo" in obj &&
+		isObjectField(obj.attributedTo) &&
+		obj.type === "InviteCode"
+	);
 };

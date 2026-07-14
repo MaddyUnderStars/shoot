@@ -1,4 +1,4 @@
-import type { APPerson } from "activitypub-types";
+import { APPerson } from "@shootpub/activitypub-types/actors/person";
 import type { Guild } from "../../entity/guild.js";
 import { Member } from "../../entity/member.js";
 import type { User } from "../../entity/user.js";

@@ -1,4 +1,3 @@
-import { ObjectIsNote } from "activitypub-types";
 import { Attachment } from "../../entity/attachment.js";
 import { DMChannel } from "../../entity/DMChannel.js";
 import { Embed } from "../../entity/embed.js";
@@ -13,6 +12,7 @@ import {
 	buildAPCreateNote,
 	buildAPNote,
 } from "../activitypub/transformers/message.js";
+import { isChatMessage } from "../activitypub/types/APMessage.js";
 import { addContext } from "../activitypub/util.js";
 import { getDatabase } from "../database.js";
 import { generateUrlPreview } from "../embeds/index.js";
@@ -107,7 +107,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 const federateMessage = async (message: Message) => {
 	const note =
-		message.reference_object && ObjectIsNote(message.reference_object.raw)
+		message.reference_object && isChatMessage(message.reference_object.raw)
 			? message.reference_object.raw
 			: buildAPNote(message);
 

@@ -14,7 +14,7 @@ import { ACTIVITYPUB_FETCH_OPTS } from "./constants.js";
 import { APError } from "./error.js";
 import { throwInstanceBlock } from "./instances.js";
 import { resolveAPObject, resolveUrlOrObject } from "./resolve.js";
-import { APObjectIsActor } from "./types/APActor.js";
+import { isAPActor } from "@shootpub/activitypub-types/actor";
 
 const Log = createLogger("HTTPSIG");
 
@@ -106,8 +106,7 @@ export const validateHttpSignature = async (
 	if (!actor || noCache) {
 		const remoteActor = await resolveAPObject(resolveUrlOrObject(actorId));
 
-		if (!APObjectIsActor(remoteActor))
-			throw new APError("Request was signed by a non-actor object?");
+		if (!isAPActor(remoteActor)) throw new APError("Request was signed by a non-actor object?");
 
 		if (!remoteActor.publicKey?.publicKeyPem)
 			throw new APError("Public key of signing actor was not returned when requested");

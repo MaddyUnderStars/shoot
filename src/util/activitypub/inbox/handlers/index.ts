@@ -1,4 +1,4 @@
-import type { APActivity } from "activitypub-types";
+import { APActivity } from "@shootpub/activitypub-types/activity";
 import type { Actor } from "../../../../entity/actor.js";
 import { AcceptActivityHandler } from "./accept.js";
 import { AnnounceActivityHandler } from "./announce.js";

@@ -1,4 +1,3 @@
-import type { APCreate } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { PublicChannel } from "../../../../entity/channel.js";
@@ -11,6 +10,7 @@ import { createDmChannel } from "../../../../util/entity/channel.js";
 import { getOrFetchUser } from "../../../../util/entity/user.js";
 import { route } from "../../../../util/route.js";
 import { makeInstanceUrl } from "../../../../util/url.js";
+import { APCreate } from "@shootpub/activitypub-types/activities/create";
 
 const router = Router({ mergeParams: true });
 

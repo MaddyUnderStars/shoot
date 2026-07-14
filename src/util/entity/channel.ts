@@ -1,10 +1,3 @@
-import {
-	type APActor,
-	type APGroup,
-	ObjectIsGroup,
-	ObjectIsOrganization,
-	ObjectIsPerson,
-} from "activitypub-types";
 import { Brackets } from "typeorm";
 import { Channel } from "../../entity/channel.js";
 import { DMChannel } from "../../entity/DMChannel.js";
@@ -28,6 +21,10 @@ import { generateSigningKeys } from "./actor.js";
 import { createGuildFromRemoteOrg } from "./guild.js";
 import { findActorOfAnyType } from "./resolve.js";
 import { createUserForRemotePerson, getOrFetchUser } from "./user.js";
+import { APGroup, isAPGroup } from "@shootpub/activitypub-types/actors/group";
+import { APActor } from "@shootpub/activitypub-types/actor";
+import { isAPPerson } from "@shootpub/activitypub-types/actors/person";
+import { ObjectIsOrganization } from "../activitypub/types/APOrganisation.js";
 
 export const createGuildTextChannel = async (name: string, guild: Guild) => {
 	const channel = GuildTextChannel.create({
@@ -166,7 +163,7 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 				? await resolveAPObject(lookup)
 				: lookup;
 
-	if (!ObjectIsGroup(obj)) throw new APError("Resolved object is not Group");
+	if (!isAPGroup(obj)) throw new APError("Resolved object is not Group");
 
 	if (!obj.publicKey?.publicKeyPem)
 		throw new APError("Resolved object is Group but does not contain public key");
@@ -198,11 +195,11 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 		domain: mention.domain,
 		remote_id: mention.id,
 		name: obj.name,
-		remote_address: obj.id,
+		remote_address: obj.id.toString(),
 		public_key: obj.publicKey.publicKeyPem,
 		collections: {
 			inbox: obj.inbox,
-			shared_inbox: obj.endpoints?.sharedInbox,
+			shared_inbox: obj.endpoints?.sharedInbox?.toString(),
 			outbox: obj.outbox,
 			followers: obj.followers?.toString(),
 			following: obj.following?.toString(),
@@ -229,13 +226,13 @@ export const createChannelFromRemoteGroup = async (lookup: ActorMention | URL | 
 			recipients: await Promise.all(
 				(await resolveCollectionEntries(new URL(obj.followers))).reduce(
 					(prev, curr) => {
-						const id = typeof curr === "string" ? curr : curr.id;
+						const id = curr instanceof URL ? curr : curr.id;
 						if (id !== obj.attributedTo) {
-							if (typeof curr === "string") {
+							if (curr instanceof URL) {
 								const url = tryParseUrl(curr);
 								if (!url) return prev;
 								prev.push(getOrFetchUser(url));
-							} else if (ObjectIsPerson(curr)) {
+							} else if (isAPPerson(curr)) {
 								prev.push(getOrFetchUser(curr));
 							}
 						}
@@ -272,7 +269,7 @@ const resolveChannelOwner = async (lookup: string) => {
 
 	const obj = id instanceof URL ? await resolveAPObject(id) : await resolveWebfinger(id);
 
-	if (ObjectIsPerson(obj)) return await createUserForRemotePerson(obj);
+	if (isAPPerson(obj)) return await createUserForRemotePerson(obj);
 
 	if (ObjectIsOrganization(obj)) return await createGuildFromRemoteOrg(obj);
 

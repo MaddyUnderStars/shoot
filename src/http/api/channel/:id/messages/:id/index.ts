@@ -1,4 +1,3 @@
-import { ObjectIsNote } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Message, PublicMessage } from "../../../../../../entity/message.js";
@@ -11,6 +10,7 @@ import { emitGatewayEvent } from "../../../../../../util/events.js";
 import { PERMISSION } from "../../../../../../util/permission.js";
 import { route } from "../../../../../../util/route.js";
 import { makeUrl, tryParseUrl } from "../../../../../../util/url.js";
+import { isChatMessage } from "../../../../../../util/activitypub/types/APMessage.js";
 
 const router = Router({ mergeParams: true });
 
@@ -63,8 +63,8 @@ router.get(
 					),
 				);
 
-				if (!ObjectIsNote(obj)) {
-					throw new APError("Remote did not return a Note object");
+				if (!isChatMessage(obj)) {
+					throw new APError("Remote did not return an object");
 				}
 
 				message = await buildMessageFromAPNote(obj, channel);

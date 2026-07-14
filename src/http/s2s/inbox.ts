@@ -6,6 +6,7 @@ import { hasAPContext, splitQualifiedMention } from "../../util/activitypub/util
 import { config } from "../../util/config.js";
 import { findActorOfAnyType } from "../../util/entity/resolve.js";
 import { route } from "../../util/route.js";
+import { isAPActivity } from "@shootpub/activitypub-types/activity";
 
 const router = Router();
 
@@ -20,6 +21,9 @@ router.post(
 			if (!hasAPContext(req.body)) throw new APError("Doesn't have context");
 
 			const activity = req.body;
+
+			if (!isAPActivity(activity)) throw new APError("Not activity");
+
 			// TODO: multiple addressing
 			// TODO: `to` field isn't always used in activities
 			// (sometimes it's `object` or whatever). So should do that

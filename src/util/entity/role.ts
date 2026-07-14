@@ -1,4 +1,4 @@
-import { ObjectIsPerson } from "activitypub-types";
+import { isAPPerson } from "@shootpub/activitypub-types/actors/person";
 import type { Member } from "../../entity/member.js";
 import { Role } from "../../entity/role.js";
 import { APError } from "../activitypub/error.js";
@@ -15,7 +15,7 @@ import { tryParseUrl } from "../url.js";
 import { getOrFetchGuild } from "./guild.js";
 import { getOrFetchMember } from "./member.js";
 
-export const createRoleFromRemote = async (lookup: string | APRole) => {
+export const createRoleFromRemote = async (lookup: string | URL | APRole) => {
 	const id = resolveId(lookup);
 	const mention = splitQualifiedMention(id);
 
@@ -26,24 +26,27 @@ export const createRoleFromRemote = async (lookup: string | APRole) => {
 	if (!obj.attributedTo || typeof obj.attributedTo !== "string")
 		throw new APError("role requires attributedTo guild");
 
+	const guild = await getOrFetchGuild(resolveId(obj.attributedTo));
+	if (!guild) throw new APError("Role attributedTo was not found");
+
 	const role = Role.create({
+		guild,
 		remote_id: mention.id,
 		name: obj.name,
 		allow: obj.allow,
 		deny: obj.deny,
 		position: obj.position,
-		guild: await getOrFetchGuild(resolveId(obj.attributedTo)),
 		members: [], // to be fetched later
 	});
 
 	const members = await Promise.all(
 		(await resolveCollectionEntries(new URL(obj.members))).reduce(
 			(prev, curr) => {
-				if (typeof curr === "string") {
+				if (curr instanceof URL) {
 					const url = tryParseUrl(curr);
 					if (!url) return prev;
 					prev.push(getOrFetchMember(url));
-				} else if (ObjectIsPerson(curr)) {
+				} else if (isAPPerson(curr)) {
 					prev.push(getOrFetchMember(curr));
 				}
 				return prev;

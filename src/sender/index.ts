@@ -1,4 +1,4 @@
-import type { APActivity } from "activitypub-types";
+import { APActivity } from "@shootpub/activitypub-types/activity";
 import type { Actor } from "../entity/actor.js";
 import { Channel } from "../entity/channel.js";
 import { Guild } from "../entity/guild.js";

@@ -1,10 +1,10 @@
-import { ObjectIsNote } from "activitypub-types";
 import { User } from "../../../../entity/user.js";
 import { getOrFetchChannel } from "../../../entity/channel.js";
 import { handleMessage } from "../../../entity/message.js";
 import { APError } from "../../error.js";
 import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve.js";
 import { buildMessageFromAPNote } from "../../transformers/message.js";
+import { isChatMessage } from "../../types/APMessage.js";
 import type { ActivityHandler } from "./index.js";
 
 /**
@@ -22,7 +22,7 @@ export const AnnounceActivityHandler: ActivityHandler = async (activity, target)
 
 	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
-	if (!ObjectIsNote(inner)) throw new APError(`Cannot accept Announce<${inner.type}>`);
+	if (!isChatMessage(inner)) throw new APError(`Cannot accept Announce<${inner.type}>`);
 
 	if (!activity.actor) throw new APError("Cannot accept Announce without `actor`.");
 

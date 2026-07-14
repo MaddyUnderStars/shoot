@@ -1,4 +1,3 @@
-import { type APFollow, ObjectIsOrganization } from "activitypub-types";
 import { Router } from "express";
 import { z } from "zod";
 import { Invite } from "../../../entity/invite.js";
@@ -12,6 +11,8 @@ import { PERMISSION } from "../../../util/permission.js";
 import { route } from "../../../util/route.js";
 import { makeInstanceUrl } from "../../../util/url.js";
 import { ObjectIsInvite } from "../../../util/activitypub/transformers/invite.js";
+import { ObjectIsOrganization } from "../../../util/activitypub/types/APOrganisation.js";
+import { APFollow } from "@shootpub/activitypub-types/activities/follow";
 
 const router = Router({ mergeParams: true });
 
@@ -61,6 +62,7 @@ router.post(
 					!attributedTo ||
 					Array.isArray(attributedTo) ||
 					typeof attributedTo === "string" ||
+					attributedTo instanceof URL ||
 					!ObjectIsOrganization(attributedTo)
 				) {
 					return;

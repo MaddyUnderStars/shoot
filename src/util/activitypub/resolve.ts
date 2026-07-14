@@ -1,13 +1,3 @@
-import {
-	ObjectIsImage,
-	ObjectIsLink,
-	type AnyAPObject,
-	type APCollectionPage,
-	type APLink,
-	type APObject,
-	type APOrderedCollectionPage,
-	type IconField,
-} from "activitypub-types";
 import { findAll } from "domutils";
 import { DomHandler, Parser } from "htmlparser2";
 import { ApCache } from "../../entity/apcache.js";
@@ -26,6 +16,10 @@ import { signWithHttpSignature } from "./httpsig.js";
 import { InstanceActor } from "./instanceActor.js";
 import { throwInstanceBlock } from "./instances.js";
 import { hasAPContext, splitQualifiedMention } from "./util.js";
+import { AnyAPObject, ObjectField } from "@shootpub/activitypub-types/object";
+import { APLink, isAPLink } from "@shootpub/activitypub-types/link";
+import { isAPImage } from "@shootpub/activitypub-types/documents/image";
+import { isAPCollection } from "@shootpub/activitypub-types/collection";
 
 const Log = createLogger("ap:resolve");
 
@@ -42,7 +36,7 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 	if (!(data instanceof URL)) {
 		if (!noCache)
 			await ApCache.create({
-				id: data.id,
+				id: data.id.toString(),
 				raw: data,
 			}).save();
 		return data;
@@ -92,7 +86,7 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	if (!noCache)
 		await ApCache.create({
-			id: json.id,
+			id: json.id.toString(),
 			raw: json,
 		}).save();
 
@@ -135,7 +129,7 @@ export const resolveId = (prop: string | AnyAPObject | APLink | URL) => {
  * Returns either a URL or Object
  * @param prop A mention or URL string, or an AP object
  */
-export const resolveUrlOrObject = (prop: string | AnyAPObject | APLink) => {
+export const resolveUrlOrObject = (prop: string | URL | AnyAPObject | APLink) => {
 	if (typeof prop === "string") {
 		const url = tryParseUrl(prop);
 		if (url) return url;
@@ -241,18 +235,18 @@ export const resolveWebfinger = async (
 export const resolveCollectionEntries = async (
 	collection: URL,
 	limit = 10,
-): Promise<Array<string | AnyAPObject>> => {
+): Promise<Array<URL | AnyAPObject>> => {
 	if (limit < 0) {
 		Log.warn("Limit reached when resolving collection");
 		return [];
 	}
 	limit--;
 
-	const ret: Array<string | AnyAPObject> = [];
+	const ret: Array<URL | AnyAPObject> = [];
 
 	const parent = await resolveAPObject(collection);
 
-	if (!ObjectIsCollection(parent)) throw new APError(`${collection.href} is not a collection`);
+	if (!isAPCollection(parent)) throw new APError(`${collection.href} is not a collection`);
 
 	const items =
 		"items" in parent
@@ -266,7 +260,7 @@ export const resolveCollectionEntries = async (
 
 	if (!items) throw new APError("can't find collection items");
 
-	ret.push(...items);
+	ret.push(...items.map((x) => (typeof x === "string" ? tryParseUrl(x) : x)).filter((x) => !!x));
 
 	if (parent.next && typeof parent.next === "string") {
 		Log.verbose(`Resolving next page of collection ${parent.id}`);
@@ -276,27 +270,17 @@ export const resolveCollectionEntries = async (
 	return ret;
 };
 
-const ObjectIsCollection = (obj: APObject): obj is APCollectionPage | APOrderedCollectionPage => {
-	return (
-		obj.type === "OrderedCollection" ||
-		obj.type === "OrderedCollectionPage" ||
-		obj.type === "Collection" ||
-		obj.type === "CollectionPage"
-	);
-};
-
-export const resolveAPImage = (val?: IconField) => {
+export const resolveAPImage = (val?: ObjectField) => {
 	if (!val) return undefined;
 
-	if (typeof val === "string") return val;
+	if (typeof val === "string" || val instanceof URL) return val.toString();
 
-	if (ObjectIsImage(val)) {
+	if (isAPImage(val)) {
 		if (!val.url) throw new APError("IconField.url missing on Image");
 		return new URL(val.url);
 	}
 
-	// is APLink
-	if (ObjectIsLink(val)) {
+	if (isAPLink(val)) {
 		if (!val.href) throw new APError("IconField.href missing on Link");
 		return new URL(val.href);
 	}

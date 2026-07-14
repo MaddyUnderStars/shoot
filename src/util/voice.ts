@@ -1,4 +1,3 @@
-import type { APJoin } from "activitypub-types";
 import jwt from "jsonwebtoken";
 import { Channel } from "../entity/channel.js";
 import { User } from "../entity/user.js";
@@ -10,6 +9,7 @@ import { getDatabase } from "./database.js";
 import { HttpError } from "./httperror.js";
 import { PERMISSION } from "./permission.js";
 import { makeInstanceUrl } from "./url.js";
+import { APJoin } from "@shootpub/activitypub-types/activities/join";
 
 const algorithm = "HS256";
 

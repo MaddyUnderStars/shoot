@@ -1,4 +1,3 @@
-import { ActivityIsFollow, type APAccept } from "activitypub-types";
 import { v7 as uuidv7 } from "uuid";
 import { Channel } from "../../../../entity/channel.js";
 import { Guild } from "../../../../entity/guild.js";
@@ -15,9 +14,11 @@ import { resolveId } from "../../resolve.js";
 import { addContext, splitQualifiedMention } from "../../util.js";
 import type { ActivityHandler } from "./index.js";
 import { config } from "../../../config.js";
+import { APAccept } from "@shootpub/activitypub-types/activities/accept";
+import { isAPFollow } from "@shootpub/activitypub-types/activities/follow";
 
 export const FollowActivityHandler: ActivityHandler = async (activity, target) => {
-	if (!ActivityIsFollow(activity)) return;
+	if (!isAPFollow(activity)) return;
 
 	const from = activity.actor;
 	if (typeof from !== "string") throw new APError("Follow activity must have single actor");
