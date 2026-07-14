@@ -12,6 +12,7 @@
 - [FEP-bebd: Follow Invites](https://codeberg.org/fediverse/fep/src/commit/70c8a451f3226280536623e5bdc853a984d47dae/fep/bebd/fep-bebd.md)
 - [FEP-7888: Demystifying the context property](https://codeberg.org/fediverse/fep/src/commit/70c8a451f3226280536623e5bdc853a984d47dae/fep/7888/fep-7888.md)
 -   - Currently only used to link guild channels to guilds
+- [FEP-2277: ActivityPub core types](https://codeberg.org/fediverse/fep/src/branch/main/fep/2277/fep-2277.md)
 
 ## ActivityPub
 
@@ -25,17 +26,19 @@ Native Shoot actors include:
 
 The following activities and object types are currently supported:
 
-- `Follow<Person>` - Friend a user
-- `Accept<Follow<Person>>` - Accept a friend request
+- `Follow<Person>` Friend a user
+- `Accept<Follow<Person>>` Accept a friend request
 
-- `Follow<Organization>` - Join a guild via a FEP-bebd invite
+- `Follow<Organization>` Join a guild via a FEP-bebd invite
 - `Accept<Follow<Organization>>`
 
-- `Join<Group>` - Request access to the voice call in this channel
-- `Accept<Join<Group>>` - Accept a voice call request
+- `Join<Group>` Request access to the voice call in this channel
+- `Accept<Join<Group>>` Accept a voice call request
 
 - `Create<Note>` can be sent to Person or Group. When sent to Person, creates a DM channel if not exist and sends the message there. When sent to Group, sends the message to the Group
 - `Announce<Create<Note>>` can be sent to Person. Sends a message to a channel specified via `announce.actor`
+
+- `Create<Group>` sent when a new DM channel is created to the members of the channel
 
 - [`Role`](https://github.com/MaddyUnderStars/shoot/blob/main/src/util/activitypub/transformers/role.ts#L9) this object contains a `members` collection along with the permissions it's members are allowed and denied. Roles are contained in the the organization's `followers` collection currently.
 
