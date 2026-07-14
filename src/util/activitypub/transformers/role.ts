@@ -1,4 +1,4 @@
-import type { APObject } from "activitypub-types";
+import { APObject } from "@shootpub/activitypub-types/object";
 import type { Role } from "../../../entity/role.js";
 import { getExternalPathFromActor } from "../../../sender/index.js";
 import type { PERMISSION } from "../../permission.js";

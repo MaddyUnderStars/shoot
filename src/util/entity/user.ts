@@ -1,4 +1,3 @@
-import { type APActor, type APNote, type APPerson, ObjectIsGroup } from "activitypub-types";
 import bcrypt from "bcrypt";
 import type { InstanceInvite } from "../../entity/instanceInvite.js";
 import { User } from "../../entity/user.js";
@@ -11,11 +10,14 @@ import {
 	resolveWebfinger,
 } from "../activitypub/resolve.js";
 import { splitQualifiedMention } from "../activitypub/util.js";
-import { APObjectIsActor } from "../activitypub/types/APActor.js";
 import { config } from "../config.js";
 import { createLogger } from "../log.js";
 import { generateSigningKeys } from "./actor.js";
 import { joinGuild } from "./guild.js";
+import { APPerson } from "@shootpub/activitypub-types/actors/person";
+import { APActor, isAPActor } from "@shootpub/activitypub-types/actor";
+import { isAPGroup } from "@shootpub/activitypub-types/actors/group";
+import { APNote } from "@shootpub/activitypub-types/common/note";
 
 const Log = createLogger("users");
 
@@ -94,9 +96,9 @@ export const createUserForRemotePerson = async (lookup: string | URL | APActor) 
 				? await resolveAPObject(id)
 				: await resolveWebfinger(id);
 
-	if (!APObjectIsActor(obj)) throw new APError("Resolved object is not Person");
+	if (!isAPActor(obj)) throw new APError("Resolved object is not Person");
 
-	if (ObjectIsGroup(obj))
+	if (isAPGroup(obj))
 		throw new APError("Refusing to treat Group as Person as Group is our native channel type");
 
 	if (!obj.publicKey?.publicKeyPem)
@@ -116,20 +118,22 @@ export const createUserForRemotePerson = async (lookup: string | URL | APActor) 
 	return User.create({
 		domain: mention.domain,
 
-		remote_address: obj.id,
+		remote_address: obj.id.toString(),
 
 		name: obj.preferredUsername || mention.id,
 		display_name: obj.name || obj.preferredUsername || mention.id,
-		summary: obj.summary,
+		summary: obj.summary || null,
 
 		public_key: obj.publicKey.publicKeyPem,
 
-		avatar: resolveAPImage(Array.isArray(obj.icon) ? obj.icon[0] : obj.icon),
-		banner: resolveAPImage(Array.isArray(obj.image) ? obj.image[0] : obj.image),
+		avatar:
+			resolveAPImage(Array.isArray(obj.icon) ? obj.icon[0] : obj.icon)?.toString() ?? null,
+		banner:
+			resolveAPImage(Array.isArray(obj.image) ? obj.image[0] : obj.image)?.toString() ?? null,
 
 		collections: {
 			inbox: obj.inbox,
-			shared_inbox: obj.endpoints?.sharedInbox,
+			shared_inbox: obj.endpoints?.sharedInbox?.toString(),
 			outbox: obj.outbox,
 			followers: obj.followers,
 			following: obj.following,
@@ -142,9 +146,10 @@ export const getOrFetchAttributedUser = async (attributed: APNote["attributedTo"
 	if (Array.isArray(attributed))
 		throw new APError("Cannot assign single author to this note with multiple attributedTo");
 
-	if (typeof attributed === "string") return await getOrFetchUser(resolveId(attributed));
+	if (typeof attributed === "string" || attributed instanceof URL)
+		return await getOrFetchUser(resolveId(attributed));
 
-	if (!APObjectIsActor(attributed)) throw new APError("note.attributedTo must be actor");
+	if (!isAPActor(attributed)) throw new APError("note.attributedTo must be actor");
 
 	return await createUserForRemotePerson(attributed);
 };

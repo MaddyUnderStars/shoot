@@ -1,4 +1,3 @@
-import type { APActivity } from "activitypub-types";
 import { Queue } from "bullmq";
 import { z } from "zod";
 import type { Actor } from "../../../entity/actor.js";
@@ -7,6 +6,7 @@ import type { APInboundJobData } from "../../../receiver/index.js";
 import { config } from "../../config.js";
 import { APError } from "../error.js";
 import { ActivityHandlers } from "./handlers/index.js";
+import { APActivity } from "@shootpub/activitypub-types/activity";
 
 const getQueue = () => {
 	return config().federation.queue.use_inbound
@@ -24,6 +24,7 @@ export const AP_ACTIVITY = z.looseObject({
 	type: z.string().refine((type) => !!ActivityHandlers[type.toLowerCase() as Lowercase<string>], {
 		message: "Activity of that type has no handler",
 	}),
+	actor: z.url().or(z.looseObject({ id: z.url() })),
 });
 
 export const handleInbox = async (activity: APActivity, target: Actor) => {

@@ -1,4 +1,3 @@
-import type { APAccept, APFollow } from "activitypub-types";
 import { EntityNotFoundError, Not } from "typeorm";
 import { Relationship, RelationshipType } from "../../entity/relationship.js";
 import type { User } from "../../entity/user.js";
@@ -6,6 +5,9 @@ import { getExternalPathFromActor, sendActivity } from "../../sender/index.js";
 import { addContext } from "../activitypub/util.js";
 import { emitGatewayEvent } from "../events.js";
 import { makeInstanceUrl } from "../url.js";
+import { APFollow } from "@shootpub/activitypub-types/activities/follow";
+import { APAccept } from "@shootpub/activitypub-types/activities/accept";
+import { ApCache } from "../../entity/apcache.js";
 
 /**
  * Create a relationship.
@@ -48,7 +50,9 @@ export const createRelationship = async (
 		// If this is a block, the to_state is ignored
 		from_state: block ? RelationshipType.blocked : RelationshipType.accepted,
 		to_state: RelationshipType.pending,
-		reference_object,
+		reference_object: reference_object
+			? ApCache.create({ id: reference_object?.id.toString() })
+			: null,
 	});
 
 	await rel.save();

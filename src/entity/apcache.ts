@@ -1,4 +1,4 @@
-import type { AnyAPObject, APActivity } from "activitypub-types";
+import { AnyAPObject } from "@shootpub/activitypub-types/object";
 import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn } from "typeorm";
 
 @Entity("activitypub_objects")
@@ -10,5 +10,5 @@ export class ApCache extends BaseEntity {
 	received: Date;
 
 	@Column({ type: "jsonb" })
-	raw: AnyAPObject | APActivity;
+	raw: AnyAPObject;
 }

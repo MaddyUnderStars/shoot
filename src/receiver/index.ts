@@ -1,4 +1,3 @@
-import type { APActivity } from "activitypub-types";
 import { type Job, Worker } from "bullmq";
 import { ApCache } from "../entity/apcache.js";
 import { Channel } from "../entity/channel.js";
@@ -10,6 +9,7 @@ import { ActivityHandlers } from "../util/activitypub/inbox/handlers/index.js";
 import { config } from "../util/config.js";
 import { initDatabase } from "../util/database.js";
 import { initRabbitMQ } from "../util/events.js";
+import { APActivity } from "@shootpub/activitypub-types/activity";
 
 export type APInboundJobData = { activity: APActivity; target_id: string };
 

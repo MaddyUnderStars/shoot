@@ -1,9 +1,4 @@
-import {
-	type AnyAPObject,
-	type APActivity,
-	type APObject,
-	type LdContextField,
-} from "activitypub-types";
+import { AnyAPObject, APObject, type LdContextField } from "@shootpub/activitypub-types/object";
 import { tryParseUrl } from "../url.js";
 import { ACTIVITYSTREAMS_CONTEXT } from "./constants.js";
 import { APError } from "./error.js";
@@ -38,20 +33,20 @@ export const splitQualifiedMention = (lookup: string | URL) => {
 	};
 };
 
+type ContextField = LdContextField | LdContextField[];
+
 export const hasAPContext = (data: unknown): data is APObject => {
 	if (typeof data !== "object" || !data) return false;
 	if (!("@context" in data)) return false;
-	const context = data["@context"] as LdContextField | LdContextField[];
+	const context = data["@context"] as ContextField;
 	if (Array.isArray(context)) return !!context.find((x) => x === ACTIVITYSTREAMS_CONTEXT);
 	return context === ACTIVITYSTREAMS_CONTEXT;
 };
 
-export const addContext = <T extends AnyAPObject | APActivity>(
-	obj: T,
-): T & { "@context": LdContextField[] } => {
+export const addContext = <T extends AnyAPObject>(obj: T): T & { "@context": ContextField } => {
 	// For some reason if I move this into the return, it causes a type error
 	// even though ContextField is string | Record<string, string> ???
-	const context: LdContextField[] = [
+	const context: ContextField = [
 		"https://www.w3.org/ns/activitystreams",
 		"https://w3id.org/security/v1",
 		"https://purl.archive.org/socialweb/webfinger",

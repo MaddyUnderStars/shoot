@@ -1,4 +1,3 @@
-import { type APActor, APOrganization, ObjectIsGroup } from "activitypub-types";
 import { Channel } from "../../entity/channel.js";
 import { Guild } from "../../entity/guild.js";
 import { Member } from "../../entity/member.js";
@@ -25,7 +24,9 @@ import { createGuildTextChannel, getOrFetchChannel } from "./channel.js";
 import { isMemberOfGuild } from "./member.js";
 import { createRoleFromRemote } from "./role.js";
 import { getOrFetchUser } from "./user.js";
-import { ObjectIsOrganization } from "../activitypub/types/APOrganisation.js";
+import { APOrganization, ObjectIsOrganization } from "../activitypub/types/APOrganisation.js";
+import { APActor } from "@shootpub/activitypub-types/actor";
+import { isAPGroup } from "@shootpub/activitypub-types/actors/group";
 
 export const getGuilds = (user_id: string) =>
 	/*
@@ -63,6 +64,8 @@ export const joinGuild = async (user_id: ActorMention, guild_id: ActorMention) =
 	}
 
 	const guild = await getOrFetchGuild(guild_id);
+
+	if (!guild) throw new Error("Guild not found");
 
 	// if (user.domain !== config().federation.instance_url.origin)
 	// 	throw new APError("Tried to join a guild for a user we don't control?");
@@ -227,12 +230,12 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 
 		roles: [], // to be assigned later
 
-		remote_address: obj.id,
+		remote_address: obj.id.toString(),
 		public_key: obj.publicKey.publicKeyPem,
 
 		collections: {
 			inbox: obj.inbox,
-			shared_inbox: obj.endpoints?.sharedInbox,
+			shared_inbox: obj.endpoints?.sharedInbox?.toString(),
 			outbox: obj.outbox,
 			followers: obj.followers,
 			context: obj.context,
@@ -244,11 +247,11 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 	const channels = await Promise.all(
 		(await resolveCollectionEntries(new URL(obj.channels))).reduce(
 			(prev, curr) => {
-				if (typeof curr === "string") {
+				if (curr instanceof URL) {
 					const url = tryParseUrl(curr);
 					if (!url) return prev;
 					prev.push(getOrFetchChannel(url));
-				} else if (ObjectIsGroup(curr)) {
+				} else if (isAPGroup(curr)) {
 					prev.push(getOrFetchChannel(curr));
 				}
 				return prev;
@@ -263,7 +266,7 @@ export const createGuildFromRemoteOrg = async (lookup: ActorMention | URL | APAc
 	const roles = await Promise.all(
 		(await resolveCollectionEntries(new URL(obj.followers))).reduce(
 			(prev, curr) => {
-				if (typeof curr === "string" || ObjectIsRole(curr)) {
+				if (curr instanceof URL || ObjectIsRole(curr)) {
 					prev.push(createRoleFromRemote(curr));
 				}
 				return prev;

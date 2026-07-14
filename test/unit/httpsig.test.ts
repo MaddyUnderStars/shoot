@@ -1,4 +1,4 @@
-import type { APActivity } from "activitypub-types";
+import { APActivity } from "@shootpub/activitypub-types/activity";
 import { test } from "../fixture";
 
 test("Using Instance Actor", async ({ api: _ }) => {
@@ -43,6 +43,7 @@ test("Using Instance Actor with Activity", async ({ api: _ }) => {
 		id: "http://localhost/test_activity",
 		attributedTo: "http://localhost/users/remote_user2",
 		type: "Test",
+		actor: "http://localhost/users/remote_user2",
 	};
 
 	const signed = signWithHttpSignature(

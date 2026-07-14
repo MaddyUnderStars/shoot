@@ -1,4 +1,4 @@
-import type { APAccept } from "activitypub-types";
+import { APAccept } from "@shootpub/activitypub-types/activities/accept";
 import { Channel } from "../../../../entity/channel.js";
 import { getExternalPathFromActor, sendActivity } from "../../../../sender/index.js";
 import { config } from "../../../config.js";
@@ -10,6 +10,7 @@ import { APError } from "../../error.js";
 import { resolveId } from "../../resolve.js";
 import { addContext } from "../../util.js";
 import type { ActivityHandler } from "./index.js";
+import { v7 as uuid } from "uuid";
 
 export const JoinActivityHandler: ActivityHandler = async (activity, target) => {
 	if (!(target instanceof Channel))
@@ -37,6 +38,7 @@ export const JoinActivityHandler: ActivityHandler = async (activity, target) => 
 
 	const accept: APAccept = addContext({
 		type: "Accept",
+		id: makeInstanceUrl(uuid()),
 		result: token,
 		target: config().webrtc.signal_address,
 		actor: makeInstanceUrl(getExternalPathFromActor(target)),

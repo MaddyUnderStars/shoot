@@ -1,4 +1,4 @@
-import { type APActivity, ObjectIsGroup, ObjectIsNote } from "activitypub-types";
+import { APActivity } from "@shootpub/activitypub-types/activity";
 import { Channel } from "../../../../entity/channel.js";
 import { DMChannel } from "../../../../entity/DMChannel.js";
 import { User } from "../../../../entity/user.js";
@@ -11,6 +11,8 @@ import { APError } from "../../error.js";
 import { resolveAPObject, resolveId, resolveUrlOrObject } from "../../resolve.js";
 import { buildMessageFromAPNote } from "../../transformers/message.js";
 import type { ActivityHandler } from "./index.js";
+import { isAPGroup } from "@shootpub/activitypub-types/actors/group";
+import { isChatMessage } from "../../types/APMessage.js";
 
 /**
  * External users Create<Note> at a channel
@@ -35,7 +37,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 
 	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
-	if (ObjectIsGroup(inner)) {
+	if (isAPGroup(inner)) {
 		// Create<Group> at User
 		// We are creating a DM channel
 		const channel = await createChannelFromRemoteGroup(inner);
@@ -54,7 +56,7 @@ const CreateAtUser = async (activity: APActivity, target: User) => {
 		return;
 	}
 
-	if (ObjectIsNote(inner)) {
+	if (isChatMessage(inner)) {
 		// Create<Note> at User
 		// This activity is probably from Mastodon or other foreign software
 		// In this case, create a dm channel if it doesn't exist
@@ -112,7 +114,7 @@ const CreateAtChannel = async (activity: APActivity, target: Channel) => {
 
 	const inner = await resolveAPObject(resolveUrlOrObject(activity.object));
 
-	if (!ObjectIsNote(inner)) throw new APError(`Cannot accept Create<${inner.type}>`);
+	if (!isChatMessage(inner)) throw new APError(`Cannot accept Create<${inner.type}>`);
 
 	const message = await buildMessageFromAPNote(inner, target);
 
