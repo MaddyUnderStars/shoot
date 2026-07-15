@@ -52,7 +52,10 @@ export const resolveAPObject = async <T extends AnyAPObject>(
 
 	throwInstanceBlock(data);
 
-	if (data.hostname === config().federation.instance_url.hostname)
+	if (
+		data.hostname === config().federation.instance_url.hostname ||
+		data.hostname === config().federation.webapp_url.hostname
+	)
 		throw new APError("Tried to resolve remote resource, but we are the remote!");
 
 	Log.verbose(`Fetching from remote ${data}`);
@@ -145,7 +148,10 @@ const doWebfingerOrFindTemplate = async (
 ): Promise<WebfingerResponse> => {
 	const { domain } = splitQualifiedMention(lookup);
 
-	if (domain === config().federation.instance_url.hostname)
+	if (
+		domain === config().federation.instance_url.hostname ||
+		domain === config().federation.webapp_url.hostname
+	)
 		throw new APError("Tried to resolve remote resource, but we are the remote!");
 
 	const protocol = process.env.DANGEROUS_NO_TLS ? "http:" : "https:";
