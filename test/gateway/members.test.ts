@@ -1,15 +1,15 @@
-import type { MEMBERS_CHUNK } from "../../src/gateway/util/validation/send";
-import { test } from "../fixture";
-import { FakeSocket, sendGatewayPayload } from "../testUtils/gateway";
-import { createTestGuild } from "../testUtils/guilds";
-import { createTestUser } from "../testUtils/users";
+import type { MEMBERS_CHUNK } from "../../src/gateway/util/validation/send.js";
+import { test } from "../fixture.js";
+import { FakeSocket, sendGatewayPayload } from "../testUtils/gateway.js";
+import { createTestGuild } from "../testUtils/guilds.js";
+import { createTestUser } from "../testUtils/users.js";
 
 test("Can request guild members", async ({ api, expect }) => {
 	const [user, user2] = await Promise.all([createTestUser(api), createTestUser(api)]);
 
 	const guild = await createTestGuild(user);
 
-	const { joinGuild } = await import("../../src/util/entity/guild");
+	const { joinGuild } = await import("../../src/util/entity/guild.js");
 	await joinGuild(user2.user.mention, guild.mention);
 
 	const socket = new FakeSocket();

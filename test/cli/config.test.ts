@@ -1,5 +1,5 @@
-import { handleCli } from "../../src/cli/cli";
-import { test } from "../fixture";
+import { handleCli } from "../../src/cli/cli.js";
+import { test } from "../fixture.js";
 
 test("CLI does not require config", async ({ expect }) => {
 	process.env.NODE_CONFIG = "";

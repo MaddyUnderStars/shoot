@@ -3,11 +3,11 @@ import { promisify } from "node:util";
 import { Client as PgClient } from "pg";
 import type { StartedNetwork } from "testcontainers";
 import { test as baseTest, inject } from "vitest";
-import type { APIServer } from "../src/http/server";
-import { ConfigSchema } from "../src/util/ConfigSchema";
-import { KEY_OPTIONS } from "../src/util/rsa";
-import { createTestDatabase } from "./testUtils/database";
-import { getTestNetwork } from "./testUtils/network";
+import type { APIServer } from "../src/http/server.js";
+import { ConfigSchema } from "../src/util/ConfigSchema.js";
+import { KEY_OPTIONS } from "../src/util/rsa.js";
+import { createTestDatabase } from "./testUtils/database.js";
+import { getTestNetwork } from "./testUtils/network.js";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 
@@ -106,8 +106,8 @@ export const test = baseTest.extend<{
 
 	api: [
 		async ({}, use) => {
-			const { APIServer } = await import("../src/http/server");
-			const { initDatabase, closeDatabase } = await import("../src/util/database");
+			const { APIServer } = await import("../src/http/server.js");
+			const { initDatabase, closeDatabase } = await import("../src/util/database.js");
 
 			const api = new APIServer();
 			await initDatabase();

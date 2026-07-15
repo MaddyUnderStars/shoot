@@ -1,8 +1,8 @@
 import request from "supertest";
-import { test } from "../../../../fixture";
+import { test } from "../../../../fixture.js";
 
 test("Can Login", { concurrent: false }, async ({ api, expect }) => {
-	const { registerUser } = await import("../../../../../src/util/entity/user");
+	const { registerUser } = await import("../../../../../src/util/entity/user.js");
 
 	await registerUser("test", "test");
 

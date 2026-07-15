@@ -1,7 +1,7 @@
 import request from "supertest";
-import { test } from "../../../fixture";
-import { createTestGuild } from "../../../testUtils/guilds";
-import { createTestUser } from "../../../testUtils/users";
+import { test } from "../../../fixture.js";
+import { createTestGuild } from "../../../testUtils/guilds.js";
+import { createTestUser } from "../../../testUtils/users.js";
 
 test("Can create role in guild", async ({ api, expect }) => {
 	const user = await createTestUser(api);

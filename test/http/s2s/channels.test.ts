@@ -1,10 +1,12 @@
-import { test } from "../../fixture";
+import type { PublicDmChannel } from "../../../src/entity/DMChannel.js";
+import type { PublicMessage } from "../../../src/entity/message.js";
+import { test } from "../../fixture.js";
 import {
 	getShootContainerUrl,
 	startShootContainer,
 	waitForLogMessage,
-} from "../../testUtils/container";
-import { createTestUser } from "../../testUtils/users";
+} from "../../testUtils/container.js";
+import { createTestUser } from "../../testUtils/users.js";
 
 test("Send message to foreign user", { timeout: 20_000 }, async ({ onTestFinished, expect }) => {
 	const [{ shoot: local }, { shoot: remote }] = await Promise.all([
@@ -41,7 +43,7 @@ test("Send message to foreign user", { timeout: 20_000 }, async ({ onTestFinishe
 
 	expect(dmRes.status).toBe(200);
 
-	const dm = await dmRes.json();
+	const dm = (await dmRes.json()) as PublicDmChannel;
 
 	await remoteLogs;
 
@@ -76,7 +78,7 @@ test("Send message to foreign user", { timeout: 20_000 }, async ({ onTestFinishe
 
 	expect(getRes.status).toBe(200);
 
-	const get = await getRes.json();
+	const get = (await getRes.json()) as { messages: PublicMessage[] };
 
 	const message = get.messages[0];
 	expect(message.content).toBe("hello");

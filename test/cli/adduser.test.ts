@@ -1,5 +1,5 @@
-import { handleCli } from "../../src/cli/cli";
-import { test } from "../fixture";
+import { handleCli } from "../../src/cli/cli.js";
+import { test } from "../fixture.js";
 
 test("CLI can create user", async ({ expect, dbClient }) => {
 	expect(

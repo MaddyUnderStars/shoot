@@ -1,10 +1,11 @@
-import { test } from "../../fixture";
+import type { PrivateRelationship } from "../../../src/entity/relationship.js";
+import { test } from "../../fixture.js";
 import {
 	getShootContainerUrl,
 	startShootContainer,
 	waitForLogMessage,
-} from "../../testUtils/container";
-import { createTestUser } from "../../testUtils/users";
+} from "../../testUtils/container.js";
+import { createTestUser } from "../../testUtils/users.js";
 
 test(
 	"Send friend request to foreign user",
@@ -71,7 +72,7 @@ test(
 
 		expect(getRemoteRes.status).toBe(200);
 
-		const getRemoteJson = await getRemoteRes.json();
+		const getRemoteJson = (await getRemoteRes.json()) as PrivateRelationship;
 
 		// RelationshipType.accept
 		expect(getRemoteJson.type).toBe(1);
@@ -89,7 +90,7 @@ test(
 
 		expect(getLocalRes.status).toBe(200);
 
-		const getLocalJson = await getLocalRes.json();
+		const getLocalJson = (await getLocalRes.json()) as PrivateRelationship;
 
 		// RelationshipType.accept
 		expect(getLocalJson.type).toBe(1);

@@ -4,11 +4,11 @@ import { GenericContainer, type StartedTestContainer, Wait } from "testcontainer
 import { merge } from "ts-deepmerge";
 import type { DeepPartial } from "typeorm";
 import { inject } from "vitest";
-import type { ConfigSchema } from "../../src/util/ConfigSchema";
-import { KEY_OPTIONS } from "../../src/util/rsa";
-import { createTestDatabase } from "./database";
-import { getTestNetwork } from "./network";
-import { getTestString } from "./random";
+import type { ConfigSchema } from "../../src/util/ConfigSchema.js";
+import { KEY_OPTIONS } from "../../src/util/rsa.js";
+import { createTestDatabase } from "./database.js";
+import { getTestNetwork } from "./network.js";
+import { getTestString } from "./random.js";
 
 const generateKeyPair = promisify(crypto.generateKeyPair);
 

@@ -1,11 +1,11 @@
 import request from "supertest";
 import type { StartedTestContainer } from "testcontainers";
-import type { PrivateUser } from "../../src/entity/user";
-import type { APIServer } from "../../src/http/server";
-import { runCliInContainer } from "./cli";
-import { getShootContainerUrl } from "./container";
-import { getTestString } from "./random";
-import { isApiServer } from "./isApiServer";
+import type { PrivateUser } from "../../src/entity/user.js";
+import type { APIServer } from "../../src/http/server.js";
+import { runCliInContainer } from "./cli.js";
+import { getShootContainerUrl } from "./container.js";
+import { getTestString } from "./random.js";
+import { isApiServer } from "./isApiServer.js";
 
 export type TestUser = Awaited<ReturnType<typeof createTestUser>>;
 
@@ -16,7 +16,7 @@ export const createTestUser = async (target: APIServer | StartedTestContainer) =
 	let body: { token: string; user: PrivateUser };
 
 	if (isApiServer(target)) {
-		const { registerUser } = await import("../../src/util/entity/user");
+		const { registerUser } = await import("../../src/util/entity/user.js");
 		password = getTestString();
 		await registerUser(username, password);
 
@@ -48,7 +48,7 @@ export const createTestUser = async (target: APIServer | StartedTestContainer) =
 			}),
 		});
 
-		body = await login.json();
+		body = (await login.json()) as typeof body;
 
 		if (!body.token || !body.user) throw new Error("token or user not provided by container");
 	}

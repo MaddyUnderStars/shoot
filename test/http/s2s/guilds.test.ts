@@ -1,13 +1,14 @@
-import { test } from "../../fixture";
-import { startShootContainer, waitForLogMessage } from "../../testUtils/container";
-import { createTestGuild } from "../../testUtils/guilds";
-import { createTestUser, TestUser } from "../../testUtils/users";
-import { containerFetch } from "../../testUtils/containerFetch";
-import type { PublicInvite } from "../../../src/entity/invite";
-import type { PublicGuild } from "../../../src/entity/guild";
+import { test } from "../../fixture.js";
+import { startShootContainer, waitForLogMessage } from "../../testUtils/container.js";
+import { createTestGuild } from "../../testUtils/guilds.js";
+import { createTestUser, TestUser } from "../../testUtils/users.js";
+import { containerFetch } from "../../testUtils/containerFetch.js";
+import type { PublicInvite } from "../../../src/entity/invite.js";
+import type { PublicGuild } from "../../../src/entity/guild.js";
 import { Client as PgClient } from "pg";
 import { describe, inject } from "vitest";
 import { StartedTestContainer } from "testcontainers";
+import type { PublicMessage } from "../../../src/entity/message.js";
 
 describe("Guilds", { concurrent: false }, () => {
 	let local: StartedTestContainer;
@@ -100,7 +101,7 @@ describe("Guilds", { concurrent: false }, () => {
 			},
 		);
 
-		const sendJson = await sendRes.json();
+		const sendJson = (await sendRes.json()) as PublicMessage;
 
 		expect(sendJson.content).toBe("federated message");
 
@@ -112,7 +113,7 @@ describe("Guilds", { concurrent: false }, () => {
 			localUser,
 		);
 
-		const getJson = await getRes.json();
+		const getJson = (await getRes.json()) as { messages: PublicMessage[] };
 
 		expect(getJson.messages.length).toBe(1);
 	});

@@ -1,11 +1,11 @@
 import { APActivity } from "@shootpub/activitypub-types/activity";
-import { test } from "../fixture";
+import { test } from "../fixture.js";
 
 test("Using Instance Actor", async ({ api: _ }) => {
 	const { signWithHttpSignature, validateHttpSignature } =
-		await import("../../src/util/activitypub/httpsig");
-	const { User } = await import("../../src/entity/user");
-	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor");
+		await import("../../src/util/activitypub/httpsig.js");
+	const { User } = await import("../../src/entity/user.js");
+	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor.js");
 
 	const actor = await User.create({
 		// oxlint-disable-next-line typescript/no-misused-spread
@@ -27,9 +27,9 @@ test("Using Instance Actor", async ({ api: _ }) => {
 
 test("Using Instance Actor with Activity", async ({ api: _ }) => {
 	const { signWithHttpSignature, validateHttpSignature } =
-		await import("../../src/util/activitypub/httpsig");
-	const { User } = await import("../../src/entity/user");
-	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor");
+		await import("../../src/util/activitypub/httpsig.js");
+	const { User } = await import("../../src/entity/user.js");
+	const { InstanceActor } = await import("../../src/util/activitypub/instanceActor.js");
 
 	const actor = await User.create({
 		// oxlint-disable-next-line typescript/no-misused-spread

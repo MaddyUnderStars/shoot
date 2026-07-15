@@ -1,7 +1,7 @@
 import request from "supertest";
-import { test } from "../../../../../fixture";
-import { createTestGuild } from "../../../../../testUtils/guilds";
-import { createTestUser } from "../../../../../testUtils/users";
+import { test } from "../../../../../fixture.js";
+import { createTestGuild } from "../../../../../testUtils/guilds.js";
+import { createTestUser } from "../../../../../testUtils/users.js";
 
 test("Cannot access files outside of storage directory", async ({ api }) => {
 	const owner = await createTestUser(api);

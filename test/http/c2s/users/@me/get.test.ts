@@ -1,6 +1,6 @@
 import request from "supertest";
-import { test } from "../../../../fixture";
-import { createTestUser } from "../../../../testUtils/users";
+import { test } from "../../../../fixture.js";
+import { createTestUser } from "../../../../testUtils/users.js";
 
 test("Get @me", async ({ api, expect }) => {
 	const user = await createTestUser(api);

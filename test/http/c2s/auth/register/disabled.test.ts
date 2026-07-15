@@ -1,6 +1,6 @@
 import request from "supertest";
 import { describe } from "vitest";
-import { test } from "../../../../fixture";
+import { test } from "../../../../fixture.js";
 
 describe("Registration is disabled", () => {
 	test.beforeEach(({ config }) => {

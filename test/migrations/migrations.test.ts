@@ -1,9 +1,9 @@
 import { describe } from "vitest";
-import { test } from "../fixture";
+import { test } from "../fixture.js";
 
 describe("Migrations", { concurrent: false }, () => {
 	test("Can rollback migrations from initial sync", async () => {
-		const { getDatabase, initDatabase } = await import("../../src/util/database");
+		const { getDatabase, initDatabase } = await import("../../src/util/database.js");
 
 		await initDatabase();
 
@@ -17,7 +17,7 @@ describe("Migrations", { concurrent: false }, () => {
 	});
 
 	test("Can apply migrations", async () => {
-		const { getDatabase } = await import("../../src/util/database");
+		const { getDatabase } = await import("../../src/util/database.js");
 
 		const db = getDatabase();
 		const qr = db.createQueryRunner();

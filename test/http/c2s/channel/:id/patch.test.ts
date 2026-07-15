@@ -1,8 +1,8 @@
 import request from "supertest";
-import { PERMISSION } from "../../../../../src/util/permission";
-import { test } from "../../../../fixture";
-import { createTestGuild } from "../../../../testUtils/guilds";
-import { createTestUser, type TestUser } from "../../../../testUtils/users";
+import { PERMISSION } from "../../../../../src/util/permission.js";
+import { test } from "../../../../fixture.js";
+import { createTestGuild } from "../../../../testUtils/guilds.js";
+import { createTestUser, type TestUser } from "../../../../testUtils/users.js";
 
 test.for([
 	[PERMISSION.OWNER, true],
@@ -25,7 +25,7 @@ test.for([
 		// have to create a new user and add them here
 		user = await createTestUser(api);
 
-		const { joinGuild } = await import("../../../../../src/util/entity/guild");
+		const { joinGuild } = await import("../../../../../src/util/entity/guild.js");
 		await joinGuild(user.user.mention, guild.mention);
 
 		// TODO: there's no route to give this user the role yet

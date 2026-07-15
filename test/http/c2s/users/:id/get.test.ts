@@ -1,7 +1,8 @@
 import request from "supertest";
-import { test } from "../../../../fixture";
-import { getShootContainerUrl, startShootContainer } from "../../../../testUtils/container";
-import { createTestUser } from "../../../../testUtils/users";
+import { test } from "../../../../fixture.js";
+import { getShootContainerUrl, startShootContainer } from "../../../../testUtils/container.js";
+import { createTestUser } from "../../../../testUtils/users.js";
+import type { PublicUser } from "../../../../../src/entity/user.js";
 
 test("Get local user by mention", async ({ api, expect }) => {
 	const [user1, user2] = await Promise.all([createTestUser(api), createTestUser(api)]);
@@ -40,7 +41,7 @@ test("Get foreign user by mention", { timeout: 60_000 }, async ({ expect, onTest
 		},
 	);
 
-	const body = await res.json();
+	const body = (await res.json()) as PublicUser;
 
 	expect(res.status).toBe(200);
 	expect(body.mention).toBe(remoteUser.user.mention);

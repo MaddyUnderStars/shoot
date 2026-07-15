@@ -1,6 +1,6 @@
 import { StartedTestContainer } from "testcontainers";
-import { getShootContainerUrl } from "./container";
-import { TestUser } from "./users";
+import { getShootContainerUrl } from "./container.js";
+import { TestUser } from "./users.js";
 
 export const containerFetch = async (
 	path: string,

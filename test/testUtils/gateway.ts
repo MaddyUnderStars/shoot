@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:stream";
-import type { GATEWAY_PAYLOAD } from "../../src/gateway/util/validation/send";
+import type { GATEWAY_PAYLOAD } from "../../src/gateway/util/validation/send.js";
 
 export class FakeSocket extends EventEmitter {
 	sequence = 0;
@@ -26,7 +26,7 @@ export const sendGatewayPayload = async (
 	payload: object,
 	socket: EventEmitter,
 ): Promise<GATEWAY_PAYLOAD> => {
-	const { onMessage } = await import("../../src/gateway/socket/message");
+	const { onMessage } = await import("../../src/gateway/socket/message.js");
 
 	const ret = new Promise<GATEWAY_PAYLOAD>((resolve) => {
 		socket.once("message", (msg) => resolve(msg));

@@ -1,7 +1,7 @@
 import request from "supertest";
 import { describe } from "vitest";
-import { test } from "../../../../fixture";
-import { createTestUser } from "../../../../testUtils/users";
+import { test } from "../../../../fixture.js";
+import { createTestUser } from "../../../../testUtils/users.js";
 
 describe("DM channels", { concurrent: false }, () => {
 	let user1: Awaited<ReturnType<typeof createTestUser>>;

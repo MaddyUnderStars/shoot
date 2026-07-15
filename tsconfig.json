@@ -1,5 +1,5 @@
 {
-	"include": ["./src/**/*"],
+	"include": ["./src/**/*", "./test/**/*"],
 	"compilerOptions": {
 		"incremental": true,
 		"target": "ES2022",

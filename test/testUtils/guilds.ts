@@ -1,10 +1,10 @@
 import { StartedTestContainer } from "testcontainers";
-import { getTestString } from "./random";
-import type { TestUser } from "./users";
-import { isApiServer } from "./isApiServer";
-import { getShootContainerUrl } from "./container";
-import type { Guild, PublicGuild } from "../../src/entity/guild";
-import { APIServer } from "../../src/http/server";
+import { getTestString } from "./random.js";
+import type { TestUser } from "./users.js";
+import { isApiServer } from "./isApiServer.js";
+import { getShootContainerUrl } from "./container.js";
+import type { Guild, PublicGuild } from "../../src/entity/guild.js";
+import { APIServer } from "../../src/http/server.js";
 
 export async function createTestGuild(
 	owner: TestUser,
@@ -18,8 +18,8 @@ export async function createTestGuild(
 	const name = getTestString();
 
 	if (!target || isApiServer(target)) {
-		const { createGuild } = await import("../../src/util/entity/guild");
-		const { getOrFetchUser } = await import("../../src/util/entity/user");
+		const { createGuild } = await import("../../src/util/entity/guild.js");
+		const { getOrFetchUser } = await import("../../src/util/entity/user.js");
 
 		const user = await getOrFetchUser(owner.user.mention);
 		return await createGuild(name, user);
