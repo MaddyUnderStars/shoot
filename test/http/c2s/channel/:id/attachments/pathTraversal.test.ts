@@ -11,6 +11,6 @@ test("Cannot access files outside of storage directory", async ({ api }) => {
 	// Assuming the config has remained as `./storage` this should
 	// resolve to `./readme.md` which is a real file
 	await request(api.app)
-		.get(`/channel/${guild.channels[0].mention}/attachments/..%2F..%2Freadme.md`)
+		.get(`/channel/${guild.channels[0].mention}/attachments/..%2F..%2F..%2Freadme.md`)
 		.expect(404);
 });

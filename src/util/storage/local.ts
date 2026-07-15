@@ -104,9 +104,9 @@ const checkFileExists = async (target: BaseModel, hash: string) => {
 };
 
 const getFileStream = async (target: BaseModel, hash: string) => {
-	const storageDir = path.resolve(config().storage.directory);
+	const storageDir = path.join(path.resolve(config().storage.directory), getTableName(target));
 
-	const rawPath = path.join(storageDir, getTableName(target), target.id, hash);
+	const rawPath = path.join(storageDir, target.id, hash);
 
 	const normalised = path.normalize(rawPath);
 
