@@ -5,7 +5,11 @@ import type { TestProject } from "vitest/node";
 const create = async (project: TestProject) => {
 	const network = await new Network().start();
 
-	const postgres = await new PostgreSqlContainer("postgres:18").withNetwork(network).start();
+	const postgres = await new PostgreSqlContainer("postgres:18")
+		// set a much larger max_connections
+		.withCommand(["postgres", "-c", `max_connections=1000`])
+		.withNetwork(network)
+		.start();
 
 	project.provide("NETWORK_ID", network.getId());
 	project.provide("NETWORK_NAME", network.getName());
@@ -23,16 +27,11 @@ const create = async (project: TestProject) => {
 };
 
 export default async (project: TestProject) => {
-	// await GenericContainer.fromDockerfile(".")
-	// 	.withBuildkit()
-	// 	.withCache(true)
-	// 	.build("shoot:test", { deleteOnExit: false });
-
 	let res = await create(project);
 
 	project.onTestsRerun(async () => {
 		await res.postgres.stop({ removeVolumes: true });
-		await res.network.stop();
+		await res.network.stop().catch(console.error);
 
 		res = await create(project);
 	});
