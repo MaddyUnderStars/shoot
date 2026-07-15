@@ -61,6 +61,10 @@ import users_id_relationship from "./users/:id/relationship.js";
 
 router.use("/users/:user_id/relationship", users_id_relationship);
 
+import users_id_attachments from "./users/:id/attachments.js";
+
+router.use("/users/:user_id/attachments", users_id_attachments);
+
 import guild from "./guild/index.js";
 
 router.use("/guild", guild);

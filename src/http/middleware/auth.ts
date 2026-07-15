@@ -13,6 +13,7 @@ export const NO_AUTH_ROUTES = [
 
 	// TODO: this might not be a good idea?
 	/channel\/.*?\/attachments\/.+$/,
+	/users\/.*?\/attachments\/.+$/,
 
 	// TODO: there are here because lemmy keeps requesting them
 	// and it throws a huge stack trace in my terminal
