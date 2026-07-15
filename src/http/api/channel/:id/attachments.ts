@@ -83,7 +83,7 @@ router.post(
 					);
 
 				const { endpoint, hash } = await createUploadEndpoint({
-					channel_id: channel.id,
+					target: channel,
 
 					...file,
 				});
@@ -110,7 +110,7 @@ router.get(
 
 			// await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
 
-			const file = await getFileStream(channel.id, req.params.hash);
+			const file = await getFileStream(channel, req.params.hash);
 
 			if (!file) {
 				res.sendStatus(404);

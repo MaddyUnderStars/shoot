@@ -11,6 +11,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { config } from "../config.js";
 import { createLogger } from "../log.js";
 import type { PutFileRequest } from "./index.js";
+import { getTableName } from "../entity/util.js";
+import { BaseModel } from "../../entity/basemodel.js";
 
 const Log = createLogger("s3");
 
@@ -39,7 +41,7 @@ const createEndpoint = async (file: PutFileRequest) => {
 
 	const command = new PutObjectCommand({
 		Bucket: config().storage.s3.bucket,
-		Key: `${file.channel_id}/${hash}`,
+		Key: `${getTableName(file.target)}/${file.target.id}/${hash}`,
 		ContentLength: file.size,
 		ContentType: file.mime,
 		ContentMD5: file.md5,
@@ -58,12 +60,12 @@ const createEndpoint = async (file: PutFileRequest) => {
 	};
 };
 
-const checkFileExists = async (channel_id: string, hash: string) => {
+const checkFileExists = async (target: BaseModel, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const command = new HeadObjectCommand({
 		Bucket: config().storage.s3.bucket,
-		Key: `${channel_id}/${hash}`,
+		Key: `${getTableName(target)}/${target.id}/${hash}`,
 	});
 
 	try {
@@ -80,12 +82,12 @@ const checkFileExists = async (channel_id: string, hash: string) => {
 	}
 };
 
-const getFileStream = async (channel_id: string, hash: string) => {
+const getFileStream = async (target: BaseModel, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const command = new GetObjectCommand({
 		Bucket: config().storage.s3.bucket,
-		Key: `${channel_id}/${hash}`,
+		Key: `${getTableName(target)}/${target.id}/${hash}`,
 	});
 
 	const res = await client.send(command);
@@ -95,12 +97,12 @@ const getFileStream = async (channel_id: string, hash: string) => {
 	return res.Body as Readable;
 };
 
-const deleteFile = async (channel_id: string, hash: string) => {
+const deleteFile = async (target: BaseModel, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
 	const command = new DeleteObjectCommand({
 		Bucket: config().storage.s3.bucket,
-		Key: `${channel_id}/${hash}`,
+		Key: `${getTableName(target)}/${target.id}/${hash}`,
 	});
 
 	await client.send(command);

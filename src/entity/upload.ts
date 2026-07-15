@@ -13,6 +13,7 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 import { BaseModel } from "./basemodel.js";
 import type { Channel } from "./channel.js";
+import { User } from "./user.js";
 
 /**
  * TODO: this class duplicates data in the Attachment entity unfortunately
@@ -21,8 +22,11 @@ import type { Channel } from "./channel.js";
  */
 @Entity("local_uploads")
 export class LocalUpload extends BaseModel {
-	@ManyToOne("channels", { onDelete: "CASCADE" })
-	channel: Channel;
+	@ManyToOne("channels", { onDelete: "CASCADE", nullable: true })
+	channel: Channel | null;
+
+	@ManyToOne("users", { onDelete: "CASCADE", nullable: true })
+	user: User | null;
 
 	@Column()
 	hash: string;

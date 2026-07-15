@@ -33,6 +33,7 @@ import { ProfileImages1778755429041 } from "./migration/postgres/1778755429041-p
 import { EmbedThumbnails1779430645216 } from "./migration/postgres/1779430645216-embedThumbnails.js";
 import { Jsonb1779431257338 } from "./migration/postgres/1779431257338-jsonb.js";
 import { AutojoinGuilds1783139862203 } from "./migration/postgres/1783139862203-autojoinGuilds.js";
+import { AttachmentTargets1784116728040 } from "./migration/postgres/1784116728040-attachmentTargets.js";
 
 let datasource: DataSource;
 
@@ -112,6 +113,7 @@ export const getDatasource = () => {
 			EmbedThumbnails1779430645216,
 			Jsonb1779431257338,
 			AutojoinGuilds1783139862203,
+			AttachmentTargets1784116728040,
 		],
 	});
 

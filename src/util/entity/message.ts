@@ -36,7 +36,7 @@ export const handleMessage = async (message: Message, federate = true) => {
 
 	if (message.files) {
 		for (const file of message.files) {
-			const head = await checkFileExists(message.channel.id, file.hash);
+			const head = await checkFileExists(message.channel, file.hash);
 			if (!head) {
 				throw new HttpError(`Hash ${file.hash} (${file.name}) does not exist`, 400);
 			}

@@ -47,7 +47,7 @@ export class Attachment extends BaseModel {
 
 	@BeforeRemove()
 	public on_delete() {
-		void deleteFile(this.message.channel.id, this.hash)
+		void deleteFile(this.message.channel, this.hash)
 			.catch((e) => Log.error("Failed to delete attachment", e))
 			.then(() => {
 				LocalUpload.delete({

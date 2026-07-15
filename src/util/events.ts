@@ -1,11 +1,10 @@
 import EventEmitter from "node:events";
 import * as rabbit from "rabbitmq-stream-js-client";
-import { getMetadataArgsStorage } from "typeorm";
 import type { BaseModel } from "../entity/basemodel.js";
-import { Channel } from "../entity/channel.js";
 import type { GATEWAY_EVENT } from "../gateway/util/validation/send.js";
 import { config } from "./config.js";
 import { createLogger } from "./log.js";
+import { getTableName } from "./entity/util.js";
 
 const Log = createLogger("events");
 
@@ -114,18 +113,7 @@ export const emitGatewayEvent = (
 };
 
 export const makeGatewayTarget = (target: BaseModel) => {
-	let constr = target.constructor;
-	if (target instanceof Channel) {
-		constr = Channel;
-	}
-
-	const name = getMetadataArgsStorage().tables.find((x) => x.target === constr)?.name;
-
-	if (!name) {
-		throw new Error("Failed to find database table for that target");
-	}
-
-	return `${name}:${target.id}`;
+	return `${getTableName(target)}:${target.id}`;
 };
 
 export const listenGatewayEvent = (

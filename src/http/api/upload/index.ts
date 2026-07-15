@@ -17,7 +17,7 @@ const router = Router({ mergeParams: true });
 
 router.put(
 	"/",
-	route({ query: z.object({ t: z.string().jwt() }) }, async (req, res) => {
+	route({ query: z.object({ t: z.jwt() }) }, async (req, res) => {
 		const token = await new Promise<localFileJwt>((resolve, reject) => {
 			jwt.verify(req.query.t, config().security.jwt_secret, (err, d) => {
 				if (err || !d || typeof d === "string") return reject(err);
@@ -25,9 +25,15 @@ router.put(
 			});
 		});
 
+		let target;
+
+		if (token.target_name === "channels") target = { channel: { id: token.target_id } };
+		if (token.target_name === "users") target = { user: { id: token.target_id } };
+
 		const upload = LocalUpload.create({
+			...target,
+
 			hash: token.key.split("/").slice(-1)[0],
-			channel: { id: token.channel_id },
 			width: token.width,
 			height: token.height,
 			mime: token.mime,
