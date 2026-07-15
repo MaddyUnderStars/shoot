@@ -25,5 +25,5 @@ export const heartbeatTimeout = (socket: Websocket) => {
 };
 
 export const startHeartbeatTimeout = (socket: Websocket) => {
-	socket.heartbeat_timeout = setTimeout(() => heartbeatTimeout(socket), 10_000);
+	socket.heartbeat_timeout = setTimeout(heartbeatTimeout, 10_000, socket);
 };

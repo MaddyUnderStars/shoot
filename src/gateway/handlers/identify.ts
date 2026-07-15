@@ -138,5 +138,5 @@ export const onIdentify = makeHandler(async function (payload) {
 	// however if we want a private event to only us via emitGatewayEvent
 	// then this is required
 	const target = `${makeGatewayTarget(user)}-only`;
-	this.events[target] = listenGatewayEvent(target, (p) => consume(this, p));
+	this.events[target] = listenGatewayEvent(target, consume.bind(null, this));
 }, IDENTIFY);

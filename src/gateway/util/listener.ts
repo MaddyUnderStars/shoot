@@ -23,7 +23,7 @@ export const listenEvents = (socket: Websocket, emitters: BaseModel[], callback 
 
 		if (socket.events[id]) Log.warn(`${socket.user_id} is already listening to ${emitter}`);
 
-		socket.events[id] = listenGatewayEvent(emitter, (payload) => callback(socket, payload));
+		socket.events[id] = listenGatewayEvent(emitter, callback.bind(null, socket));
 	}
 };
 
@@ -85,8 +85,7 @@ export const consume = async (socket: Websocket, payload: GATEWAY_EVENT) => {
 			break;
 
 		case "ROLE_MEMBER_ADD":
-			// don't care about errors and can't slow down this function
-			setImmediate(() => handleMemberListRoleAdd(socket, payload).catch(() => {}));
+			setImmediate(handleMemberListRoleAdd, socket, payload);
 
 			break;
 

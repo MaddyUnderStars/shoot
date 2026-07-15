@@ -21,23 +21,27 @@ export function onConnection(this: WebSocketServer, socket: MediaSocket, request
 
 	Log.verbose(`New client from '${socket.ip_address}'`);
 
-	socket.addEventListener("close", async (ev) => {
-		try {
-			await onClose.call(socket, ev);
-		} catch (e) {
-			Log.error("close handler failed with", e);
-		}
-	});
+	socket.addEventListener("close", tryOnClose);
 
-	socket.addEventListener("message", async function (this: WebSocket, ev) {
-		try {
-			await onMessage.call(socket, ev);
-		} catch (e) {
-			this.close(CLOSE_CODES.SERVER_ERROR);
-			Log.error("message handler failed with", e);
-		}
-	});
+	socket.addEventListener("message", tryOnMessage);
 
 	// Trigger auth timeout after 10 seconds
-	socket.auth_timeout = setTimeout(() => socket.close(CLOSE_CODES.IDENTIFY_TIMEOUT), 10_000);
+	socket.auth_timeout = setTimeout(socket.close, 10_000, CLOSE_CODES.IDENTIFY_TIMEOUT);
+}
+
+async function tryOnClose(this: MediaSocket, ev: WebSocket.CloseEvent) {
+	try {
+		await onClose.call(this, ev);
+	} catch (e) {
+		Log.error("close handler failed with", e);
+	}
+}
+
+async function tryOnMessage(this: MediaSocket, ev: WebSocket.MessageEvent) {
+	try {
+		await onMessage.call(this, ev);
+	} catch (e) {
+		this.close(CLOSE_CODES.SERVER_ERROR);
+		Log.error("message handler failed with", e);
+	}
 }
