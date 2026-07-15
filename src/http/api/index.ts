@@ -33,6 +33,10 @@ import users_me from "./users/@me/index.js";
 
 router.use("/users/@me", users_me);
 
+import users_me_upload from "./users/@me/upload.js";
+
+router.use("/users/@me/upload", users_me_upload);
+
 import users_me_guild from "./users/@me/guild.js";
 
 router.use("/users/@me/guild", users_me_guild);

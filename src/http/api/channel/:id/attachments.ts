@@ -7,6 +7,7 @@ import { HttpError } from "../../../../util/httperror.js";
 import { PERMISSION } from "../../../../util/permission.js";
 import { route } from "../../../../util/route.js";
 import { createUploadEndpoint, getFileStream } from "../../../../util/storage/index.js";
+import { AttachmentInitRequest } from "../../../../entity/attachment.js";
 
 const router = Router({ mergeParams: true });
 
@@ -31,28 +32,7 @@ router.post(
 				channel_id: ActorMention,
 			}),
 			body: z
-				.array(
-					z.object({
-						id: z
-							.string()
-							.describe(
-								"Client defined ID for cross referencing attachments to output endpoints. Can be any value. Must be unique",
-							),
-
-						name: z.string().describe("User defined file name"),
-
-						md5: z.string(), // md5 of the uploaded image
-
-						mime: z.string(), // mime type
-						size: z.number().describe("Size in bytes"), // bytes
-
-						// we trust the client here, but only because we require the md5 hash and size
-						// that should be good enough
-						// I'm sure it'll bite me later, though
-						width: z.number().optional(),
-						height: z.number().optional(),
-					}),
-				)
+				.array(AttachmentInitRequest)
 				.refine(
 					(d) => new Set(d.map((x) => x.id)).size === d.length,
 					"Attachment IDs must be unique",
