@@ -27,7 +27,7 @@
 		"@asteasolutions/zod-to-openapi": "^8.4.0",
 		"@aws-sdk/client-s3": "^3.717.0",
 		"@aws-sdk/s3-request-presigner": "^3.717.0",
-		"@shootpub/activitypub-types": "^3.1.3",
+		"@shootpub/activitypub-types": "^3.1.5",
 		"bcrypt": "^6.0.0",
 		"body-parser": "^2.2.0",
 		"bufferutil": "^4.1.0",
