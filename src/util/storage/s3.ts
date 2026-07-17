@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import type { Readable } from "node:stream";
 import {
 	DeleteObjectCommand,
 	GetObjectCommand,
@@ -13,6 +12,7 @@ import { createLogger } from "../log.js";
 import type { PutFileRequest } from "./index.js";
 import { getTableName } from "../entity/util.js";
 import { BaseModel } from "../../entity/basemodel.js";
+import { Readable } from "node:stream";
 
 const Log = createLogger("s3");
 
@@ -45,6 +45,7 @@ const createEndpoint = async (file: PutFileRequest) => {
 		ContentLength: file.size,
 		ContentType: file.mime,
 		ContentMD5: file.md5,
+		ChecksumAlgorithm: "MD5",
 		Metadata:
 			file.width && file.height
 				? {
@@ -82,6 +83,18 @@ const checkFileExists = async (target: BaseModel, hash: string) => {
 	}
 };
 
+const getFileUrl = async (target: BaseModel, hash: string) => {
+	if (!client) throw new Error("s3 not enabled");
+
+	const command = new GetObjectCommand({
+		Bucket: config().storage.s3.bucket,
+		Key: `${getTableName(target)}/${target.id}/${hash}`,
+	});
+
+	// 1 day expiry
+	return await getSignedUrl(client, command, { expiresIn: 60 * 60 * 24 });
+};
+
 const getFileStream = async (target: BaseModel, hash: string) => {
 	if (!client) throw new Error("s3 not enabled");
 
@@ -108,6 +121,6 @@ const deleteFile = async (target: BaseModel, hash: string) => {
 	await client.send(command);
 };
 
-const s3 = { createEndpoint, getFileStream, checkFileExists, deleteFile };
+const s3 = { createEndpoint, getFileUrl, checkFileExists, deleteFile, getFileStream };
 
 export default s3;

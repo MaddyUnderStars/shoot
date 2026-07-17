@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { route } from "../../../../util/route.js";
 import z from "zod";
-import { getOrFetchUser } from "../../../../util/entity/user.js";
-import { ActorMention } from "../../../../util/activitypub/constants.js";
-import { getFileStream } from "../../../../util/storage/index.js";
+import { User } from "../../../../entity/user.js";
+import { getFileStream, getFileUrl } from "../../../../util/storage/index.js";
+import { config } from "../../../../util/config.js";
 
 const router = Router({ mergeParams: true });
 
@@ -13,20 +13,27 @@ router.get(
 		{
 			params: z.object({
 				hash: z.string(),
-				user_id: ActorMention,
+				user_id: z.string(),
 			}),
 		},
 		async (req, res) => {
-			const user = await getOrFetchUser(req.params.user_id);
+			if (config().storage.s3.enabled) {
+				return res.redirect(
+					await getFileUrl(User.create({ id: req.params.user_id }), req.params.hash),
+				);
+			}
 
-			const file = await getFileStream(user, req.params.hash);
+			const file = await getFileStream(
+				User.create({ id: req.params.user_id }),
+				req.params.hash,
+			);
 
 			if (!file) {
 				res.sendStatus(404);
 				return;
 			}
 
-			file.pipe(res);
+			file.on("error", () => res.sendStatus(404)).pipe(res);
 		},
 	),
 );
