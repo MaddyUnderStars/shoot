@@ -70,3 +70,26 @@ export const PublicAttachment = z
 	.openapi("PublicAttachment");
 
 export type PublicAttachment = z.infer<typeof PublicAttachment>;
+
+export const AttachmentInitRequest = z
+	.object({
+		id: z
+			.string()
+			.describe(
+				"Client defined ID for cross referencing attachments to output endpoints. Can be any value. Must be unique",
+			),
+
+		name: z.string().describe("User defined file name"),
+
+		md5: z.string(), // md5 of the uploaded image
+
+		mime: z.string(), // mime type
+		size: z.number().describe("Size in bytes"), // bytes
+
+		// we trust the client here, but only because we require the md5 hash and size
+		// that should be good enough
+		// I'm sure it'll bite me later, though
+		width: z.number().optional(),
+		height: z.number().optional(),
+	})
+	.openapi("AttachmentInitRequest");

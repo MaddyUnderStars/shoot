@@ -33,6 +33,10 @@ import users_me from "./users/@me/index.js";
 
 router.use("/users/@me", users_me);
 
+import users_me_upload from "./users/@me/upload.js";
+
+router.use("/users/@me/upload", users_me_upload);
+
 import users_me_guild from "./users/@me/guild.js";
 
 router.use("/users/@me/guild", users_me_guild);
@@ -56,6 +60,10 @@ router.use("/users/:user_id/channels", users_id_channels);
 import users_id_relationship from "./users/:id/relationship.js";
 
 router.use("/users/:user_id/relationship", users_id_relationship);
+
+import users_id_attachments from "./users/:id/attachments.js";
+
+router.use("/users/:user_id/attachments", users_id_attachments);
 
 import guild from "./guild/index.js";
 

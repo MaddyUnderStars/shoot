@@ -5,6 +5,7 @@ import { Actor } from "./actor.js";
 import { InstanceInvite } from "./instanceInvite.js";
 import { getImageProxyUrl } from "../util/embeds/index.js";
 import { UrlTransformer } from "../util/columns.js";
+import { makeInstanceUrl } from "../util/url.js";
 
 @Entity("users")
 @Index(["name", "domain"], { unique: true })
@@ -74,14 +75,23 @@ export class User extends Actor {
 	}
 
 	public toPublic = (): PublicUser => {
+		let avatarUrl;
+		if (this.avatar instanceof URL) avatarUrl = getImageProxyUrl(this.avatar, 500, 500).href;
+		else if (this.avatar)
+			avatarUrl = makeInstanceUrl(`/users/${this.id}/attachments/${this.avatar}`);
+
+		let bannerUrl;
+		if (this.banner instanceof URL) bannerUrl = getImageProxyUrl(this.banner, 1500, 500).href;
+		else if (this.banner)
+			bannerUrl = makeInstanceUrl(`/users/${this.id}/attachments/${this.banner}`);
+
 		return {
 			mention: this.mention,
 			name: this.name,
 			display_name: this.display_name,
 			summary: this.summary,
-			// TODO #87 local avatar/banner uploads
-			avatar: this.avatar instanceof URL ? getImageProxyUrl(this.avatar, 500, 500).href : "",
-			banner: this.banner instanceof URL ? getImageProxyUrl(this.banner, 1500, 500).href : "",
+			avatar: avatarUrl,
+			banner: bannerUrl,
 		};
 	};
 

@@ -2,11 +2,12 @@ import { Router } from "express";
 import { z } from "zod";
 import { ActorMention } from "../../../../util/activitypub/constants.js";
 import { config } from "../../../../util/config.js";
-import { getOrFetchChannel } from "../../../../util/entity/channel.js";
+import { getChannel, getOrFetchChannel } from "../../../../util/entity/channel.js";
 import { HttpError } from "../../../../util/httperror.js";
 import { PERMISSION } from "../../../../util/permission.js";
 import { route } from "../../../../util/route.js";
-import { createUploadEndpoint, getFileStream } from "../../../../util/storage/index.js";
+import { createUploadEndpoint, getFileStream, getFileUrl } from "../../../../util/storage/index.js";
+import { AttachmentInitRequest } from "../../../../entity/attachment.js";
 
 const router = Router({ mergeParams: true });
 
@@ -31,28 +32,7 @@ router.post(
 				channel_id: ActorMention,
 			}),
 			body: z
-				.array(
-					z.object({
-						id: z
-							.string()
-							.describe(
-								"Client defined ID for cross referencing attachments to output endpoints. Can be any value. Must be unique",
-							),
-
-						name: z.string().describe("User defined file name"),
-
-						md5: z.string(), // md5 of the uploaded image
-
-						mime: z.string(), // mime type
-						size: z.number().describe("Size in bytes"), // bytes
-
-						// we trust the client here, but only because we require the md5 hash and size
-						// that should be good enough
-						// I'm sure it'll bite me later, though
-						width: z.number().optional(),
-						height: z.number().optional(),
-					}),
-				)
+				.array(AttachmentInitRequest)
 				.refine(
 					(d) => new Set(d.map((x) => x.id)).size === d.length,
 					"Attachment IDs must be unique",
@@ -106,9 +86,13 @@ router.get(
 			}),
 		},
 		async (req, res) => {
-			const channel = await getOrFetchChannel(req.params.channel_id);
+			const channel = await getChannel(req.params.channel_id);
 
-			// await channel.throwPermission(req.user, PERMISSION.VIEW_CHANNEL);
+			if (!channel) throw new HttpError("Channel not found", 404);
+
+			if (config().storage.s3.enabled) {
+				return res.redirect(await getFileUrl(channel, req.params.hash));
+			}
 
 			const file = await getFileStream(channel, req.params.hash);
 
@@ -117,7 +101,7 @@ router.get(
 				return;
 			}
 
-			file.pipe(res);
+			file.on("error", () => res.sendStatus(404)).pipe(res);
 		},
 	),
 );

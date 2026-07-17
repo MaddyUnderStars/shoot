@@ -70,10 +70,10 @@ This route is not authenticated.
 Shoot needs no additional configuration to support uploads out of the box.
 However, it is preferred that you do configure an S3-compatible upload service to use instead.
 
-When you do not have S3 configured, Shoot instead handles and uploads attachments to local disk at `.storage` by default.
-It is likely that performance will degrade while Shoot is managing an upload request.
+When you do not have S3 configured, Shoot instead handles and uploads attachments to local disk at `./storage` by default.
+It is likely that performance will degrade while Shoot is managing an upload/download request.
 
-Shoot has been tested and verified to work with [MinIO](https://min.io/).
+Shoot has been tested and verified to work with [MinIO](https://min.io/) and [Garage](https://garagehq.deuxfleurs.fr/)
 
 Other S3-compatible storage services may also work if they support the following:
 

@@ -120,11 +120,24 @@ const getFileStream = async (target: BaseModel, hash: string) => {
 	}
 };
 
+const getFileUrl = (target: BaseModel, hash: string) => {
+	switch (true) {
+		case target instanceof Channel:
+		case target instanceof DMChannel:
+		case target instanceof GuildTextChannel:
+			return makeInstanceUrl(`/channel/${target.id}/attachments/${hash}`);
+		case target instanceof User:
+			return makeInstanceUrl(`/users/${target.id}/attachments/${hash}`);
+	}
+
+	throw new Error("Could not make attachment URL, unknown file");
+};
+
 const deleteFile = async (target: BaseModel, hash: string) => {
 	const p = path.join(config().storage.directory, getTableName(target), target.id, hash);
 	await fs.rm(p);
 };
 
-const api = { createEndpoint, checkFileExists, getFileStream, deleteFile };
+const api = { createEndpoint, checkFileExists, getFileUrl, getFileStream, deleteFile };
 
 export default api;

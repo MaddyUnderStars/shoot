@@ -3,7 +3,7 @@ import local from "./local.js";
 import s3 from "./s3.js";
 import { BaseModel } from "../../entity/basemodel.js";
 
-const api = config().storage.s3.enabled ? s3 : local;
+const api = () => (config().storage.s3.enabled ? s3 : local);
 
 export type PutFileRequest = {
 	target: BaseModel;
@@ -16,11 +16,13 @@ export type PutFileRequest = {
 	height?: number;
 };
 
-export const createUploadEndpoint = (file: PutFileRequest) => api.createEndpoint(file);
+export const createUploadEndpoint = (file: PutFileRequest) => api().createEndpoint(file);
 
 export const checkFileExists = (target: BaseModel, hash: string) =>
-	api.checkFileExists(target, hash);
+	api().checkFileExists(target, hash);
 
-export const getFileStream = (target: BaseModel, hash: string) => api.getFileStream(target, hash);
+export const getFileUrl = (target: BaseModel, hash: string) => api().getFileUrl(target, hash);
 
-export const deleteFile = (target: BaseModel, hash: string) => api.deleteFile(target, hash);
+export const getFileStream = (target: BaseModel, hash: string) => api().getFileStream(target, hash);
+
+export const deleteFile = (target: BaseModel, hash: string) => api().deleteFile(target, hash);

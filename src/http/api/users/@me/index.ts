@@ -4,6 +4,7 @@ import { z } from "zod";
 import { PrivateUser, User } from "../../../../entity/user.js";
 import { HttpError } from "../../../../util/httperror.js";
 import { route } from "../../../../util/route.js";
+import { checkFileExists } from "../../../../util/storage/index.js";
 
 const router = Router({ mergeParams: true });
 
@@ -23,13 +24,15 @@ const UserModifySchema = z
 	.object({
 		display_name: z.string(),
 		summary: z.string(),
-		// todo: profile picture
+
+		avatar: z.string(),
+		banner: z.string(),
 
 		current_password: z.string(),
 
 		// the below fields require current_password
 		password: z.string(),
-		email: z.string().email(),
+		email: z.email(),
 	})
 	.partial()
 	.strict()
@@ -72,6 +75,22 @@ router.patch(
 
 				// TODO: we might want to invalidate all this users sessions
 				// and give them a new token
+			}
+
+			if (req.body.avatar) {
+				const head = await checkFileExists(req.user, req.body.avatar);
+
+				if (!head) throw new HttpError("File does not exist", 400);
+
+				update.avatar = req.body.avatar;
+			}
+
+			if (req.body.banner) {
+				const head = await checkFileExists(req.user, req.body.banner);
+
+				if (!head) throw new HttpError("File does not exist", 400);
+
+				update.banner = req.body.banner;
 			}
 
 			if (Object.keys(update).length === 0) {
