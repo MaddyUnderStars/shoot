@@ -1,1 +1,0 @@
-- move dm channels to be just normal guild channels, but hide the guilds from the user
