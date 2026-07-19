@@ -68,6 +68,7 @@ const queueNotif = async (user: ActorMention, message: Message) => {
 	await queue.add(`${user}-${Date.now()}`, {
 		user,
 		notification: {
+			id: message.id,
 			title:
 				message.channel instanceof DMChannel
 					? message.channel.name
@@ -82,7 +83,7 @@ const queueNotif = async (user: ActorMention, message: Message) => {
 					: undefined,
 			author: message.author.mention,
 		},
-	});
+	} satisfies PushNotificationJobData);
 };
 
 let NOTIFICATION_QUEUE: Queue | null;

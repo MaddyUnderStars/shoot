@@ -16,6 +16,7 @@ webPush.setVapidDetails(
 export type PushNotificationJobData = {
 	user: ActorMention;
 	notification: {
+		id: string;
 		title: string;
 		body: string;
 		sent: number; // timestamp of when notification sent
