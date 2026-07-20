@@ -7,17 +7,9 @@ import { HttpError } from "../../../../util/httperror.js";
 import { PERMISSION } from "../../../../util/permission.js";
 import { route } from "../../../../util/route.js";
 import { createUploadEndpoint, getFileStream, getFileUrl } from "../../../../util/storage/index.js";
-import { AttachmentInitRequest } from "../../../../entity/attachment.js";
+import { AttachmentInitRequest, AttachmentsResponse } from "../../../../entity/attachment.js";
 
 const router = Router({ mergeParams: true });
-
-const AttachmentsResponse = z.array(
-	z.object({
-		id: z.string(),
-		hash: z.string(),
-		url: z.string(),
-	}),
-);
 
 // NOTE: This route DOES NOT require authentication.
 // The POST route will simply fail if you do not have `req.user`, thus it is still protected ish
@@ -31,12 +23,7 @@ router.post(
 			params: z.object({
 				channel_id: ActorMention,
 			}),
-			body: z
-				.array(AttachmentInitRequest)
-				.refine(
-					(d) => new Set(d.map((x) => x.id)).size === d.length,
-					"Attachment IDs must be unique",
-				),
+			body: AttachmentInitRequest,
 			response: AttachmentsResponse,
 		},
 		async (req, res) => {

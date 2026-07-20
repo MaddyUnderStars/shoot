@@ -92,4 +92,17 @@ export const AttachmentInitRequest = z
 		width: z.number().optional(),
 		height: z.number().optional(),
 	})
+	.array()
+	.max(5) // TODO: config
+	.refine((d) => new Set(d.map((x) => x.id)).size === d.length, "Attachment IDs must be unique")
 	.openapi("AttachmentInitRequest");
+
+export const AttachmentsResponse = z
+	.array(
+		z.object({
+			id: z.string(),
+			hash: z.string(),
+			url: z.string(),
+		}),
+	)
+	.openapi("AttachmentInitResponse");
