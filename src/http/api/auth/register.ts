@@ -6,7 +6,6 @@ import { config } from "../../../util/config.js";
 import { registerUser } from "../../../util/entity/user.js";
 import { HttpError } from "../../../util/httperror.js";
 import { route } from "../../../util/route.js";
-import { generateToken } from "../../../util/token.js";
 
 const router = Router();
 
@@ -14,12 +13,21 @@ const RegisterRequest = z.object({
 	username: z.string(),
 	password: z.string(),
 	email: z.string().optional(),
-	invite: z.string().optional().describe("Instance registration invite"),
+	invite: z.string().optional().describe("Instance registration token"),
 });
 
 const RegisterResponse = z.object({
 	token: z.string(),
 });
+
+router.get(
+	"/register",
+	route({}, (req, res) => {
+		res.render("register", {
+			disabled: !config().registration.enabled,
+		});
+	}),
+);
 
 router.post(
 	"/register",
@@ -49,9 +57,9 @@ router.post(
 				.getOneOrFail();
 		}
 
-		const user = await registerUser(username.toLowerCase(), password, email, false, invite);
+		await registerUser(username.toLowerCase(), password, email, false, invite);
 
-		return res.json({ token: await generateToken(user.id) });
+		return res.sendStatus(204);
 	}),
 );
 

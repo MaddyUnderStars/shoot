@@ -17,6 +17,13 @@ const RateLimitSchema = z.object({
 });
 
 export const ConfigSchema = z.object({
+	general: z
+		.object({
+			name: z.string(),
+		})
+		.partial()
+		.prefault({}),
+
 	/**
 	 * Shoots own logging configuration
 	 */

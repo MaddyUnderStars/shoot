@@ -15,13 +15,19 @@ import upload from "./upload/index.js";
 
 router.use("/upload", upload);
 
+import oauth_authorize from "./oauth/authorize.js";
+import oauth_token from "./oauth/token.js";
+import oauth_register from "./oauth/register.js";
+
+router.use("/oauth/authorize", rateLimiter("auth"), oauth_authorize);
+router.use("/oauth/token", rateLimiter("auth"), oauth_token);
+router.use("/oauth/register", rateLimiter("auth"), oauth_register);
+
 router.use(authHandler);
 
-import auth_login from "./auth/login.js";
 import auth_register from "./auth/register.js";
 
-router.use("/auth", rateLimiter("auth"));
-router.use("/auth", auth_register, auth_login);
+router.use("/auth", rateLimiter("auth"), auth_register);
 
 router.use(rateLimiter("global"));
 
