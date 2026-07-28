@@ -28,5 +28,9 @@
 		"[typescript]": {
 			"editor.defaultFormatter": "oxc.oxc-vscode",
 		},
+		"[html]": {
+			"editor.defaultFormatter": "vscode.html-language-features",
+		},
+		"tailwindCSS.experimental.configFile": null,
 	},
 }

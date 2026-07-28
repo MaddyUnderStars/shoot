@@ -34,6 +34,8 @@ import { EmbedThumbnails1779430645216 } from "./migration/postgres/1779430645216
 import { Jsonb1779431257338 } from "./migration/postgres/1779431257338-jsonb.js";
 import { AutojoinGuilds1783139862203 } from "./migration/postgres/1783139862203-autojoinGuilds.js";
 import { AttachmentTargets1784116728040 } from "./migration/postgres/1784116728040-attachmentTargets.js";
+import { OauthClient } from "../entity/oauthClient.js";
+import { OauthToken } from "../entity/oauthToken.js";
 
 let datasource: DataSource;
 
@@ -57,7 +59,7 @@ export const getDatasource = () => {
 		database: IS_SQLITE ? CONNECTION_STRING.split("://")[1] : undefined,
 		supportBigNumbers: true,
 		bigNumberStrings: false,
-		synchronize: false, // TODO
+		synchronize: true, // TODO
 		logging: config().database.log,
 
 		// https://github.com/typeorm/typeorm/issues/11570
@@ -90,6 +92,8 @@ export const getDatasource = () => {
 			LocalUpload,
 			User,
 			VoiceState,
+			OauthClient,
+			OauthToken,
 		],
 
 		migrations: [

@@ -2,6 +2,7 @@ import http from "node:http";
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
+import path from "node:path";
 
 import { config } from "../util/config.js";
 import { initDatabase } from "../util/database.js";
@@ -9,6 +10,7 @@ import { initRabbitMQ } from "../util/events.js";
 import { createLogger, createLogStream } from "../util/log.js";
 import { errorHandler } from "./middleware/error.js";
 import routes, { isFederationRequest } from "./routes.js";
+import { engine } from "express-handlebars";
 
 const Log = createLogger("API");
 
@@ -39,6 +41,20 @@ export class APIServer {
 					},
 				}),
 			);
+
+		this.app.engine("handlebars", engine());
+		this.app.set("view engine", "handlebars");
+		this.app.set(
+			"views",
+			path.join(import.meta.filename, "..", "..", "..", "..", "assets", "views"),
+		);
+
+		this.app.use(
+			"/public",
+			express.static(
+				path.join(import.meta.filename, "..", "..", "..", "..", "assets", "public"),
+			),
+		);
 
 		this.app.use("/", routes);
 

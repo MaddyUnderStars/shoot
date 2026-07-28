@@ -2,8 +2,8 @@ import type { RequestHandler } from "express";
 import type { Actor } from "../../entity/actor.js";
 import type { User } from "../../entity/user.js";
 import { ACTIVITY_JSON_ACCEPT } from "../../util/activitypub/constants.js";
-import { HttpError } from "../../util/httperror.js";
-import { getUserFromToken } from "../../util/token.js";
+import { Oauth } from "../../util/oauth.js";
+import { Request as OAuthRequest, Response as OauthResponse } from "@node-oauth/oauth2-server";
 
 export const NO_AUTH_ROUTES = [
 	"/auth/login",
@@ -21,7 +21,7 @@ export const NO_AUTH_ROUTES = [
 	"/api/v3/federated_instances",
 ];
 
-export const authHandler: RequestHandler = async (req, _res, next) => {
+export const authHandler: RequestHandler = async (req, res, next) => {
 	const url = req.url;
 
 	if (
@@ -34,17 +34,13 @@ export const authHandler: RequestHandler = async (req, _res, next) => {
 	)
 		return next();
 
-	const { authorization } = req.headers;
-	if (!authorization) return next(new HttpError("Missing `authorization` header", 401));
-
-	let user: User;
 	try {
-		user = await getUserFromToken(authorization);
+		const auth = await Oauth.server.authenticate(new OAuthRequest(req), new OauthResponse(res));
+
+		req.user = auth.user as User;
 	} catch (e) {
 		return next(e);
 	}
-
-	req.user = user;
 
 	return next();
 };
