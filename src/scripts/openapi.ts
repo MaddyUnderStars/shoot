@@ -4,6 +4,7 @@ import {
 	extendZodWithOpenApi,
 	OpenAPIRegistry,
 	OpenApiGeneratorV31,
+	RouteConfig,
 } from "@asteasolutions/zod-to-openapi";
 import type { Router } from "express";
 import { type ZodObject, z } from "zod";
@@ -147,7 +148,7 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 	} as const;
 
 	for (const route of routes) {
-		registry.registerPath({
+		const config: RouteConfig = {
 			method: route.method,
 			path: route.path,
 			security: route.requires_auth ? [{ [bearerAuth.name]: [] }] : undefined,
@@ -168,46 +169,52 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 					: undefined,
 				query: route.options?.query,
 			},
-			responses: {
-				"200": {
-					description: route.options?.response?.description ?? "",
-					content: {
-						"application/json": {
-							schema: route.options?.response ?? z.object({}),
-						},
-					},
-				},
-				...Object.fromEntries(
-					Object.entries(route.options?.errors ?? {}).map(([code, schema]) => {
-						// christ
-						// why can't `x in errorMap` do this automatically?
-						if (((x): x is keyof typeof errorMap => x in errorMap)(code)) {
-							// if we have a common response for this
-							// just reference it instead
-
-							return [
-								code,
-								{
-									$ref: `#/components/responses/${errorMap[code]}`,
-								},
-							];
-						}
+			responses: Object.fromEntries(
+				Object.entries(route.options?.errors ?? {}).map(([code, schema]) => {
+					// christ
+					// why can't `x in errorMap` do this automatically?
+					if (((x): x is keyof typeof errorMap => x in errorMap)(code)) {
+						// if we have a common response for this
+						// just reference it instead
 
 						return [
 							code,
 							{
-								description: schema?.description ?? "",
-								content: {
-									"application/json": {
-										schema: schema ?? z.object({}),
-									},
-								},
+								$ref: `#/components/responses/${errorMap[code]}`,
 							},
 						];
-					}),
-				),
-			},
-		});
+					}
+
+					return [
+						code,
+						{
+							description: schema?.description ?? "",
+							content: {
+								"application/json": {
+									schema: schema ?? z.object({}),
+								},
+							},
+						},
+					];
+				}),
+			),
+		};
+
+		if (route.options?.response) {
+			config.responses["200"] = {
+				description: route.options.response.description ?? "",
+				content: {
+					"application/json": {
+						schema: route.options.response,
+					},
+				},
+			};
+		}
+
+		if (!Object.keys(config.responses).find((x) => x.startsWith("2")))
+			console.warn(`${config.method} ${config.path} does not have a 2xx response`);
+
+		registry.registerPath(config);
 	}
 
 	const generator = new OpenApiGeneratorV31(registry.definitions);

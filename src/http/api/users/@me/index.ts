@@ -22,19 +22,18 @@ router.get(
 
 const UserModifySchema = z
 	.object({
-		display_name: z.string(),
-		summary: z.string(),
+		display_name: z.string().nullish(),
+		summary: z.string().nullish(),
 
-		avatar: z.string(),
-		banner: z.string(),
+		avatar: z.string().nullish(),
+		banner: z.string().nullish(),
 
-		current_password: z.string(),
+		current_password: z.string().nullish(),
 
 		// the below fields require current_password
-		password: z.string(),
-		email: z.email(),
+		password: z.string().nullish(),
+		email: z.email().nullish(),
 	})
-	.partial()
 	.strict()
 	.refine((obj) => {
 		if (obj.password !== undefined || obj.email !== undefined) {
@@ -49,6 +48,9 @@ router.patch(
 	route(
 		{
 			body: UserModifySchema,
+			errors: {
+				204: z.literal("Accepted"),
+			},
 		},
 		async (req, res) => {
 			if (req.body.current_password) {
@@ -61,12 +63,12 @@ router.patch(
 
 			const update: Partial<User> = {};
 
-			// I'm sure there's a better way to do this...
-			if (req.body.display_name) update.display_name = req.body.display_name;
-			if (req.body.summary) update.summary = req.body.summary;
+			if (req.body.display_name !== undefined)
+				update.display_name = req.body.display_name || req.user.name;
+			if (req.body.summary !== undefined) update.summary = req.body.summary || null;
 
 			// current_password is required to set email
-			if (req.body.email) update.email = req.body.email;
+			if (req.body.email !== undefined) update.email = req.body.email;
 
 			if (req.body.password) {
 				// zod schema enforces that current_password is provided
@@ -83,7 +85,7 @@ router.patch(
 				if (!head) throw new HttpError("File does not exist", 400);
 
 				update.avatar = req.body.avatar;
-			}
+			} else if (req.body.avatar === null) update.avatar = null;
 
 			if (req.body.banner) {
 				const head = await checkFileExists(req.user, req.body.banner);
@@ -91,14 +93,14 @@ router.patch(
 				if (!head) throw new HttpError("File does not exist", 400);
 
 				update.banner = req.body.banner;
-			}
+			} else if (req.body.banner === null) update.banner = null;
 
 			if (Object.keys(update).length === 0) {
 				throw new HttpError("Must specify at least one property", 401);
 			}
 
 			await User.update({ id: req.user.id }, update);
-			return res.sendStatus(200);
+			return res.sendStatus(204);
 		},
 	),
 );

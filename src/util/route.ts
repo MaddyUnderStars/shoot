@@ -107,7 +107,7 @@ export const ZodHttpError = z
 		code: z.number(),
 		detail: z
 			.record(
-				z.nativeEnum(ErrorTypes),
+				z.enum(ErrorTypes),
 				z.array(
 					z.object({
 						// zod doesn't expose the error type as a schema itself

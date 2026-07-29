@@ -12,7 +12,7 @@ test("Get @me", async ({ api, expect }) => {
 			display_name: "test name",
 			summary: "yoo",
 		})
-		.expect(200);
+		.expect(204);
 
 	const res = await request(api.app)
 		.get("/users/@me")

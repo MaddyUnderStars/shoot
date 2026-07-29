@@ -1,6 +1,3 @@
-// TODO: might want to move this into it's own http server so that it can
-// be moved onto a different process by admins more easily
-
 import crypto from "node:crypto";
 import { createWriteStream } from "node:fs";
 import { mkdir, rm } from "node:fs/promises";
