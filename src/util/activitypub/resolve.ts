@@ -17,8 +17,7 @@ import { InstanceActor } from "./instanceActor.js";
 import { throwInstanceBlock } from "./instances.js";
 import { hasAPContext, splitQualifiedMention } from "./util.js";
 import { AnyAPObject, ObjectField } from "@shootpub/activitypub-types/object";
-import { APLink, isAPLink } from "@shootpub/activitypub-types/link";
-import { isAPImage } from "@shootpub/activitypub-types/documents/image";
+import type { APLink } from "@shootpub/activitypub-types/link";
 import { isAPCollection } from "@shootpub/activitypub-types/collection";
 
 const Log = createLogger("ap:resolve");
@@ -281,13 +280,11 @@ export const resolveAPImage = (val?: ObjectField) => {
 
 	if (typeof val === "string" || val instanceof URL) return val.toString();
 
-	if (isAPImage(val)) {
-		if (!val.url) throw new APError("IconField.url missing on Image");
+	if ("url" in val && typeof val.url === "string") {
 		return new URL(val.url);
 	}
 
-	if (isAPLink(val)) {
-		if (!val.href) throw new APError("IconField.href missing on Link");
+	if ("href" in val && typeof val.href === "string") {
 		return new URL(val.href);
 	}
 
