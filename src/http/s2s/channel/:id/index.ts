@@ -6,7 +6,10 @@ import { User } from "../../../../entity/user.js";
 import { handleInbox } from "../../../../util/activitypub/inbox/index.js";
 import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection.js";
 import { buildAPActor } from "../../../../util/activitypub/transformers/actor.js";
-import { buildAPNote } from "../../../../util/activitypub/transformers/message.js";
+import {
+	buildAPCreateNote,
+	buildAPNote,
+} from "../../../../util/activitypub/transformers/message.js";
 import { addContext } from "../../../../util/activitypub/util.js";
 import { config } from "../../../../util/config.js";
 import { getDatabase } from "../../../../util/database.js";
@@ -82,7 +85,8 @@ router.get(
 				keys: ["published"],
 				before: req.query.before,
 				after: req.query.after,
-				convert: (x) => (x.reference_object ? x.reference_object.id : buildAPNote(x)),
+				convert: (x) =>
+					x.reference_object ? x.reference_object.id : buildAPCreateNote(buildAPNote(x)),
 				entity: Message,
 				qb: getDatabase()
 					.getRepository(Message)
