@@ -1,10 +1,9 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Channel } from "../../../../entity/channel.js";
 import { Guild } from "../../../../entity/guild.js";
 import { Role } from "../../../../entity/role.js";
 import { handleInbox } from "../../../../util/activitypub/inbox/index.js";
-import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection.js";
+import { collectionHandler } from "../../../../util/activitypub/collection.js";
 import { buildAPActor } from "../../../../util/activitypub/transformers/actor.js";
 import { buildAPRole } from "../../../../util/activitypub/transformers/role.js";
 import { addContext } from "../../../../util/activitypub/util.js";
@@ -12,6 +11,7 @@ import { config } from "../../../../util/config.js";
 import { getDatabase } from "../../../../util/database.js";
 import { route } from "../../../../util/route.js";
 import { makeInstanceUrl } from "../../../../util/url.js";
+import { GuildTextChannel } from "../../../../entity/textChannel.js";
 
 const router = Router({ mergeParams: true });
 
@@ -70,10 +70,11 @@ router.get(
 	"/followers",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
-			await orderedCollectionHandler({
+			await collectionHandler({
 				id: makeInstanceUrl(`/guild/${req.params.guild_id}/followers`),
 				before: req.query.before,
 				after: req.query.after,
+				keys: ["position"],
 				convert: buildAPRole,
 				entity: Role,
 				qb: getDatabase()
@@ -92,15 +93,16 @@ router.get(
 	"/channels",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
-			await orderedCollectionHandler({
+			await collectionHandler<GuildTextChannel>({
 				id: makeInstanceUrl(`/guild/${req.params.guild_id}/channels`),
+				keys: ["position"],
 				...req.query,
 				convert: (x) => x.remote_address ?? buildAPActor(x),
-				entity: Channel,
+				entity: GuildTextChannel,
 				qb: getDatabase()
-					.getRepository(Channel)
-					.createQueryBuilder("channel")
-					.leftJoinAndSelect("channel.guild", "guild")
+					.getRepository(GuildTextChannel)
+					.createQueryBuilder("guildtextchannel")
+					.leftJoinAndSelect("guildtextchannel.guild", "guild")
 					.where("guild.id = :guild_id", {
 						guild_id: req.params.guild_id,
 					}),

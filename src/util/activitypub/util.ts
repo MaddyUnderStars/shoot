@@ -43,7 +43,9 @@ export const hasAPContext = (data: unknown): data is APObject => {
 	return context === ACTIVITYSTREAMS_CONTEXT;
 };
 
-export const addContext = <T extends AnyAPObject>(obj: T): T & { "@context": ContextField } => {
+export type WithContext<T extends AnyAPObject> = T & { "@context": ContextField };
+
+export const addContext = <T extends AnyAPObject>(obj: T): WithContext<T> => {
 	// For some reason if I move this into the return, it causes a type error
 	// even though ContextField is string | Record<string, string> ???
 	const context: ContextField = [

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Relationship } from "../../../../entity/relationship.js";
 import { User } from "../../../../entity/user.js";
 import { handleInbox } from "../../../../util/activitypub/inbox/index.js";
-import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection.js";
+import { collectionHandler } from "../../../../util/activitypub/collection.js";
 import { buildAPActor } from "../../../../util/activitypub/transformers/actor.js";
 import { addContext } from "../../../../util/activitypub/util.js";
 import { config } from "../../../../util/config.js";
@@ -64,8 +64,10 @@ router.get(
 	"/followers",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
-			await orderedCollectionHandler({
+			await collectionHandler({
 				id: makeInstanceUrl(`/users/${req.params.user_id}/followers`),
+				ordered: true,
+				keys: ["created"],
 				...req.query,
 				convert: (x) => x.from.remote_address ?? buildAPActor(x.from),
 				entity: Relationship,

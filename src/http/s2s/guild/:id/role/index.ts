@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { Member } from "../../../../../entity/member.js";
 import { Role } from "../../../../../entity/role.js";
-import { orderedCollectionHandler } from "../../../../../util/activitypub/orderedCollection.js";
+import { collectionHandler } from "../../../../../util/activitypub/collection.js";
 import { buildAPActor } from "../../../../../util/activitypub/transformers/actor.js";
 import { buildAPRole } from "../../../../../util/activitypub/transformers/role.js";
 import { addContext } from "../../../../../util/activitypub/util.js";
@@ -45,7 +45,7 @@ router.get(
 		},
 		async (req, res) =>
 			res.json(
-				await orderedCollectionHandler({
+				await collectionHandler({
 					id: makeInstanceUrl(
 						`/guild/${req.params.guild_id}/role/${req.params.role_id}/members`,
 					),
