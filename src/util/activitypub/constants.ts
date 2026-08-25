@@ -46,13 +46,13 @@ interface WebfingerLink {
 
 export interface WebfingerResponse {
 	subject: string;
-	aliases: string[];
+	aliases?: string[];
 	links: WebfingerLink[];
 }
 
 export const WebfingerResponse: z.ZodType<WebfingerResponse> = z.object({
 	subject: z.string(),
-	aliases: z.string().array(),
+	aliases: z.string().array().optional(),
 	links: z
 		.object({
 			rel: z.string(),

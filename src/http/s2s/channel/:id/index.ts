@@ -4,9 +4,12 @@ import { Channel } from "../../../../entity/channel.js";
 import { Message } from "../../../../entity/message.js";
 import { User } from "../../../../entity/user.js";
 import { handleInbox } from "../../../../util/activitypub/inbox/index.js";
-import { orderedCollectionHandler } from "../../../../util/activitypub/orderedCollection.js";
+import { collectionHandler } from "../../../../util/activitypub/collection.js";
 import { buildAPActor } from "../../../../util/activitypub/transformers/actor.js";
-import { buildAPNote } from "../../../../util/activitypub/transformers/message.js";
+import {
+	buildAPCreateNote,
+	buildAPNote,
+} from "../../../../util/activitypub/transformers/message.js";
 import { addContext } from "../../../../util/activitypub/util.js";
 import { config } from "../../../../util/config.js";
 import { getDatabase } from "../../../../util/database.js";
@@ -77,12 +80,15 @@ router.get(
 	"/outbox",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
-			await orderedCollectionHandler({
+			await collectionHandler({
 				id: makeInstanceUrl(`/channel/${req.params.channel_id}/outbox`),
+				ordered: true,
 				keys: ["published"],
+				orderBy: "DESC",
 				before: req.query.before,
 				after: req.query.after,
-				convert: (x) => (x.reference_object ? x.reference_object.id : buildAPNote(x)),
+				convert: (x) =>
+					x.reference_object ? x.reference_object.id : buildAPCreateNote(buildAPNote(x)),
 				entity: Message,
 				qb: getDatabase()
 					.getRepository(Message)
@@ -108,7 +114,7 @@ router.get(
 	"/followers",
 	route(COLLECTION_PARAMS, async (req, res) =>
 		res.json(
-			await orderedCollectionHandler({
+			await collectionHandler({
 				id: makeInstanceUrl(`/channel/${req.params.channel_id}/followers`),
 				before: req.query.before,
 				after: req.query.after,

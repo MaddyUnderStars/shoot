@@ -13,7 +13,7 @@ export interface PaginationOptions<Entity> {
 	entity: ObjectType<Entity>;
 	alias?: string;
 	query?: PagingQuery;
-	paginationKeys?: Extract<keyof Entity, string>[];
+	paginationKeys?: Extract<keyof Entity, string | number>[];
 }
 
 export function buildPaginator<Entity extends ObjectLiteral>(
