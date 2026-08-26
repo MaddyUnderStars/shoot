@@ -15,7 +15,7 @@ router.get(
 			registration_endpoint: makeInstanceUrl("/oauth/register"),
 			response_types_supported: ["code"],
 			response_modes_supported: ["query", "fragment", "form_post"],
-			grant_types_supported: ["authorization_code", "client_credentials"],
+			grant_types_supported: ["authorization_code", "client_credentials", "refresh_token"],
 		});
 	}),
 );

@@ -2,15 +2,15 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Shoot Login</title>
+		<title>{{title}}</title>
 
 		<link href="/public/output.css" rel="stylesheet" />
 		<link rel="icon" href="/public/favicon.png" />
 	</head>
 	<body>
-		<div class="flex items-center justify-center flex-col gap-2 h-full w-vw">
-			<div class="max-w-lg m-15">
-				<div class="mb-4">
+		<div class="flex items-center justify-center flex-col gap-2 h-full mx-15">
+			<div>
+				<div class="mb-4 max-[892px]:flex justify-center">
 					<div class="font-semibold text-3xl flex gap-4 items-center mb-2">
 						<div
 							class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square items-center justify-center rounded-lg size-12"
@@ -41,13 +41,21 @@
 								<path d="M9.707 14.293 21 3"></path>
 							</svg>
 						</div>
-						<h1>Shoot</h1>
+						<div>
+							<h1>{{server.name}}</h1>
+							<p class="text-sm font-normal">
+								Powered by
+								<a
+									href="https://github.com/MaddyUnderStars/shoot"
+									target="_blank"
+									class="underline"
+								>Shoot</a>
+							</p>
+						</div>
 					</div>
 				</div>
 
-				<div>
-					{{{body}}}
-				</div>
+				{{{body}}}
 			</div>
 		</div>
 	</body>

@@ -134,7 +134,7 @@ export const Oauth = new OAuthServer({
 			};
 		},
 
-		async getAuthorizationCode(value) {
+		async getAuthorizationCode(value: string) {
 			const token = await OauthToken.findOne({
 				where: { value, type: "authorization" },
 				relations: { client: true, user: true },

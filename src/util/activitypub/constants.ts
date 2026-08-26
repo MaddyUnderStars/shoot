@@ -1,5 +1,4 @@
 import z from "zod";
-import { config } from "../config.js";
 
 export const ACTIVITYSTREAMS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 
@@ -8,18 +7,6 @@ export const ACTIVITY_JSON_ACCEPT = [
 	"application/ld+json", // body parser doesn't like profile... bug?
 	"application/activity+json",
 ];
-
-export const USER_AGENT = `Shoot (https://github.com/maddyunderstars/shoot; +${config().federation.webapp_url.origin})`;
-
-export const ACTIVITYPUB_FETCH_OPTS: RequestInit = {
-	headers: {
-		Accept: "application/activity+json",
-		"Content-Type": "application/activity+json",
-		"User-Agent": USER_AGENT,
-	},
-
-	redirect: "follow",
-};
 
 export const ActorMentionRegex = /^.*@.*$/;
 
