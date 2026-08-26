@@ -16,7 +16,7 @@ const router = Router({ mergeParams: true });
 
 const MessageRequestParams = z.object({
 	channel_id: ActorMention,
-	message_id: z.string().uuid(),
+	message_id: z.uuid(),
 });
 
 router.get(

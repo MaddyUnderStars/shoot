@@ -1,15 +1,8 @@
 import { writeFile } from "node:fs";
 import path from "node:path";
-import {
-	extendZodWithOpenApi,
-	OpenAPIRegistry,
-	OpenApiGeneratorV31,
-	RouteConfig,
-} from "@asteasolutions/zod-to-openapi";
+import { OpenAPIRegistry, OpenApiGeneratorV31, RouteConfig } from "@asteasolutions/zod-to-openapi";
 import type { Router } from "express";
 import { type ZodObject, z } from "zod";
-
-extendZodWithOpenApi(z);
 
 process.env.NODE_CONFIG = JSON.stringify({
 	database: {

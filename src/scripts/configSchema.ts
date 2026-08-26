@@ -1,13 +1,6 @@
 import { writeFile } from "node:fs";
 import path from "node:path";
-import {
-	extendZodWithOpenApi,
-	OpenAPIRegistry,
-	OpenApiGeneratorV31,
-} from "@asteasolutions/zod-to-openapi";
-import z from "zod";
-
-extendZodWithOpenApi(z);
+import { OpenAPIRegistry, OpenApiGeneratorV31 } from "@asteasolutions/zod-to-openapi";
 
 import { ConfigSchema } from "../util/ConfigSchema.js";
 
@@ -33,7 +26,7 @@ const configSchema = {
 };
 
 writeFile(
-	path.join(__dirname, "..", "..", "..", "assets", "config.json"),
+	path.join(import.meta.dirname, "..", "..", "..", "assets", "config.json"),
 	JSON.stringify(configSchema),
 	{},
 	(err) => {

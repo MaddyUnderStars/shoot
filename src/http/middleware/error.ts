@@ -4,6 +4,7 @@ import { InstanceBlockedError } from "../../util/activitypub/instances.js";
 import { HttpError } from "../../util/httperror.js";
 import { createLogger } from "../../util/log.js";
 import { ValidationError } from "../../util/route.js";
+import { OAuthError } from "@node-oauth/oauth2-server";
 
 const ENTITY_NOT_FOUND_REGEX = /"(\w+)"/;
 
@@ -39,6 +40,9 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
 			// silence
 			break;
 		case error instanceof HttpError:
+			code = error.code;
+			break;
+		case error instanceof OAuthError:
 			code = error.code;
 			break;
 		case error.name === "EntityNotFoundError": {

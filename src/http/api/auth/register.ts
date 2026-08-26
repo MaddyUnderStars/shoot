@@ -24,6 +24,11 @@ router.get(
 	"/register",
 	route({}, (req, res) => {
 		res.render("register", {
+			title: "Register",
+			server: {
+				name: config().general.name ?? config().federation.webapp_url.hostname,
+				terms: config().general.terms,
+			},
 			disabled: !config().registration.enabled,
 		});
 	}),
@@ -31,36 +36,42 @@ router.get(
 
 router.post(
 	"/register",
-	route({ body: RegisterRequest, response: RegisterResponse }, async (req, res) => {
-		if (!config().registration.enabled && !req.body.invite)
-			throw new HttpError("Registration is disabled", 400);
+	route(
+		{
+			body: RegisterRequest,
+			response: RegisterResponse,
+		},
+		async (req, res) => {
+			if (!config().registration.enabled && !req.body.invite)
+				throw new HttpError("Registration is disabled", 400);
 
-		const { username, email, password } = req.body;
+			const { username, email, password } = req.body;
 
-		let invite: InstanceInvite | undefined;
+			let invite: InstanceInvite | undefined;
 
-		if (req.body.invite) {
-			invite = await InstanceInvite.createQueryBuilder("invite")
-				.where("invite.code = :code", { code: req.body.invite })
-				.andWhere("(invite.expires > now() or invite.expires is null)")
-				.andWhere((qb) => {
-					const inner = qb
-						.createQueryBuilder()
-						.from(User, "users")
-						.where("users.invite = invite.code")
-						.select("count(*)")
-						.getSql();
+			if (req.body.invite) {
+				invite = await InstanceInvite.createQueryBuilder("invite")
+					.where("invite.code = :code", { code: req.body.invite })
+					.andWhere("(invite.expires > now() or invite.expires is null)")
+					.andWhere((qb) => {
+						const inner = qb
+							.createQueryBuilder()
+							.from(User, "users")
+							.where("users.invite = invite.code")
+							.select("count(*)")
+							.getSql();
 
-					return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
-				})
-				.leftJoinAndSelect("invite.guild", "guild")
-				.getOneOrFail();
-		}
+						return `(invite.maxUses > (${inner}) or invite.maxUses is null)`;
+					})
+					.leftJoinAndSelect("invite.guild", "guild")
+					.getOneOrFail();
+			}
 
-		await registerUser(username.toLowerCase(), password, email, false, invite);
+			await registerUser(username.toLowerCase(), password, email, false, invite);
 
-		return res.sendStatus(204);
-	}),
+			return res.sendStatus(204);
+		},
+	),
 );
 
 export default router;

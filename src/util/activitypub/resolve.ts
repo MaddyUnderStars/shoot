@@ -8,7 +8,6 @@ import {
 	ACTIVITY_JSON_ACCEPT,
 	type ActorMention,
 	ActorMentionRegex,
-	USER_AGENT,
 	WebfingerResponse,
 } from "./constants.js";
 import { APError } from "./error.js";
@@ -19,6 +18,7 @@ import { hasAPContext, splitQualifiedMention } from "./util.js";
 import { AnyAPObject, ObjectField } from "@shootpub/activitypub-types/object";
 import type { APLink } from "@shootpub/activitypub-types/link";
 import { isAPCollection } from "@shootpub/activitypub-types/collection";
+import { USER_AGENT } from "../userAgent.js";
 
 const Log = createLogger("ap:resolve");
 

@@ -19,7 +19,15 @@ const RateLimitSchema = z.object({
 export const ConfigSchema = z.object({
 	general: z
 		.object({
+			/**
+			 * The name of this server
+			 */
 			name: z.string(),
+
+			/**
+			 * URL for this servers terms
+			 */
+			terms: z.url(),
 		})
 		.partial()
 		.prefault({}),

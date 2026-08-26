@@ -1,5 +1,3 @@
-// import nodeConfig from "config";
-
 import type { ZodObject } from "zod";
 import { ConfigSchema } from "./ConfigSchema.js";
 import { createLogger } from "./log.js";

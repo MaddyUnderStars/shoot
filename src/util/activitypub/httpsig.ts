@@ -10,11 +10,11 @@ import { createGuildFromRemoteOrg } from "../entity/guild.js";
 import { createUserForRemotePerson } from "../entity/user.js";
 import { createLogger } from "../log.js";
 import { makeInstanceUrl, tryParseUrl } from "../url.js";
-import { ACTIVITYPUB_FETCH_OPTS } from "./constants.js";
 import { APError } from "./error.js";
 import { throwInstanceBlock } from "./instances.js";
 import { resolveAPObject, resolveUrlOrObject } from "./resolve.js";
 import { isAPActor } from "@shootpub/activitypub-types/actor";
+import { ACTIVITYPUB_FETCH_OPTS } from "../userAgent.js";
 
 const Log = createLogger("HTTPSIG");
 

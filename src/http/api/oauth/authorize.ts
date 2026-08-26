@@ -15,7 +15,7 @@ const AuthorizeRequest = z.object({
 	client_id: z.uuid(),
 	redirect_uri: z.string().optional(),
 	response_type: z.string(),
-	scope: z.string(),
+	scope: z.string().optional(), // ignored
 	state: z.string().optional(),
 	code_challenge: z.string(),
 	code_challenge_method: z.literal("S256").optional().default("S256"),
@@ -33,12 +33,12 @@ router.get(
 			const client = await OauthClient.findOneOrFail({ where: { id: req.query.client_id } });
 
 			res.render("authorize", {
+				title: "Authorise",
 				server: { name: config().general.name ?? config().federation.webapp_url.hostname },
 
 				client: { id: req.query.client_id, name: client.name },
 				redirectUri: req.query.redirect_uri,
 				responseType: req.query.response_type,
-				scopes: req.query.scope.split(" "),
 				state: req.query.state,
 				code_challenge: req.query.code_challenge,
 				code_challenge_method: req.query.code_challenge_method,

@@ -34,7 +34,11 @@ export function onConnection(this: WebSocketServer, socket: Websocket, request: 
 	socket.addEventListener("message", tryOnMessage);
 
 	// Trigger auth timeout after 10 seconds
-	socket.auth_timeout = setTimeout(socket.close, 10_000, CLOSE_CODES.IDENTIFY_TIMEOUT);
+	socket.auth_timeout = setTimeout(
+		socket.close.bind(socket),
+		10_000,
+		CLOSE_CODES.IDENTIFY_TIMEOUT,
+	);
 }
 
 async function tryOnMessage(this: Websocket, ev: MessageEvent) {

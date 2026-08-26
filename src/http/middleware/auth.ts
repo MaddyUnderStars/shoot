@@ -38,6 +38,7 @@ export const authHandler: RequestHandler = async (req, res, next) => {
 		const auth = await Oauth.server.authenticate(new OAuthRequest(req), new OauthResponse(res));
 
 		req.user = auth.user as User;
+		req.scopes = auth.scope;
 	} catch (e) {
 		return next(e);
 	}
@@ -52,6 +53,8 @@ declare global {
 			user: User;
 			/** For s2s/federated routes (using http signatures), contains the Actor that signed this request */
 			actor: Actor;
+			/** Granted oauth scopes */
+			scopes: string[] | undefined;
 		}
 	}
 }
