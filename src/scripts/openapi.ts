@@ -95,10 +95,15 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 
 	const routes = getRoutes(router);
 
-	const bearerAuth = registry.registerComponent("securitySchemes", "bearerAuth", {
-		type: "http",
-		scheme: "bearer",
-		bearerFormat: "JWT",
+	const bearerAuth = registry.registerComponent("securitySchemes", "oauth", {
+		type: "oauth2",
+		flows: {
+			authorizationCode: {
+				authorizationUrl: "/oauth/authorize",
+				tokenUrl: "/oauth/token",
+				scopes: {},
+			},
+		},
 	});
 
 	const innerErrorResponse = {
@@ -219,6 +224,11 @@ const generateOpenapi = (router: Router, requestContentType: string) => {
 			title: "Client to Server API",
 		},
 		servers: [{ url: "https://chat.understars.dev" }],
+		security: [
+			{
+				oauth: [],
+			},
+		],
 	});
 };
 
