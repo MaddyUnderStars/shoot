@@ -69,9 +69,22 @@ router.post(
 
 			await registerUser(username.toLowerCase(), password, email, false, invite);
 
-			return res.sendStatus(204);
+			return res.redirect("/auth/register/done");
 		},
 	),
+);
+
+router.get(
+	"/register/done",
+	route({}, async (req, res) => {
+		return res.render("register_done", {
+			title: "Register",
+			server: {
+				name: config().general.name ?? config().federation.webapp_url.hostname,
+				terms: config().general.terms,
+			},
+		});
+	}),
 );
 
 export default router;

@@ -15,6 +15,7 @@
 		"start:inbound_queue": "node --enable-source-maps --import ./dist/src/zodOpenapi.js dist/src/receiver/index.js",
 		"cli": "node --enable-source-maps --import ./dist/src/zodOpenapi.js dist/src/cli/index.js",
 		"build": "tsc",
+		"tailwind": "npx @tailwindcss/cli -i assets/public/index.css -o assets/public/output.css --watch",
 		"prepare": "husky || true",
 		"openapi": "node --enable-source-maps --import ./dist/src/zodOpenapi.js dist/src/scripts/openapi.js",
 		"config": "node --enable-source-maps --import ./dist/src/zodOpenapi.js dist/src/scripts/configSchema.js",
