@@ -1,87 +1,83 @@
-<div class="flex gap-5 flex-wrap justify-center">
-	<div class="text-muted-foreground mb-4 w-sm flex flex-col justify-between">
+<div class="text-muted-foreground text-lg mb-4 w-sm flex flex-col justify-between">
+	<div>
+		<p>Shoot is a federated instant messenger.</p>
+		<p>
+			Connect with your friends on Shoot or the rest of the Fediverse with Group Chats, Direct
+			Messages, and Guilds.
+		</p>
+	</div>
+	{{#if server.terms}}
 		<div>
-			<p>Shoot is a federated instant messenger.</p>
 			<p>
-				Connect with your friends on Shoot or the rest of the Fediverse with Group Chats,
-				Direct Messages, and Guilds.
+				By joining this server, you agree to its
 			</p>
+			<a href="{{server.terms}}" target="_blank" class="underline">Terms of Service</a>
 		</div>
-		{{#if server.terms}}
-			<div>
-				<p>
-					By joining this server, you agree to its
-					<a href="{{server.terms}}" target="_blank" class="underline">Terms of Service</a>.
-				</p>
-			</div>
-		{{/if}}
-	</div>
-
-	<div
-		class="w-sm bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 px-6 shadow-sm"
-	>
-		<h1 class="leading-none font-semibold">
-			Register
-		</h1>
-
-		<div id="errors" class="hidden"></div>
-
-		<form method="post" class="space-y-4">
-			{{#if disabled}}
-				<label
-					class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
-					for="invite"
-				>
-					Registration Token
-				</label>
-				<p class="text-muted-foreground text-sm">
-					This instance has closed registration. You may use a registration token to join.
-				</p>
-				<input
-					type="text"
-					id="invite"
-					name="invite"
-					required
-					class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-				/>
-			{{/if}}
-
-			<label
-				class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
-			>
-				Username
-			</label>
-			<input
-				type="text"
-				id="username"
-				name="username"
-				required
-				class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-			/>
-
-			<label
-				class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
-			>
-				Password
-			</label>
-			<input
-				type="password"
-				id="password"
-				name="password"
-				required
-				class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-			/>
-
-			<button
-				type="submit"
-				name="allow"
-				value="true"
-				class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
-			>
-				Register
-			</button>
-		</form>
-	</div>
+	{{/if}}
 </div>
 
-<script src="/public/register.js" />
+<div
+	class="w-sm bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 px-6 shadow-sm"
+>
+	<h1 class="leading-none font-semibold">
+		Register
+	</h1>
+
+	<div id="errors" class="hidden"></div>
+
+	<form method="post" class="space-y-4">
+		{{#if disabled}}
+			<label
+				class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+				for="invite"
+			>
+				Registration Token
+			</label>
+			<p class="text-muted-foreground text-sm">
+				This instance has closed registration. You may use a registration token to join.
+			</p>
+			<input
+				type="text"
+				id="invite"
+				name="invite"
+				required
+				class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+			/>
+		{{/if}}
+
+		<label
+			class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+		>
+			Username
+		</label>
+		<input
+			type="text"
+			id="username"
+			name="username"
+			required
+			class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+		/>
+
+		<label
+			class="flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 data-[error=true]:text-destructive"
+		>
+			Password
+		</label>
+		<input
+			type="password"
+			id="password"
+			name="password"
+			required
+			class="placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs outline-none md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+		/>
+
+		<button
+			type="submit"
+			name="allow"
+			value="true"
+			class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3"
+		>
+			Register
+		</button>
+	</form>
+</div>
