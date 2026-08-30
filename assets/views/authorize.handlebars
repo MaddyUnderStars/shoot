@@ -1,13 +1,18 @@
-<div class="text-muted-foreground text-lg mb-4 w-sm">
-	<p>An app '<span class="font-bold">{{client.name}}</span>' is requesting access to your account
-		on
-		<span class="font-bold">{{server.name}}</span>
-	</p>
+<div class="flex flex-wrap justify-center items-center">
+	<div>
+	{{> logo}}
 
-	<p>Credentials for other instances cannot be used here.</p>
+	<div class="text-muted-foreground text-lg mb-4 w-sm">
+		<p>An app '<span class="font-bold">{{client.name}}</span>' is requesting access to your account
+			on
+			<span class="font-bold">{{server.name}}</span>
+		</p>
+
+		<p>Credentials for other instances cannot be used here.</p>
+	</div>
 </div>
 
-<div class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
+<div class="w-sm bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm">
 	<div class="px-6">
 		<form method="post" action="/oauth/authorize" class="space-y-4">
 			<label
@@ -56,4 +61,5 @@
 			</button>
 		</form>
 	</div>
+</div>
 </div>
