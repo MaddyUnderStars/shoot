@@ -328,14 +328,8 @@
 	.min-w-0 {
 		min-width: 0px;
 	}
-	.flex-shrink {
-		flex-shrink: 1;
-	}
 	.shrink-0 {
 		flex-shrink: 0;
-	}
-	.border-collapse {
-		border-collapse: collapse;
 	}
 	.transform {
 		transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,)
@@ -343,9 +337,6 @@
 	}
 	.cursor-pointer {
 		cursor: pointer;
-	}
-	.resize {
-		resize: both;
 	}
 	.flex-col {
 		flex-direction: column;
@@ -425,12 +416,6 @@
 	.py-6 {
 		padding-block: calc(var(--spacing) * 6);
 	}
-	.text-justify {
-		text-align: justify;
-	}
-	.text-right {
-		text-align: right;
-	}
 	.text-3xl {
 		font-size: var(--text-3xl);
 		line-height: var(--tw-leading, var(--text-3xl--line-height));
@@ -455,10 +440,6 @@
 		--tw-font-weight: var(--font-weight-bold);
 		font-weight: var(--font-weight-bold);
 	}
-	.font-medium {
-		--tw-font-weight: var(--font-weight-medium);
-		font-weight: var(--font-weight-medium);
-	}
 	.font-normal {
 		--tw-font-weight: var(--font-weight-normal);
 		font-weight: var(--font-weight-normal);
@@ -466,9 +447,6 @@
 	.font-semibold {
 		--tw-font-weight: var(--font-weight-semibold);
 		font-weight: var(--font-weight-semibold);
-	}
-	.whitespace-nowrap {
-		white-space: nowrap;
 	}
 	.text-card-foreground {
 		color: var(--card-foreground);
@@ -507,10 +485,6 @@
 			var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow),
 			var(--tw-ring-shadow), var(--tw-shadow);
 	}
-	.outline {
-		outline-style: var(--tw-outline-style);
-		outline-width: 1px;
-	}
 	.filter {
 		filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,)
 			var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,)
@@ -521,11 +495,6 @@
 		transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
 		transition-duration: var(--tw-duration, var(--default-transition-duration));
 	}
-	.transition-all {
-		transition-property: all;
-		transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-		transition-duration: var(--tw-duration, var(--default-transition-duration));
-	}
 	.outline-none {
 		--tw-outline-style: none;
 		outline-style: none;
@@ -533,18 +502,6 @@
 	.select-none {
 		-webkit-user-select: none;
 		user-select: none;
-	}
-	.group-data-\[disabled\=true\]\:pointer-events-none:is(:where(.group)[data-disabled="true"] *) {
-		pointer-events: none;
-	}
-	.group-data-\[disabled\=true\]\:opacity-50:is(:where(.group)[data-disabled="true"] *) {
-		opacity: 50%;
-	}
-	.peer-disabled\:cursor-not-allowed:is(:where(.peer):disabled ~ *) {
-		cursor: not-allowed;
-	}
-	.peer-disabled\:opacity-50:is(:where(.peer):disabled ~ *) {
-		opacity: 50%;
 	}
 	.selection\:bg-primary ::selection {
 		background-color: var(--primary);
@@ -557,9 +514,6 @@
 	}
 	.selection\:text-primary-foreground::selection {
 		color: var(--primary-foreground);
-	}
-	.placeholder\:text-muted-foreground::placeholder {
-		color: var(--muted-foreground);
 	}
 	@media (hover: hover) {
 		.hover\:bg-primary\/90:hover {
@@ -587,27 +541,6 @@
 			--tw-ring-color: color-mix(in oklab, var(--ring) 50%, transparent);
 		}
 	}
-	.disabled\:pointer-events-none:disabled {
-		pointer-events: none;
-	}
-	.disabled\:opacity-50:disabled {
-		opacity: 50%;
-	}
-	.has-\[\>svg\]\:px-3:has(> svg) {
-		padding-inline: calc(var(--spacing) * 3);
-	}
-	.aria-invalid\:border-destructive[aria-invalid="true"] {
-		border-color: var(--destructive);
-	}
-	.aria-invalid\:ring-destructive\/20[aria-invalid="true"] {
-		--tw-ring-color: var(--destructive);
-		@supports (color: color-mix(in lab, red, red)) {
-			--tw-ring-color: color-mix(in oklab, var(--destructive) 20%, transparent);
-		}
-	}
-	.data-\[error\=true\]\:text-destructive[data-error="true"] {
-		color: var(--destructive);
-	}
 	@media (width >= 48rem) {
 		.md\:text-sm {
 			font-size: var(--text-sm);
@@ -619,22 +552,6 @@
 		@supports (color: color-mix(in lab, red, red)) {
 			background-color: color-mix(in oklab, var(--input) 30%, transparent);
 		}
-	}
-	.dark\:aria-invalid\:ring-destructive\/40:is(.dark *)[aria-invalid="true"] {
-		--tw-ring-color: var(--destructive);
-		@supports (color: color-mix(in lab, red, red)) {
-			--tw-ring-color: color-mix(in oklab, var(--destructive) 40%, transparent);
-		}
-	}
-	.\[\&_svg\]\:pointer-events-none svg {
-		pointer-events: none;
-	}
-	.\[\&_svg\]\:shrink-0 svg {
-		flex-shrink: 0;
-	}
-	.\[\&_svg\:not\(\[class\*\=\'size-\'\]\)\]\:size-4 svg:not([class*="size-"]) {
-		width: calc(var(--spacing) * 4);
-		height: calc(var(--spacing) * 4);
 	}
 }
 :root {
@@ -824,11 +741,6 @@
 	inherits: false;
 	initial-value: 0 0 #0000;
 }
-@property --tw-outline-style {
-	syntax: "*";
-	inherits: false;
-	initial-value: solid;
-}
 @property --tw-blur {
 	syntax: "*";
 	inherits: false;
@@ -912,7 +824,6 @@
 			--tw-ring-offset-width: 0px;
 			--tw-ring-offset-color: #fff;
 			--tw-ring-offset-shadow: 0 0 #0000;
-			--tw-outline-style: solid;
 			--tw-blur: initial;
 			--tw-brightness: initial;
 			--tw-contrast: initial;
