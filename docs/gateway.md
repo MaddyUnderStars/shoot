@@ -52,7 +52,7 @@ If you do not, the connection will be terminated.
 ```jsonc
 {
 	"t": "identify",
-	"token": "your user token, obtained via /auth/login",
+	"token": "your user token, obtained via oauth auth code flow",
 }
 ```
 
