@@ -2,7 +2,6 @@ import type { StartedTestContainer } from "testcontainers";
 import type { PrivateUser } from "../../src/entity/user.js";
 import { APIServer } from "../../src/http/server.js";
 import { runCliInContainer } from "./cli.js";
-import { getShootContainerUrl } from "./container.js";
 import { getTestString } from "./random.js";
 import { isApiServer } from "./isApiServer.js";
 import * as crypto from "node:crypto";
@@ -34,20 +33,15 @@ export const createTestUser = async (target: APIServer | StartedTestContainer) =
 
 		password = extract;
 
-		const login = await fetch(new URL("/auth/login", getShootContainerUrl(target)), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				username,
-				password,
-			}),
-		});
+		const token = await createTestAccessToken(target, username, password);
 
-		body = (await login.json()) as typeof body;
+		const userRes = await testFetch(target, "/user/@me");
+		const user = "json" in userRes ? await userRes.json() : userRes.body;
 
-		if (!body.token || !body.user) throw new Error("token or user not provided by container");
+		body = {
+			user,
+			token,
+		};
 	}
 
 	return {
@@ -92,7 +86,10 @@ export const createTestAccessToken = async (
 	});
 	const header =
 		res.headers instanceof Headers ? res.headers.get("location") : res.headers.location;
-	if (!header) throw new Error("could not get location header");
+	if (!header)
+		throw new Error(
+			`could not get location header: ${"json" in res ? await res.text() : res.body}`,
+		);
 	const url = new URL(header);
 	const code = url.searchParams.get("code");
 	if (!code) throw new Error("failed to get auth code");
