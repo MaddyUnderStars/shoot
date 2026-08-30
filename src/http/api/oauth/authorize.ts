@@ -53,15 +53,12 @@ router.post(
 		{
 			body: AuthorizeRequest.and(
 				z.object({
-					allow: z.coerce.boolean(),
 					username: z.string(),
 					password: z.string(),
 				}),
 			),
 		},
 		async (req, res, next) => {
-			if (!req.body.allow) throw new HttpError("Access denied", 403);
-
 			const user = await User.findOne({
 				where: {
 					name: req.body.username,
