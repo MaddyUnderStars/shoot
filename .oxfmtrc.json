@@ -1,6 +1,11 @@
 {
 	"$schema": "./node_modules/oxfmt/configuration_schema.json",
-	"ignorePatterns": ["assets/client.json", "assets/config.json"],
+	"ignorePatterns": [
+		"assets/client.json",
+		"assets/config.json",
+		// prettier doesn't support handlebars partials https://github.com/oxc-project/oxc/issues/24298
+		"*.handlebars"
+	],
 	"printWidth": 100,
 	"useTabs": true,
 	"tabWidth": 4

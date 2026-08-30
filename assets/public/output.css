@@ -328,8 +328,14 @@
 	.min-w-0 {
 		min-width: 0px;
 	}
+	.flex-shrink {
+		flex-shrink: 1;
+	}
 	.shrink-0 {
 		flex-shrink: 0;
+	}
+	.border-collapse {
+		border-collapse: collapse;
 	}
 	.transform {
 		transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,)
@@ -338,8 +344,14 @@
 	.cursor-pointer {
 		cursor: pointer;
 	}
+	.resize {
+		resize: both;
+	}
 	.flex-col {
 		flex-direction: column;
+	}
+	.flex-wrap {
+		flex-wrap: wrap;
 	}
 	.items-center {
 		align-items: center;
@@ -355,6 +367,9 @@
 	}
 	.gap-4 {
 		gap: calc(var(--spacing) * 4);
+	}
+	.gap-5 {
+		gap: calc(var(--spacing) * 5);
 	}
 	.gap-6 {
 		gap: calc(var(--spacing) * 6);
@@ -409,6 +424,12 @@
 	}
 	.py-6 {
 		padding-block: calc(var(--spacing) * 6);
+	}
+	.text-justify {
+		text-align: justify;
+	}
+	.text-right {
+		text-align: right;
 	}
 	.text-3xl {
 		font-size: var(--text-3xl);
@@ -485,6 +506,10 @@
 		box-shadow:
 			var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow),
 			var(--tw-ring-shadow), var(--tw-shadow);
+	}
+	.outline {
+		outline-style: var(--tw-outline-style);
+		outline-width: 1px;
 	}
 	.filter {
 		filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,)
@@ -799,6 +824,11 @@
 	inherits: false;
 	initial-value: 0 0 #0000;
 }
+@property --tw-outline-style {
+	syntax: "*";
+	inherits: false;
+	initial-value: solid;
+}
 @property --tw-blur {
 	syntax: "*";
 	inherits: false;
@@ -882,6 +912,7 @@
 			--tw-ring-offset-width: 0px;
 			--tw-ring-offset-color: #fff;
 			--tw-ring-offset-shadow: 0 0 #0000;
+			--tw-outline-style: solid;
 			--tw-blur: initial;
 			--tw-brightness: initial;
 			--tw-contrast: initial;
