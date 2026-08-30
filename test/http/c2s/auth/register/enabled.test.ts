@@ -12,7 +12,6 @@ describe("Registration is enabled", () => {
 				email: "test@test.com",
 			})
 			.set("Accept", "application/json")
-			.expect("Content-Type", /json/)
-			.expect(200);
+			.expect(302);
 	});
 });

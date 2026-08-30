@@ -16,14 +16,13 @@ describe("Registration is disabled", () => {
 				email: "test@test.com",
 			})
 			.set("Accept", "application/json")
-			.expect("Content-Type", /json/)
 			.expect(400);
 	});
 
 	test("Can register with token", async ({ api, dbClient, expect }) => {
 		await dbClient.query("INSERT INTO instance_invites (code) VALUES ($1)", ["testinvite"]);
 
-		const res = await request(api.app)
+		await request(api.app)
 			.post("/auth/register")
 			.send({
 				username: "test",
@@ -32,11 +31,7 @@ describe("Registration is disabled", () => {
 				invite: "testinvite",
 			})
 			.set("Accept", "application/json")
-			.expect("Content-Type", /json/)
-			.expect(200);
-
-		expect(res.body.token).toBeTypeOf("string");
-		expect(res.body.user).toMatchSnapshot();
+			.expect(302);
 
 		const dbres = await dbClient.query("SELECT * FROM users WHERE name = $1", ["test"]);
 

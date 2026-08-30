@@ -59,7 +59,7 @@ export const getDatasource = () => {
 		database: IS_SQLITE ? CONNECTION_STRING.split("://")[1] : undefined,
 		supportBigNumbers: true,
 		bigNumberStrings: false,
-		synchronize: true, // TODO
+		synchronize: false, // TODO
 		logging: config().database.log,
 
 		// https://github.com/typeorm/typeorm/issues/11570

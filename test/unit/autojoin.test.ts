@@ -1,7 +1,7 @@
 import request from "supertest";
 import { test } from "../fixture.js";
 import { createTestGuild } from "../testUtils/guilds.js";
-import { createTestUser } from "../testUtils/users.js";
+import { createTestAccessToken, createTestUser } from "../testUtils/users.js";
 
 test.describe("Via config", () => {
 	test.beforeEach(async ({ config, api }) => {
@@ -12,20 +12,20 @@ test.describe("Via config", () => {
 	});
 
 	test("Auto joins guilds", async ({ api, expect }) => {
-		const { body: reg } = await request(api.app)
+		await request(api.app)
 			.post("/auth/register")
 			.send({
 				username: "a",
 				password: "test",
 				email: "test@test.com",
 			})
-			.set("Accept", "application/json")
-			.expect("Content-Type", /json/)
-			.expect(200);
+			.expect(302);
+
+		const token = await createTestAccessToken(api, "a", "test");
 
 		const guilds = await request(api.app)
 			.get("/users/@me/guild")
-			.auth(reg.token, { type: "bearer" })
+			.auth(token, { type: "bearer" })
 			.expect(200);
 
 		expect(guilds.body).toHaveLength(1);
@@ -46,7 +46,7 @@ test.describe("With registration token", () => {
 	});
 
 	test("Auto joins guilds", async ({ api, expect }) => {
-		const { body: reg } = await request(api.app)
+		await request(api.app)
 			.post("/auth/register")
 			.send({
 				username: "b",
@@ -54,13 +54,13 @@ test.describe("With registration token", () => {
 				email: "test@test.com",
 				invite: "testinvite",
 			})
-			.set("Accept", "application/json")
-			.expect("Content-Type", /json/)
-			.expect(200);
+			.expect(302);
+
+		const token = await createTestAccessToken(api, "b", "test");
 
 		const guilds = await request(api.app)
 			.get("/users/@me/guild")
-			.auth(reg.token, { type: "bearer" })
+			.auth(token, { type: "bearer" })
 			.expect(200);
 
 		expect(guilds.body).toHaveLength(1);
