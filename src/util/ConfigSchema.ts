@@ -96,6 +96,14 @@ export const ConfigSchema = z.object({
 		 * @default "loopback,uniquelocal"
 		 */
 		trust_proxy: z.string().default("loopback,uniquelocal"),
+
+		/**
+		 * Whether to enable dynamic OAuth client registration.
+		 * If disabled, client applications cannot dynamically register on this instance
+		 * Turn this off if you want to only allow a specific client application to connect.
+		 * You'll need to give the client the client_id and client_secret.
+		 */
+		dynamic_client_registration: z.boolean().default(true),
 	}),
 	database: z.object({
 		/**
