@@ -35,12 +35,14 @@ export const createTestUser = async (target: APIServer | StartedTestContainer) =
 
 		const token = await createTestAccessToken(target, username, password);
 
-		const userRes = await testFetch(target, "/user/@me");
+		const userRes = await testFetch(target, "/users/@me", {
+			headers: { Authorization: `Bearer ${token}` },
+		});
 		const user = "json" in userRes ? await userRes.json() : userRes.body;
 
 		body = {
 			user,
-			token,
+			token: `Bearer ${token}`,
 		};
 	}
 
@@ -108,14 +110,14 @@ export const createTestAccessToken = async (
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
-		body: JSON.stringify({
+		body: {
 			redirect_uri: REDIRECT,
 			code,
 			code_verifier,
 			grant_type: "authorization_code",
 			client_id,
 			client_secret,
-		}),
+		},
 	});
 	if (!res.ok) {
 		throw new Error("json" in res ? await res.text() : res.body);

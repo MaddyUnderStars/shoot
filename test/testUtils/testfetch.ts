@@ -8,7 +8,7 @@ import { AllMethods } from "supertest/types.js";
 export const testFetch = async (
 	target: APIServer | StartedTestContainer,
 	path: string,
-	init?: RequestInit,
+	init?: Omit<RequestInit, "body"> & { body?: any },
 ) => {
 	if (isApiServer(target)) {
 		let req = request(target.app)[(init?.method?.toLowerCase() ?? "get") as AllMethods](path);
@@ -17,11 +17,21 @@ export const testFetch = async (
 			req.set("Content-Type", init.headers["Content-Type"] as string);
 		}
 
-		return req.send(
-			//@ts-expect-error
-			JSON.parse(init?.body),
-		);
+		if (init?.headers && "Authorization" in init.headers) {
+			req.auth(init.headers["Authorization"] as string, { type: "bearer" });
+		}
+
+		return req.send(init?.body);
 	} else {
+		if (
+			init?.headers &&
+			"Content-Type" in init.headers &&
+			init?.headers["Content-Type"] == "application/x-www-form-urlencoded" &&
+			init?.body
+		) {
+			init.body = new URLSearchParams(init.body);
+		}
+
 		return fetch(new URL(path, getShootContainerUrl(target)), init);
 	}
 };
