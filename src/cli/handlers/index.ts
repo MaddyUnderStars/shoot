@@ -1,5 +1,6 @@
 import { addUser } from "./addUser.js";
 import { generateKeys } from "./generateKeys.js";
+import { generateOauthClient } from "./generateOauthClient.js";
 import { generateRegInvite } from "./generateRegInvite.js";
 import { instance } from "./instance.js";
 import { resolve } from "./resolve.js";
@@ -7,6 +8,7 @@ import { resolve } from "./resolve.js";
 export const cliHandlers = {
 	"generate-keys": generateKeys,
 	"generate-reg-invite": generateRegInvite,
+	"generate-oauth-client": generateOauthClient,
 	"add-user": addUser,
 	instance: instance,
 	resolve: resolve,
