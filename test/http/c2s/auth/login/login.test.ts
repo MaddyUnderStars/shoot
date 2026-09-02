@@ -3,6 +3,8 @@ import { test } from "../../../../fixture.js";
 import { describe } from "vitest";
 import * as crypto from "node:crypto";
 
+const REDIRECT = "shoot://login/";
+
 test.beforeAll(async ({ api: _ }) => {
 	const { registerUser } = await import("../../../../../src/util/entity/user.js");
 
@@ -20,7 +22,7 @@ describe("Oauth", () => {
 			.post("/oauth/register")
 			.send({
 				client_name: "vitest",
-				redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"],
+				redirect_uris: [REDIRECT],
 				grant_types: ["authorization_code", "refresh_token"],
 			})
 			.expect(201);
@@ -31,7 +33,7 @@ describe("Oauth", () => {
 			client_secret_expires_at: 0,
 			client_id_issued_at: expect.any(Number),
 			grant_types: expect.arrayContaining(["authorization_code", "refresh_token"]),
-			redirect_uris: expect.arrayContaining(["urn:ietf:wg:oauth:2.0:oob"]),
+			redirect_uris: expect.arrayContaining([REDIRECT]),
 			client_name: "vitest",
 		});
 
@@ -53,7 +55,7 @@ describe("Oauth", () => {
 				code_challenge,
 				client_id,
 				state,
-				redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
+				redirect_uri: REDIRECT,
 				response_type: "code",
 				code_challenge_method: "S256",
 
@@ -86,7 +88,7 @@ describe("Oauth", () => {
 				code_challenge: bad_code_challenge,
 				client_id,
 				state: bad_state,
-				redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
+				redirect_uri: REDIRECT,
 				response_type: "code",
 				code_challenge_method: "S256",
 
@@ -105,7 +107,7 @@ describe("Oauth", () => {
 				client_id,
 				code,
 				code_verifier,
-				redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
+				redirect_uri: REDIRECT,
 				grant_type: "authorization_code",
 			})
 			.expect(200);
