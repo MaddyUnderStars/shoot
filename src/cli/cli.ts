@@ -12,6 +12,7 @@ export const handleCli = async (argv: string[]) => {
 			"Syntax: `npm run cli -- [option]. Options:\n" +
 				"generate-keys - Generate signing keys for federation HTTP signatures, user tokens, and Web Push notifications.\n" +
 				"generate-reg-invite [code?] [maxUses?] [expiry?] - Generate a registration invite. Provide -1 for no restriction for field\n" +
+				"generate-oauth-client [redirectUris] [grants] [name?] - Generate an OAuth client. Separate values by commas\n" +
 				"add-user [username] [email?] - Register a new user\n" +
 				"instance [url] [action?] - View, block, limit, or allow instances\n" +
 				"resolve [lookup] - Resolve a webfinger mention or URL",
