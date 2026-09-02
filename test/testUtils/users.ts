@@ -56,27 +56,35 @@ export const createTestAccessToken = async (
 	username: string,
 	password: string,
 ) => {
+	const REDIRECT = "shoot://login/";
 	const code_verifier = crypto.randomBytes(32).toString("hex");
 	const state = crypto.randomBytes(32).toString("hex");
 	const code_challenge = crypto.createHash("sha256").update(code_verifier).digest("base64url");
 
 	let res = await testFetch(target, "/oauth/register", {
 		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
 		body: JSON.stringify({
 			client_name: "vitest",
-			redirect_uris: ["urn:ietf:wg:oauth:2.0:oob"],
-			grant_types: ["authorization_code", "refresh_token"],
+			redirect_uris: [REDIRECT],
+			grant_types: ["authorization_code"],
 		}),
 	});
 	const { client_id, client_secret } = "json" in res ? await res.json() : res.body;
 
 	res = await testFetch(target, "/oauth/authorize", {
 		method: "POST",
+		redirect: "manual",
+		headers: {
+			"Content-Type": "application/json",
+		},
 		body: JSON.stringify({
 			code_challenge,
 			client_id,
 			state,
-			redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
+			redirect_uri: REDIRECT,
 			response_type: "code",
 			code_challenge_method: "S256",
 
@@ -92,6 +100,7 @@ export const createTestAccessToken = async (
 		);
 	const url = new URL(header);
 	const code = url.searchParams.get("code");
+	if (state !== url.searchParams.get("state")) throw new Error("state did not match");
 	if (!code) throw new Error("failed to get auth code");
 
 	res = await testFetch(target, "/oauth/token", {
@@ -100,14 +109,17 @@ export const createTestAccessToken = async (
 			"Content-Type": "application/x-www-form-urlencoded",
 		},
 		body: JSON.stringify({
-			grant_type: "authorization_code",
-			client_id,
-			redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
+			redirect_uri: REDIRECT,
 			code,
 			code_verifier,
+			grant_type: "authorization_code",
+			client_id,
 			client_secret,
 		}),
 	});
+	if (!res.ok) {
+		throw new Error("json" in res ? await res.text() : res.body);
+	}
 	const { access_token } = "json" in res ? await res.json() : res.body;
 
 	return access_token;
