@@ -36,6 +36,7 @@ import { AutojoinGuilds1783139862203 } from "./migration/postgres/1783139862203-
 import { AttachmentTargets1784116728040 } from "./migration/postgres/1784116728040-attachmentTargets.js";
 import { OauthClient } from "../entity/oauthClient.js";
 import { OauthToken } from "../entity/oauthToken.js";
+import { Oauth1788350631599 } from "./migration/postgres/1788350631599-oauth.js";
 
 let datasource: DataSource;
 
@@ -118,6 +119,7 @@ export const getDatasource = () => {
 			Jsonb1779431257338,
 			AutojoinGuilds1783139862203,
 			AttachmentTargets1784116728040,
+			Oauth1788350631599,
 		],
 	});
 

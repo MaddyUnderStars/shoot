@@ -4,6 +4,8 @@ import z from "zod";
 import { OauthClient } from "../../../entity/oauthClient.js";
 import crypto from "node:crypto";
 import { promisify } from "node:util";
+import { config } from "../../../util/config.js";
+import { HttpError } from "../../../util/httperror.js";
 const randomBytes = promisify(crypto.randomBytes);
 
 const router = Router();
@@ -33,6 +35,10 @@ router.post(
 				.partial(),
 		},
 		async (req, res) => {
+			if (!config().security.dynamic_client_registration) {
+				throw new HttpError("Dynamic client registration is disabled.", 404);
+			}
+
 			const client = await OauthClient.create({
 				redirectUris: req.body.redirect_uris ?? [],
 				grants: req.body.grant_types ?? [],
