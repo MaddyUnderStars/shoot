@@ -18,16 +18,9 @@ router.post(
 				.looseObject({
 					redirect_uris: z.string().array(),
 					grant_types: z
-						.union(
-							[
-								z.literal("authorization_code"),
-								z.literal("client_credentials"),
-								z.literal("refresh_token"),
-							],
-							{
-								error: "Unsupported grant type",
-							},
-						)
+						.union([z.literal("authorization_code"), z.literal("refresh_token")], {
+							error: "Unsupported grant type",
+						})
 						.array(),
 					client_name: z.string(),
 					scope: z.string(),
