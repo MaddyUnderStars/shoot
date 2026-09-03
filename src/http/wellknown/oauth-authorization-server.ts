@@ -14,7 +14,7 @@ router.get(
 			token_endpoint: makeInstanceUrl("/oauth/token"),
 			response_types_supported: ["code"],
 			response_modes_supported: ["query", "fragment", "form_post"],
-			grant_types_supported: ["authorization_code", "client_credentials", "refresh_token"],
+			grant_types_supported: ["authorization_code", "refresh_token"],
 			registration_endpoint: config().security.dynamic_client_registration
 				? makeInstanceUrl("/oauth/register")
 				: undefined,
