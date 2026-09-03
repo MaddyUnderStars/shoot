@@ -16,6 +16,7 @@ describe("Oauth", () => {
 	let client_id: string;
 	let code: string;
 	let code_verifier: string;
+	let refresh_token: string;
 
 	test("Can register oauth client", { concurrent: false }, async ({ api, expect }) => {
 		const res = await request(api.app)
@@ -111,6 +112,28 @@ describe("Oauth", () => {
 				grant_type: "authorization_code",
 			})
 			.expect(200);
+
+		expect(res.body).toEqual({
+			access_token: expect.any(String),
+			refresh_token: expect.any(String),
+			expires_in: expect.any(Number),
+			token_type: "Bearer",
+			scope: "",
+		});
+
+		refresh_token = res.body.refresh_token;
+	});
+
+	test("Can refresh tokens", { concurrent: false }, async ({ api, expect }) => {
+		const res = await request(api.app)
+			.post("/oauth/token")
+			.set("Content-Type", "application/x-www-form-urlencoded")
+			.send({
+				refresh_token,
+				grant_type: "refresh_token",
+				client_id,
+				client_secret,
+			});
 
 		expect(res.body).toEqual({
 			access_token: expect.any(String),
