@@ -1,4 +1,20 @@
-# Shoot - Federated Instant Messenger
+<p align="center">
+	<img width="100" src="https://raw.githubusercontent.com/maddyunderstars/shoot/main/assets/public/favicon.png">
+</p>
+<h1 align="center">Shoot</h1>
+
+<p align="center">
+	<a href="https://shoot.pub" target="_blank">
+		<img src="https://img.shields.io/badge/Join-Shoot-49B50C">
+	</a>
+	<a href="https://matrix.to/#/#shootpub:goober.systems" target="_blank">
+		<img src="https://img.shields.io/matrix/shootpub%3Agoober.systems?server_fqdn=matrix.org&fetchMode=summary&label=Matrix" alt="Matrix space">
+	</a>
+	<img src="https://img.shields.io/badge/GenAI-No-49B50C" alt="No Generative AI"/>
+	<img src="https://img.shields.io/github/check-suites/maddyunderstars/shoot/main" alt="Build status">
+</p>
+
+---
 
 Shoot is a (work in progress) instant messenger for the fediverse.
 
