@@ -26,7 +26,7 @@ export const createTestUser = async (target: APIServer | StartedTestContainer) =
 			token,
 		};
 	} else {
-		const res = await runCliInContainer(target, `add-user ${username}`);
+		const res = await runCliInContainer(target, `add-user -u ${username}`);
 
 		const extract = res.stdout.match(/with password '(.*?)'/)?.[1];
 		if (!extract) throw new Error("could not find password in cli output");
