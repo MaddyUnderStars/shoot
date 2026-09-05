@@ -3,7 +3,15 @@ import { test } from "../fixture.js";
 
 test("CLI can create user", async ({ expect, dbClient }) => {
 	expect(
-		await handleCli(["node", process.cwd(), "add-user", "testUser", "test@localhost"]),
+		await handleCli([
+			"node",
+			process.cwd(),
+			"add-user",
+			"-u",
+			"testUser",
+			"-e",
+			"test@localhost",
+		]),
 	).not.toBeInstanceOf(Error);
 
 	const res = await dbClient.query("SELECT * FROM users WHERE name = $1", ["testUser"]);

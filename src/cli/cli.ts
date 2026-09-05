@@ -1,34 +1,65 @@
-import { createLogger } from "../util/log.js";
 import { cliHandlers } from "./handlers/index.js";
-
-const Log = createLogger("cli");
+import { parseArgs } from "node:util";
 
 export const handleCli = async (argv: string[]) => {
 	const args = argv.slice(2);
-	const cmd = args.shift()?.toLowerCase();
+	const cmdName = args.shift()?.toLowerCase();
 
+	if (!cmdName) {
+		console.log(buildHelp());
+		return;
+	}
+
+	const cmd = cliHandlers[cmdName];
 	if (!cmd) {
-		Log.warn(
-			"Syntax: `npm run cli -- [option]. Options:\n" +
-				"generate-keys - Generate signing keys for federation HTTP signatures, user tokens, and Web Push notifications.\n" +
-				"generate-reg-invite [code?] [maxUses?] [expiry?] - Generate a registration invite. Provide -1 for no restriction for field\n" +
-				"generate-oauth-client [redirectUris] [grants] [name?] - Generate an OAuth client. Separate values by commas\n" +
-				"add-user [username] [email?] - Register a new user\n" +
-				"instance [url] [action?] - View, block, limit, or allow instances\n" +
-				"resolve [lookup] - Resolve a webfinger mention or URL",
-		);
+		console.error("Command does not exist");
 		return;
 	}
+	const { options, handler } = cmd;
 
-	const exec = cliHandlers[cmd];
-	if (!exec) {
-		Log.error(`Unknown option ${cmd}`);
-		return;
-	}
+	const { values, positionals } = parseArgs({ args, options, allowPositionals: true });
 
 	try {
-		await exec(...args);
+		await handler(values, positionals);
 	} catch (e) {
-		Log.error(e instanceof Error ? e.message : e);
+		console.error(e);
+	} finally {
+		const { closeDatabase } = await import("../util/database.js");
+		closeDatabase();
 	}
+};
+
+const buildHelp = () => {
+	let out = "";
+
+	for (const cmd in cliHandlers) {
+		const { options, description: cmdDesc, positionals } = cliHandlers[cmd];
+
+		out += cmd;
+
+		if (positionals) out += " " + positionals.map((x) => `[${x}]`).join(" ");
+		if (cmdDesc) out += `\n\t${cmdDesc}\n`;
+
+		for (const long in options) {
+			const { default: defaultValue, short, description: optDesc } = options[long];
+
+			out += `\n\t-${short}, --${long}`;
+
+			if (defaultValue) {
+				const def = Array.isArray(defaultValue)
+					? defaultValue.join(`, --${long}=`)
+					: `${defaultValue}`;
+				out += `=${def}`;
+			}
+
+			if ("default" in options[long]) out += "\n\t\tOptional";
+			if (optDesc) out += `\n\t\t${optDesc}`;
+
+			out += "\n";
+		}
+
+		out += "\n";
+	}
+
+	return out;
 };

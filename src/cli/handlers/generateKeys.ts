@@ -11,7 +11,9 @@ const generateKeyPair = promisify(crypto.generateKeyPair);
 
 const Log = createLogger("cli");
 
-export const generateKeys = async () => {
+const generateKeysOptions = {};
+
+const generateKeysHandler = async () => {
 	Log.msg("Generating public/private keys");
 
 	const federationKeys = await generateKeyPair("rsa", KEY_OPTIONS);
@@ -36,4 +38,10 @@ export const generateKeys = async () => {
 	);
 
 	Log.msg("Saved to ./config/default.json");
+};
+
+export const generateKeys = {
+	description: "Generate server keys needed for federation and notifications",
+	handler: generateKeysHandler,
+	options: generateKeysOptions,
 };

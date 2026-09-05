@@ -2,10 +2,18 @@ import { Like } from "typeorm";
 import { InstanceBehaviour } from "../../util/activitypub/instanceBehaviour.js";
 import { createLogger } from "../../util/log.js";
 import { appendToConfig } from "../util.js";
+import { ParseArgsPositionals, ParseArgsValues } from "./index.js";
 
 const Log = createLogger("cli");
 
-export const instance = async (url: string, action: string): Promise<void | Error> => {
+const instanceOptions = {};
+
+const instanceHandler = async (
+	_values: ParseArgsValues,
+	positionals: ParseArgsPositionals,
+): Promise<void | Error> => {
+	const [action, url] = positionals;
+
 	if (!url) return new Error("Must specify URL");
 
 	const { config } = await import("../../util/config.js");
@@ -21,11 +29,11 @@ export const instance = async (url: string, action: string): Promise<void | Erro
 	const { Channel } = await import("../../entity/channel.js");
 	const { ApCache } = await import("../../entity/apcache.js");
 
-	const { initDatabase, closeDatabase } = await import("../../util/database.js");
+	const { initDatabase } = await import("../../util/database.js");
 
 	await initDatabase();
 
-	if (!action) {
+	if (!action || action == "view") {
 		const [users, dm, text, guilds] = await Promise.all([
 			User.count({ where: { domain: parsed.hostname } }),
 			DMChannel.count({ where: { domain: parsed.hostname } }),
@@ -40,12 +48,12 @@ export const instance = async (url: string, action: string): Promise<void | Erro
 				`Guilds: ${guilds}`,
 		);
 
-		return closeDatabase();
+		return;
 	}
 
 	if (config().federation.webapp_url.hostname === parsed.hostname) {
 		Log.error("You can't block yourself");
-		return closeDatabase();
+		return;
 	}
 
 	switch (action.toLowerCase()) {
@@ -75,8 +83,13 @@ export const instance = async (url: string, action: string): Promise<void | Erro
 		}
 		default:
 			Log.error(`Action ${action} not implemented`);
-			return closeDatabase();
+			return;
 	}
+};
 
-	closeDatabase();
+export const instance = {
+	positionals: ["view, block", "instance url"],
+	description: "View or manage a connection to a remote instance",
+	handler: instanceHandler,
+	options: instanceOptions,
 };

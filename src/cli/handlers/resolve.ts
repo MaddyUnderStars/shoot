@@ -1,7 +1,10 @@
 import { type ActorMention } from "../../util/activitypub/constants.js";
+import { ParseArgsPositionals, ParseArgsValues } from "./index.js";
 
-export const resolve = async (lookup: string) => {
-	const { initDatabase, closeDatabase } = await import("../../util/database.js");
+const resolveHandler = async (_values: ParseArgsValues, positionals: ParseArgsPositionals) => {
+	const [lookup] = positionals;
+
+	const { initDatabase } = await import("../../util/database.js");
 
 	await initDatabase();
 
@@ -10,16 +13,19 @@ export const resolve = async (lookup: string) => {
 
 	const parsedLookup = tryParseUrl(lookup) ?? lookup;
 
-	try {
-		const res =
-			parsedLookup instanceof URL &&
-			parsedLookup.protocol !== "acct:" &&
-			parsedLookup.protocol !== "invite:"
-				? await resolveAPObject(parsedLookup)
-				: await resolveWebfinger(lookup as ActorMention);
+	const res =
+		parsedLookup instanceof URL &&
+		parsedLookup.protocol !== "acct:" &&
+		parsedLookup.protocol !== "invite:"
+			? await resolveAPObject(parsedLookup)
+			: await resolveWebfinger(lookup as ActorMention);
 
-		console.log(res);
-	} finally {
-		closeDatabase();
-	}
+	console.log(res);
+};
+
+export const resolve = {
+	positionals: ["lookup"],
+	description: "Resolve an ActivityPub Webfinger or ID",
+	options: {},
+	handler: resolveHandler,
 };

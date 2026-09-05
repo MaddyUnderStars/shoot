@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { createLogger } from "../../util/log.js";
+import { ArgsConfigWithHelp, ParseArgsValues } from "./index.js";
 
 const Log = createLogger("cli");
 
@@ -11,7 +12,21 @@ const generatePassword = (
 		.map((x) => characters[x % characters.length])
 		.join("");
 
-export const addUser = async (username: string, email?: string) => {
+const addUserOptions: ArgsConfigWithHelp = {
+	username: {
+		type: "string",
+		short: "u",
+	},
+	email: {
+		type: "string",
+		short: "e",
+		default: undefined,
+	},
+};
+
+const addUserHandler = async (values: ParseArgsValues) => {
+	const { username, email } = values as { username: string; email: string | undefined };
+
 	const password = generatePassword();
 
 	if (!username) {
@@ -20,7 +35,7 @@ export const addUser = async (username: string, email?: string) => {
 	}
 
 	const { config } = await import("../../util/config.js");
-	const { initDatabase, closeDatabase } = await import("../../util/database.js");
+	const { initDatabase } = await import("../../util/database.js");
 	const { registerUser } = await import("../../util/entity/user.js");
 
 	const handle = `${username}@${config().federation.webapp_url.hostname}`;
@@ -34,6 +49,10 @@ export const addUser = async (username: string, email?: string) => {
 	}
 
 	Log.msg(`Registered user '${handle}' with password '${password}'`);
+};
 
-	closeDatabase();
+export const addUser = {
+	description: "Register a new user with a random password",
+	handler: addUserHandler,
+	options: addUserOptions,
 };

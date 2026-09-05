@@ -1,12 +1,46 @@
 import * as crypto from "node:crypto";
 import { createLogger } from "../../util/log.js";
 import { promisify } from "node:util";
+import { ArgsConfigWithHelp, ParseArgsValues } from "./index.js";
 const randomBytes = promisify(crypto.randomBytes);
 
 const Log = createLogger("cli");
 
-export const generateOauthClient = async (redirectUris: string, grants: string, name?: string) => {
-	const { initDatabase, closeDatabase } = await import("../../util/database.js");
+const generateOauthClientOptions: ArgsConfigWithHelp = {
+	redirectUri: {
+		type: "string",
+		short: "r",
+		multiple: true,
+	},
+	grant: {
+		type: "string",
+		short: "g",
+		multiple: true,
+		default: ["authorization_code", "refresh_code"],
+	},
+	name: {
+		type: "string",
+		short: "n",
+		default: undefined,
+	},
+};
+
+const generateOauthClientHandler = async (values: ParseArgsValues) => {
+	const {
+		redirectUri: redirectUris,
+		grant: grants,
+		name,
+	} = values as {
+		redirectUri: string[];
+		grant: string[];
+		name?: string;
+	};
+
+	if (!redirectUris) {
+		throw new Error("Must specify at least one redirect uri");
+	}
+
+	const { initDatabase } = await import("../../util/database.js");
 
 	await initDatabase();
 
@@ -14,12 +48,16 @@ export const generateOauthClient = async (redirectUris: string, grants: string, 
 
 	const client = await OauthClient.create({
 		name,
-		redirectUris: redirectUris.split(","),
-		grants: grants.split(","),
+		redirectUris,
+		grants,
 		secret: (await randomBytes(32)).toString("hex"),
 	}).save();
 
 	Log.msg(`Oauth client created\nclient id: ${client.id}\nclient_secret: ${client.secret}`);
+};
 
-	closeDatabase();
+export const generateOauthClient = {
+	description: "Generate an OAuth client",
+	handler: generateOauthClientHandler,
+	options: generateOauthClientOptions,
 };
