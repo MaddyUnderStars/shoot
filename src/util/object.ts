@@ -4,9 +4,7 @@ type Truthy<T> = {
 };
 
 export const onlyTruthy = <T extends object>(obj: T): Truthy<T> | undefined => {
-	const ret = Object.fromEntries(
-		Object.entries(obj).filter(([_, value]) => !!value),
-	) as Truthy<T>;
+	const ret = Object.fromEntries(Object.entries(obj).filter(([, value]) => !!value)) as Truthy<T>;
 
 	if (Object.keys(ret).length === 0) return undefined;
 

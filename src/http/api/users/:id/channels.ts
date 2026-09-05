@@ -55,7 +55,7 @@ router.post(
 						id: makeInstanceUrl(`${getExternalPathFromActor(channel)}/create`),
 						actor: makeInstanceUrl(getExternalPathFromActor(channel.owner)),
 						object: buildAPActor(channel),
-					}) as APCreate,
+					}) satisfies APCreate,
 					channel.owner,
 				);
 			});

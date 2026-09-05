@@ -17,5 +17,5 @@ jobs:
               with:
                   node-version: 24
 
-            - run: npm install --frozen-lockfile
+            - run: npm install
             - run: npm run lint -- --format=github

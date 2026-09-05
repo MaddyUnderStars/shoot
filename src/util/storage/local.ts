@@ -39,12 +39,16 @@ const createEndpoint = async (file: PutFileRequest) => {
 	const token = await new Promise<string>((resolve, reject) => {
 		jwt.sign(
 			{
-				...file,
-				target: undefined,
+				name: file.name,
+				size: file.size,
+				mime: file.mime,
+				md5: file.md5,
+				width: file.width,
+				height: file.height,
 				target_id: file.target.id,
 				target_name: getTableName(file.target),
 				key: `${getTableName(file.target)}/${file.target.id}/${hash}`,
-			} as localFileJwt,
+			} satisfies localFileJwt,
 			config().security.jwt_secret,
 			{ expiresIn: 300 },
 			(err, encoded) => {

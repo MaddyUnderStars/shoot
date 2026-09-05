@@ -1,7 +1,7 @@
 import { APActivity } from "@shootpub/activitypub-types/activity";
 import { test } from "../fixture.js";
 
-test("Using Instance Actor", async ({ api: _ }) => {
+test("Using Instance Actor", async ({ api: _api }) => {
 	const { signWithHttpSignature, validateHttpSignature } =
 		await import("../../src/util/activitypub/httpsig.js");
 	const { User } = await import("../../src/entity/user.js");
@@ -25,7 +25,7 @@ test("Using Instance Actor", async ({ api: _ }) => {
 	);
 });
 
-test("Using Instance Actor with Activity", async ({ api: _ }) => {
+test("Using Instance Actor with Activity", async ({ api: _api }) => {
 	const { signWithHttpSignature, validateHttpSignature } =
 		await import("../../src/util/activitypub/httpsig.js");
 	const { User } = await import("../../src/entity/user.js");

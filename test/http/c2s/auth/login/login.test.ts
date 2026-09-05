@@ -5,7 +5,7 @@ import * as crypto from "node:crypto";
 
 const REDIRECT = "shoot://login/";
 
-test.beforeAll(async ({ api: _ }) => {
+test.beforeAll(async ({ api: _api }) => {
 	const { registerUser } = await import("../../../../../src/util/entity/user.js");
 
 	await registerUser("test", "test");
