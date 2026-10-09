@@ -47,6 +47,10 @@ export const verifyHttpSig: RequestHandler = async (req, res, next) => {
 	// depending on if req.body exists
 
 	try {
+		// need to patch req.headers variable to fix the hostname in case we use a frontend proxy
+		if (req.hostname) {
+			req.headers.host = req.hostname;
+		}
 		req.actor = await validateHttpSignature(
 			new URL(makeInstanceUrl(req.originalUrl)).pathname,
 			req.method,
