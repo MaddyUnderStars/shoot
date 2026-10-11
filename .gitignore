@@ -6,3 +6,4 @@ node_modules
 /storage
 
 tsconfig.tsbuildinfo
+nohup.out
