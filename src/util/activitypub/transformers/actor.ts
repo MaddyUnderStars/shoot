@@ -63,6 +63,8 @@ export const buildAPActor = (actor: Actor): APActor => {
 			? makeInstanceUrl(`${getExternalPathFromActor(actor.guild)}/channels`)
 			: undefined;
 
+	const summary = actor instanceof User ? (actor.summary ?? undefined) : undefined;
+
 	const channels =
 		actor instanceof Guild
 			? makeInstanceUrl(`${getExternalPathFromActor(actor)}/channels`)
@@ -73,6 +75,7 @@ export const buildAPActor = (actor: Actor): APActor => {
 		name,
 		attributedTo,
 		webfinger,
+		summary,
 
 		type: getAPTypeFromActor(actor),
 		id: makeInstanceUrl(id),
