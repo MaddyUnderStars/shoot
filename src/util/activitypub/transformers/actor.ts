@@ -68,7 +68,7 @@ export const buildAPActor = (actor: Actor): APActor => {
 			? makeInstanceUrl(`${getExternalPathFromActor(actor)}/channels`)
 			: undefined;
 
-	return {
+	const ret: APActor = {
 		preferredUsername,
 		name,
 		attributedTo,
@@ -107,4 +107,24 @@ export const buildAPActor = (actor: Actor): APActor => {
 			publicKeyPem: actor.public_key,
 		},
 	};
+
+	if (actor instanceof User && actor.avatar) {
+		//@ts-expect-error TODO
+		ret.icon = {
+			type: "Image",
+			mediaType: "image/png",
+			url: actor.getImageUrl(actor.avatar),
+		};
+	}
+
+	if (actor instanceof User && actor.banner) {
+		//@ts-expect-error TODO
+		ret.image = {
+			type: "Image",
+			mediaType: "image/png",
+			url: actor.getImageUrl(actor.banner),
+		};
+	}
+
+	return ret;
 };

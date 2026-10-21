@@ -75,23 +75,13 @@ export class User extends Actor {
 	}
 
 	public toPublic = (): PublicUser => {
-		let avatarUrl;
-		if (this.avatar instanceof URL) avatarUrl = getImageProxyUrl(this.avatar, 500, 500).href;
-		else if (this.avatar)
-			avatarUrl = makeInstanceUrl(`/users/${this.id}/attachments/${this.avatar}`);
-
-		let bannerUrl;
-		if (this.banner instanceof URL) bannerUrl = getImageProxyUrl(this.banner, 1500, 500).href;
-		else if (this.banner)
-			bannerUrl = makeInstanceUrl(`/users/${this.id}/attachments/${this.banner}`);
-
 		return {
 			mention: this.mention,
 			name: this.name,
 			display_name: this.display_name,
 			summary: this.summary,
-			avatar: avatarUrl,
-			banner: bannerUrl,
+			avatar: this.getImageUrl(this.avatar),
+			banner: this.getImageUrl(this.banner),
 		};
 	};
 
@@ -101,6 +91,12 @@ export class User extends Actor {
 
 			...this.toPublic(),
 		};
+	};
+
+	public getImageUrl = (hashOrUrl: string | URL | null) => {
+		if (!hashOrUrl) return undefined;
+		if (hashOrUrl instanceof URL) return getImageProxyUrl(hashOrUrl, 500, 500).href;
+		return makeInstanceUrl(`/users/${this.id}/attachments/${hashOrUrl}`);
 	};
 }
 
