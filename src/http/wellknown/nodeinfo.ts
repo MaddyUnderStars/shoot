@@ -3,6 +3,8 @@ import { z } from "zod";
 import { config } from "../../util/config.js";
 import { HttpError } from "../../util/httperror.js";
 import { route } from "../../util/route.js";
+import { User } from "../../entity/user.js";
+import { IsNull } from "typeorm";
 
 const router = Router();
 
@@ -71,7 +73,7 @@ router.get(
 		{
 			response: NodeInfoResponse,
 		},
-		(_req, res) => {
+		async (_req, res) => {
 			res.json({
 				version: "2.0",
 				software: {
@@ -84,15 +86,11 @@ router.get(
 					outbound: [],
 					inbound: [],
 				},
-				// usage: {
-				//     users: {
-				//         total: 0,
-				//         activeMonth: 0,
-				//         activeHalfyear: 0,
-				//     },
-				//     localPosts: 0,
-				//     localComments: 0,
-				// },
+				usage: {
+					users: {
+						total: await User.count({ where: { remote_address: IsNull() } }),
+					},
+				},
 				openRegistrations: config().registration.enabled,
 				metadata: {
 					// Not sure I'm happy putting this here...
