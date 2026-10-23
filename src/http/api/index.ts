@@ -55,6 +55,10 @@ import users_me_push from "./users/@me/push.js";
 
 router.use("/users/@me/push", users_me_push);
 
+import users_me_delete from "./users/@me/delete.js";
+
+router.use("/users/@me/delete", users_me_delete);
+
 import users_id from "./users/$id/index.js";
 
 router.use("/users/:user_id", users_id);

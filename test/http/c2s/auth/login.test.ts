@@ -1,12 +1,12 @@
 import request from "supertest";
-import { test } from "../../../../fixture.js";
+import { test } from "../../../fixture.js";
 import { describe } from "vitest";
 import * as crypto from "node:crypto";
 
 const REDIRECT = "shoot://login/";
 
 test.beforeAll(async ({ api: _api }) => {
-	const { registerUser } = await import("../../../../../src/util/entity/user.js");
+	const { registerUser } = await import("../../../../src/util/entity/user.js");
 
 	await registerUser("test", "test");
 });
