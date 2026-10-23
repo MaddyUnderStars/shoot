@@ -96,13 +96,3 @@ npm run cli -- add-user [username]
 ```
 
 Now you'll need a client. Head over to [shoot-client](https://github.com/MaddyUnderStars/shoot-client) for the official Shoot client.
-
-## Contributing
-
-I've become pretty busy with my job, so I haven't had the time to work on Shoot.
-I would love if anyone interested could contribute to the project.
-Feel free to open any issues or pull requests, and I'll review them when I have the time.
-
-### Tests
-
-You can run the tests with `npm run test`. The tests are written with Vitest, and federation is tested with Test Containers.
